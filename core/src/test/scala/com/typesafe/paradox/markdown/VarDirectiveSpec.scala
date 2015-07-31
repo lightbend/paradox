@@ -38,4 +38,12 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
     markdown("@ref:[Version @var[version]](version.md)") shouldEqual html("""<p><a href="version.html">Version 1.2.3</a></p>""")
   }
 
+  it should "retain whitespace before and after" in {
+    markdown("The @var[version] version.") shouldEqual html("<p>The 1.2.3 version.</p>")
+  }
+
+  it should "parse but ignore directive source and attributes" in {
+    markdown("The @var[version] (xxx) { .var a=1 } version.") shouldEqual html("<p>The 1.2.3 version.</p>")
+  }
+
 }

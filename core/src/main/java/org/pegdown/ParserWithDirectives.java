@@ -57,8 +57,8 @@ public class ParserWithDirectives extends Parser {
         return NodeSequence(
             directiveMarker,
             DirectiveName(),
-            DirectiveLabel(), Sp(),
-            MaybeDirectiveSource(), Sp(),
+            DirectiveLabel(),
+            MaybeDirectiveSource(),
             MaybeDirectiveAttributes(),
             push(inlineDirectiveNode())
         );
@@ -88,9 +88,9 @@ public class ParserWithDirectives extends Parser {
     public Rule LeafBlockDirective() {
         return NodeSequence(
             directiveMarker, directiveMarker, Sp(),
-            DirectiveName(), Sp(),
-            MaybeDirectiveLabel(), Sp(),
-            MaybeDirectiveSource(), Sp(),
+            DirectiveName(),
+            MaybeDirectiveLabel(),
+            MaybeDirectiveSource(),
             MaybeDirectiveAttributes(), Sp(), Newline(),
             push(leafBlockDirectiveNode())
         );
@@ -121,9 +121,9 @@ public class ParserWithDirectives extends Parser {
         return Sequence(
             markerLength.clear(),
             ContainerBlockMarker(markerLength), Sp(),
-            DirectiveName(), Sp(),
-            MaybeDirectiveTextLabel(), Sp(),
-            MaybeDirectiveSource(), Sp(),
+            DirectiveName(),
+            MaybeDirectiveTextLabel(),
+            MaybeDirectiveSource(),
             MaybeDirectiveAttributes(), Sp(), Newline()
         );
     }
@@ -193,7 +193,7 @@ public class ParserWithDirectives extends Parser {
 
     public Rule MaybeDirectiveLabel() {
         return NodeSequence(
-            FirstOf(DirectiveLabel(), push(new SuperNode()))
+            FirstOf(Sequence(Sp(), DirectiveLabel()), push(new SuperNode()))
         );
     }
 
@@ -202,7 +202,7 @@ public class ParserWithDirectives extends Parser {
     }
 
     public Rule MaybeDirectiveTextLabel() {
-        return FirstOf(DirectiveTextLabel(), push(""));
+        return FirstOf(Sequence(Sp(), DirectiveTextLabel()), push(""));
     }
 
     public Rule DirectiveTextLabel() {
@@ -210,7 +210,7 @@ public class ParserWithDirectives extends Parser {
     }
 
     public Rule MaybeDirectiveSource() {
-        return FirstOf(DirectiveSource(), push(""));
+        return FirstOf(Sequence(Sp(), DirectiveSource()), push(""));
     }
 
     public Rule DirectiveSource() {
@@ -226,7 +226,7 @@ public class ParserWithDirectives extends Parser {
     }
 
     public Rule MaybeDirectiveAttributes() {
-        return FirstOf(DirectiveAttributes(), push(new DirectiveAttributes.AttributeMap()));
+        return FirstOf(Sequence(Sp(), DirectiveAttributes()), push(new DirectiveAttributes.AttributeMap()));
     }
 
     public Rule DirectiveAttributes() {

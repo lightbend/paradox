@@ -12,8 +12,8 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
   val markdownReader = new Reader
   val markdownWriter = new Writer
 
-  def markdown(text: String)(implicit context: Location[Page] => Writer.Context = loc => Writer.Context(loc)): Map[String, String] = {
-    markdownPages("test.md" -> text)
+  def markdown(text: String)(implicit context: Location[Page] => Writer.Context = loc => Writer.Context(loc)): String = {
+    markdownPages("test.md" -> text).getOrElse("test.html", "")
   }
 
   def markdownPages(mappings: (String, String)*)(implicit context: Location[Page] => Writer.Context = loc => Writer.Context(loc)): Map[String, String] = {
@@ -32,12 +32,12 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
     Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix))
   }
 
-  def html(text: String): Map[String, String] = {
-    htmlPages("test.html" -> text)
+  def html(text: String): String = {
+    normalize(prepare(text))
   }
 
   def htmlPages(mappings: (String, String)*): Map[String, String] = {
-    (mappings map { case (path, text) => (path, normalize(prepare(text))) }).toMap
+    (mappings map { case (path, text) => (path, html(text)) }).toMap
   }
 
   def prepare(text: String): String = {
