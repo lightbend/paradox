@@ -43,7 +43,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       case None => rendered
     }
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
-    render(Location.forest(pages))
+    pages flatMap { root => render(Some(root.location)) }
   }
 
   /**
