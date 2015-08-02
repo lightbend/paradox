@@ -17,12 +17,11 @@ object Import {
     val paradox = taskKey[File]("Build the paradox site.")
     val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
     val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
-    val paradoxPageTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
+    val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
     val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
     val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
     val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
     val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
-    val paradoxTemplateDirectory = settingKey[File]("Location of templates.")
   }
 }
 
@@ -45,16 +44,22 @@ object Paradox extends AutoPlugin {
     paradoxSourceSuffix := ".md",
     paradoxTargetSuffix := ".html",
 
-    paradoxTemplateDirectory := sourceDirectory.value / "templates",
-    paradoxPageTemplate := new PageTemplate(paradoxTemplateDirectory.value),
-
-    sourceDirectories in paradox := Seq(sourceDirectory.value / "paradox"),
+    sourceDirectory in paradox := sourceDirectory.value / "paradox",
+    sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
     sources in paradoxMarkdownToHtml <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml),
     mappings in paradoxMarkdownToHtml <<= Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox),
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
+
+    sourceDirectory in paradoxTemplate := sourceDirectory.value / "paradox" / "_template",
+    paradoxTemplate := new PageTemplate((sourceDirectory in paradoxTemplate).value),
+    sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
+    includeFilter in paradoxTemplate := AllPassFilter,
+    excludeFilter in paradoxTemplate := "*.st" || "*.stg",
+    sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate),
+    mappings in paradoxTemplate <<= Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate),
 
     paradoxMarkdownToHtml := {
       IO.delete((target in paradoxMarkdownToHtml).value)
@@ -65,22 +70,24 @@ object Paradox extends AutoPlugin {
         paradoxTargetSuffix.value,
         paradoxProperties.value,
         paradoxNavigationDepth.value,
-        paradoxPageTemplate.value,
+        paradoxTemplate.value,
         new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
       )
     },
 
     includeFilter in paradox := AllPassFilter,
-    excludeFilter in paradox := (includeFilter in paradoxMarkdownToHtml).value,
+    excludeFilter in paradox := {
+      (includeFilter in paradoxMarkdownToHtml).value ||
+        new SimpleFileFilter(_.getAbsolutePath.startsWith((sourceDirectory in paradoxTemplate).value.getAbsolutePath))
+    },
     sources in paradox <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox),
     mappings in paradox <<= Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox),
+    mappings in paradox ++= (mappings in paradoxTemplate).value,
     mappings in paradox ++= paradoxMarkdownToHtml.value,
     mappings in paradox ++= (mappings in Assets).value,
     target in paradox := target.value / "paradox" / "site",
 
-    watchSources in Defaults.ConfigGlobal ++= {
-      (sources in paradoxMarkdownToHtml).value ++ paradoxTemplateDirectory.value.***.get ++ (sources in paradox).value
-    },
+    watchSources in Defaults.ConfigGlobal ++= (sourceDirectories in paradox).value.***.get,
 
     paradox := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradox).value, (target in paradox).value)
   )
