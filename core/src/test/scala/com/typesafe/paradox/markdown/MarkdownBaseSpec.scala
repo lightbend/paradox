@@ -50,6 +50,7 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
     val tidy = new org.w3c.tidy.Tidy
     tidy.setTabsize(2)
     tidy.setPrintBodyOnly(true)
+    tidy.setTrimEmptyElements(false)
     tidy.setShowWarnings(false)
     tidy.setQuiet(true)
     tidy.parse(reader, writer)

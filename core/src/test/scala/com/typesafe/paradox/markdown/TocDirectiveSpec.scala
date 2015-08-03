@@ -24,7 +24,7 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       """
     ) shouldEqual htmlPages(
         "foo.html" -> """
-          |<h1><a href="#foo" name="foo">Foo</a></h1>
+          |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
           |<div class="toc">
           |  <ul>
           |    <li><a href="foo.html#a">A</a>
@@ -43,13 +43,13 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
           |    </li>
           |  </ul>
           |</div>
-          |<h2><a href="#a" name="a">A</a></h2>
-          |<h3><a href="#b" name="b">B</a></h3>
+          |<h2><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h2>
+          |<h3><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h3>
         """,
         "bar.html" -> """
-          |<h1><a href="#bar" name="bar">Bar</a></h1>
-          |<h2><a href="#a" name="a">A</a></h2>
-          |<h3><a href="#b" name="b">B</a></h3>
+          |<h1><a href="#bar" name="bar" class="anchor"><span class="anchor-link"></span></a>Bar</h1>
+          |<h2><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h2>
+          |<h3><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h3>
         """)
   }
 
@@ -65,7 +65,7 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |### G
       |#### H
     """) shouldEqual htmlPages("a.html" -> """
-      |<h1><a href="#a" name="a">A</a></h1>
+      |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
       |<div class="toc">
       |  <ul>
       |    <li><a href="a.html#b">B</a>
@@ -81,13 +81,13 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |    </li>
       |  </ul>
       |</div>
-      |<h2><a href="#b" name="b">B</a></h2>
-      |<h3><a href="#c" name="c">C</a></h3>
-      |<h4><a href="#d" name="d">D</a></h4>
-      |<h3><a href="#e" name="e">E</a></h3>
-      |<h2><a href="#f" name="f">F</a></h2>
-      |<h3><a href="#g" name="g">G</a></h3>
-      |<h4><a href="#h" name="h">H</a></h4>
+      |<h2><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h2>
+      |<h3><a href="#c" name="c" class="anchor"><span class="anchor-link"></span></a>C</h3>
+      |<h4><a href="#d" name="d" class="anchor"><span class="anchor-link"></span></a>D</h4>
+      |<h3><a href="#e" name="e" class="anchor"><span class="anchor-link"></span></a>E</h3>
+      |<h2><a href="#f" name="f" class="anchor"><span class="anchor-link"></span></a>F</h2>
+      |<h3><a href="#g" name="g" class="anchor"><span class="anchor-link"></span></a>G</h3>
+      |<h4><a href="#h" name="h" class="anchor"><span class="anchor-link"></span></a>H</h4>
     """)
   }
 
@@ -103,8 +103,8 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
         |### G
         |#### H
       """) shouldEqual htmlPages("a.html" -> """
-        |<h1><a href="#a" name="a">A</a></h1>
-        |<h2><a href="#b" name="b">B</a></h2>
+        |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
+        |<h2><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h2>
         |<div class="toc">
         |  <ul>
         |    <li><a href="a.html#c">C</a>
@@ -115,12 +115,12 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
         |    <li><a href="a.html#e">E</a></li>
         |  </ul>
         |</div>
-        |<h3><a href="#c" name="c">C</a></h3>
-        |<h4><a href="#d" name="d">D</a></h4>
-        |<h3><a href="#e" name="e">E</a></h3>
-        |<h2><a href="#f" name="f">F</a></h2>
-        |<h3><a href="#g" name="g">G</a></h3>
-        |<h4><a href="#h" name="h">H</a></h4>
+        |<h3><a href="#c" name="c" class="anchor"><span class="anchor-link"></span></a>C</h3>
+        |<h4><a href="#d" name="d" class="anchor"><span class="anchor-link"></span></a>D</h4>
+        |<h3><a href="#e" name="e" class="anchor"><span class="anchor-link"></span></a>E</h3>
+        |<h2><a href="#f" name="f" class="anchor"><span class="anchor-link"></span></a>F</h2>
+        |<h3><a href="#g" name="g" class="anchor"><span class="anchor-link"></span></a>G</h3>
+        |<h4><a href="#h" name="h" class="anchor"><span class="anchor-link"></span></a>H</h4>
       """)
   }
 
@@ -131,7 +131,7 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |## B
       |### C
     """) shouldEqual htmlPages("a.html" -> """
-      |<h1><a href="#a" name="a">A</a></h1>
+      |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
       |<div class="toc foo bar">
       |  <ul>
       |    <li><a href="a.html#b">B</a>
@@ -141,8 +141,8 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |    </li>
       |  </ul>
       |</div>
-      |<h2><a href="#b" name="b">B</a></h2>
-      |<h3><a href="#c" name="c">C</a></h3>
+      |<h2><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h2>
+      |<h3><a href="#c" name="c" class="anchor"><span class="anchor-link"></span></a>C</h3>
     """)
   }
 
