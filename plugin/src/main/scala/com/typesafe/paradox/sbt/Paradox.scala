@@ -45,11 +45,13 @@ object Paradox extends AutoPlugin {
 
     name in paradox := name.value,
     version in paradox := version.value,
+    description in paradox := description.value,
 
     paradoxProperties := Map.empty,
     paradoxProperties += "project.name" -> (name in paradox).value,
     paradoxProperties += "project.version" -> (version in paradox).value,
     paradoxProperties += "project.version.short" -> shortVersion((version in paradox).value),
+    paradoxProperties += "project.description" -> (description in paradox).value,
     paradoxProperties ++= dateProperties,
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <title>$page.title$ · $page.properties.("project.name")$</title>
+<meta name="description" content="$page.properties.("project.description")$"/>
 </head>
 <body>
 <a href="$page.base$">base</a>
