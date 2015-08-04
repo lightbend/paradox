@@ -34,7 +34,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       case Some(loc) =>
         val page = loc.tree.label
         val writerContext = Writer.Context(loc, sourceSuffix, targetSuffix, properties)
-        val toc = new TableOfContents(pages = true, headers = false, maxDepth = navigationDepth)
+        val toc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(loc, writer, writerContext, toc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs
