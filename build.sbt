@@ -31,5 +31,9 @@ lazy val plugin = project
     scriptedDependencies := {
       (publishLocal in core).value
       publishLocal.value
+    },
+    test in Test := {
+      (test in Test).value
+      scripted.toTask("").value
     }
   )
