@@ -5,12 +5,12 @@
 </head>
 <body>
 <a href="$page.base$">base</a>
-$page.home$
+$page.home.html$
 $page.properties.version$
 $page.breadcrumbs$
 $page.navigation$
-$page.prev$
-$page.next$
+$page.prev.html$
+$page.next.html$
 $page.content$
 </body>
 </html>

@@ -35,12 +35,20 @@ object PageTemplate {
     def getTitle: String
     def getContent: String
     def getBase: String
-    def getHome: String
-    def getPrev: String
-    def getNext: String
+    def getHome: Link
+    def getPrev: Link
+    def getNext: Link
     def getBreadcrumbs: String
     def getNavigation: String
     def getProperties: JMap[String, String]
+  }
+
+  /**
+   * Page link. Can be rendered as just the href or full HTML.
+   */
+  trait Link {
+    def getHref: String
+    def getHtml: String
   }
 
   /**

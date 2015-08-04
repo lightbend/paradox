@@ -66,10 +66,24 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     lazy val getProperties = context.properties.asJava
 
-    private def link(location: Option[Location[Page]]): String = location match {
-      case Some(linked) => writer.writeFragment(new ExpLinkNode("", page.base + linked.tree.label.path, linked.tree.label.label), context)
+    private def link(location: Option[Location[Page]]): PageTemplate.Link = PageLink(location, page, writer, context)
+  }
+
+  /**
+   * Default template links, rendered to just a relative uri and HTML for the link.
+   */
+  case class PageLink(location: Option[Location[Page]], current: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
+    lazy val getHref: String = location match {
+      case Some(linked) => href(linked)
       case None         => null
     }
+
+    lazy val getHtml: String = location match {
+      case Some(linked) => writer.writeFragment(new ExpLinkNode("", href(linked), linked.tree.label.label), context)
+      case None         => null
+    }
+
+    private def href(location: Location[Page]): String = current.base + location.tree.label.path
   }
 
   /**

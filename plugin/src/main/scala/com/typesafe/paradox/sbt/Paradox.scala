@@ -17,11 +17,11 @@ object Import {
     val paradox = taskKey[File]("Build the paradox site.")
     val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
     val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
-    val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
     val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
     val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
     val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
     val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
+    val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
   }
 }
 
