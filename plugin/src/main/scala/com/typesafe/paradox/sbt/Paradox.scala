@@ -43,9 +43,13 @@ object Paradox extends AutoPlugin {
     paradoxSourceSuffix := ".md",
     paradoxTargetSuffix := ".html",
 
+    name in paradox := name.value,
+    version in paradox := version.value,
+
     paradoxProperties := Map.empty,
-    paradoxProperties += "version" -> version.value,
-    paradoxProperties += "version.short" -> shortVersion(version.value),
+    paradoxProperties += "project.name" -> (name in paradox).value,
+    paradoxProperties += "project.version" -> (version in paradox).value,
+    paradoxProperties += "project.version.short" -> shortVersion((version in paradox).value),
     paradoxProperties ++= dateProperties,
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
@@ -105,10 +109,10 @@ object Paradox extends AutoPlugin {
     val month = new SimpleDateFormat("MMM").format(now)
     val year = new SimpleDateFormat("yyyy").format(now)
     Map(
+      "date" -> s"$month $day, $year",
       "date.day" -> day,
       "date.month" -> month,
-      "date.year" -> year,
-      "date.full" -> s"$month $day, $year"
+      "date.year" -> year
     )
   }
 

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>$page.title$</title>
+<title>$page.title$ · $page.properties.("project.name")$</title>
 </head>
 <body>
 <a href="$page.base$">base</a>
 $page.home.html$
-$page.properties.version$
+$page.properties.("project.version")$
 $page.breadcrumbs$
 $page.navigation$
 $page.prev.html$

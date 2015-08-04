@@ -1,6 +1,6 @@
 # A
 
-Version is @var[version].
+Version is @var[project.version].
 
 @@ toc
 
