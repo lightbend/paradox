@@ -45,7 +45,8 @@ object Paradox extends AutoPlugin {
 
     paradoxProperties := Map.empty,
     paradoxProperties += "version" -> version.value,
-    paradoxProperties += "version.short" -> version.value.replace("-SNAPSHOT", "*"),
+    paradoxProperties += "version.short" -> shortVersion(version.value),
+    paradoxProperties ++= dateProperties,
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
@@ -94,5 +95,21 @@ object Paradox extends AutoPlugin {
 
     paradox := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradox).value, (target in paradox).value)
   )
+
+  def shortVersion(version: String): String = version.replace("-SNAPSHOT", "*")
+
+  def dateProperties: Map[String, String] = {
+    import java.text.SimpleDateFormat
+    val now = new java.util.Date
+    val day = new SimpleDateFormat("dd").format(now)
+    val month = new SimpleDateFormat("MMM").format(now)
+    val year = new SimpleDateFormat("yyyy").format(now)
+    Map(
+      "date.day" -> day,
+      "date.month" -> month,
+      "date.year" -> year,
+      "date.full" -> s"$month $day, $year"
+    )
+  }
 
 }
