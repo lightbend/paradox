@@ -56,9 +56,9 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     lazy val getTitle = page.title
     lazy val getContent = writer.write(page.markdown, context)
-    lazy val getBase = page.base
-    lazy val getHome = page.base + loc.root.tree.label.path
 
+    lazy val getBase = page.base
+    lazy val getHome = link(Some(loc.root))
     lazy val getPrev = link(loc.prev)
     lazy val getNext = link(loc.next)
     lazy val getBreadcrumbs = writer.writeFragment(Breadcrumbs.markdown(loc.path), context)

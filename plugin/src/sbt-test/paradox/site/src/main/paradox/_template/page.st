@@ -5,7 +5,8 @@
 </head>
 <body>
 <a href="$page.base$">base</a>
-<a href="$page.home$">home $page.properties.version$</a>
+$page.home$
+$page.properties.version$
 $page.breadcrumbs$
 $page.navigation$
 $page.prev$
