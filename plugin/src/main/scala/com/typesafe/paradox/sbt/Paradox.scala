@@ -9,7 +9,7 @@ import sbt.Keys._
 
 import com.typesafe.paradox.ParadoxProcessor
 import com.typesafe.paradox.template.PageTemplate
-import com.typesafe.sbt.web.Import.Assets
+import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.SbtWeb
 
 object Import {
@@ -21,7 +21,9 @@ object Import {
     val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
     val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
     val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
+    val paradoxTheme = settingKey[Option[String]]("Web module name of the paradox theme, otherwise local template.")
     val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
+    val paradoxTemplatePath = taskKey[String]("Relative path to template (when extracted from webjar).")
   }
 }
 
@@ -34,20 +36,25 @@ object Paradox extends AutoPlugin {
 
   override def trigger = noTrigger
 
+  override def globalSettings: Seq[Setting[_]] = paradoxGlobalSettings
+
   override def projectSettings: Seq[Setting[_]] = inConfig(Compile)(paradoxSettings)
+
+  def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
+    paradoxSourceSuffix := ".md",
+    paradoxTargetSuffix := ".html",
+    paradoxNavigationDepth := 2,
+    paradoxProperties := Map.empty,
+    paradoxTheme := None
+  )
 
   def paradoxSettings: Seq[Setting[_]] = Seq(
     paradoxProcessor := new ParadoxProcessor,
-
-    paradoxNavigationDepth := 2,
-    paradoxSourceSuffix := ".md",
-    paradoxTargetSuffix := ".html",
 
     name in paradox := name.value,
     version in paradox := version.value,
     description in paradox := description.value,
 
-    paradoxProperties := Map.empty,
     paradoxProperties += "project.name" -> (name in paradox).value,
     paradoxProperties += "project.version" -> (version in paradox).value,
     paradoxProperties += "project.version.short" -> shortVersion((version in paradox).value),
@@ -63,8 +70,25 @@ object Paradox extends AutoPlugin {
     mappings in paradoxMarkdownToHtml <<= Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox),
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
 
-    sourceDirectory in paradoxTemplate := sourceDirectory.value / "paradox" / "_template",
-    paradoxTemplate := new PageTemplate((sourceDirectory in paradoxTemplate).value),
+    sourceDirectory in paradoxTemplate := {
+      paradoxTheme.value match {
+        case Some(theme) => (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme
+        case None        => sourceDirectory.value / "paradox" / "_template"
+      }
+    },
+
+    paradoxTemplatePath := {
+      paradoxTheme.value match {
+        case Some(theme) => s"${(WebKeys.webModulesLib in Assets).value}/$theme/"
+        case None        => ""
+      }
+    },
+
+    paradoxTemplate := {
+      (WebKeys.webJars in Assets).value // extract webjars first
+      new PageTemplate((sourceDirectory in paradoxTemplate).value)
+    },
+
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
     includeFilter in paradoxTemplate := AllPassFilter,
     excludeFilter in paradoxTemplate := "*.st" || "*.stg",
@@ -81,6 +105,7 @@ object Paradox extends AutoPlugin {
         paradoxProperties.value,
         paradoxNavigationDepth.value,
         paradoxTemplate.value,
+        paradoxTemplatePath.value,
         new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
       )
     },

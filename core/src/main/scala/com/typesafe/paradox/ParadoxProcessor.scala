@@ -28,6 +28,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               properties: Map[String, String],
               navigationDepth: Int,
               template: PageTemplate,
+              templatePath: String,
               errorListener: STErrorListener): Seq[(File, String)] = {
     @tailrec
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
@@ -35,7 +36,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val page = loc.tree.label
         val writerContext = Writer.Context(loc, sourceSuffix, targetSuffix, properties)
         val toc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
-        val pageContext = PageContents(loc, writer, writerContext, toc)
+        val pageContext = PageContents(loc, templatePath, writer, writerContext, toc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs
         template.write(pageContext, outputFile, errorListener)
@@ -49,7 +50,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Default template contents for a markdown page at a particular location.
    */
-  case class PageContents(loc: Location[Page], writer: Writer, context: Writer.Context, toc: TableOfContents) extends PageTemplate.Contents {
+  case class PageContents(loc: Location[Page], templatePath: String, writer: Writer, context: Writer.Context, toc: TableOfContents) extends PageTemplate.Contents {
     import scala.collection.JavaConverters._
 
     private lazy val page = loc.tree.label
@@ -57,6 +58,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getTitle = page.title
     lazy val getContent = writer.write(page.markdown, context)
 
+    lazy val getTemplate = page.base + templatePath
     lazy val getBase = page.base
     lazy val getHome = link(Some(loc.root))
     lazy val getPrev = link(loc.prev)
