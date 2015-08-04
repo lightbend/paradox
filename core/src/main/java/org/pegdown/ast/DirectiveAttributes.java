@@ -44,6 +44,11 @@ public interface DirectiveAttributes {
     public String value(String key);
 
     /**
+     * Get the first value for a key, otherwise default.
+     */
+    public String value(String key, String defaultValue);
+
+    /**
      * Get all values for a key.
      */
     public List<String> values(String key);
@@ -96,6 +101,11 @@ public interface DirectiveAttributes {
         public String value(String key) {
             List<String> values = values(key);
             return values.isEmpty() ? null : values.get(0);
+        }
+
+        public String value(String key, String defaultValue) {
+            String value = value(key);
+            return value == null ? defaultValue : value;
         }
 
         public List<String> values(String key) {

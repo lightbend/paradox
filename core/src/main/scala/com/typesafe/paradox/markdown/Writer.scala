@@ -73,7 +73,8 @@ object Writer {
   def defaultDirectives(context: Context): Seq[Directive] = Seq(
     RefDirective(context.sourceSuffix, context.targetSuffix),
     TocDirective(context.location),
-    VarDirective(context.properties)
+    VarDirective(context.properties),
+    VarsDirective(context.properties)
   )
 
 }
