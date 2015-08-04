@@ -4,7 +4,7 @@
 
 lazy val paradox = project
   .in(file("."))
-  .aggregate(core, plugin)
+  .aggregate(core, plugin, themes)
   .enablePlugins(NoPublish)
 
 lazy val core = project
@@ -36,4 +36,21 @@ lazy val plugin = project
       (test in Test).value
       scripted.toTask("").value
     }
+  )
+
+lazy val themes = project
+  .in(file("themes"))
+  .aggregate(typesafeTheme)
+  .enablePlugins(NoPublish)
+
+lazy val typesafeTheme = project
+  .in(file("themes/typesafe"))
+  .enablePlugins(SbtWeb)
+  .settings(
+    name := "paradox-theme-typesafe",
+    crossPaths := false,
+    libraryDependencies ++= Seq(
+      Library.foundation,
+      Library.prettify
+    )
   )

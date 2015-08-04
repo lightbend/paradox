@@ -4,6 +4,7 @@
 
 addSbtPlugin("com.github.gseitz" % "sbt-release"     % "1.0.1")
 addSbtPlugin("com.typesafe.sbt"  % "sbt-scalariform" % "1.3.0")
+addSbtPlugin("com.typesafe.sbt"  % "sbt-web"         % "1.2.2")
 addSbtPlugin("com.typesafe.tmp"  % "sbt-header"      % "1.5.0-JDK6-0.1")
 addSbtPlugin("me.lessis"         % "bintray-sbt"     % "0.3.0")
 
