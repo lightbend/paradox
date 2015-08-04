@@ -40,9 +40,12 @@ object Paradox extends AutoPlugin {
     paradoxProcessor := new ParadoxProcessor,
 
     paradoxNavigationDepth := 2,
-    paradoxProperties := Map.empty,
     paradoxSourceSuffix := ".md",
     paradoxTargetSuffix := ".html",
+
+    paradoxProperties := Map.empty,
+    paradoxProperties += "version" -> version.value,
+    paradoxProperties += "version.short" -> version.value.replace("-SNAPSHOT", "*"),
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
