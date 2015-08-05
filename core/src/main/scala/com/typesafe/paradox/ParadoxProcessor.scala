@@ -77,16 +77,24 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   case class PageLink(location: Option[Location[Page]], current: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
     lazy val getHref: String = location.map(href).orNull
     lazy val getHtml: String = location.map(link).orNull
+    lazy val getTitle: String = location.map(title).orNull
+    lazy val isActive: Boolean = location.map(active).getOrElse(false)
 
     private def link(location: Location[Page]): String = {
-      val node = if (location.tree.label.path == current.path)
+      val node = if (active(location))
         new ActiveLinkNode(href(location), location.tree.label.label)
       else
         new ExpLinkNode("", href(location), location.tree.label.label)
       writer.writeFragment(node, context)
     }
 
+    private def active(location: Location[Page]): Boolean = {
+      location.tree.label.path == current.path
+    }
+
     private def href(location: Location[Page]): String = current.base + location.tree.label.path
+
+    private def title(location: Location[Page]): String = location.tree.label.title
   }
 
   /**

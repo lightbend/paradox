@@ -49,6 +49,8 @@ object PageTemplate {
   trait Link {
     def getHref: String
     def getHtml: String
+    def getTitle: String
+    def isActive: Boolean
   }
 
   /**
