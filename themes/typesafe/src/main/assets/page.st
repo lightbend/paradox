@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 
 <head>
-<title>$page.title$ · $page.properties.("project.name")$</title>
+<title>$page.title$$if(!page.home.active)$ · $page.home.title$$endif$</title>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="$page.properties.("project.description")$"/>
