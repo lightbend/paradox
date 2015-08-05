@@ -374,14 +374,13 @@ table tr td {
 
 .nav-toc ul > li {
   list-style-type: none;
-  font-size: 1em;
-  padding-left: 20px;
+  border-top: 1px solid #f0f3f6;
+  padding-left: 0;
 }
 
 .nav-toc ul > li a {
   display: block;
-  margin-left: -20px;
-  border-top: 1px solid #f0f3f6;
+  font-size: 1em;
   padding-left: 20px;
   transition: all 300ms ease-in-out;
 }
@@ -400,9 +399,13 @@ table tr td {
   transition: all 300ms ease-in-out;
 }
 
-.nav-toc ul > li > ul li {
+.nav-toc ul > li > ul li a {
   font-size: 0.9em;
-  padding-left: 0;
+  padding-left: 40px;
+}
+
+.nav-toc ul > li > ul li a.active {
+  padding-left: 30px;
 }
 
 /* navigation next */
