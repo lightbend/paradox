@@ -20,12 +20,17 @@
 <div class="inner-wrap">
 
 <div class="right-off-canvas-menu">
-<nav class="nav-toolbar">
+<div class="nav-toolbar">
 <h3>Version</h3>
 <div class="version-number">
 <h3>$page.properties.("project.version.short")$</h3>
 </div>
-</nav>
+</div>
+<div class="nav-home">
+<a href="$page.home.href$" $if(page.home.active)$class="active"$endif$>
+<span class="home-icon">⌂</span>Home
+</a>
+</div>
 <div class="nav-toc">
 $page.navigation$
 </div>
@@ -56,12 +61,17 @@ $endif$
 <div class="large-3 show-for-large-up columns">
 <div id="sidebar">
 <aside>
-<nav class="nav-toolbar">
+<div class="nav-toolbar">
 <h3>Version</h3>
 <div class="version-number">
 <h3>$page.properties.("project.version.short")$</h3>
 </div>
-</nav>
+</div>
+<div class="nav-home">
+<a href="$page.home.href$" $if(page.home.active)$class="active"$endif$>
+<span class="home-icon">⌂</span>Home
+</a>
+</div>
 <div class="nav-toc">
 $page.navigation$
 </div>
