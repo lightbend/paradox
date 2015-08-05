@@ -340,6 +340,10 @@ table tr td {
   padding: 0;
 }
 
+.right-off-canvas-menu .off-canvas-nav {
+  border-bottom: 1px solid #f0f3f6;
+}
+
 /* sidebar */
 
 .sidebar {

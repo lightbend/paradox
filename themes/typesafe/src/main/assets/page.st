@@ -20,7 +20,9 @@
 <div class="inner-wrap">
 
 <div class="right-off-canvas-menu">
+<div class="off-canvas-nav">
 $navigation()$
+</div>
 </div>
 
 <header class="site-header">
