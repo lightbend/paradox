@@ -9,7 +9,7 @@ import com.typesafe.paradox.template.PageTemplate
 import com.typesafe.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 import org.parboiled.common.FileUtils
-import org.pegdown.ast.{ ExpLinkNode, Node, RootNode }
+import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, Node, RootNode }
 import org.stringtemplate.v4.STErrorListener
 import scala.annotation.tailrec
 
@@ -75,14 +75,15 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
    * Default template links, rendered to just a relative uri and HTML for the link.
    */
   case class PageLink(location: Option[Location[Page]], current: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
-    lazy val getHref: String = location match {
-      case Some(linked) => href(linked)
-      case None         => null
-    }
+    lazy val getHref: String = location.map(href).orNull
+    lazy val getHtml: String = location.map(link).orNull
 
-    lazy val getHtml: String = location match {
-      case Some(linked) => writer.writeFragment(new ExpLinkNode("", href(linked), linked.tree.label.label), context)
-      case None         => null
+    private def link(location: Location[Page]): String = {
+      val node = if (location.tree.label.path == current.path)
+        new ActiveLinkNode(href(location), location.tree.label.label)
+      else
+        new ExpLinkNode("", href(location), location.tree.label.label)
+      writer.writeFragment(node, context)
     }
 
     private def href(location: Location[Page]): String = current.base + location.tree.label.path
