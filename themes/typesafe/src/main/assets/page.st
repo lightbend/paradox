@@ -23,7 +23,7 @@
 $navigation()$
 </div>
 
-<header id="site-header">
+<header class="site-header">
 <div class="row">
 <div class="small-12 columns">
 <div class="title">$page.home.html$</div>
@@ -46,7 +46,7 @@ $endif$
 </div>
 
 <div class="large-3 show-for-large-up columns">
-<div id="sidebar">
+<div class="sidebar">
 <aside>
 $navigation()$
 </aside>
@@ -56,7 +56,7 @@ $navigation()$
 </div>
 </div>
 
-<footer id="site-footer">
+<footer class="site-footer">
 <div class="row">
 
 <div class="small-12 small-only-text-center medium-6 medium-text-left columns">
@@ -79,8 +79,8 @@ $navigation()$
 </div>
 </footer>
 
-
 <a class="exit-off-canvas"></a>
+
 </div>
 </div>
 </body>

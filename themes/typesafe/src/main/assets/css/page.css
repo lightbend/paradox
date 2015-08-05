@@ -270,7 +270,7 @@ table tr td {
 
 /* site header */
 
-#site-header {
+.site-header {
   background: #103a51;
   margin: 0;
   padding: 0;
@@ -279,7 +279,7 @@ table tr td {
   width: 100%;
 }
 
-#site-header .title {
+.site-header .title {
   display: inline-block;
   float: left;
   height: 70px;
@@ -289,37 +289,37 @@ table tr td {
   transition: all 300ms ease-in-out;
 }
 
-#site-header .title a:link, #site-header .title a:visited {
+.site-header .title a:link, .site-header .title a:visited {
   color: #fff;
 }
 
-#site-header .title a:hover {
+.site-header .title a:hover {
   color: #53cdec;
   text-decoration: none;
   transition: all 300ms ease-in-out;
 }
 
-#site-header .logo {
+.site-header .logo {
   float: right;
   margin-top: 15px;
 }
 
-#site-header .right-off-canvas-toggle {
+.site-header .right-off-canvas-toggle {
   float: right;
 }
 
-#site-header .right-off-canvas-toggle .svg-icon-menu {
+.site-header .right-off-canvas-toggle .svg-icon-menu {
   height: 40px;
   width: 40px;
   margin-top: 15px;
 }
 
-#site-header .right-off-canvas-toggle .svg-icon-menu .svg-icon-menu-path {
+.site-header .right-off-canvas-toggle .svg-icon-menu .svg-icon-menu-path {
   fill: #ffffff;
   transition: all 300ms ease-in-out;
 }
 
-#site-header .right-off-canvas-toggle .svg-icon-menu:hover .svg-icon-menu-path {
+.site-header .right-off-canvas-toggle .svg-icon-menu:hover .svg-icon-menu-path {
   fill: #53cdec;
   transition: all 300ms ease-in-out;
 }
@@ -342,7 +342,7 @@ table tr td {
 
 /* sidebar */
 
-#sidebar {
+.sidebar {
   background: #ffffff;
   background: linear-gradient(left, 0% #f0f3f6, 5% #ffffff);
   padding: 0;
@@ -478,50 +478,50 @@ table tr td {
 
 /* site footer */
 
-#site-footer {
+.site-footer {
   background: #103a51;
   color: #ffffff;
   padding: 60px 0px;
 }
 
-#site-footer h3, #site-footer a {
+.site-footer h3, .site-footer a {
   color: #ffffff;
 }
 
-#site-footer .copyright {
+.site-footer .copyright {
   margin-top: 20px;
 }
 
-#site-footer .copyright .text {
+.site-footer .copyright .text {
   display: inline-block;
   line-height: 40px;
   vertical-align: top;
 }
 
-#site-footer .support .icon {
+.site-footer .support .icon {
   display: inline-block;
   margin-right: 10px;
 }
 
-#site-footer .support .icon .svg-icon-support {
+.site-footer .support .icon .svg-icon-support {
   width: 50px;
   height: 50px;
 }
 
-#site-footer .support .details {
+.site-footer .support .details {
   display: inline-block;
   min-height: 50px;
   vertical-align: top;
   text-align: left;
 }
 
-#site-footer .support .details h3 {
+.site-footer .support .details h3 {
   font-size: 1.1em;
   text-transform: uppercase;
   margin: 6px 0 0 0;
 }
 
-#site-footer .support .details a:hover {
+.site-footer .support .details a:hover {
   color: #53cdec;
   text-decoration: none;
 }
