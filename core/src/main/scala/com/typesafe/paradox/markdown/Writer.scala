@@ -52,6 +52,7 @@ object Writer {
    */
   case class Context(
     location: Location[Page],
+    paths: Set[String],
     sourceSuffix: String = DefaultSourceSuffix,
     targetSuffix: String = DefaultTargetSuffix,
     properties: Map[String, String] = Map.empty)
@@ -71,7 +72,7 @@ object Writer {
   )
 
   def defaultDirectives(context: Context): Seq[Directive] = Seq(
-    RefDirective(context.sourceSuffix, context.targetSuffix),
+    RefDirective(context.location.tree.label.path, context.paths, Path.replaceExtension(context.sourceSuffix, context.targetSuffix)),
     TocDirective(context.location),
     VarDirective(context.properties),
     VarsDirective(context.properties)

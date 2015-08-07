@@ -11,7 +11,7 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
   val testProperties = Map("version" -> "1.2.3")
 
   implicit val context: Location[Page] => Writer.Context = { loc =>
-    Writer.Context(loc, properties = testProperties)
+    writerContext(loc).copy(properties = testProperties)
   }
 
   "Var directive" should "insert property values" in {
@@ -35,7 +35,7 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "work within other inline directives" in {
-    markdown("@ref:[Version @var[version]](version.md)") shouldEqual html("""<p><a href="version.html">Version 1.2.3</a></p>""")
+    markdown("@ref:[Version @var[version]](test.md)") shouldEqual html("""<p><a href="test.html">Version 1.2.3</a></p>""")
   }
 
   it should "retain whitespace before and after" in {

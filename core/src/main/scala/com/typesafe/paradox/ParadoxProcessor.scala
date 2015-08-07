@@ -30,11 +30,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               template: PageTemplate,
               templatePath: String,
               errorListener: STErrorListener): Seq[(File, String)] = {
+    val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
+    val paths = Page.allPaths(pages).toSet
     @tailrec
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
-        val writerContext = Writer.Context(loc, sourceSuffix, targetSuffix, properties)
+        val writerContext = Writer.Context(loc, paths, sourceSuffix, targetSuffix, properties)
         val toc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(loc, templatePath, writer, writerContext, toc)
         val outputFile = new File(outputDirectory, page.path)
@@ -43,7 +45,6 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
-    val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     pages flatMap { root => render(Some(root.location)) }
   }
 
@@ -53,10 +54,10 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   case class PageContents(loc: Location[Page], templatePath: String, writer: Writer, context: Writer.Context, toc: TableOfContents) extends PageTemplate.Contents {
     import scala.collection.JavaConverters._
 
-    private lazy val page = loc.tree.label
+    private val page = loc.tree.label
 
-    lazy val getTitle = page.title
-    lazy val getContent = writer.write(page.markdown, context)
+    val getTitle = page.title
+    val getContent = writer.write(page.markdown, context)
 
     lazy val getTemplate = page.base + templatePath
     lazy val getBase = page.base

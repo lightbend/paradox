@@ -65,12 +65,25 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
  * Ref directive.
  *
  * Refs are for links to internal pages. The file extension is replaced when rendering.
+ * Links are validated to ensure they point to a known page.
  */
-case class RefDirective(sourceSuffix: String, targetSuffix: String) extends InlineDirective("ref", "ref:") {
+case class RefDirective(currentPath: String, pathExists: String => Boolean, convertPath: String => String) extends InlineDirective("ref", "ref:") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    val url = Path.replaceExtension(sourceSuffix, targetSuffix)(node.source)
-    new ExpLinkNode("", url, node.contentsNode).accept(visitor)
+    new ExpLinkNode("", check(convertPath(node.source)), node.contentsNode).accept(visitor)
   }
+
+  private def check(path: String): String = {
+    if (!pathExists(Path.resolve(currentPath, path)))
+      throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [$currentPath]")
+    path
+  }
+}
+
+object RefDirective {
+  /**
+   * Exception thrown for unknown pages in reference links.
+   */
+  class LinkException(message: String) extends RuntimeException(message)
 }
 
 /**

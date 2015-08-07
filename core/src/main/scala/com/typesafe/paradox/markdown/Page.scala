@@ -4,9 +4,10 @@
 
 package com.typesafe.paradox.markdown
 
-import com.typesafe.paradox.tree.Tree.Forest
+import com.typesafe.paradox.tree.Tree.{ Forest, Location }
 import java.net.URI
 import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
+import scala.annotation.tailrec
 
 /**
  * Common interface for Page and Header, which are linkable.
@@ -80,6 +81,18 @@ object Page {
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
     Page(targetPath, label, headers, page.markdown)
+  }
+
+  /**
+   * Collect all page paths.
+   */
+  def allPaths(pages: Forest[Page]): List[String] = {
+    @tailrec
+    def collect(location: Option[Location[Page]], paths: List[String] = Nil): List[String] = location match {
+      case Some(loc) => collect(loc.next, loc.tree.label.path :: paths)
+      case None      => paths
+    }
+    pages flatMap { root => collect(Some(root.location)) }
   }
 
 }
