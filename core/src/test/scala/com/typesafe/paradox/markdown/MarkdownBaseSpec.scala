@@ -12,11 +12,11 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
   val markdownReader = new Reader
   val markdownWriter = new Writer
 
-  def markdown(text: String)(implicit context: Location[Page] => Writer.Context = loc => Writer.Context(loc)): String = {
+  def markdown(text: String)(implicit context: Location[Page] => Writer.Context = writerContext): String = {
     markdownPages("test.md" -> text).getOrElse("test.html", "")
   }
 
-  def markdownPages(mappings: (String, String)*)(implicit context: Location[Page] => Writer.Context = loc => Writer.Context(loc)): Map[String, String] = {
+  def markdownPages(mappings: (String, String)*)(implicit context: Location[Page] => Writer.Context = writerContext): Map[String, String] = {
     def render(location: Option[Location[Page]], rendered: Seq[(String, String)] = Seq.empty): Seq[(String, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
@@ -25,6 +25,10 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
       case None => rendered
     }
     render(Location.forest(pages(mappings: _*))).toMap
+  }
+
+  def writerContext(location: Location[Page]): Writer.Context = {
+    Writer.Context(location, Page.allPaths(List(location.root.tree)).toSet)
   }
 
   def pages(mappings: (String, String)*): Forest[Page] = {

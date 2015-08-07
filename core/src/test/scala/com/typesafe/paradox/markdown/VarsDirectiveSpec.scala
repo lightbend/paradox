@@ -11,7 +11,7 @@ class VarsDirectiveSpec extends MarkdownBaseSpec {
   val testProperties = Map("version" -> "1.2.3")
 
   implicit val context: Location[Page] => Writer.Context = { loc =>
-    Writer.Context(loc, properties = testProperties)
+    writerContext(loc).copy(properties = testProperties)
   }
 
   "Vars directive" should "insert property values" in {
