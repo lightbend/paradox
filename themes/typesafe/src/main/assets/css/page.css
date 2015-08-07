@@ -472,11 +472,48 @@ table tr td {
 
 /* table of contents */
 
-.toc ol ol {
+.toc ol li {
+  color: #778a99;
+}
+
+.toc > ol > li > ol {
   list-style-type: lower-alpha;
 }
 
-.toc ol ol ol {
+.toc > ol > li > ol > li > ol {
+  list-style-type: lower-roman;
+}
+
+.toc.main > ol > li {
+  margin-top: 0.5em;
+  font-size: 1.2em;
+}
+
+.toc.main > ol > li {
+  counter-increment: root;
+}
+
+.toc.main > ol > li > ol {
+  counter-reset: subsection;
+  list-style-type: none;
+  margin-left: 2rem;
+}
+
+.toc.main > ol > li > ol > li {
+  counter-increment: subsection;
+}
+
+.toc.main > ol > li > ol > li:before {
+  content: counter(root) "." counter(subsection) ". ";
+  margin-left: -2rem;
+  padding-right: 0.25rem;
+}
+
+.toc.main > ol > li > ol > li > ol {
+  list-style-type: lower-alpha;
+}
+
+.toc.main > ol > li > ol > li > ol > li > ol {
   list-style-type: lower-roman;
 }
 
