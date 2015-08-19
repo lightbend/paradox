@@ -5,6 +5,7 @@
 package com.typesafe.paradox.markdown
 
 import com.typesafe.paradox.tree.Tree.{ Forest, Location }
+import java.io.File
 import org.scalatest.{ FlatSpec, Matchers }
 
 abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
@@ -32,7 +33,7 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
   }
 
   def pages(mappings: (String, String)*): Forest[Page] = {
-    val parsed = mappings map { case (path, text) => (path, markdownReader.read(prepare(text))) }
+    val parsed = mappings map { case (path, text) => (new File(path), path, markdownReader.read(prepare(text))) }
     Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix))
   }
 

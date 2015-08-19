@@ -6,6 +6,7 @@ package com.typesafe.paradox.markdown
 
 import com.typesafe.paradox.tree.Tree
 import com.typesafe.paradox.tree.Tree.Forest
+import java.io.File
 import org.pegdown.ast._
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
@@ -17,16 +18,16 @@ object Index {
 
   case class Ref(level: Int, path: String, markdown: Node)
 
-  case class Page(path: String, markdown: RootNode, indices: Forest[Ref], headers: Forest[Ref])
+  case class Page(file: File, path: String, markdown: RootNode, indices: Forest[Ref], headers: Forest[Ref])
 
-  def pages(parsed: Seq[(String, RootNode)]): Forest[Page] = {
+  def pages(parsed: Seq[(File, String, RootNode)]): Forest[Page] = {
     link(parsed.map((page _).tupled).toList)
   }
 
   /**
    * Create a new Index.Page with parsed indices and headers.
    */
-  def page(path: String, markdown: RootNode): Page = Page(path, markdown, indices(markdown), headers(markdown))
+  def page(file: File, path: String, markdown: RootNode): Page = Page(file, path, markdown, indices(markdown), headers(markdown))
 
   /**
    * Create a tree of header refs from a parsed markdown page.

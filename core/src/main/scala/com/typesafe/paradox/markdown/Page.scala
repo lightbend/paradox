@@ -5,6 +5,7 @@
 package com.typesafe.paradox.markdown
 
 import com.typesafe.paradox.tree.Tree.{ Forest, Location }
+import java.io.File
 import java.net.URI
 import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
 import scala.annotation.tailrec
@@ -25,7 +26,7 @@ case class Header(path: String, label: Node) extends Linkable
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(path: String, label: Node, headers: Forest[Header], markdown: RootNode) extends Linkable {
+case class Page(file: File, path: String, label: Node, headers: Forest[Header], markdown: RootNode) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -58,13 +59,13 @@ object Page {
    * Create a single page from parsed markdown.
    */
   def apply(path: String, markdown: RootNode, convertPath: String => String): Page = {
-    convertPage(convertPath)(Index.page(path, markdown))
+    convertPage(convertPath)(Index.page(new File(path), path, markdown))
   }
 
   /**
    * Convert parsed markdown pages into a linked forest of Page objects.
    */
-  def forest(parsed: Seq[(String, RootNode)], convertPath: String => String): Forest[Page] = {
+  def forest(parsed: Seq[(File, String, RootNode)], convertPath: String => String): Forest[Page] = {
     Index.pages(parsed) map (_ map convertPage(convertPath))
   }
 
@@ -80,7 +81,7 @@ object Page {
       case hs                            => (new SpecialTextNode(targetPath), hs)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
-    Page(targetPath, label, headers, page.markdown)
+    Page(page.file, targetPath, label, headers, page.markdown)
   }
 
   /**

@@ -5,6 +5,7 @@
 package com.typesafe.paradox.markdown
 
 import com.typesafe.paradox.tree.Tree.Location
+import java.io.File
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
@@ -84,6 +85,21 @@ object RefDirective {
    * Exception thrown for unknown pages in reference links.
    */
   class LinkException(message: String) extends RuntimeException(message)
+}
+
+/**
+ * Snip directive.
+ *
+ * Extracts snippets from source files into verbatim blocks.
+ */
+case class SnipDirective(page: Page) extends LeafBlockDirective("snip") {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val label = Option(node.attributes.identifier)
+    val file = new File(page.file.getParentFile, node.source)
+    val text = Snippet(file, label)
+    val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
+    new VerbatimNode(text, lang).accept(visitor)
+  }
 }
 
 /**
