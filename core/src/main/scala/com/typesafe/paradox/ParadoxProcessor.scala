@@ -108,8 +108,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Parse markdown files into pegdown AST.
    */
-  def parseMarkdown(mappings: Seq[(File, String)]): Seq[(String, RootNode)] = {
-    mappings map { case (file, path) => (normalizePath(path), reader.read(FileUtils.readAllChars(file))) }
+  def parseMarkdown(mappings: Seq[(File, String)]): Seq[(File, String, RootNode)] = {
+    mappings map { case (file, path) => (file, normalizePath(path), reader.read(FileUtils.readAllChars(file))) }
   }
 
   /**
