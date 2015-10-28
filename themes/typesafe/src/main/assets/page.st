@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="$page.base$lib/foundation/css/foundation.min.css"/>
 <link rel="stylesheet" href="$page.template$css/page.css"/>
 <link rel="shortcut icon" href="$page.template$images/favicon.ico" />
+$analytics()$
 </head>
 
 <body>
