@@ -470,7 +470,7 @@ table tr td {
   font-style: italic;
 }
 
-/* table of contents */
+/* table of contents -- ordered */
 
 .toc ol li {
   color: #778a99;
@@ -515,6 +515,17 @@ table tr td {
 
 .toc.main > ol > li > ol > li > ol > li > ol {
   list-style-type: lower-roman;
+}
+
+/* table of contents -- unordered */
+
+.toc ul li {
+  color: #778a99;
+}
+
+.toc.main > ul > li {
+  margin-top: 0.5em;
+  font-size: 1.2em;
 }
 
 /* site footer */
