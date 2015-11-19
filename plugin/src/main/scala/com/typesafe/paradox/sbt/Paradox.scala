@@ -22,6 +22,7 @@ object Import {
     val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
     val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
     val paradoxTheme = settingKey[Option[String]]("Web module name of the paradox theme, otherwise local template.")
+    val paradoxThemeDirectory = taskKey[File]("Sync combined theme and local template to a directory.")
     val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
     val paradoxTemplatePath = taskKey[String]("Relative path to template (when extracted from webjar).")
   }
@@ -70,12 +71,22 @@ object Paradox extends AutoPlugin {
     mappings in paradoxMarkdownToHtml <<= Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox),
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
 
-    sourceDirectory in paradoxTemplate := {
-      paradoxTheme.value match {
-        case Some(theme) => (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme
-        case None        => sourceDirectory.value / "paradox" / "_template"
-      }
+    managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
+      (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme
     },
+    sourceDirectory in paradoxTheme := sourceDirectory.value / "paradox" / "_theme",
+    sourceDirectories in paradoxTheme := (managedSourceDirectories in paradoxTheme).value :+ (sourceDirectory in paradoxTheme).value,
+    includeFilter in paradoxTheme := AllPassFilter,
+    excludeFilter in paradoxTheme := HiddenFileFilter,
+    sources in paradoxTheme <<= Defaults.collectFiles(sourceDirectories in paradoxTheme, includeFilter in paradoxTheme, excludeFilter in paradoxTheme) dependsOn {
+      WebKeys.webJars in Assets // extract webjars first
+    },
+    mappings in paradoxTheme <<= Defaults.relativeMappings(sources in paradoxTheme, sourceDirectories in paradoxTheme),
+    // if there are duplicates, select the file from the local template to allow overrides/extensions in themes
+    WebKeys.deduplicators in paradoxTheme += SbtWeb.selectFileFrom((sourceDirectory in paradoxTheme).value),
+    mappings in paradoxTheme := SbtWeb.deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
+    target in paradoxTheme := target.value / "paradox" / "theme",
+    paradoxThemeDirectory := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
     paradoxTemplatePath := {
       paradoxTheme.value match {
@@ -84,15 +95,15 @@ object Paradox extends AutoPlugin {
       }
     },
 
-    paradoxTemplate := {
-      (WebKeys.webJars in Assets).value // extract webjars first
-      new PageTemplate((sourceDirectory in paradoxTemplate).value)
-    },
+    paradoxTemplate := new PageTemplate(paradoxThemeDirectory.value),
 
+    sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
     includeFilter in paradoxTemplate := AllPassFilter,
     excludeFilter in paradoxTemplate := "*.st" || "*.stg",
-    sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate),
+    sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate) dependsOn {
+      paradoxThemeDirectory // trigger theme extraction first
+    },
     mappings in paradoxTemplate <<= Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate),
 
     paradoxMarkdownToHtml := {
