@@ -114,7 +114,7 @@ case class TocDirective(location: Location[Page]) extends LeafBlockDirective("to
     val depth = node.attributes.intValue("depth", 6)
     val pages = node.attributes.booleanValue("pages", true)
     val headers = node.attributes.booleanValue("headers", true)
-    val ordered = node.attributes.booleanValue("ordered", true)
+    val ordered = node.attributes.booleanValue("ordered", false)
     val toc = new TableOfContents(pages, headers, ordered, depth)
     printer.println.print(s"""<div class="toc $classes">""")
     toc.markdown(location, node.getStartIndex).accept(visitor)
