@@ -29,7 +29,7 @@ $navigation()$
 <header class="site-header">
 <div class="row">
 <div class="small-12 columns">
-<div class="title">$page.home.html$</div>
+$title()$
 <a href="http://www.typesafe.com" class="logo show-for-large-up">$logo()$</a>
 <a href="#" class="right-off-canvas-toggle hide-for-large-up" >$menu()$</a>
 </div>
