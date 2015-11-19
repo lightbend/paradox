@@ -74,7 +74,7 @@ object Paradox extends AutoPlugin {
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
       (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme
     },
-    sourceDirectory in paradoxTheme := sourceDirectory.value / "paradox" / "_theme",
+    sourceDirectory in paradoxTheme := sourceDirectory.value / "paradox" / "_template",
     sourceDirectories in paradoxTheme := (managedSourceDirectories in paradoxTheme).value :+ (sourceDirectory in paradoxTheme).value,
     includeFilter in paradoxTheme := AllPassFilter,
     excludeFilter in paradoxTheme := HiddenFileFilter,
