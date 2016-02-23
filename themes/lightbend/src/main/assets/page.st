@@ -30,7 +30,7 @@ $navigation()$
 <div class="row">
 <div class="small-12 columns">
 $title()$
-<a href="http://www.typesafe.com" class="logo show-for-large-up">$logo()$</a>
+<a href="http://www.lightbend.com" class="logo show-for-large-up">$logo()$</a>
 <a href="#" class="right-off-canvas-toggle hide-for-large-up" >$menu()$</a>
 </div>
 </div>
@@ -67,7 +67,7 @@ $navigation()$
 <div class="icon">$support()$</div>
 <div class="details">
 <h3>Commercial Support</h3>
-<a href="http://www.typesafe.com/subscription">Typesafe Subscription</a>
+<a href="http://www.lightbend.com/subscription">Lightbend Subscription</a>
 </div>
 </div>
 </div>
@@ -75,7 +75,7 @@ $navigation()$
 <div class="small-12 small-only-text-center medium-6 medium-text-right columns">
 <div class="copyright">
 <span class="text">&copy; $page.properties.("date.year")$</span>
-<a href="http://www.typesafe.com" class="logo">$logo()$</a>
+<a href="http://www.lightbend.com" class="logo">$logo()$</a>
 </div>
 </div>
 
