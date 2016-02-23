@@ -40,14 +40,14 @@ lazy val plugin = project
 
 lazy val themes = project
   .in(file("themes"))
-  .aggregate(typesafeTheme)
+  .aggregate(lightbendTheme)
   .enablePlugins(NoPublish)
 
-lazy val typesafeTheme = project
-  .in(file("themes/typesafe"))
+lazy val lightbendTheme = project
+  .in(file("themes/lightbend"))
   .enablePlugins(SbtWeb)
   .settings(
-    name := "paradox-theme-typesafe",
+    name := "paradox-theme-lightbend",
     crossPaths := false,
     libraryDependencies ++= Seq(
       Library.foundation,
