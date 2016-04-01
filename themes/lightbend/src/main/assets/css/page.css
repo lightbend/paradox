@@ -302,7 +302,9 @@ table tr td {
 
 .site-header .logo {
   float: right;
-  margin-top: 25px;
+  margin-top: 15px;
+  text-align: right;
+  color: #ffffff;
 }
 
 .site-header .right-off-canvas-toggle {
