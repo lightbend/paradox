@@ -30,7 +30,7 @@ $navigation()$
 <div class="row">
 <div class="small-12 columns">
 $title()$
-<a href="http://www.lightbend.com" class="logo show-for-large-up">$logo()$</a>
+<a href="http://www.lightbend.com" class="logo show-for-large-up">$logo()$ <div>Commercial Software</div></a>
 <a href="#" class="right-off-canvas-toggle hide-for-large-up" >$menu()$</a>
 </div>
 </div>
