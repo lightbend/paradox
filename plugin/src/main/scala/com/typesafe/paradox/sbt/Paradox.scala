@@ -25,6 +25,7 @@ object Import {
     val paradoxThemeDirectory = taskKey[File]("Sync combined theme and local template to a directory.")
     val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
     val paradoxTemplatePath = taskKey[String]("Relative path to template (when extracted from webjar).")
+    val paradoxVersion = settingKey[String]("Paradox plugin version.")
   }
 }
 
@@ -42,6 +43,7 @@ object Paradox extends AutoPlugin {
   override def projectSettings: Seq[Setting[_]] = inConfig(Compile)(paradoxSettings)
 
   def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
+    paradoxVersion := readProperty("paradox.version.properties", "paradox.version"),
     paradoxSourceSuffix := ".md",
     paradoxTargetSuffix := ".html",
     paradoxNavigationDepth := 2,
@@ -152,6 +154,15 @@ object Paradox extends AutoPlugin {
       "date.month" -> month,
       "date.year" -> year
     )
+  }
+
+  def readProperty(resource: String, property: String): String = {
+    val props = new java.util.Properties
+    val stream = getClass.getClassLoader.getResourceAsStream(resource)
+    try { props.load(stream) }
+    catch { case e: Exception => }
+    finally { if (stream ne null) stream.close }
+    props.getProperty(property)
   }
 
 }

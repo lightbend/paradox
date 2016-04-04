@@ -35,7 +35,12 @@ lazy val plugin = project
     test in Test := {
       (test in Test).value
       scripted.toTask("").value
-    }
+    },
+    resourceGenerators in Compile += Def.task {
+      val file = (resourceManaged in Compile).value / "paradox.version.properties"
+      IO.write(file, s"paradox.version=${version.value}")
+      Seq(file)
+    }.taskValue
   )
 
 lazy val themes = project
