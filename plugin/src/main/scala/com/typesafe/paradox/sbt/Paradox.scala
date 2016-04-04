@@ -17,6 +17,7 @@ object Import {
     val paradox = taskKey[File]("Build the paradox site.")
     val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
     val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
+    val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
     val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
     val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
     val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
@@ -38,17 +39,19 @@ object Paradox extends AutoPlugin {
 
   override def trigger = noTrigger
 
-  override def globalSettings: Seq[Setting[_]] = paradoxGlobalSettings
-
-  override def projectSettings: Seq[Setting[_]] = inConfig(Compile)(paradoxSettings)
+  override def projectSettings: Seq[Setting[_]] = paradoxGlobalSettings ++ inConfig(Compile)(paradoxSettings)
 
   def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
-    paradoxVersion := readProperty("paradox.version.properties", "paradox.version"),
+    paradoxOrganization := readProperty("paradox.properties", "paradox.organization"),
+    paradoxVersion := readProperty("paradox.properties", "paradox.version"),
     paradoxSourceSuffix := ".md",
     paradoxTargetSuffix := ".html",
     paradoxNavigationDepth := 2,
     paradoxProperties := Map.empty,
-    paradoxTheme := None
+    paradoxTheme := None,
+    libraryDependencies ++= paradoxTheme.value.toSeq map { theme =>
+      paradoxOrganization.value % theme % paradoxVersion.value
+    }
   )
 
   def paradoxSettings: Seq[Setting[_]] = Seq(
