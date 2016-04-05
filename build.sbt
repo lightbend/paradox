@@ -53,12 +53,11 @@ lazy val themes = project
 
 lazy val lightbendTheme = project
   .in(file("themes/lightbend"))
-  .enablePlugins(SbtWeb)
+  .enablePlugins(Theme)
   .settings(
     name := "paradox-theme-lightbend",
-    crossPaths := false,
     libraryDependencies ++= Seq(
-      Library.foundation,
-      Library.prettify
+      Library.foundation % "provided",
+      Library.prettify % "provided"
     )
   )
