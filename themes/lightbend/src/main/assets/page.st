@@ -11,8 +11,8 @@
 <script src="$page.base$lib/jquery/jquery.min.js"></script>
 <link rel="stylesheet" href="$page.base$lib/normalize.css/normalize.css"/>
 <link rel="stylesheet" href="$page.base$lib/foundation/css/foundation.min.css"/>
-<link rel="stylesheet" href="$page.template$css/page.css"/>
-<link rel="shortcut icon" href="$page.template$images/favicon.ico" />
+<link rel="stylesheet" href="$page.base$css/page.css"/>
+<link rel="shortcut icon" href="$page.base$images/favicon.ico" />
 $analytics()$
 </head>
 

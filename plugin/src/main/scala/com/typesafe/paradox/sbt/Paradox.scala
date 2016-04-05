@@ -25,7 +25,6 @@ object Import {
     val paradoxTheme = settingKey[Option[String]]("Web module name of the paradox theme, otherwise local template.")
     val paradoxThemeDirectory = taskKey[File]("Sync combined theme and local template to a directory.")
     val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
-    val paradoxTemplatePath = taskKey[String]("Relative path to template (when extracted from webjar).")
     val paradoxVersion = settingKey[String]("Paradox plugin version.")
   }
 }
@@ -93,13 +92,6 @@ object Paradox extends AutoPlugin {
     target in paradoxTheme := target.value / "paradox" / "theme",
     paradoxThemeDirectory := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
-    paradoxTemplatePath := {
-      paradoxTheme.value match {
-        case Some(theme) => s"${(WebKeys.webModulesLib in Assets).value}/$theme/"
-        case None        => ""
-      }
-    },
-
     paradoxTemplate := new PageTemplate(paradoxThemeDirectory.value),
 
     sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
@@ -121,21 +113,24 @@ object Paradox extends AutoPlugin {
         paradoxProperties.value,
         paradoxNavigationDepth.value,
         paradoxTemplate.value,
-        paradoxTemplatePath.value,
         new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
       )
     },
 
     includeFilter in paradox := AllPassFilter,
     excludeFilter in paradox := {
-      (includeFilter in paradoxMarkdownToHtml).value ||
-        new SimpleFileFilter(_.getAbsolutePath.startsWith((sourceDirectory in paradoxTemplate).value.getAbsolutePath))
+      // exclude markdown sources and the _template directory sources
+      (includeFilter in paradoxMarkdownToHtml).value || InDirectoryFilter((sourceDirectory in paradoxTheme).value)
     },
     sources in paradox <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox),
     mappings in paradox <<= Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox),
     mappings in paradox ++= (mappings in paradoxTemplate).value,
     mappings in paradox ++= paradoxMarkdownToHtml.value,
-    mappings in paradox ++= (mappings in Assets).value,
+    mappings in paradox ++= {
+      // include webjar assets, but not the assets from the theme
+      val themeFilter = (managedSourceDirectories in paradoxTheme).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
+      (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
+    },
     target in paradox := target.value / "paradox" / "site",
 
     watchSources in Defaults.ConfigGlobal ++= (sourceDirectories in paradox).value.***.get,
@@ -167,5 +162,8 @@ object Paradox extends AutoPlugin {
     finally { if (stream ne null) stream.close }
     props.getProperty(property)
   }
+
+  def InDirectoryFilter(base: File): FileFilter =
+    new SimpleFileFilter(_.getAbsolutePath.startsWith(base.getAbsolutePath))
 
 }
