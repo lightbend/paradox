@@ -88,8 +88,12 @@ $navigation()$
 </div>
 </body>
 
-<script src="$page.base$lib/prettify/run_prettify.js"></script>
-<script src="$page.base$lib/foundation/js/foundation.min.js"></script>
-<script>jQuery(document).foundation();</script>
+<script type="text/javascript" src="$page.base$lib/foundation/js/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+
+<style type="text/css">@import "$page.base$lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="$page.base$lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="$page.base$lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
 
 </html>
