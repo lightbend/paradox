@@ -8,11 +8,11 @@
 <meta name="description" content="$page.properties.("project.description")$"/>
 <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
 <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
-<script src="$page.base$lib/jquery/jquery.min.js"></script>
-<link rel="stylesheet" href="$page.base$lib/normalize.css/normalize.css"/>
-<link rel="stylesheet" href="$page.base$lib/foundation/css/foundation.min.css"/>
-<link rel="stylesheet" href="$page.template$css/page.css"/>
-<link rel="shortcut icon" href="$page.template$images/favicon.ico" />
+<script type="text/javascript" src="$page.base$lib/jquery/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="$page.base$lib/normalize.css/normalize.css"/>
+<link rel="stylesheet" type="text/css" href="$page.base$lib/foundation/css/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="$page.base$css/page.css"/>
+<link rel="shortcut icon" href="$page.base$images/favicon.ico" />
 $analytics()$
 </head>
 
@@ -88,8 +88,12 @@ $navigation()$
 </div>
 </body>
 
-<script src="$page.base$lib/prettify/run_prettify.js"></script>
-<script src="$page.base$lib/foundation/js/foundation.min.js"></script>
-<script>jQuery(document).foundation();</script>
+<script type="text/javascript" src="$page.base$lib/foundation/js/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+
+<style type="text/css">@import "$page.base$lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="$page.base$lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="$page.base$lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
 
 </html>

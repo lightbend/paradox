@@ -7,7 +7,7 @@
   ga('create', 'UA-23127719-1', 'typesafe.com', {'allowLinker': true, 'name': 'tsTracker'});
   ga('require', 'linkid', 'linkid.js');
   ga('tsTracker.require', 'linker');
-  ga('tsTracker.linker:autoLink', ['lightbend.com', typesafe.com','playframework.com','scala-lang.org','scaladays.org','spray.io','akka.io','scala-sbt.org','scala-ide.org']);
+  ga('tsTracker.linker:autoLink', ['lightbend.com','typesafe.com','playframework.com','scala-lang.org','scaladays.org','spray.io','akka.io','scala-sbt.org','scala-ide.org']);
   ga('tsTracker.send', 'pageview');
 </script>
 <script>
