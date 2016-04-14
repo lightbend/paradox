@@ -1,0 +1,11 @@
+<foo>
+    <!-- #foo-bar -->
+    <bar>
+        <!-- #not-included -->
+        XML FTW
+    </bar>
+    <!-- #foo-bar -->
+    <baz>
+        It is so awesome
+    </baz>
+</foo>
