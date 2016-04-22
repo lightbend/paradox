@@ -5,7 +5,8 @@
 package com.typesafe.paradox.markdown
 
 import com.typesafe.paradox.tree.Tree.Location
-import java.io.File
+import java.io.{ File, FileNotFoundException }
+
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
@@ -16,6 +17,7 @@ import org.pegdown.Printer
  */
 class DirectiveSerializer(directives: Seq[Directive]) extends ToHtmlSerializerPlugin {
   val directiveMap = directives.flatMap(d => d.names.map(n => (n, d))).toMap
+
   def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
     case dnode: DirectiveNode =>
       directiveMap.get(dnode.name) match {
@@ -35,7 +37,9 @@ class DirectiveSerializer(directives: Seq[Directive]) extends ToHtmlSerializerPl
  */
 abstract class Directive {
   def names: Seq[String]
+
   def format: Set[DirectiveNode.Format]
+
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit
 }
 
@@ -81,10 +85,12 @@ case class RefDirective(currentPath: String, pathExists: String => Boolean, conv
 }
 
 object RefDirective {
+
   /**
    * Exception thrown for unknown pages in reference links.
    */
   class LinkException(message: String) extends RuntimeException(message)
+
 }
 
 /**
@@ -94,12 +100,26 @@ object RefDirective {
  */
 case class SnipDirective(page: Page) extends LeafBlockDirective("snip") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    val label = Option(node.attributes.identifier)
-    val file = new File(page.file.getParentFile, node.source)
-    val text = Snippet(file, label)
-    val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
-    new VerbatimNode(text, lang).accept(visitor)
+    try {
+      val label = Option(node.attributes.identifier)
+      val file = new File(page.file.getParentFile, node.source)
+      val text = Snippet(file, label)
+      val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
+      new VerbatimNode(text, lang).accept(visitor)
+    } catch {
+      case e: FileNotFoundException =>
+        throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")
+    }
   }
+}
+
+object SnipDirective {
+
+  /**
+   * Exception thrown for unknown snip links.
+   */
+  class LinkException(message: String) extends RuntimeException(message)
+
 }
 
 /**
