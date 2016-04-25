@@ -462,6 +462,15 @@ table tr td {
   padding-left: 30px;
 }
 
+.nav-toc ul > li > ul > li > ul li a {
+  font-size: 0.8em;
+  padding-left: 60px;
+}
+
+.nav-toc ul > li > ul > li > ul li a.active {
+  padding-left: 50px;
+}
+
 /* navigation next */
 
 .nav-next {
