@@ -188,10 +188,10 @@ h1:hover > a.anchor, h2:hover > a.anchor, h3:hover > a.anchor, h4:hover > a.anch
 
 pre {
   padding: 0.5rem 1rem !important;
-  border: 1px solid #DDDDDD !important;
+  border: 1px solid #dddddd !important;
   -webkit-border-radius: 5px !important;
   border-radius: 5px !important;
-  background: #F7F7F7 !important;
+  background: #f7f7f7 !important;
   margin: 0 0 1rem 0 !important;
   white-space: pre;
   overflow: auto;
@@ -213,9 +213,102 @@ pre > code {
 p code {
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  background: #FAFAFA;
+  background: #f7f7f7;
   color: #0c323b;
   padding: 0 0.2em !important;
+}
+
+li code {
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background: #f7f7f7;
+  color: #0c323b;
+  padding: 0 0.2em !important;
+}
+
+/* tabbed code snippets */
+
+dl.tabbed {
+  position: relative;
+}
+
+dl.tabbed dt {
+  float: left;
+  display: inline-block;
+  position: relative;
+  left: 1px;
+  margin-left: -1px;
+}
+
+dl.tabbed dt.current {
+  z-index: 2;
+}
+
+dl.tabbed dt a {
+  display: block;
+  border: 1px solid #f7f7f7;
+  padding: 0 20px;
+  height: 30px;
+  line-height: 2;
+  color: #1a84ad;
+  text-decoration: none;
+}
+
+dl.tabbed dt a:hover {
+  background: #f7f7f7;
+  transition: all 300ms ease-in-out;
+}
+
+dl.tabbed dt.first a {
+  border-top-left-radius: 5px;
+}
+
+dl.tabbed dt.last a {
+  border-top-right-radius: 5px;
+}
+
+dl.tabbed dt.current a {
+  background-color: #f7f7f7;
+  border-color: #dddddd;
+  border-bottom: 0;
+  padding-bottom: 1px;
+}
+
+dl.tabbed dt.current a {
+  color: #0c323b;
+  outline: none;
+}
+
+dl.tabbed dd {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 29px;
+}
+
+dl.tabbed dd.current {
+  z-index: 1;
+}
+
+dl.tabbed dd pre {
+  border-top-left-radius: 0 !important;
+}
+
+dl.tabbed dd.has-note pre {
+  border-bottom: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+dl.tabbed dd.has-note blockquote {
+  color: #0c323b;
+  border: solid #dddddd;
+  border-width: 1px 1px 1px 10px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  margin-top: 0;
+  font-style: italic;
 }
 
 /* blockquotes */
@@ -225,12 +318,24 @@ blockquote {
   border-left: 10px solid #ff931e;
   margin: 1.5em 0;
   padding: 1em 20px;
+  color: #0c323b;
+  line-height: 1.4em;
+  font-style: italic;
 }
 
 blockquote p {
-  display: inline;
+  margin: 0;
   color: #0c323b;
-  font-style: italic;
+  line-height: 1.4em;
+}
+
+blockquote p ~ p {
+  margin-top: 1em;
+}
+
+blockquote p code {
+  background: #fff;
+  padding-right: 0.4em !important;
 }
 
 /* footnotes */
