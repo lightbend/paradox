@@ -233,6 +233,12 @@ blockquote p {
   font-style: italic;
 }
 
+/* footnotes */
+
+small {
+  display: block;
+}
+
 /* tables */
 
 table {
