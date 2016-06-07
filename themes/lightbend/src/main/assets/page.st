@@ -37,6 +37,18 @@ $title()$
 </div>
 </header>
 
+<div class="page-header">
+<div class="row">
+<div class="medium-12 show-for-medium-up columns">
+<div class="nav-breadcrumbs">
+$if(!page.home.active)$
+$page.breadcrumbs$
+$endif$
+</div>
+</div>
+</div>
+</div>
+
 <div class="wrapper page-content">
 <div class="row">
 
