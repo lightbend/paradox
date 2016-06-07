@@ -40,7 +40,7 @@ object Breadcrumbs {
   }
 
   private def link(base: String, path: String, label: Node, active: String): Node = {
-    if (path == active) new ActiveLinkNode(base + path, label)
+    if (path == active) label // no link for current location
     else new ExpLinkNode("", base + path, label)
   }
 
