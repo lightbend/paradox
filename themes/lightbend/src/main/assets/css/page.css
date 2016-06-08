@@ -525,27 +525,23 @@ table tr td {
 }
 
 .nav-home {
-  margin: 0;
-  padding: 0;
   border-top: 1px solid #f3f6f6;
-  line-height: 3em;
+  padding-top: 1rem;
+  line-height: 2rem;
 }
 
 .nav-home a {
   display: block;
   color: #1a84ad;
-  font-weight: normal;
-  font-size: 1.125em;
-  padding-left: 20px;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  padding-left: 1rem;
   transition: all 300ms ease-in-out;
 }
 
 .nav-home a.active {
   background: #f3f6f6;
-  color: #0c323b;
-  border-left: 10px solid #1a84ad;
-  padding-left: 10px;
-  transition: all 300ms ease-in-out;
 }
 
 .nav-home a:hover {
@@ -569,33 +565,36 @@ table tr td {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.nav-toc {
+  padding-bottom: 1rem;
+}
+
 .nav-toc ul {
   margin: 0;
   padding: 0;
-  line-height: 2em;
+  line-height: 2rem;
 }
 
 .nav-toc ul > li {
   list-style-type: none;
+  margin-top: 1rem;
   border-top: 1px solid #f3f6f6;
+  padding-top: 1rem;
   padding-left: 0;
 }
 
 .nav-toc ul > li a {
   display: block;
   color: #1a84ad;
-  font-weight: normal;
-  font-size: 1em;
-  padding-left: 20px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: 1rem;
   transition: all 300ms ease-in-out;
 }
 
 .nav-toc ul > li a.active {
   background: #f3f6f6;
-  color: #0c323b;
-  border-left: 10px solid #1a84ad;
-  padding-left: 10px;
-  transition: all 300ms ease-in-out;
 }
 
 .nav-toc ul > li a:hover {
@@ -604,22 +603,23 @@ table tr td {
   transition: all 300ms ease-in-out;
 }
 
-.nav-toc ul > li > ul li a {
-  font-size: 0.9em;
-  padding-left: 40px;
+.nav-toc ul > li > ul li {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0;
 }
 
-.nav-toc ul > li > ul li a.active {
-  padding-left: 30px;
+.nav-toc ul > li > ul li a {
+  font-size: 0.9rem;
+  font-weight: normal;
+  text-transform: none;
+  margin-top: 0;
+  padding-left: 1.2rem;
 }
 
 .nav-toc ul > li > ul > li > ul li a {
-  font-size: 0.8em;
-  padding-left: 60px;
-}
-
-.nav-toc ul > li > ul > li > ul li a.active {
-  padding-left: 50px;
+  font-size: 0.8rem;
+  padding-left: 2rem;
 }
 
 /* navigation next */
