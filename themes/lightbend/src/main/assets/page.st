@@ -11,35 +11,36 @@
 <script type="text/javascript" src="$page.base$lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="$page.base$js/page.js"></script>
 <link rel="stylesheet" type="text/css" href="$page.base$lib/normalize.css/normalize.css"/>
-<link rel="stylesheet" type="text/css" href="$page.base$lib/foundation/css/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="$page.base$lib/foundation/dist/foundation.min.css"/>
 <link rel="stylesheet" type="text/css" href="$page.base$css/page.css"/>
 <link rel="shortcut icon" href="$page.base$images/favicon.ico" />
 $analytics()$
 </head>
 
 <body>
-<div class="off-canvas-wrap" data-offcanvas>
-<div class="inner-wrap">
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
 
-<div class="right-off-canvas-menu">
+<div class="off-canvas position-right" id="right-off-canvas-menu" data-off-canvas data-position="right">
 <div class="off-canvas-nav">
 $navigation()$
 </div>
 </div>
 
+<div class="off-canvas-content" data-off-canvas-content>
 <header class="site-header">
 <div class="row">
 <div class="small-12 columns">
 $title()$
-<a href="http://www.lightbend.com" class="logo show-for-large-up">$logo()$ <div>Commercial Software</div></a>
-<a href="#" class="right-off-canvas-toggle hide-for-large-up" >$menu()$</a>
+<a href="http://www.lightbend.com" class="logo show-for-large">$logo()$ <div>Commercial Software</div></a>
+<a href="#" class="right-off-canvas-toggle hide-for-large" data-toggle="right-off-canvas-menu">$menu()$</a>
 </div>
 </div>
 </header>
 
 <div class="page-header">
 <div class="row">
-<div class="medium-12 show-for-medium-up columns">
+<div class="medium-12 show-for-medium columns">
 <div class="nav-breadcrumbs">
 $if(!page.home.active)$
 $page.breadcrumbs$
@@ -61,7 +62,7 @@ $if(page.next.html)$
 $endif$
 </div>
 
-<div class="large-3 show-for-large-up columns">
+<div class="large-3 show-for-large columns">
 <div class="sidebar">
 <aside>
 $navigation()$
@@ -75,7 +76,7 @@ $navigation()$
 <footer class="site-footer">
 <div class="row">
 
-<div class="small-12 small-only-text-center medium-6 medium-text-left columns">
+<div class="small-12 text-center medium-6 medium-text-left columns">
 <div class="support">
 <div class="icon">$support()$</div>
 <div class="details">
@@ -85,7 +86,7 @@ $navigation()$
 </div>
 </div>
 
-<div class="small-12 small-only-text-center medium-6 medium-text-right columns">
+<div class="small-12 text-center medium-6 medium-text-right columns">
 <div class="copyright">
 <span class="text">&copy; $page.properties.("date.year")$</span>
 <a href="http://www.lightbend.com" class="logo">$logo()$</a>
@@ -95,13 +96,12 @@ $navigation()$
 </div>
 </footer>
 
-<a class="exit-off-canvas"></a>
-
+</div>
 </div>
 </div>
 </body>
 
-<script type="text/javascript" src="$page.base$lib/foundation/js/foundation.min.js"></script>
+<script type="text/javascript" src="$page.base$lib/foundation/dist/foundation.min.js"></script>
 <script type="text/javascript">jQuery(document).foundation();</script>
 
 <style type="text/css">@import "$page.base$lib/prettify/prettify.css";</style>

@@ -213,6 +213,7 @@ pre > code {
 p code {
   -webkit-border-radius: 3px;
   border-radius: 3px;
+  border: none;
   background: #f7f7f7;
   color: #0c323b;
   padding: 0 0.2em !important;
@@ -221,6 +222,7 @@ p code {
 li code {
   -webkit-border-radius: 3px;
   border-radius: 3px;
+  border: none;
   background: #f7f7f7;
   color: #0c323b;
   padding: 0 0.2em !important;
@@ -488,13 +490,13 @@ table tr td {
 
 /* off-canvas menu */
 
-.right-off-canvas-menu {
+.off-canvas {
   background: #ffffff;
   background: linear-gradient(left, 0% #f3f6f6, 5% #ffffff);
   padding: 0;
 }
 
-.right-off-canvas-menu .off-canvas-nav {
+.off-canvas-nav {
   border-bottom: 1px solid #f3f6f6;
 }
 
