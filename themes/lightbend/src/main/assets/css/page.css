@@ -700,9 +700,39 @@ table tr td {
   color: #778a99;
 }
 
+.toc.main > ul {
+  margin-left: 0;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #f3f6f6;
+}
+
 .toc.main > ul > li {
-  margin-top: 0.5em;
-  font-size: 1.2em;
+  margin-top: 2rem;
+  border-top: 1px solid #f3f6f6;
+  padding-top: 2rem;
+  list-style-type: none;
+}
+
+.toc.main > ul > li > a {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.toc.main > ul > li > ul {
+  margin-top: 1rem;
+}
+
+.toc.main > ul > li > ul > li {
+  list-style-type: disc;
+}
+
+.toc.main > ul > li > ul > li > a {
+  font-weight: normal;
+  text-transform: none;
+}
+
+.toc.main > ul > li > ul > li > ul > li {
+  list-style-type: circle;
 }
 
 /* site footer */
