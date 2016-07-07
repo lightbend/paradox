@@ -6,8 +6,8 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="description" content="$page.properties.("project.description")$"/>
-<link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
-<link href="http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="$page.base$lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="$page.base$js/page.js"></script>
 <link rel="stylesheet" type="text/css" href="$page.base$lib/normalize.css/normalize.css"/>
@@ -34,7 +34,7 @@ $navigation()$
 <div class="small-12 column">
 <a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu">$menu()$</a>
 $title()$
-<a href="http://www.lightbend.com" class="logo show-for-medium">$logo()$ <div>Commercial Software</div></a>
+<a href="https://www.lightbend.com" class="logo show-for-medium">$logo()$ <div>Commercial Software</div></a>
 </div>
 </div>
 </header>
@@ -100,7 +100,7 @@ $endif$
 <div class="icon show-for-medium">$support()$</div>
 <div class="details">
 <h3>Commercial Support</h3>
-<a href="http://www.lightbend.com/subscription">Lightbend Subscription</a>
+<a href="https://www.lightbend.com/subscription">Lightbend Subscription</a>
 </div>
 </div>
 </div>
@@ -108,7 +108,7 @@ $endif$
 <div class="small-12 text-center medium-6 medium-text-right column">
 <div class="copyright">
 <span class="text">&copy; $page.properties.("date.year")$</span>
-<a href="http://www.lightbend.com" class="logo">$logo()$</a>
+<a href="https://www.lightbend.com" class="logo">$logo()$</a>
 </div>
 </div>
 
