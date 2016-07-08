@@ -40,6 +40,8 @@ object PageTemplate {
     def getNext: Link
     def getBreadcrumbs: String
     def getNavigation: String
+    def hasSubheaders: Boolean
+    def getToc: String
     def getProperties: JMap[String, String]
   }
 
