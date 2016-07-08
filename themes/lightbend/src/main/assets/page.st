@@ -29,13 +29,11 @@ $navigation()$
 
 <div class="off-canvas-content" data-off-canvas-content>
 
-<header class="site-header">
-<div class="expanded row">
+<header class="site-header expanded row">
 <div class="small-12 column">
 <a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu">$menu()$</a>
 $title()$
 <a href="https://www.lightbend.com" class="logo show-for-medium">$logo()$ <div>Commercial Software</div></a>
-</div>
 </div>
 </header>
 
@@ -89,23 +87,107 @@ $endif$
 </div>
 
 <footer class="site-footer">
+
+<section class="site-footer-demo">
 <div class="expanded row">
 <div class="small-12 large-offset-2 large-10 column">
 <div class="row site-footer-content">
+
+<div class="small-12 text-center medium-5 medium-text-left column">
+<h1>Try our demo</h1>
+<h2>Try out our Reactive Maps demo, which is an Akka cluster application with resilience assured by ConductR and observed in real-time by Lightbend Monitoring.</h2>
+<p>
+<a href="https://demo.lightbend.com" class="primary button" target="_blank">View Interactive Demo</a>
+<a href="https://www.lightbend.com/contact" class="hollow secondary button">Get in touch with us</a>
+</p>
+</div>
+<div class="medium-7 show-for-medium column">
+<a href="https://demo.lightbend.com" target="_blank">
+<img src="$page.base$images/demo.png">
+</a>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-suite show-for-medium">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
 <div class="small-12 large-9 column">
-<div class="row">
-
-<div class="small-12 text-center medium-6 medium-text-left column">
-<div class="support">
-<div class="icon show-for-medium">$support()$</div>
-<div class="details">
-<h3>Commercial Support</h3>
-<a href="https://www.lightbend.com/subscription">Lightbend Subscription</a>
+<div class="row with-bottom-divider">
+<div class="small-12 medium-6 text-center column">
+<a href="https://www.lightbend.com/products/conductr">$logo_conductr()$</a>
+</div>
+<div class="small-12 medium-6 text-center column">
+<a href="https://www.lightbend.com/products/monitoring">$logo_monitoring()$</a>
 </div>
 </div>
 </div>
 
-<div class="small-12 text-center medium-6 medium-text-right column">
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<li><a href="https://www.lightbend.com/services/expert-support">Services</a>
+<ul>
+<li><a href="https://www.lightbend.com/services/expert-support">Expert Support</a></li>
+<li><a href="https://www.lightbend.com/services/training">Training</a></li>
+<li><a href="https://www.lightbend.com/services/consulting">Consulting</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div class="small-12 medium-4 large-3 text-center with-left-divider column">
+<div class="nav-links">
+<ul>
+<li><a href="https://www.lightbend.com/products/lightbend-reactive-platform">Products</a>
+<ul>
+<li><a href="https://www.lightbend.com/products/conductr">ConductR</a></li>
+<li><a href="https://www.lightbend.com/products/monitoring">Monitoring</a></li>
+<li><a href="https://www.lightbend.com/lagom">Lagom</a></li>
+<li><a href="https://www.lightbend.com/products/spark">Apache Spark</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div class="small-12 medium-4 large-3 text-center with-left-divider end column">
+<div class="nav-links">
+<ul>
+<li><a href="https://www.lightbend.com/account">Account</a>
+<ul>
+<li><a href="https://www.lightbend.com/account/login">Login</a></li>
+<li><a href="https://www.lightbend.com/account/register">Sign up</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
 <div class="copyright">
 <span class="text">&copy; $page.properties.("date.year")$</span>
 <a href="https://www.lightbend.com" class="logo">$logo()$</a>
@@ -115,8 +197,7 @@ $endif$
 </div>
 </div>
 </div>
-</div>
-</div>
+</section>
 </footer>
 
 </div>

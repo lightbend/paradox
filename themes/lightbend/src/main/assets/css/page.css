@@ -380,11 +380,6 @@ table tr td {
 
 .site-header {
   background: #0c323b;
-  margin: 0;
-  padding: 0;
-  height: 75px;
-  display: block;
-  width: 100%;
 }
 
 .site-header .title {
@@ -823,83 +818,183 @@ table tr td {
 /* site footer */
 
 .site-footer {
-  background: #0c323b;
-  padding: 2rem 0;
-  color: #406972;
+  margin-top: 3rem;
 }
 
 .site-footer-content.row {
   max-width: 90rem;
 }
 
-.site-footer h3, .site-footer a {
+.site-footer-demo {
+  background: url("../images/backgrounds/polygons.jpg") repeat-x center top;
+  padding: 4rem 0;
   color: #406972;
 }
 
-.site-footer .copyright {
+@media screen and (max-width: 40em) {
+  .site-footer-demo {
+    padding: 2rem 0;
+  }
+}
+
+@media screen and (max-width: 40em) {
+  .site-footer-demo h1 {
+    font-size: 1.8rem !important;
+  }
+}
+
+.site-footer-demo h2 {
+  font-size: 1.4rem;
+}
+
+@media screen and (max-width: 40em) {
+  .site-footer-demo h2 {
+    font-size: 1.1rem !important;
+  }
+}
+
+.site-footer-demo .button {
+  text-transform: uppercase;
+}
+
+.site-footer-demo .button.primary {
+  background-color: #ff931e;
+}
+
+.site-footer-demo .button.primary:hover {
+  background-color: #f48122;
+}
+
+.site-footer-demo a:hover {
+  text-decoration: none;
+}
+
+.site-footer-demo img {
+  max-width: none;
+}
+
+.site-footer-suite {
+  background: #1c3b47;
+  padding-top: 2rem;
+}
+
+.site-footer-suite .svg-icon-logo {
+  max-width: 12rem;
+}
+
+.site-footer-suite .svg-icon-logo .svg-icon-logo-text {
+  fill: #c5d0d4;
+  transition: all 300ms ease-in-out;
+}
+
+.site-footer-suite .svg-icon-logo:hover .svg-icon-logo-text {
+  fill: #ff931e;
+}
+
+.site-footer-suite .svg-icon-logo .svg-icon-logo-image {
+  fill: #c5d0d4;
+  transition: all 300ms ease-in-out;
+}
+
+.site-footer-suite .svg-icon-logo:hover .svg-icon-logo-image {
+  fill: #ff931e;
+}
+
+.site-footer-suite .with-bottom-divider {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.site-footer-nav {
+  background: #1c3b47;
+  padding: 2rem 0;
+}
+
+.site-footer-nav .with-left-divider {
+  border-top: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media screen and (max-width: 40em) {
+  .site-footer-nav .with-left-divider {
+    margin-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 2rem;
+    border-left: 0;
+  }
+}
+
+@media screen and (min-width: 40em) {
+  .site-footer-nav .nav-links {
+    height: 12rem;
+  }
+}
+
+.nav-links ul {
+  margin: 0;
+  padding: 0;
+  line-height: 2rem;
+}
+
+.nav-links ul > li {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.nav-links ul > li a {
+  color: #c5d0d4;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.nav-links ul > li a:hover {
+  color: #ff931e;
+  text-decoration: none;
+}
+
+.nav-links ul > li > ul li a {
+  font-weight: normal;
+  text-transform: none;
+}
+
+.site-footer-base {
+  background: #0c323b;
+  padding: 1rem 0;
+  color: #406972;
+}
+
+.site-footer-base h3, .site-footer-base a {
+  color: #406972;
+}
+
+.site-footer-base .copyright {
   margin-top: 20px;
 }
 
-.site-footer .copyright .text {
+.site-footer-base .copyright .text {
   display: inline-block;
   line-height: 24px;
   padding-right: 10px;
   vertical-align: top;
 }
 
-.site-footer .svg-icon-logo-text {
+.site-footer-base .svg-icon-logo-text {
   fill: #406972;
   transition: all 300ms ease-in-out;
 }
 
-.site-footer .svg-icon-logo-image {
+.site-footer-base .svg-icon-logo-image {
   fill: #406972;
   transition: all 300ms ease-in-out;
 }
 
-.site-footer .logo:hover .svg-icon-logo-text {
+.site-footer-base .logo:hover .svg-icon-logo-text {
   fill: #ff931e;
   transition: all 300ms ease-in-out;
 }
 
-.site-footer .logo:hover .svg-icon-logo-image {
+.site-footer-base .logo:hover .svg-icon-logo-image {
   fill: #ff931e;
   transition: all 300ms ease-in-out;
-}
-
-.site-footer .support .icon {
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.site-footer .support .icon .svg-icon-support {
-  width: 50px;
-  height: 50px;
-}
-
-.site-footer .support .icon .svg-icon-support-image {
-  fill: #406972;
-}
-
-.site-footer .support .details {
-  display: inline-block;
-  min-height: 50px;
-  vertical-align: top;
-}
-
-.site-footer .support .details h3 {
-  color: #406972;
-  font-size: 1.1em;
-  text-transform: uppercase;
-  margin: 6px 0 0 0;
-}
-
-.site-footer .support .details a {
-  color: #406972;
-  text-decoration: none;
-}
-
-.site-footer .support .details a:hover {
-  color: #ff931e;
-  text-decoration: none;
 }
