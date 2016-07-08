@@ -5,7 +5,7 @@
 import sbt._
 
 object Version {
-  val foundation = "5.1.1"
+  val foundation = "6.2.3"
   val jtidy      = "r938"
   val pegdown    = "1.6.0"
   val prettify   = "4-Mar-2013"

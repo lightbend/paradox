@@ -42,6 +42,15 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
   }
 
   /**
+   * Create a TOC bullet list for the headers of a Page only, including the top-level header.
+   */
+  def headers(location: Location[Page]): Node = {
+    val page = location.tree.label
+    val tree = Tree.leaf(page.copy(headers = List(Tree(page.h1, page.headers))))
+    markdown(base = page.base, active = "", tree)
+  }
+
+  /**
    * Create a new Page Tree for a TOC at a certain point within the section hierarchy.
    */
   private def nested(tree: Tree[Page], tocIndex: Int): Tree[Page] = {
