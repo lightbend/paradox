@@ -41,7 +41,7 @@ object Import {
   }
 }
 
-object Paradox extends AutoPlugin {
+object ParadoxPlugin extends AutoPlugin {
   import Import.ParadoxKeys._
 
   val autoImport = Import
@@ -104,7 +104,13 @@ object Paradox extends AutoPlugin {
     target in paradoxTheme := target.value / "paradox" / "theme",
     paradoxThemeDirectory := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
-    paradoxTemplate := new PageTemplate(paradoxThemeDirectory.value),
+    paradoxTemplate := {
+      val dir = paradoxThemeDirectory.value
+      if (!dir.exists) {
+        IO.createDirectory(dir)
+      }
+      new PageTemplate(dir)
+    },
 
     sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
