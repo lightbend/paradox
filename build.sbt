@@ -16,7 +16,7 @@
 
 lazy val paradox = project
   .in(file("."))
-  .aggregate(core, plugin /*, themes*/)
+  .aggregate(core, plugin, themes)
   .enablePlugins(NoPublish)
 
 lazy val core = project
@@ -58,18 +58,16 @@ lazy val plugin = project
     }.taskValue
   )
 
-// lazy val themes = project
-//   .in(file("themes"))
-//   .aggregate(lightbendTheme)
-//   .enablePlugins(NoPublish)
+lazy val themes = (project in file("themes"))
+  .aggregate(genericTheme)
+  .enablePlugins(NoPublish)
 
-// lazy val lightbendTheme = project
-//   .in(file("themes/lightbend"))
-//   .enablePlugins(Theme)
-//   .settings(
-//     name := "paradox-theme-lightbend",
-//     libraryDependencies ++= Seq(
-//       Library.foundation % "provided",
-//       Library.prettify % "provided"
-//     )
-//   )
+lazy val genericTheme = (project in (file("themes") / "generic"))
+  .enablePlugins(Theme)
+  .settings(
+    name := "paradox-theme-generic",
+    libraryDependencies ++= Seq(
+      Library.foundation % "provided",
+      Library.prettify % "provided"
+    )
+  )

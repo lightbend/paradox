@@ -24,27 +24,12 @@ import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.SbtWeb
 
-object Import {
-  object ParadoxKeys {
-    val paradox = taskKey[File]("Build the paradox site.")
-    val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
-    val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
-    val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
-    val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
-    val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
-    val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
-    val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
-    val paradoxTheme = settingKey[Option[String]]("Web module name of the paradox theme, otherwise local template.")
-    val paradoxThemeDirectory = taskKey[File]("Sync combined theme and local template to a directory.")
-    val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
-    val paradoxVersion = settingKey[String]("Paradox plugin version.")
-  }
-}
-
 object ParadoxPlugin extends AutoPlugin {
-  import Import.ParadoxKeys._
-
-  val autoImport = Import
+  object autoImport extends ParadoxKeys {
+    def builtinParadoxTheme(name: String): ModuleID =
+      readProperty("paradox.properties", "paradox.organization") % s"paradox-theme-$name" % readProperty("paradox.properties", "paradox.version")
+  }
+  import autoImport._
 
   override def requires = SbtWeb
 
@@ -60,9 +45,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxProperties := Map.empty,
     paradoxTheme := None,
-    libraryDependencies ++= paradoxTheme.value.toSeq map { theme =>
-      paradoxOrganization.value % theme % paradoxVersion.value
-    }
+    libraryDependencies ++= paradoxTheme.value.toSeq
   )
 
   def paradoxSettings: Seq[Setting[_]] = Seq(
@@ -88,7 +71,7 @@ object ParadoxPlugin extends AutoPlugin {
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
-      (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme
+      (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme.name
     },
     sourceDirectory in paradoxTheme := sourceDirectory.value / "paradox" / "_template",
     sourceDirectories in paradoxTheme := (managedSourceDirectories in paradoxTheme).value :+ (sourceDirectory in paradoxTheme).value,
