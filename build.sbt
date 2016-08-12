@@ -18,9 +18,25 @@ lazy val paradox = project
   .in(file("."))
   .aggregate(core, plugin, themes)
   .enablePlugins(NoPublish)
+  .settings(inThisBuild(List(
+    organization := "com.lightbend.paradox",
+    licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
+    scalaVersion := "2.10.6",
+    organizationName := "lightbend",
+    organizationHomepage := Some(url("http://lightbend.com/")),
+    homepage := Some(url("https://github.com/lightbend/paradox")),
+    scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
+    developers := List(
+      Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
+      Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
+    ),
+    description := "Paradox is a markdown documentation tool for software projects."
+  )))
 
 lazy val core = project
   .in(file("core"))
+  .disablePlugins(BintrayPlugin)
+  .enablePlugins(SonatypePublish)
   .settings(
     name := "paradox",
     libraryDependencies ++= Seq(
@@ -34,6 +50,7 @@ lazy val core = project
 lazy val plugin = project
   .in(file("plugin"))
   .dependsOn(core)
+  .enablePlugins(BintrayPublish)
   .settings(
     name := "sbt-paradox",
     sbtPlugin := true,
@@ -63,7 +80,8 @@ lazy val themes = (project in file("themes"))
   .enablePlugins(NoPublish)
 
 lazy val genericTheme = (project in (file("themes") / "generic"))
-  .enablePlugins(Theme)
+  .disablePlugins(BintrayPlugin)
+  .enablePlugins(Theme, SonatypePublish)
   .settings(
     name := "paradox-theme-generic",
     libraryDependencies ++= Seq(

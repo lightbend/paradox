@@ -21,34 +21,45 @@ import bintray.{ BintrayKeys, BintrayPlugin }
 /**
  * Publish to private bintray repository.
  */
-object Publish extends AutoPlugin {
-
+object BintrayPublish extends AutoPlugin {
   override def trigger = allRequirements
-
   override def requires = plugins.JvmPlugin && BintrayPlugin
 
   override def buildSettings = Seq(
-    BintrayKeys.bintrayOrganization := Some("typesafe"),
+    BintrayKeys.bintrayOrganization := Some("sbt"),
     BintrayKeys.bintrayReleaseOnPublish := false
   )
 
   override def projectSettings = Seq(
-    BintrayKeys.bintrayRepository := "phoenix",
-    BintrayKeys.bintrayPackage := "paradox",
-    licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
+    BintrayKeys.bintrayRepository := "sbt-plugin-releases",
+    BintrayKeys.bintrayPackage := "sbt-paradox",
     pomIncludeRepository := { _ => false }
   )
+}
 
+/**
+ * Publish to private bintray repository.
+ */
+object SonatypePublish extends AutoPlugin {
+  override def requires = plugins.JvmPlugin
+
+  override def projectSettings = Seq(
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+      else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    }
+  )
 }
 
 /**
  * For projects that are not published.
  */
 object NoPublish extends AutoPlugin {
-
-  override def requires = plugins.JvmPlugin && Publish
+  override def requires = plugins.JvmPlugin && BintrayPublish
 
   override def projectSettings = Seq(
+    publishArtifact := false,
     publish := (),
     publishLocal := ()
   )
