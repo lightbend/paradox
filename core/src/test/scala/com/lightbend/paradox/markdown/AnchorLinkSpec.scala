@@ -14,31 +14,23 @@
  * limitations under the License.
  */
 
-package org.pegdown.ast;
+package com.lightbend.paradox.markdown
 
-import org.parboiled.common.ImmutableList;
+class AnchorLinkSpec extends MarkdownBaseSpec {
 
-import java.util.List;
+  "Anchor links" should "create anchor for headers" in {
+    markdown("# Title") shouldEqual
+      html("""
+        |<h1><a href="#title" name="title" class="anchor">
+        |<span class="anchor-link"></span></a>Title</h1>""")
+  }
 
-/**
- * An active link is an explicit link with an 'active' class attribute.
- */
-public class ActiveLinkNode extends AbstractNode {
-
-    public final String href;
-    public final Node child;
-
-    public ActiveLinkNode(String href, Node child) {
-        this.href = href;
-        this.child = child;
-    }
-
-    public List<Node> getChildren() {
-        return ImmutableList.of(child);
-    }
-
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
-    }
+  it should "parse and render all header children" in {
+    markdown("# Title with `code`...") shouldEqual
+      html("""
+        |<h1><a href="#title-with-code" name="title-with-code" class="anchor">
+        |<span class="anchor-link"></span></a>Title with <code>code</code>&hellip;</h1>
+        """)
+  }
 
 }

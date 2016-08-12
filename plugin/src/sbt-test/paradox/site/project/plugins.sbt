@@ -1,1 +1,1 @@
-addSbtPlugin("com.typesafe.paradox" % "sbt-paradox" % sys.props("project.version"))
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % sys.props("project.version"))
