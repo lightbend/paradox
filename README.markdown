@@ -49,6 +49,17 @@ is substituted with the title of the page.
 In addition Paradox extends Markdown in a principled manner called generic directives syntax,
 which basiclly means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
 
+### @ref
+
+Paradox extensions are designed so the resulting Markdown is Github friendly.
+For example, you might want to link from one document to the other, let's say from `index.md` to `setup/index.md`.
+
+```
+See @ref:[Setup](setup/index.md) for more information.
+```
+
+This will render to be `setup/index.html` in the HTML, but the source on Github will link correct as well!
+
 ### @@@index container
 
 `@@@index` is used to list child pages or sections from a page.
@@ -79,6 +90,8 @@ Inside `setup/index.md` can list its own child pages as follows:
 Paradox will walk through these indices and create a hierachical navigation:
 
 ![index](docs/index.png)
+
+Similar to `@ref`, the source document on Github will link correctly the other sources.
 
 License and credtis
 -------------------
