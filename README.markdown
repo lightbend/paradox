@@ -3,7 +3,9 @@ Paradox
 
 Paradox is a documentation tool for software projects.
 
-Status: In development. Paradox is not supported commercially via Lightbend subscription.
+**Status**: In development.
+
+**Currently Paradox is not supported under Lightbend subscription.**
 
 Setup
 -----
