@@ -49,7 +49,7 @@ is substituted with the title of the page.
 In addition Paradox extends Markdown in a principled manner called generic directives syntax,
 which basiclly means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
 
-### @ref
+### @ref link
 
 Paradox extensions are designed so the resulting Markdown is Github friendly.
 For example, you might want to link from one document to the other, let's say from `index.md` to `setup/index.md`.
@@ -93,9 +93,24 @@ Paradox will walk through these indices and create a hierachical navigation:
 
 Similar to `@ref`, the source document on Github will link correctly the other sources.
 
-### @@snip
+### @@toc block
 
-`@@snip` is used to include code snippets from another file.
+The "generic" theme already renders a hierachical navigation,
+but let's say you would like to render a more detailed table of contents for a section overview page.
+
+`@@toc` block is used to include a table of content with arbitrary depth.
+
+```
+@@toc { depth=2 }
+```
+
+This will render the page names (first header), and the second headers.
+
+![toc](docs/toc.png)
+
+### @@snip block
+
+`@@snip` block is used to include code snippets from another file.
 
 ```
 @@snip [Hello.scala](../scala/Hello.scala) { #hello_example }
@@ -115,6 +130,23 @@ This lets us compile and test the source before including it in the documentatio
 The snippet is rendered with code formatting like this:
 
 ![snip](docs/snip.png)
+
+To display muliple snippets in a tabbed view, use definition list syntax as follows:
+
+```markdown
+sbt
+:   @@snip [build.sbt](../../../build.sbt) { #setup_example }
+
+Maven
+:   @@snip [pom.xml](../../../pom.xml) { #setup_example }
+
+Gradle
+:   @@snip [build.gradle](../../../build.gradle) { #setup_example }
+```
+
+This will be rendered like this:
+
+![multi_snip](docs/multi_snip.png)
 
 License and credtis
 -------------------
