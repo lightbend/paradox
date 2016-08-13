@@ -93,6 +93,29 @@ Paradox will walk through these indices and create a hierachical navigation:
 
 Similar to `@ref`, the source document on Github will link correctly the other sources.
 
+### @@snip
+
+`@@snip` is used to include code snippets from another file.
+
+```
+@@snip [Hello.scala](../scala/Hello.scala) { #hello_example }
+```
+
+Inside of `Hello.scala` mark the desired section you want to extract using the `#hello_example` label as follows:
+
+```scala
+// #hello_example
+object Hello extends App {
+  println("hello")
+}
+// #hello_example
+```
+
+This lets us compile and test the source before including it in the documentation.
+The snippet is rendered with code formatting like this:
+
+![snip](docs/snip.png)
+
 License and credtis
 -------------------
 
