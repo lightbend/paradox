@@ -10,7 +10,7 @@ Paradox is a documentation tool for software projects.
 Setup
 -----
 
-Find [the lastest](https://github.com/lightbend/paradox/releases) version, and create `project/paradox.sbt`:
+Find [the latest](https://github.com/lightbend/paradox/releases) version, and create `project/paradox.sbt`:
 
 ```scala
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "X.Y.Z")
@@ -34,7 +34,7 @@ Your markdown documentation wil go inside `src/main/paradox/`. For example, you 
 
 ### GFM
 
-Powered by [Pegdown][pegdown], Github Flavored Markdown extensions fensed code formatting and table are both supported.
+Powered by [Pegdown][pegdown], Github Flavored Markdown extensions, such as fenced code blocks and tables are supported.
 
 ### StringTemplate
 
@@ -89,7 +89,7 @@ Inside `setup/index.md` can list its own child pages as follows:
 @@@
 ```
 
-Paradox will walk through these indices and create a hierachical navigation:
+Paradox will walk through these indices and create a hierarchical navigation sidebar:
 
 ![index](docs/index.png)
 
@@ -97,10 +97,10 @@ Similar to `@ref`, the source document on Github will link correctly the other s
 
 ### @@toc block
 
-The "generic" theme already renders a hierachical navigation,
+The "generic" theme already renders a hierarchical navigation sidebar,
 but let's say you would like to render a more detailed table of contents for a section overview page.
 
-`@@toc` block is used to include a table of content with arbitrary depth.
+The `@@toc` block is used to include a table of content with arbitrary depth.
 
 ```
 @@toc { depth=2 }
@@ -112,7 +112,7 @@ This will render the page names (first header), and the second headers.
 
 ### @@snip block
 
-`@@snip` block is used to include code snippets from another file.
+The `@@snip` block is used to include code snippets from another file.
 
 ```
 @@snip [Hello.scala](../scala/Hello.scala) { #hello_example }
@@ -153,7 +153,7 @@ This will be rendered like this:
 License and credits
 -------------------
 
-- Copyright 2015-2016 Lightbend, Inc. Paradox is provided under Apache 2.0 license.
+- Copyright 2015-2016 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
 - The markdown engine is based on Mathias's [Pegdown][pegdown].
 
   [pegdown]: http://pegdown.org
