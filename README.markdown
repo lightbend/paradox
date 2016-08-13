@@ -150,7 +150,7 @@ This will be rendered like this:
 
 ![multi_snip](docs/multi_snip.png)
 
-License and credtis
+License and credits
 -------------------
 
 - Copyright 2015-2016 Lightbend, Inc. Paradox is provided under Apache 2.0 license.
