@@ -16,7 +16,7 @@
 
 lazy val paradox = project
   .in(file("."))
-  .aggregate(core, plugin, themes)
+  .aggregate(core, plugin, themePlugin, themes)
   .enablePlugins(NoPublish)
   .settings(inThisBuild(List(
     organization := "com.lightbend.paradox",
@@ -75,13 +75,21 @@ lazy val plugin = project
     }.taskValue
   )
 
+lazy val themePlugin = (project in file("theme-plugin"))
+  .enablePlugins(BintrayPublish)
+  .settings(
+    name := "sbt-paradox-theme",
+    sbtPlugin := true,
+    addSbtPlugin(Library.sbtWeb)
+  )
+
 lazy val themes = (project in file("themes"))
   .aggregate(genericTheme)
   .enablePlugins(NoPublish)
 
 lazy val genericTheme = (project in (file("themes") / "generic"))
   .disablePlugins(BintrayPlugin)
-  .enablePlugins(Theme, SonatypePublish)
+  .enablePlugins(ParadoxThemePlugin, SonatypePublish)
   .settings(
     name := "paradox-theme-generic",
     libraryDependencies ++= Seq(
