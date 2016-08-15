@@ -27,6 +27,8 @@ lazy val root = (project in file(".")).
   )
 ```
 
+Then call `paradox` which will generate the site in `target/paradox/site/`.
+
 Documents
 ---------
 
