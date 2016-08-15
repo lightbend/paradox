@@ -30,7 +30,7 @@ lazy val root = (project in file(".")).
 Documents
 ---------
 
-Your markdown documentation wil go inside `src/main/paradox/`. For example, you can start with `src/main/paradox/index.md`.
+Your markdown documentation will go inside `src/main/paradox/`. For example, you can start with `src/main/paradox/index.md`.
 
 ### GFM
 
@@ -49,7 +49,7 @@ is substituted with the title of the page.
 ### Generic directive
 
 In addition Paradox extends Markdown in a principled manner called generic directives syntax,
-which basiclly means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
+which basically means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
 
 ### @ref link
 
@@ -133,7 +133,7 @@ The snippet is rendered with code formatting like this:
 
 ![snip](docs/snip.png)
 
-To display muliple snippets in a tabbed view, use definition list syntax as follows:
+To display multiple snippets in a tabbed view, use definition list syntax as follows:
 
 ```markdown
 sbt
