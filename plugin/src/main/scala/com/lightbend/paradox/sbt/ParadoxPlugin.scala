@@ -45,6 +45,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxProperties := Map.empty,
     paradoxTheme := None,
+    paradoxLeadingBreadcrumbs := Nil,
     libraryDependencies ++= paradoxTheme.value.toSeq
   )
 
@@ -108,6 +109,7 @@ object ParadoxPlugin extends AutoPlugin {
       IO.delete((target in paradoxMarkdownToHtml).value)
       paradoxProcessor.value.process(
         (mappings in paradoxMarkdownToHtml).value,
+        paradoxLeadingBreadcrumbs.value,
         (target in paradoxMarkdownToHtml).value,
         paradoxSourceSuffix.value,
         paradoxTargetSuffix.value,
