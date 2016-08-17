@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import scala.collection.JavaConverters._
+
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.ast._
 
@@ -38,17 +40,12 @@ object Breadcrumbs {
   }
 
   private def list(items: List[ListItemNode]): BulletListNode = {
-    val parent = new SuperNode
-    items.foreach(parent.getChildren.add)
-    new BulletListNode(parent)
+    new BulletListNode(new SuperNode(items.map(n => n: Node).asJava))
   }
 
   private def item(base: String, active: String)(location: Location[Page]): ListItemNode = {
     val page = location.tree.label
-    val label = link(base, page.path, page.label, active)
-    val parent = new SuperNode
-    parent.getChildren.add(label)
-    new ListItemNode(parent)
+    new ListItemNode(new SuperNode(link(base, page.path, page.label, active)))
   }
 
   private def link(base: String, path: String, label: Node, active: String): Node = {
