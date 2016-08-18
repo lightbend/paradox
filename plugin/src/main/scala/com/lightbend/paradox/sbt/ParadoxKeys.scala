@@ -24,6 +24,7 @@ trait ParadoxKeys {
   val paradox = taskKey[File]("Build the paradox site.")
   val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
   val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
+  val paradoxLeadingBreadcrumbs = settingKey[List[(String, String)]]("Any leading breadcrumbs (label -> url)")
   val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
   val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
   val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")

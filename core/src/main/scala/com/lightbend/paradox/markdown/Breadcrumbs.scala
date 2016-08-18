@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import scala.collection.JavaConverters._
+
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.ast._
 
@@ -28,32 +30,35 @@ object Breadcrumbs {
    * Convert a location path into a markdown list.
    * Note: locations are ordered from current location up to root.
    */
-  def markdown(locations: List[Location[Page]]): BulletListNode = locations match {
-    case current :: parents => crumbs(current.tree.label.base, current.tree.label.path, locations.reverse)
-    case _                  => list(Nil)
-  }
+  def markdown(leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode =
+    locations match {
+      case current :: parents => crumbs(current.tree.label.base, current.tree.label.path, leadingBreadcrumbs, locations.reverse)
+      case _                  => list(Nil)
+    }
 
-  private def crumbs(base: String, active: String, locations: List[Location[Page]]): BulletListNode = {
-    list(locations map item(base, active))
+  private def crumbs(base: String, active: String, leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode = {
+    val lead = leadingBreadcrumbs map { case (label, url) => item(url, "", labelNode(label), active) }
+    list(lead ++ (locations map pageItem(base, active)))
   }
 
   private def list(items: List[ListItemNode]): BulletListNode = {
-    val parent = new SuperNode
-    items.foreach(parent.getChildren.add)
-    new BulletListNode(parent)
+    new BulletListNode(new SuperNode(items.map(n => n: Node).asJava))
   }
 
-  private def item(base: String, active: String)(location: Location[Page]): ListItemNode = {
+  private def pageItem(base: String, active: String)(location: Location[Page]): ListItemNode = {
     val page = location.tree.label
-    val label = link(base, page.path, page.label, active)
-    val parent = new SuperNode
-    parent.getChildren.add(label)
-    new ListItemNode(parent)
+    item(base + page.path, page.path, page.label, active)
   }
 
-  private def link(base: String, path: String, label: Node, active: String): Node = {
-    if (path == active) label // no link for current location
-    else new ExpLinkNode("", base + path, label)
+  private def item(url: String, path: String, label: Node, active: String): ListItemNode = {
+    new ListItemNode(new SuperNode(link(url, path, label, active)))
   }
+
+  private def link(url: String, path: String, label: Node, active: String): Node = {
+    if (path == active) label // no link for current location
+    else new ExpLinkNode("", url, label)
+  }
+
+  private def labelNode(label: String): Node = new SuperNode(new TextNode(label))
 
 }
