@@ -89,8 +89,8 @@ object Page {
     // TODO: get default label node from page index link?
     val targetPath = convertPath(page.path)
     val (h1, subheaders) = page.headers match {
-      case h :: hs if h.label.level == 1 => (Header(h.label.path, h.label.markdown), h.children ++ hs)
-      case hs                            => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
+      case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
+      case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
     Page(page.file, targetPath, h1.label, h1, headers, page.markdown)
