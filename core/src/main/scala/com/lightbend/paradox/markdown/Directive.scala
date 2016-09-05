@@ -135,6 +135,58 @@ object SnipDirective {
 }
 
 /**
+ * Fiddle directive.
+ *
+ * Extracts fiddles from source files into fiddle blocks.
+ */
+case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    try {
+      val label = Option(node.attributes.identifier)
+
+      val baseUrl = node.attributes.value("baseUrl", "https://embed.scalafiddle.io/embed")
+      val cssClass = node.attributes.value("cssClass", "fiddle")
+      val width = Option(node.attributes.value("width")).map("width=" + _).getOrElse("")
+      val height = Option(node.attributes.value("height")).map("height=" + _).getOrElse("")
+      val extraParams = node.attributes.value("extraParams", "theme=light")
+      val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
+
+      val file = new File(page.file.getParentFile, node.source)
+      val text = Snippet(file, label)
+      val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
+
+      val fiddleSource = java.net.URLEncoder.encode(
+        """|
+           | import fiddle.Fiddle, Fiddle.println
+           | @scalajs.js.annotation.JSExport
+           | object ScalaFiddle {
+           |   // $FiddleStart
+                  """ + text + """
+           |   // $FiddleEnd
+           | }
+          """.stripMargin, "UTF-8")
+
+      printer.println.print(s"""
+        <iframe class="$cssClass" $width $height src="$baseUrl?$extraParams&source=$fiddleSource" frameborder="0" style="$cssStyle"></iframe>
+        """
+      )
+    } catch {
+      case e: FileNotFoundException =>
+        throw new FiddleDirective.LinkException(s"Unknown fiddle [${e.getMessage}] referenced from [${page.path}]")
+    }
+  }
+}
+
+object FiddleDirective {
+
+  /**
+   * Exception thrown for unknown snip links.
+   */
+  class LinkException(message: String) extends RuntimeException(message)
+
+}
+
+/**
  * Table of contents directive.
  *
  * Placeholder to insert a serialized table of contents, using the page and header trees.
