@@ -59,8 +59,9 @@ lazy val plugin = project
     scriptedSettings,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedDependencies := {
-      (publishLocal in core).value
-      publishLocal.value
+      val p1 = (publishLocal in core).value
+      val p2 = publishLocal.value
+      val p3 = (publishLocal in genericTheme).value
     },
     test in Test := {
       (test in Test).value
