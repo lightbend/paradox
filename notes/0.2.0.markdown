@@ -1,0 +1,11 @@
+### Initial public release of Paradox.
+
+Features include:
+
+- Static site generation
+- GFM powered by Pegdown
+- StringTemplate using ST4
+- @ref link
+- @@index container
+- @@toc block
+- @@snip block

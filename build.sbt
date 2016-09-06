@@ -44,7 +44,8 @@ lazy val core = project
       Library.st4,
       Library.scalatest % "test",
       Library.jtidy % "test"
-    )
+    ),
+    parallelExecution in Test := false
   )
 
 lazy val plugin = project
@@ -57,9 +58,13 @@ lazy val plugin = project
     addSbtPlugin(Library.sbtWeb),
     scriptedSettings,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
+      a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
+    ),
     scriptedDependencies := {
-      (publishLocal in core).value
-      publishLocal.value
+      val p1 = (publishLocal in core).value
+      val p2 = publishLocal.value
+      val p3 = (publishLocal in genericTheme).value
     },
     test in Test := {
       (test in Test).value
