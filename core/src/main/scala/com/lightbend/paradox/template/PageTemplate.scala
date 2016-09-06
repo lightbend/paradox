@@ -32,7 +32,10 @@ class PageTemplate(directory: File, startDelimiter: Char = '$', stopDelimiter: C
    * Write a templated page to the target file.
    */
   def write(contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
-    val template = templates.getInstanceOf(name).add("page", contents)
+    val template = Option(templates.getInstanceOf(name)) match {
+      case Some(t) => t.add("page", contents)
+      case None    => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
+    }
     template.write(target, errorListener)
     target
   }
