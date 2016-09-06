@@ -44,7 +44,8 @@ lazy val core = project
       Library.st4,
       Library.scalatest % "test",
       Library.jtidy % "test"
-    )
+    ),
+    parallelExecution in Test := false
   )
 
 lazy val plugin = project
