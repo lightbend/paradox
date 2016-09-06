@@ -3,5 +3,6 @@ lazy val docs = project
   .enablePlugins(ParadoxPlugin)
   .settings(
     name := "Paradox Test",
-    paradoxLeadingBreadcrumbs := List("Alphabet" -> "https://abc.xyz/", "Google" -> "https://www.google.com")
+    paradoxLeadingBreadcrumbs := List("Alphabet" -> "https://abc.xyz/", "Google" -> "https://www.google.com"),
+    paradoxTheme := None
   )

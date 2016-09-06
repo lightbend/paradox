@@ -58,6 +58,9 @@ lazy val plugin = project
     addSbtPlugin(Library.sbtWeb),
     scriptedSettings,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
+      a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
+    ),
     scriptedDependencies := {
       val p1 = (publishLocal in core).value
       val p2 = publishLocal.value
