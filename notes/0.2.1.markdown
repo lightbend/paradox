@@ -1,0 +1,38 @@
+### Fixes with compatibility implications
+
+- `paradoxTheme` now defaults to `Some(builtinParadoxTheme("generic"))`. To opt out of a theme you must set `None` explicitly. [#19][19] by [@eed3si9n][@eed3si9n]
+
+### Fixes and enhacements
+
+- Allows non-H1 headers. [#18][18] by [@dwijnand][@dwijnand]
+- Fixes NPE when `page.st` is not set. [#19][19] by [@eed3si9n][@eed3si9n]
+
+### Leady McBreadcrumbs
+
+If a documentation site is contained within an enclosing website it's very pleasant if the breadcrumbs
+allows one to navigate back up.
+
+    lazy val docs = (project infile(".")).
+      enablePlugins(ParadoxPlugin)
+      settings(
+        name := "Breadcrumbs Test",
+        paradoxLeadingBreadcrumbs := List("Alphabet" -> "https://abc.xyz/", "Google" -> "https://www.google.com")
+      )
+
+[#9][9] by [@dwijnand][@dwijnand].
+
+### Scalafiddle integration
+
+Adds a variation of `@@snip` feature that works with Scalafiddle:
+
+    @@fiddle [Example.scala](./Example.scala) { #fiddle_code extraParams=theme=light&layout=v75 cssStyle=width:100%; }
+
+[#16][16] by [@andreaTP][@andreaTP]
+
+  [9]: https://github.com/lightbend/paradox/pull/9
+  [16]: https://github.com/lightbend/paradox/pull/16
+  [18]: https://github.com/lightbend/paradox/pull/18
+  [19]: https://github.com/lightbend/paradox/pull/19
+  [@eed3si9n]: https://github.com/eed3si9n
+  [@dwijnand]: http://github.com/dwijnand
+  [@andreaTP]: https://github.com/andreaTP
