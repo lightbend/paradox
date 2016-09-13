@@ -24,9 +24,9 @@ object Snippet {
 
   class SnippetException(message: String) extends RuntimeException(message)
 
-  def apply(file: File, label: Option[String]): String = label match {
-    case Some(label) => extract(file, label)
-    case None        => extract(file, _ => true, _ => false, addFilteredLine).snippetLines.mkString("\n")
+  def apply(file: File, labels: Seq[String]): String = labels match {
+    case Seq() => extract(file, _ => true, _ => false, addFilteredLine).snippetLines.mkString("\n")
+    case _     => labels.map(label => extract(file, label)).mkString("\n")
   }
 
   def extract(file: File, label: String): String = {

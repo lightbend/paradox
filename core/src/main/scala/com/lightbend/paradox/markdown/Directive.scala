@@ -24,6 +24,8 @@ import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.Printer
 
+import scala.collection.JavaConverters._
+
 /**
  * Serialize directives, checking the name and format against registered directives.
  */
@@ -113,9 +115,9 @@ object RefDirective {
 case class SnipDirective(page: Page) extends LeafBlockDirective("snip") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
-      val label = Option(node.attributes.identifier)
+      val labels = node.attributes.values("identifier").asScala
       val file = new File(page.file.getParentFile, node.source)
-      val text = Snippet(file, label)
+      val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
       new VerbatimNode(text, lang).accept(visitor)
     } catch {
@@ -142,7 +144,7 @@ object SnipDirective {
 case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
-      val label = Option(node.attributes.identifier)
+      val labels = node.attributes.values("identifier").asScala
 
       val baseUrl = node.attributes.value("baseUrl", "https://embed.scalafiddle.io/embed")
       val cssClass = node.attributes.value("cssClass", "fiddle")
@@ -152,7 +154,7 @@ case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") {
       val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
 
       val file = new File(page.file.getParentFile, node.source)
-      val text = Snippet(file, label)
+      val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
 
       val fiddleSource = java.net.URLEncoder.encode(

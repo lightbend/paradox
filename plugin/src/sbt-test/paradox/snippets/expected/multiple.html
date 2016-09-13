@@ -1,3 +1,6 @@
 <pre class="prettyprint"><code class="language-scala">import scala.concurrent.duration._
 
 case class Measurement(method: Method, duration: Duration)</code></pre>
+<pre class="prettyprint"><code class="language-scala">import scala.util.Try
+
+def parseInt(s: String): Option[Int] = Try(s.toInt).toOption</code></pre>
