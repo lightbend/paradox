@@ -38,7 +38,7 @@ case class Header(path: String, label: Node) extends Linkable
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode) extends Linkable {
+case class Page(file: File, path: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Map[String, String]) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -63,21 +63,21 @@ object Page {
   /**
    * Create a single page from parsed markdown.
    */
-  def apply(path: String, markdown: RootNode): Page = {
-    apply(path, markdown, identity)
+  def apply(path: String, markdown: RootNode, properties: Map[String, String]): Page = {
+    apply(path, markdown, identity, properties)
   }
 
   /**
    * Create a single page from parsed markdown.
    */
-  def apply(path: String, markdown: RootNode, convertPath: String => String): Page = {
-    convertPage(convertPath)(Index.page(new File(path), path, markdown))
+  def apply(path: String, markdown: RootNode, convertPath: String => String, properties: Map[String, String]): Page = {
+    convertPage(convertPath)(Index.page(new File(path), path, markdown, properties))
   }
 
   /**
    * Convert parsed markdown pages into a linked forest of Page objects.
    */
-  def forest(parsed: Seq[(File, String, RootNode)], convertPath: String => String): Forest[Page] = {
+  def forest(parsed: Seq[(File, String, RootNode, Map[String, String])], convertPath: String => String): Forest[Page] = {
     Index.pages(parsed) map (_ map convertPage(convertPath))
   }
 
@@ -93,7 +93,7 @@ object Page {
       case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
-    Page(page.file, targetPath, h1.label, h1, headers, page.markdown)
+    Page(page.file, targetPath, h1.label, h1, headers, page.markdown, page.properties)
   }
 
   /**

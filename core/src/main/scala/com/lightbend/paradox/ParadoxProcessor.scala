@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer }
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin }
 import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
@@ -48,7 +48,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
-        val writerContext = Writer.Context(loc, paths, sourceSuffix, targetSuffix, properties)
+        val pageProperties: Map[String, String] = properties // ++ page.properties
+        val writerContext = Writer.Context(loc, paths, sourceSuffix, targetSuffix, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
@@ -122,8 +123,12 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Parse markdown files into pegdown AST.
    */
-  def parseMarkdown(mappings: Seq[(File, String)]): Seq[(File, String, RootNode)] = {
-    mappings map { case (file, path) => (file, normalizePath(path), reader.read(FileUtils.readAllChars(file))) }
+  def parseMarkdown(mappings: Seq[(File, String)]): Seq[(File, String, RootNode, Map[String, String])] = {
+    mappings map {
+      case (file, path) =>
+        val frontin = Frontin(file)
+        (file, normalizePath(path), reader.read(frontin.body), frontin.header)
+    }
   }
 
   /**
