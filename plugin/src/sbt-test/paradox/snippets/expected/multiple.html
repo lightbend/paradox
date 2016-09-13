@@ -4,3 +4,15 @@ case class Measurement(method: Method, duration: Duration)</code></pre>
 <pre class="prettyprint"><code class="language-scala">import scala.util.Try
 
 def parseInt(s: String): Option[Int] = Try(s.toInt).toOption</code></pre>
+<pre class="prettyprint"><code class="language-conf"># HTTP Configuration
+http {
+  port=80
+  host=0.0.0.0
+}
+
+# Database Configuration
+db {
+  url=jdbc:mysql://mydb/mytable
+  user=dev
+  pass=secret
+}</code></pre>
