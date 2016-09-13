@@ -32,9 +32,10 @@ object Snippet {
   def extract(file: File, label: String): String = {
     if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
       "Only [a-zA-Z0-9_-] are allowed.")
-    // A label can be followed by an end of line or a space followed by a single sequence of contiguous
-    // (no whitespace) non-word characters (anything not in the group [a-zA-Z0-9_]
-    val labelPattern = ("""#\Q""" + label + """\E( [^w \t]*)?$""").r
+    // A label can be followed by an end of line or one or more spaces followed by an
+    // optional single sequence of contiguous (no whitespace) non-word characters
+    // (anything not in the group [a-zA-Z0-9_])
+    val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
     val extractionState = extract(file, hasLabel, hasLabel, addFilteredLine)
     val snippetLines = extractionState.snippetLines
@@ -59,7 +60,7 @@ object Snippet {
 
   private case class ExtractionState(inBlock: Boolean, snippetLines: Seq[String])
 
-  private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( [^w \t]*)?$""".r
+  private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
   private def addFilteredLine(line: String, lines: Seq[String]): Seq[String] =
     anyLabelRegex.findFirstIn(line).map(_ => lines).getOrElse(lines :+ line)
   private def verifyLabel(label: String): Boolean = anyLabelRegex.findFirstIn(s"#$label").nonEmpty
