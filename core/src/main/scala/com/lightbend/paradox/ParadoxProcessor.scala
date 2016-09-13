@@ -48,7 +48,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
-        val pageProperties: Map[String, String] = properties // ++ page.properties
+        val pageProperties: Map[String, String] = properties ++ page.properties
         val writerContext = Writer.Context(loc, paths, sourceSuffix, targetSuffix, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
