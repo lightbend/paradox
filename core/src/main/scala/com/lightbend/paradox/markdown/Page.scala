@@ -71,7 +71,7 @@ object Page {
    * Create a single page from parsed markdown.
    */
   def apply(path: String, markdown: RootNode, convertPath: String => String, properties: Map[String, String]): Page = {
-    convertPage(convertPath)(Index.page(new File(path), path, markdown, properties))
+    convertPage(Properties.convertToTarget(properties, convertPath))(Index.page(new File(path), path, markdown, properties))
   }
 
   /**
@@ -87,7 +87,8 @@ object Page {
    */
   def convertPage(convertPath: String => String)(page: Index.Page): Page = {
     // TODO: get default label node from page index link?
-    val targetPath = convertPath(page.path)
+    val targetPath = Properties.convertToTarget(page.properties, convertPath)(page.path)
+    println("targetPath after Properties.convertToTarget: " + targetPath)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
       case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)

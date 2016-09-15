@@ -83,13 +83,16 @@ object Writer {
     new DirectiveSerializer(defaultDirectives(context))
   )
 
-  def defaultDirectives(context: Context): Seq[Directive] = Seq(
-    RefDirective(context.location.tree.label.path, context.paths, Path.replaceExtension(context.sourceSuffix, context.targetSuffix)),
-    SnipDirective(context.location.tree.label),
-    FiddleDirective(context.location.tree.label),
-    TocDirective(context.location),
-    VarDirective(context.properties),
-    VarsDirective(context.properties)
-  )
+  def defaultDirectives(context: Context): Seq[Directive] = {
+    println(context.location.tree.label.path + ", properties: " + context.properties)
+    Seq(
+      RefDirective(context.location.tree.label.path, context.paths, Properties.convertToTarget(context.properties, Path.replaceExtension(context.sourceSuffix, context.targetSuffix))),
+      SnipDirective(context.location.tree.label),
+      FiddleDirective(context.location.tree.label),
+      TocDirective(context.location),
+      VarDirective(context.properties),
+      VarsDirective(context.properties)
+    )
+  }
 
 }
