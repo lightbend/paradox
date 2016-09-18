@@ -1,0 +1,3 @@
+> paradox
+
+$ must-mirror target/paradox/site/extref.html expected/extref.html

@@ -108,6 +108,56 @@ object RefDirective {
 }
 
 /**
+ * Link to external sites using URI templates.
+ */
+abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) {
+
+  import ExternalLinkDirective._
+
+  def currentPath: String
+  def resolveLink(location: String): UrlResolver
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    new ExpLinkNode("", resolve(node.source), node.contentsNode).accept(visitor)
+  }
+
+  private def resolve(link: String): String = {
+    try {
+      resolveLink(link).resolve.normalize.toString
+    } catch {
+      case UrlResolver.Error(reason) =>
+        throw new LinkException(s"Failed to resolve [$link] referenced from [$currentPath] because $reason")
+    }
+  }
+
+}
+
+object ExternalLinkDirective {
+
+  /**
+   * Exception thrown for unknown or invalid links.
+   */
+  class LinkException(reason: String) extends RuntimeException(reason)
+
+}
+
+/**
+ * ExtRef directive.
+ *
+ * Link to external pages using URL templates.
+ */
+case class ExtRefDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("extref", "extref:") {
+
+  def resolveLink(link: String): UrlResolver = {
+    link.split(":", 2) match {
+      case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
+      case _                   => throw UrlResolver.Error("URL has no scheme")
+    }
+  }
+
+}
+
+/**
  * Snip directive.
  *
  * Extracts snippets from source files into verbatim blocks.
