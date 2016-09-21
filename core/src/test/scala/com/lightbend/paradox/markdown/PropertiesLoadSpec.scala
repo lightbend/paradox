@@ -16,12 +16,30 @@
 
 package com.lightbend.paradox.markdown
 
-object Properties {
-  def convertToTarget(prop: Map[String, String], convertPath: String => String): String => String =
-    (path: String) => replaceFile(prop.get("out"), ".html")(path) getOrElse convertPath(path)
+class PropertiesLoadSpec extends MarkdownBaseSpec {
 
-  private def replaceFile(prop: Option[String], extension: String)(path: String): Option[String] = prop match {
-    case Some(p) if (p.endsWith(extension)) => Some(path.dropRight(Path.leaf(path).length) + p)
-    case _                                  => None
+  "Property 'out'" should "be taken into account for file name at generation" in {
+    markdownPages(
+      "index.md" -> """
+      |---
+      |out: newIndex.html
+      |---
+      """
+    ) shouldEqual htmlPages(
+        "newIndex.html" -> "")
+  }
+
+  it should "display the correct content even if the file name has changed" in {
+    markdownPages(
+      "index.md" -> """
+      |---
+      |out: newIndex.html
+      |---
+      |# Foo
+      """
+    ) shouldEqual htmlPages(
+        "newIndex.html" -> """
+      |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
+      """)
   }
 }

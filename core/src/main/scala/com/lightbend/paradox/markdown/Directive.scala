@@ -92,7 +92,6 @@ case class RefDirective(currentPath: String, pathExists: String => Boolean, conv
   }
 
   private def check(path: String): String = {
-    println("check path: " + path)
     if (!pathExists(Path.resolve(currentPath, path)))
       throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [$currentPath]")
     path

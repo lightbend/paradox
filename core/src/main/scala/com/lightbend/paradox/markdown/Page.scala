@@ -71,7 +71,7 @@ object Page {
    * Create a single page from parsed markdown.
    */
   def apply(path: String, markdown: RootNode, convertPath: String => String, properties: Map[String, String]): Page = {
-    convertPage(Properties.convertToTarget(properties, convertPath))(Index.page(new File(path), path, markdown, properties))
+    convertPage(convertPath)(Index.page(new File(path), path, markdown, properties))
   }
 
   /**
@@ -88,7 +88,6 @@ object Page {
   def convertPage(convertPath: String => String)(page: Index.Page): Page = {
     // TODO: get default label node from page index link?
     val targetPath = Properties.convertToTarget(page.properties, convertPath)(page.path)
-    println("targetPath after Properties.convertToTarget: " + targetPath)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
       case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
@@ -127,6 +126,56 @@ object Path {
    */
   def resolve(base: String, path: String): String = {
     new URI(base).resolve(path).getPath
+  }
+
+  /**
+   * Provide the leaf (file) from a path as a String
+   */
+  def leaf(path: String): String = {
+    path.split('/').reverse.head
+  }
+
+  /**
+   * Provide the relative root path from a local path related to a full path
+   */
+  def relativeRootPath(fullPath: String, localPath: String) = {
+    if (fullPath.endsWith(localPath)) fullPath.dropRight(localPath.length) else fullPath
+  }
+
+  /**
+   * Provide the local path given the root and the full path
+   */
+  def relativeLocalPath(rootPath: String, fullPath: String): String = {
+    val root = new URI(rootPath)
+    val full = new URI(fullPath)
+    root.relativize(full).toString
+  }
+
+  /**
+   * Provide the mapping "sources to target" files relative to the current file path
+   */
+  def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
+    def parentsPath(path: String): List[String] = path.split('/').toList.reverse.tail.reverse
+
+    val rootPath = parentsPath(localPath)
+
+    globalPageMappings map { mapping =>
+      val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
+      (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
+    }
+  }
+
+  /**
+   * Provide the modified path relative to the source path
+   */
+  def refRelativePath(root: List[String], path: List[String], leafFile: String): String = {
+    def listPath(root: List[String], path: List[String]): List[String] = (root, path) match {
+      case (Nil, ps)                      => ps
+      case (rs, Nil)                      => rs map (_ => "..")
+      case (r :: rs, p :: ps) if (r == p) => listPath(rs, ps)
+      case _                              => root.map(_ => "..") ::: path
+    }
+    (listPath(root, path) ::: List(leafFile)).mkString("/")
   }
 
   /**

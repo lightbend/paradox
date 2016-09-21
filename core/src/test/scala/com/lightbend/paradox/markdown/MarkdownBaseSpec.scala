@@ -40,12 +40,17 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
     render(Location.forest(pages(mappings: _*))).toMap
   }
 
+  // TODO: include pageMappings
   def writerContext(location: Location[Page]): Writer.Context = {
     Writer.Context(location, Page.allPaths(List(location.root.tree)).toSet)
   }
 
   def pages(mappings: (String, String)*): Forest[Page] = {
-    val parsed = mappings map { case (path, text) => (new File(path), path, markdownReader.read(prepare(text))) }
+    val parsed = mappings map {
+      case (path, text) =>
+        val frontin = Frontin(prepare(text))
+        (new File(path), path, markdownReader.read(frontin.body), frontin.header)
+    }
     Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix))
   }
 

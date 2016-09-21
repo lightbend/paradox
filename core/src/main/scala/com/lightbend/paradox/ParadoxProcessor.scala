@@ -44,12 +44,15 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               errorListener: STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
+    val rootPath = Path.relativeRootPath(mappings.head._1.toString, mappings.head._2)
+    val globalPageMappings = sourceTargetMappings(rootPath, pages)
     @tailrec
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
         val pageProperties = properties ++ page.properties
-        val writerContext = Writer.Context(loc, paths, sourceSuffix, targetSuffix, pageProperties)
+        val currentMapping = Path.relativeMapping(Path.relativeLocalPath(rootPath, page.file.getPath), globalPageMappings)
+        val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
@@ -136,6 +139,24 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
    */
   def normalizePath(path: String, separator: Char = java.io.File.separatorChar): String = {
     if (separator == '/') path else path.replace(separator, '/')
+  }
+
+  /**
+   * Create Mappings from page path to target file name (taking into account the 'out' field at page level)
+   */
+  def sourceTargetMappings(root: String, pages: Forest[Page]): Map[String, String] = {
+    @tailrec
+    def mapping(location: Option[Location[Page]], fileMappings: List[(String, String)] = Nil): List[(String, String)] = location match {
+      case Some(loc) =>
+        val page = loc.tree.label
+        val fullSrcPath = page.file.getPath
+        val curTargetPath = page.path
+        val curSrcPath = Path.relativeLocalPath(root, fullSrcPath)
+        val curMappings = (curSrcPath, curTargetPath)
+        mapping(loc.next, curMappings :: fileMappings)
+      case None => fileMappings
+    }
+    pages.flatMap { root => mapping(Some(root.location)) }.toMap
   }
 
 }

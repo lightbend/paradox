@@ -65,6 +65,7 @@ object Writer {
   case class Context(
     location: Location[Page],
     paths: Set[String],
+    pageMappings: String => String = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
     sourceSuffix: String = DefaultSourceSuffix,
     targetSuffix: String = DefaultTargetSuffix,
     properties: Map[String, String] = Map.empty)
@@ -84,9 +85,8 @@ object Writer {
   )
 
   def defaultDirectives(context: Context): Seq[Directive] = {
-    println(context.location.tree.label.path + ", properties: " + context.properties)
     Seq(
-      RefDirective(context.location.tree.label.path, context.paths, Properties.convertToTarget(context.properties, Path.replaceExtension(context.sourceSuffix, context.targetSuffix))),
+      RefDirective(context.location.tree.label.path, context.paths, context.pageMappings),
       SnipDirective(context.location.tree.label),
       FiddleDirective(context.location.tree.label),
       TocDirective(context.location),

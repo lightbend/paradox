@@ -56,4 +56,37 @@ class PathSpec extends FlatSpec with Matchers {
     Path.replaceExtension(".md", ".html")("../../a/b/foo.md#anchor") shouldEqual "../../a/b/foo.html#anchor"
   }
 
+  "Path.leaf" should "return the name of the file at the end of the path" in {
+    Path.leaf("/path/for/test/index.html") shouldEqual "index.html"
+  }
+
+  "Path.relativeRootPath" should "return the relative root path given a full path and the end of the path" in {
+    Path.relativeRootPath("/a/b/c/d.md", "c/d.md") shouldEqual "/a/b/"
+  }
+
+  "Path.relativeLocalPath" should "return the relative local path given the root path and its full path" in {
+    Path.relativeLocalPath("/a/b/", "/a/b/c/d.md") shouldEqual "c/d.md"
+  }
+
+  "Path.refRelativePath" should "return the correct relative path" in {
+    val root = List("a", "b")
+    val path = List("a", "c", "d")
+    Path.refRelativePath(root, path, "index.md") shouldEqual "../c/d/index.md"
+  }
+
+  "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
+    val mappings = Map("index.md" -> "index.html",
+      "a/A.md" -> "a/A.html",
+      "b/B.md" -> "b/B.html",
+      "a/a2/A2.md" -> "a/a2/A2.html",
+      "a/b/sameFolder.md" -> "a/b/sameFolder.html",
+      "a/b/c/ABC.md" -> "a/b/c/ABC.html")
+    val sourcePath = "a/b/source.md"
+    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("../../index.md" -> "../../index.html",
+      "../A.md" -> "../A.html",
+      "../../b/B.md" -> "../../b/B.html",
+      "../a2/A2.md" -> "../a2/A2.html",
+      "sameFolder.md" -> "sameFolder.html",
+      "c/ABC.md" -> "c/ABC.html")
+  }
 }
