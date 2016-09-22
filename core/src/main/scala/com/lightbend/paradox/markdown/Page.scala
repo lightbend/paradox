@@ -154,16 +154,15 @@ object Path {
   /**
    * Provide the mapping "sources to target" files relative to the current file path
    */
-  def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): String => String = {
+  def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
     def parentsPath(path: String): List[String] = path.split('/').toList.reverse.tail.reverse
 
     val rootPath = parentsPath(localPath)
 
-    val finalMapping = globalPageMappings map { mapping =>
+    globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
       (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
     }
-    (path: String) => if (finalMapping.contains(path)) finalMapping(path) else path
   }
 
   /**
