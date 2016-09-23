@@ -38,7 +38,7 @@ case class Header(path: String, label: Node) extends Linkable
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Map[String, String]) extends Linkable {
+case class Page(file: File, path: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Page.Properties) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -87,13 +87,14 @@ object Page {
    */
   def convertPage(convertPath: String => String)(page: Index.Page): Page = {
     // TODO: get default label node from page index link?
-    val targetPath = Properties.convertToTarget(page.properties, convertPath)(page.path)
+    val properties = Page.Properties(page.properties)
+    val targetPath = properties.convertToTarget(convertPath)(page.path)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
       case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
-    Page(page.file, targetPath, h1.label, h1, headers, page.markdown, page.properties)
+    Page(page.file, targetPath, h1.label, h1, headers, page.markdown, properties)
   }
 
   /**
@@ -108,6 +109,29 @@ object Page {
     pages flatMap { root => collect(Some(root.location)) }
   }
 
+  /**
+   * Specific properties at page level for the current page
+   */
+  case class Properties(props: Map[String, String]) {
+    def get: Map[String, String] = props
+
+    def apply(property: String, default: String = ""): String = {
+      props.getOrElse(property, default)
+    }
+
+    def convertToTarget(convertPath: String => String): String => String =
+      (path: String) => replaceFile(props.get(Properties.DefaultOutMdIndicator))(path) getOrElse convertPath(path)
+
+    private def replaceFile(prop: Option[String])(path: String): Option[String] = prop match {
+      case Some(p) => Some(path.dropRight(Path.leaf(path).length) + p)
+      case _       => None
+    }
+  }
+
+  object Properties {
+    val DefaultOutMdIndicator = "out"
+    val DefaultLayoutMdIndicator = "layout"
+  }
 }
 
 /**
@@ -129,6 +153,21 @@ object Path {
   }
 
   /**
+   * Replace the file extension in a path.
+   */
+  def replaceExtension(from: String, to: String)(link: String): String = {
+    val uri = new URI(link)
+    replaceSuffix(from, to)(uri.getPath) + Option(uri.getFragment).fold("")("#".+)
+  }
+
+  /**
+   * Replace the suffix of a path.
+   */
+  def replaceSuffix(from: String, to: String)(path: String): String = {
+    if (path.endsWith(from)) path.dropRight(from.length) + to else path
+  }
+
+  /**
    * Provide the leaf (file) from a path as a String
    */
   def leaf(path: String): String = {
@@ -138,12 +177,13 @@ object Path {
   /**
    * Provide the relative root path from a local path related to a full path
    */
-  def relativeRootPath(fullPath: String, localPath: String) = {
-    if (fullPath.endsWith(localPath)) fullPath.dropRight(localPath.length) else fullPath
+  def relativeRootPath(file: File, localPath: String): String = {
+    val filePath = file.getAbsolutePath
+    if (filePath.endsWith(localPath)) filePath.dropRight(localPath.length) else filePath
   }
 
   /**
-   * Provide the local path given the root and the full path
+   * Provide the local path given the root path and the full path
    */
   def relativeLocalPath(rootPath: String, fullPath: String): String = {
     val root = new URI(rootPath)
@@ -176,20 +216,5 @@ object Path {
       case _                              => root.map(_ => "..") ::: path
     }
     (listPath(root, path) ::: List(leafFile)).mkString("/")
-  }
-
-  /**
-   * Replace the file extension in a path.
-   */
-  def replaceExtension(from: String, to: String)(link: String): String = {
-    val uri = new URI(link)
-    replaceSuffix(from, to)(uri.getPath) + Option(uri.getFragment).fold("")("#".+)
-  }
-
-  /**
-   * Replace the suffix of a path.
-   */
-  def replaceSuffix(from: String, to: String)(path: String): String = {
-    if (path.endsWith(from)) path.dropRight(from.length) + to else path
   }
 }

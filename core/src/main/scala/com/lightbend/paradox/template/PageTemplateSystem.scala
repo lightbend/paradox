@@ -58,7 +58,6 @@ class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, sta
 
 object PageTemplate {
   val DefaultName = "page"
-  val DefaultMarkdownIndicator = "layout"
 
   /**
    * All page information to give to the template.

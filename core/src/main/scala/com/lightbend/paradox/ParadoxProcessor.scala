@@ -44,21 +44,22 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               errorListener: STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
-    val rootPath = Path.relativeRootPath(mappings.head._1.toString, mappings.head._2)
+    // TODO: We assume there that all source files are contained in the same folder, maybe check if it's true
+    val rootPath = Path.relativeRootPath(mappings.head._1, mappings.head._2)
     val globalPageMappings = rootPageMappings(rootPath, pages)
 
     @tailrec
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
-        val pageProperties = properties ++ page.properties
+        val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.relativeMapping(Path.relativeLocalPath(rootPath, page.file.getPath), globalPageMappings)
         val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
-        val template = CachedTemplates(themeDir, page.properties.getOrElse(PageTemplate.DefaultMarkdownIndicator, PageTemplate.DefaultName))
+        val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
         template.write(pageContext, outputFile, errorListener)
         render(loc.next, rendered :+ (outputFile, page.path))
