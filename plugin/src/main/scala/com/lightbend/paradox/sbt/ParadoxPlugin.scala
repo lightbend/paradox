@@ -88,23 +88,6 @@ object ParadoxPlugin extends AutoPlugin {
     target in paradoxTheme := target.value / "paradox" / "theme",
     paradoxThemeDirectory := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
-    paradoxTemplate := {
-      val dir = paradoxThemeDirectory.value
-      if (!dir.exists) {
-        IO.createDirectory(dir)
-      }
-      new PageTemplate(dir)
-    },
-
-    sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
-    sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
-    includeFilter in paradoxTemplate := AllPassFilter,
-    excludeFilter in paradoxTemplate := "*.st" || "*.stg",
-    sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate) dependsOn {
-      paradoxThemeDirectory // trigger theme extraction first
-    },
-    mappings in paradoxTemplate <<= Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate),
-
     paradoxMarkdownToHtml := {
       IO.delete((target in paradoxMarkdownToHtml).value)
       paradoxProcessor.value.process(
@@ -115,7 +98,7 @@ object ParadoxPlugin extends AutoPlugin {
         paradoxTargetSuffix.value,
         paradoxProperties.value,
         paradoxNavigationDepth.value,
-        paradoxTemplate.value,
+        paradoxThemeDirectory.value,
         new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
       )
     },
@@ -127,7 +110,6 @@ object ParadoxPlugin extends AutoPlugin {
     },
     sources in paradox <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox),
     mappings in paradox <<= Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox),
-    mappings in paradox ++= (mappings in paradoxTemplate).value,
     mappings in paradox ++= paradoxMarkdownToHtml.value,
     mappings in paradox ++= {
       // include webjar assets, but not the assets from the theme

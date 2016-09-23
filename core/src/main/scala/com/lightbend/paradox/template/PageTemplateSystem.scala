@@ -20,20 +20,33 @@ import java.io.File
 import java.util.{ Map => JMap }
 import org.stringtemplate.v4.misc.STMessage
 import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST }
+import collection.concurrent.TrieMap
+
+object CachedTemplates {
+  def apply(dir: File, templateName: String): PageTemplate = {
+    cache.get(templateName) match {
+      case Some(t) => t
+      case _ =>
+        val newTemplate = new PageTemplate(dir, templateName)
+        cache(templateName) = newTemplate
+        newTemplate
+    }
+  }
+
+  val cache: TrieMap[String, PageTemplate] = TrieMap()
+}
 
 /**
  * Page template writer.
  */
-class PageTemplate(directory: File, startDelimiter: Char = '$', stopDelimiter: Char = '$', name: String = "page") {
+class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, startDelimiter: Char = '$', stopDelimiter: Char = '$') {
   private val templates = new STRawGroupDir(directory.getAbsolutePath, startDelimiter, stopDelimiter)
 
   /**
    * Write a templated page to the target file.
    */
   def write(contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
-    // TODO : Inside contents.properties, there could exist a mapping for the new layout, how to include it?
-    val temp = if (contents.getProperties.containsKey("layout")) contents.getProperties.get("layout") else name
-    val template = Option(templates.getInstanceOf(temp)) match {
+    val template = Option(templates.getInstanceOf(name)) match {
       case Some(t) => t.add("page", contents)
       case None    => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
@@ -44,6 +57,9 @@ class PageTemplate(directory: File, startDelimiter: Char = '$', stopDelimiter: C
 }
 
 object PageTemplate {
+  val DefaultName = "page"
+  val DefaultMarkdownIndicator = "layout"
+
   /**
    * All page information to give to the template.
    */

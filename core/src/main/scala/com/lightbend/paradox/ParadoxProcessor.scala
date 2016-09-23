@@ -17,7 +17,7 @@
 package com.lightbend.paradox
 
 import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin }
-import com.lightbend.paradox.template.PageTemplate
+import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 import org.parboiled.common.FileUtils
@@ -40,12 +40,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               targetSuffix: String,
               properties: Map[String, String],
               navigationDepth: Int,
-              template: PageTemplate,
+              themeDir: File,
               errorListener: STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
     val rootPath = Path.relativeRootPath(mappings.head._1.toString, mappings.head._2)
-    val globalPageMappings = sourceTargetMappings(rootPath, pages)
+    val globalPageMappings = rootPageMappings(rootPath, pages)
+
     @tailrec
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
@@ -57,6 +58,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
+        val template = CachedTemplates(themeDir, page.properties.getOrElse(PageTemplate.DefaultMarkdownIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
         template.write(pageContext, outputFile, errorListener)
         render(loc.next, rendered :+ (outputFile, page.path))
@@ -142,9 +144,9 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   }
 
   /**
-   * Create Mappings from page path to target file name (taking into account the 'out' field at page level)
+   * Create Mappings from page path to target file name
    */
-  def sourceTargetMappings(root: String, pages: Forest[Page]): Map[String, String] = {
+  def rootPageMappings(root: String, pages: Forest[Page]): Map[String, String] = {
     @tailrec
     def mapping(location: Option[Location[Page]], fileMappings: List[(String, String)] = Nil): List[(String, String)] = location match {
       case Some(loc) =>
