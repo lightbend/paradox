@@ -17,6 +17,7 @@
 package com.lightbend.paradox.markdown
 
 import org.scalatest.{ FlatSpec, Matchers }
+import java.io.File
 
 class PathSpec extends FlatSpec with Matchers {
 
@@ -61,7 +62,7 @@ class PathSpec extends FlatSpec with Matchers {
   }
 
   "Path.relativeRootPath" should "return the relative root path given a full path and the end of the path" in {
-    Path.relativeRootPath("/a/b/c/d.md", "c/d.md") shouldEqual "/a/b/"
+    Path.relativeRootPath(new File("/a/b/c/d.md"), "c/d.md") shouldEqual "/a/b/"
   }
 
   "Path.relativeLocalPath" should "return the relative local path given the root path and its full path" in {

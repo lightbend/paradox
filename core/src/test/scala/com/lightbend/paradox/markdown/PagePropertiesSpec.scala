@@ -22,18 +22,22 @@ class PropertiesSpec extends FlatSpec with Matchers {
   def convertPath = Path.replaceSuffix(".md", ".html")_
 
   val propOut = Map("out" -> "newIndex.html")
-  val propOutInvalid = Map("out" -> "newIndex.foo")
   val propNoOut = Map.empty[String, String]
+  val propOutInvalid = Map("out" -> "newIndex.foo")
 
-  "Properties.convertToTarget(properties, convertPath)(\"index.md\")" should "create target file String according to 'out' field in properties" in {
-    Properties.convertToTarget(propOut, convertPath)("index.md") shouldEqual "newIndex.html"
+  val outProperties = new Page.Properties(propOut)
+  val noOutProperties = new Page.Properties(propNoOut)
+  val outInvalidProperties = new Page.Properties(propOutInvalid)
+
+  "Page.Properties.convertToTarget(properties, convertPath)(\"index.md\")" should "create target file String according to 'out' field in properties" in {
+    outProperties.convertToTarget(convertPath)("index.md") shouldEqual "newIndex.html"
   }
 
   it should "create default 'index.html' (just by replacing .md by .html) when no 'out' field is specified" in {
-    Properties.convertToTarget(propNoOut, convertPath)("index.md") shouldEqual "index.html"
+    noOutProperties.convertToTarget(convertPath)("index.md") shouldEqual "index.html"
   }
 
   it should "drop the 'out' field if it is invalid (not finishing by '.html')" in {
-    Properties.convertToTarget(propOutInvalid, convertPath)("index.md") shouldEqual "index.html"
+    outInvalidProperties.convertToTarget(convertPath)("index.md") shouldEqual "index.html"
   }
 }

@@ -122,9 +122,10 @@ object Page {
     def convertToTarget(convertPath: String => String): String => String =
       (path: String) => replaceFile(props.get(Properties.DefaultOutMdIndicator))(path) getOrElse convertPath(path)
 
-    private def replaceFile(prop: Option[String])(path: String): Option[String] = prop match {
-      case Some(p) => Some(path.dropRight(Path.leaf(path).length) + p)
-      case _       => None
+    // TODO: give the target suffix ".html" in a more general way
+    private def replaceFile(prop: Option[String], targetSuffix: String = ".html")(path: String): Option[String] = prop match {
+      case Some(p) if (p.endsWith(targetSuffix)) => Some(path.dropRight(Path.leaf(path).length) + p)
+      case _                                     => None
     }
   }
 
@@ -168,7 +169,7 @@ object Path {
   }
 
   /**
-   * Provide the leaf (file) from a path as a String
+   * Provide the leaf (file) from a path
    */
   def leaf(path: String): String = {
     path.split('/').reverse.head
@@ -192,21 +193,20 @@ object Path {
   }
 
   /**
-   * Provide the mapping "sources to target" files relative to the current file path
+   * Provide the mappings "sources to target" files relative to the current file path given the root mappings
    */
   def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
     def parentsPath(path: String): List[String] = path.split('/').toList.reverse.tail.reverse
 
     val rootPath = parentsPath(localPath)
-
     globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
-      (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
+      (refRelativePath(rootPath, parentsPath(mapping._1), leaf(mapping._1))) -> (refRelativePath(rootPath, parentsPath(mapping._2), leaf(mapping._2)))
     }
   }
 
   /**
-   * Provide the modified path relative to the source path
+   * Provide the modified path relative to the root path
    */
   def refRelativePath(root: List[String], path: List[String], leafFile: String): String = {
     def listPath(root: List[String], path: List[String]): List[String] = (root, path) match {

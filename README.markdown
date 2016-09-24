@@ -48,6 +48,26 @@ $page.title$
 
 is substituted with the title of the page.
 
+### Properties front matter
+
+Paradox allows to specify some properties at page level using `---` delimiters
+
+The `out` property allows to rename the target name of the current file.
+And the `layout` allows to specify the layout we want to be used for this particular page, the layouts are placed by default in the `target/paradox/theme` folder:
+
+```scala
+---
+out: newIndex.html
+layout: templateName
+---
+
+/*
+ * Content of the page 
+ */
+```
+
+where `newIndex.html` will be the new name of the generated file and `templateName` is the name of a template, more precisely `templateName.st`.
+
 ### Generic directive
 
 In addition Paradox extends Markdown in a principled manner called generic directives syntax,
