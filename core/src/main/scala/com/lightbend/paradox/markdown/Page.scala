@@ -115,10 +115,16 @@ object Page {
   case class Properties(props: Map[String, String]) {
     def get: Map[String, String] = props
 
+    /**
+     * Give the property associated to the key given in input
+     */
     def apply(property: String, default: String = ""): String = {
       props.getOrElse(property, default)
     }
 
+    /**
+     * Convert the source file path to the target file path according to the "out" property or not
+     */
     def convertToTarget(convertPath: String => String): String => String =
       (path: String) => replaceFile(props.get(Properties.DefaultOutMdIndicator))(path) getOrElse convertPath(path)
 
@@ -179,8 +185,8 @@ object Path {
    * Provide the relative root path from a local path related to a full path
    */
   def relativeRootPath(file: File, localPath: String): String = {
-    val filePath = file.getAbsolutePath
-    if (filePath.endsWith(localPath)) filePath.dropRight(localPath.length) else filePath
+    val fullPath = file.getAbsolutePath
+    if (fullPath.endsWith(localPath)) fullPath.dropRight(localPath.length) else fullPath
   }
 
   /**
@@ -193,7 +199,7 @@ object Path {
   }
 
   /**
-   * Provide the mappings "sources to target" files relative to the current file path given the root mappings
+   * Provide the mappings "source to target" files relative to the current file path given the root mappings
    */
   def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
     def parentsPath(path: String): List[String] = path.split('/').toList.reverse.tail.reverse
@@ -201,7 +207,7 @@ object Path {
     val rootPath = parentsPath(localPath)
     globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
-      (refRelativePath(rootPath, parentsPath(mapping._1), leaf(mapping._1))) -> (refRelativePath(rootPath, parentsPath(mapping._2), leaf(mapping._2)))
+      (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
     }
   }
 

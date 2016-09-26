@@ -29,7 +29,7 @@ class PropertiesSpec extends FlatSpec with Matchers {
   val noOutProperties = new Page.Properties(propNoOut)
   val outInvalidProperties = new Page.Properties(propOutInvalid)
 
-  "Page.Properties.convertToTarget(properties, convertPath)(\"index.md\")" should "create target file String according to 'out' field in properties" in {
+  "Page.Properties.convertToTarget(convertPath)(\"index.md\")" should "create target file String according to 'out' field in properties" in {
     outProperties.convertToTarget(convertPath)("index.md") shouldEqual "newIndex.html"
   }
 
