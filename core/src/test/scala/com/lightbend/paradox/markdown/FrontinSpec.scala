@@ -25,36 +25,36 @@ class FrontinSpec extends MarkdownBaseSpec {
   val f1 = new File("f1.md")
   writeInFile(f1,
     """
-  	|%s
-  	|%s
-  	""" format (first, second))
+    |%s
+    |%s
+    """ format (first, second))
 
   val f2 = new File("f2.md")
   writeInFile(f2,
     """
-  	|---
-  	|---
+    |---
+    |---
     |%s
     |%s
-  	""" format (first, second))
+    """ format (first, second))
 
   val f3 = new File("f3.md")
   writeInFile(f3,
     """
-  	|---
-  	|out: index.html
-  	|---
-  	|%s
-  	|%s
-  	""" format (first, second))
+    |---
+    |out: index.html
+    |---
+    |%s
+    |%s
+    """ format (first, second))
 
   val f4 = new File("f4.md")
   writeInFile(f4,
     """
-  	|---
-  	|out: index.html
-  	|---
-  	""")
+    |---
+    |out: index.html
+    |---
+    """)
 
   "Frontin.apply()" should "return an empty header when no property are specified at the page level" in {
     Frontin(f1).header shouldEqual Map.empty[String, String]
@@ -70,8 +70,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     Frontin(f2).header shouldEqual Map.empty[String, String]
     Frontin(f2).body shouldEqual
       prepare("""
-      	|%s
-      	|%s
+        |%s
+        |%s
         """ format (first, second))
     f2.delete()
   }
@@ -80,9 +80,9 @@ class FrontinSpec extends MarkdownBaseSpec {
     Frontin(f3).header shouldEqual Map("out" -> "index.html")
     Frontin(f3).body shouldEqual
       prepare("""
-  	  	|%s
-  	  	|%s
-  	  	""" format (first, second))
+        |%s
+        |%s
+        """ format (first, second))
     f3.delete()
   }
 
@@ -90,7 +90,7 @@ class FrontinSpec extends MarkdownBaseSpec {
     Frontin(f4).header shouldEqual Map("out" -> "index.html")
     Frontin(f4).body shouldEqual
       prepare("""
-  	  	""")
+        """)
     f4.delete()
   }
 
