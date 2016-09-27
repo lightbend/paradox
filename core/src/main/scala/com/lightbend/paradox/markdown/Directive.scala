@@ -108,6 +108,128 @@ object RefDirective {
 }
 
 /**
+ * Link to external sites using URI templates.
+ */
+abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) {
+
+  import ExternalLinkDirective._
+
+  def currentPath: String
+  def resolveLink(location: String): UrlResolver
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    new ExpLinkNode("", resolve(node.source), node.contentsNode).accept(visitor)
+  }
+
+  private def resolve(link: String): String = {
+    try {
+      resolveLink(link).resolve.normalize.toString
+    } catch {
+      case UrlResolver.Error(reason) =>
+        throw new LinkException(s"Failed to resolve [$link] referenced from [$currentPath] because $reason")
+    }
+  }
+
+}
+
+object ExternalLinkDirective {
+
+  /**
+   * Exception thrown for unknown or invalid links.
+   */
+  class LinkException(reason: String) extends RuntimeException(reason)
+
+}
+
+/**
+ * ExtRef directive.
+ *
+ * Link to external pages using URL templates.
+ */
+case class ExtRefDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("extref", "extref:") {
+
+  def resolveLink(link: String): UrlResolver = {
+    link.split(":", 2) match {
+      case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
+      case _                   => throw UrlResolver.Error("URL has no scheme")
+    }
+  }
+
+}
+
+/**
+ * Scaladoc directive.
+ *
+ * Link to scaladoc using the package prefix. Will match the configured base URL
+ * with the longest package prefix. For example, given:
+ *
+ * - `scaladoc.akka.base_url=doc.akka.io/api/akka/x.y.z`
+ * - `scaladoc.akka.http.base_url=doc.akka.io/api/akka-http/x.y.z`
+ *
+ * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
+ */
+case class ScaladocDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("scaladoc", "scaladoc:") {
+
+  val defaultBaseUrl = PropertyUrl("scaladoc.base_url", variables.get)
+  val ScaladocProperty = """scaladoc\.(.*)\.base_url""".r
+  val baseUrls = variables.collect {
+    case (property @ ScaladocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+  }
+
+  def resolveLink(link: String): UrlResolver = {
+    val levels = link.split("[.]")
+    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
+    baseUrl / "" withFragment link
+  }
+
+}
+
+/**
+ * GitHub directive.
+ *
+ * Link to GitHub project entities like issues, commits and source code.
+ * Supports most of the references documented in:
+ * https://help.github.com/articles/autolinked-references-and-urls/
+ */
+case class GitHubDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("github", "github:") {
+
+  val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
+  val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
+  val TreeUrl = """(.*github.com/[^/]+/[^/]+/tree/[^/]+)""".r
+  val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
+
+  val baseUrl = PropertyUrl("github.base_url", variables.get)
+
+  def resolveLink(link: String): UrlResolver = {
+    link match {
+      case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
+      case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
+      case _                              => treeUrl / link
+    }
+  }
+
+  private def resolveProject(project: String) = {
+    Option(project) match {
+      case Some(path) => Url("https://github.com") / path
+      case None       => projectUrl
+    }
+  }
+
+  private def projectUrl = baseUrl.collect {
+    case ProjectUrl(url) => url
+    case _               => throw UrlResolver.Error("[github.base_url] is not a project URL")
+  }
+
+  private def treeUrl = baseUrl.collect {
+    case TreeUrl(url)    => url
+    case ProjectUrl(url) => url + "/tree/master"
+    case _               => throw UrlResolver.Error("[github.base_url] is not a project or versioned tree URL")
+  }
+
+}
+
+/**
  * Snip directive.
  *
  * Extracts snippets from source files into verbatim blocks.
