@@ -160,7 +160,7 @@ directives are configured via base URLs defined in `paradoxProperties`:
 
 ```sbt
 paradoxProperties in Compile ++= Map(
-  "github.base_url" -> "https://github.com/lightbend/paradox/tree/${version.value}",
+  "github.base_url" -> s"https://github.com/lightbend/paradox/tree/${version.value}",
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/${Dependencies.akkaVersion}",
   "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s"
 )
@@ -203,7 +203,7 @@ Then `@scaladoc[Http](akka.http.scaladsl.Http$)` will resolve to
 <http://doc.akka.io/api/akka-http/10.0.0/#akka.http.scaladsl.Http$>.
 
 By default, `scaladoc.scala.base_url` is configured to the Scaladoc
-associated with the configured `scalaVersion`. If the SBT project's
+associated with the configured `scalaVersion`. If the sbt project's
 `apiURL` setting is configured, it is used as the default Scaladoc base
 URL.
 
@@ -217,7 +217,7 @@ as `#1`. For source code links to a specific version set the base URL to
 a tree revision, for example:
 <https://github.com/lightbend/paradox/tree/v0.2.1>.
 
-If the SBT project's `scmInfo` setting is configured and the `browseUrl`
+If the sbt project's `scmInfo` setting is configured and the `browseUrl`
 points to a GitHub project, it is used as the GitHub base URL.
 
 [github-autolinking]: https://help.github.com/articles/autolinked-references-and-urls/
