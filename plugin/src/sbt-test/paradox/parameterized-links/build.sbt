@@ -14,3 +14,4 @@ paradoxProperties in Compile ++= Map(
 )
 
 apiURL := Some(url(s"https://example.org/api/${version.value}"))
+scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git"))

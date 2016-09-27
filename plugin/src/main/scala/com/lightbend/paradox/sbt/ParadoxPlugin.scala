@@ -61,7 +61,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxProperties += "project.version.short" -> shortVersion((version in paradox).value),
     paradoxProperties += "project.description" -> (description in paradox).value,
     paradoxProperties ++= dateProperties,
-    paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value),
+    paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value),
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
@@ -158,13 +158,15 @@ object ParadoxPlugin extends AutoPlugin {
     )
   }
 
-  def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL]): Map[String, String] = {
+  def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL], scmInfo: Option[ScmInfo]): Map[String, String] = {
     val defaults = Map(
       "scaladoc.scala.base_url" -> s"http://www.scala-lang.org/api/$scalaVersion"
     )
     val scaladoc = apiURL.map("scaladoc.base_url" -> _.toString)
+    val githubUrl = scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")
+    val github = githubUrl.map("github.base_url" -> _.toString)
 
-    defaults ++ scaladoc
+    defaults ++ scaladoc ++ github
   }
 
   def readProperty(resource: String, property: String): String = {

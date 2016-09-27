@@ -87,6 +87,7 @@ object Writer {
     RefDirective(context.location.tree.label.path, context.paths, Path.replaceExtension(context.sourceSuffix, context.targetSuffix)),
     ExtRefDirective(context.location.tree.label.path, context.properties),
     ScaladocDirective(context.location.tree.label.path, context.properties),
+    GitHubDirective(context.location.tree.label.path, context.properties),
     SnipDirective(context.location.tree.label),
     FiddleDirective(context.location.tree.label),
     TocDirective(context.location),

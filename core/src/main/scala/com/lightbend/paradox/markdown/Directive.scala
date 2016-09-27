@@ -186,6 +186,50 @@ case class ScaladocDirective(currentPath: String, variables: Map[String, String]
 }
 
 /**
+ * GitHub directive.
+ *
+ * Link to GitHub project entities like issues, commits and source code.
+ * Supports most of the references documented in:
+ * https://help.github.com/articles/autolinked-references-and-urls/
+ */
+case class GitHubDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("github", "github:") {
+
+  val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
+  val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
+  val TreeUrl = """(.*github.com/[^/]+/[^/]+/tree/[^/]+)""".r
+  val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
+
+  val baseUrl = PropertyUrl("github.base_url", variables.get)
+
+  def resolveLink(link: String): UrlResolver = {
+    link match {
+      case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
+      case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
+      case _                              => treeUrl / link
+    }
+  }
+
+  private def resolveProject(project: String) = {
+    Option(project) match {
+      case Some(path) => Url("https://github.com") / path
+      case None       => projectUrl
+    }
+  }
+
+  private def projectUrl = baseUrl.collect {
+    case ProjectUrl(url) => url
+    case _               => throw UrlResolver.Error("[github.base_url] is not a project URL")
+  }
+
+  private def treeUrl = baseUrl.collect {
+    case TreeUrl(url)    => url
+    case ProjectUrl(url) => url + "/tree/master"
+    case _               => throw UrlResolver.Error("[github.base_url] is not a project or versioned tree URL")
+  }
+
+}
+
+/**
  * Snip directive.
  *
  * Extracts snippets from source files into verbatim blocks.
