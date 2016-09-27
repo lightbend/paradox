@@ -158,6 +158,34 @@ case class ExtRefDirective(currentPath: String, variables: Map[String, String]) 
 }
 
 /**
+ * Scaladoc directive.
+ *
+ * Link to scaladoc using the package prefix. Will match the configured base URL
+ * with the longest package prefix. For example, given:
+ *
+ * - `scaladoc.akka.base_url=doc.akka.io/api/akka/x.y.z`
+ * - `scaladoc.akka.http.base_url=doc.akka.io/api/akka-http/x.y.z`
+ *
+ * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
+ */
+case class ScaladocDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("scaladoc", "scaladoc:") {
+
+  val defaultBaseUrl = PropertyUrl("scaladoc.base_url", variables.get)
+  val ScaladocProperty = """scaladoc\.(.*)\.base_url""".r
+  val baseUrls = variables.collect {
+    case (property @ ScaladocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+  }
+
+  def resolveLink(link: String): UrlResolver = {
+    val levels = link.split("[.]")
+    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
+    baseUrl / "" withFragment link
+  }
+
+}
+
+/**
  * Snip directive.
  *
  * Extracts snippets from source files into verbatim blocks.

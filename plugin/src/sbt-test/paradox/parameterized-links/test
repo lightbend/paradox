@@ -1,3 +1,4 @@
 > paradox
 
 $ must-mirror target/paradox/site/extref.html expected/extref.html
+$ must-mirror target/paradox/site/scaladoc.html expected/scaladoc.html
