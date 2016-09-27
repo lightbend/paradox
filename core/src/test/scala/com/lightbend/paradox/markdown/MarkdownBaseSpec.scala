@@ -40,7 +40,10 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
     render(Location.forest(pages(mappings: _*))).toMap
   }
 
-  // TODO: include pageMappings
+  def writerContextWithProperties(properties: (String, String)*): Location[Page] => Writer.Context = { location =>
+    writerContext(location).copy(properties = properties.toMap)
+  }
+
   def writerContext(location: Location[Page]): Writer.Context = {
     Writer.Context(location, Page.allPaths(List(location.root.tree)).toSet)
   }

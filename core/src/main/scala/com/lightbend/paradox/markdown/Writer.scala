@@ -84,15 +84,15 @@ object Writer {
     new DirectiveSerializer(defaultDirectives(context))
   )
 
-  def defaultDirectives(context: Context): Seq[Directive] = {
-    Seq(
-      RefDirective(context.location.tree.label.path, context.paths, context.pageMappings),
-      SnipDirective(context.location.tree.label),
-      FiddleDirective(context.location.tree.label),
-      TocDirective(context.location),
-      VarDirective(context.properties),
-      VarsDirective(context.properties)
-    )
-  }
-
+  def defaultDirectives(context: Context): Seq[Directive] = Seq(
+    RefDirective(context.location.tree.label.path, context.paths, context.pageMappings),
+    ExtRefDirective(context.location.tree.label.path, context.properties),
+    ScaladocDirective(context.location.tree.label.path, context.properties),
+    GitHubDirective(context.location.tree.label.path, context.properties),
+    SnipDirective(context.location.tree.label),
+    FiddleDirective(context.location.tree.label),
+    TocDirective(context.location),
+    VarDirective(context.properties),
+    VarsDirective(context.properties)
+  )
 }
