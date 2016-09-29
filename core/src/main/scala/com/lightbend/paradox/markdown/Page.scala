@@ -17,6 +17,7 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
+import com.lightbend.paradox.template.{ PageTemplate }
 import java.io.File
 import java.net.URI
 import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
@@ -118,8 +119,8 @@ object Page {
     /**
      * Give the property associated to the key given in input
      */
-    def apply(property: String, default: String = ""): String = {
-      props.getOrElse(property, default)
+    def apply(property: String): String = {
+      props.getOrElse(property, PageTemplate.DefaultName)
     }
 
     /**

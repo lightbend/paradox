@@ -46,9 +46,13 @@ class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, sta
    * Write a templated page to the target file.
    */
   def write(contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
+    import scala.collection.JavaConverters._
+
     val template = Option(templates.getInstanceOf(name)) match {
-      case Some(t) => t.add("page", contents)
-      case None    => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
+      case Some(t) => // TODO, only load page properties, not global ones
+        for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) { t.add(content._1, content._2) }
+        t.add("page", contents)
+      case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
     template.write(target, errorListener)
     target
