@@ -66,7 +66,9 @@ layout: templateName
  */
 ```
 
-where `newIndex.html` will be the new name of the generated file and `templateName` is the name of a template, more precisely `templateName.st`.
+where `newIndex.html` will be the new name of the generated file and `templateName` is the name of a template, which corresponds more precisely to the file `templateName.st`.
+
+Moreover, it is possible to specify the properties defined at page level inside the template files by using the `$` delimiters, for example: `$out$`
 
 ### Generic directive
 
