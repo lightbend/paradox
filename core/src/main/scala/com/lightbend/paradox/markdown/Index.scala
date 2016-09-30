@@ -30,16 +30,17 @@ object Index {
 
   case class Ref(level: Int, path: String, markdown: Node)
 
-  case class Page(file: File, path: String, markdown: RootNode, indices: Forest[Ref], headers: Forest[Ref])
+  case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref])
 
-  def pages(parsed: Seq[(File, String, RootNode)]): Forest[Page] = {
+  def pages(parsed: Seq[(File, String, RootNode, Map[String, String])]): Forest[Page] = {
     link(parsed.map((page _).tupled).toList)
   }
 
   /**
    * Create a new Index.Page with parsed indices and headers.
    */
-  def page(file: File, path: String, markdown: RootNode): Page = Page(file, path, markdown, indices(markdown), headers(markdown))
+  def page(file: File, path: String, markdown: RootNode, properties: Map[String, String]): Page =
+    Page(file, path, markdown, properties, indices(markdown), headers(markdown))
 
   /**
    * Create a tree of header refs from a parsed markdown page.

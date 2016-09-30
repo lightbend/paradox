@@ -65,6 +65,7 @@ object Writer {
   case class Context(
     location: Location[Page],
     paths: Set[String],
+    pageMappings: String => String = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
     sourceSuffix: String = DefaultSourceSuffix,
     targetSuffix: String = DefaultTargetSuffix,
     properties: Map[String, String] = Map.empty)
@@ -84,7 +85,7 @@ object Writer {
   )
 
   def defaultDirectives(context: Context): Seq[Directive] = Seq(
-    RefDirective(context.location.tree.label.path, context.paths, Path.replaceExtension(context.sourceSuffix, context.targetSuffix)),
+    RefDirective(context.location.tree.label.path, context.paths, context.pageMappings),
     ExtRefDirective(context.location.tree.label.path, context.properties),
     ScaladocDirective(context.location.tree.label.path, context.properties),
     GitHubDirective(context.location.tree.label.path, context.properties),
@@ -94,5 +95,4 @@ object Writer {
     VarDirective(context.properties),
     VarsDirective(context.properties)
   )
-
 }
