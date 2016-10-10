@@ -23,7 +23,7 @@ import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST }
 import collection.concurrent.TrieMap
 
 object CachedTemplates {
-  def apply(dir: File, templateName: String): PageTemplate = {
+  def apply(dir: File, templateName: String = PageTemplate.DefaultName): PageTemplate = {
     cache.get(templateName) match {
       case Some(t) => t
       case _ =>
