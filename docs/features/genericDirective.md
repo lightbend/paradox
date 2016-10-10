@@ -43,7 +43,7 @@ Inside `setup/index.md` can list its own child pages as follows:
 
 Paradox will walk through these indices and create a hierarchical navigation sidebar:
 
-![index](../index.png)
+![index](../img/index.png)
 
 Similar to `@ref`, the source document on Github will link correctly the other sources.
 
@@ -60,7 +60,7 @@ The `@@toc` block is used to include a table of content with arbitrary depth.
 
 This will render the page names (first header), and the second headers.
 
-![toc](../toc.png)
+![toc](../img/toc.png)
 
 ### @@snip block
 
@@ -83,7 +83,7 @@ object Hello extends App {
 This lets us compile and test the source before including it in the documentation.
 The snippet is rendered with code formatting like this:
 
-![snip](../snip.png)
+![snip](../img/snip.png)
 
 To display multiple snippets in a tabbed view, use definition list syntax as follows:
 
@@ -98,4 +98,4 @@ Gradle
 
 This will be rendered like this:
 
-![multi_snip](../multi_snip.png)
+![multi_snip](../img/multi_snip.png)
