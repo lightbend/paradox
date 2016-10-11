@@ -27,7 +27,7 @@ import scala.concurrent.duration._
  */
 class Reader(parser: Parser) {
 
-  def this(options: Int = Extensions.ALL,
+  def this(options: Int = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */,
            directiveMarker: Char = ParserWithDirectives.DEFAULT_DIRECTIVE_MARKER,
            maxParsingTime: Duration = 2.seconds,
            parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
