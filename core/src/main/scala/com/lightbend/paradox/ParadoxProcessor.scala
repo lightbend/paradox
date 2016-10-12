@@ -59,7 +59,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
-        val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator))
+        val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
         template.write(pageContext, outputFile, errorListener)
         render(loc.next, rendered :+ (outputFile, page.path))

@@ -119,8 +119,8 @@ object Page {
     /**
      * Give the property associated to the key given in input
      */
-    def apply(property: String): String = {
-      props.getOrElse(property, PageTemplate.DefaultName)
+    def apply(property: String, default: String = ""): String = {
+      props.getOrElse(property, default)
     }
 
     /**

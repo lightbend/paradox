@@ -51,7 +51,7 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
         val html = normalize(markdownWriter.write(page.markdown, context(loc)))
         val outputFile = new File(page.path)
         val emptyPageContext = PartialPageContent(page.properties.get, html)
-        val template = CachedTemplates(new File(templateDirectory.toString), page.properties(Page.Properties.DefaultLayoutMdIndicator))
+        val template = CachedTemplates(new File(templateDirectory.toString), page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         template.write(emptyPageContext, outputFile, new PageTemplate.ErrorLogger(s => println("[error] " + s)))
         val fileContent = fileToContent(outputFile)
         outputFile.delete
