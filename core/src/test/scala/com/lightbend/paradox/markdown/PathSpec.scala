@@ -20,6 +20,16 @@ import org.scalatest.{ FlatSpec, Matchers }
 import java.io.File
 
 class PathSpec extends FlatSpec with Matchers {
+  def provideRelativeMapping: (Map[String, String], String) = {
+    val mappings = Map("index.md" -> "index.html",
+      "a/A.md" -> "a/A.html",
+      "b/B.md" -> "b/B.html",
+      "a/a2/A2.md" -> "a/a2/A2.html",
+      "a/b/sameFolder.md" -> "a/b/sameFolder.html",
+      "a/b/c/ABC.md" -> "a/b/c/ABC.html")
+    val sourcePath = "a/b/source.md"
+    (mappings, sourcePath)
+  }
 
   "Path.basePath" should "handle root pages" in {
     Path.basePath("foo.html") shouldEqual ("")
@@ -76,18 +86,23 @@ class PathSpec extends FlatSpec with Matchers {
   }
 
   "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
-    val mappings = Map("index.md" -> "index.html",
-      "a/A.md" -> "a/A.html",
-      "b/B.md" -> "b/B.html",
-      "a/a2/A2.md" -> "a/a2/A2.html",
-      "a/b/sameFolder.md" -> "a/b/sameFolder.html",
-      "a/b/c/ABC.md" -> "a/b/c/ABC.html")
-    val sourcePath = "a/b/source.md"
+    val (mappings, sourcePath) = provideRelativeMapping
     Path.relativeMapping(sourcePath, mappings) shouldEqual Map("../../index.md" -> "../../index.html",
       "../A.md" -> "../A.html",
       "../../b/B.md" -> "../../b/B.html",
       "../a2/A2.md" -> "../a2/A2.html",
       "sameFolder.md" -> "sameFolder.html",
       "c/ABC.md" -> "c/ABC.html")
+  }
+
+  "Path.generateTargetFile" should "return the corresponding target file given the relative mapping for the current file" in {
+    val (mappings, sourcePath) = provideRelativeMapping
+    val newMapping = Path.generateTargetFile(sourcePath, mappings)_
+
+    newMapping("../../index.md") shouldEqual "../../index.html"
+    the[RuntimeException] thrownBy {
+      newMapping("A.md")
+    } should have message "No reference link corresponding to A.md"
+    newMapping("../a2/A2.md#someanchor") shouldEqual "../a2/A2.html#someanchor"
   }
 }
