@@ -202,13 +202,18 @@ object Path {
   /**
    * Provide the mappings "source to target" files relative to the current file path given the root mappings
    */
-  def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
+  def relativeMapping(localPath: String, globalPageMappings: Map[String, String])(link: String): String = {
     def parentsPath(path: String): List[String] = path.split('/').toList.reverse.tail.reverse
 
     val rootPath = parentsPath(localPath)
-    globalPageMappings map { mapping =>
+    val mappings = globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
       (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
+    }
+    val uri = new URI(link)
+    mappings.get(uri.getPath) match {
+      case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
+      case None    => sys.error(s"No reference link corresponding to $link")
     }
   }
 
