@@ -65,10 +65,6 @@ object ParadoxPlugin extends AutoPlugin {
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
-    // TODO include the "docs" folder
-
-    // sourceDirectory in docs := "docs",
-    // target in docs := target in paradox,
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
