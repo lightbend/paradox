@@ -38,7 +38,7 @@ Your markdown documentation will go inside `src/main/paradox/`. For example, you
 
 Powered by [Pegdown][pegdown], Github Flavored Markdown extensions, such as fenced code blocks and tables are supported.
 
-### StringTemplate
+## StringTemplate
 
 Paradox uses [StringTemplate][st] for the basic templating. For example:
 
@@ -50,25 +50,50 @@ is substituted with the title of the page.
 
 ### Properties front matter
 
-Paradox allows to specify some properties at page level using `---` delimiters
+Paradox allows to specify some properties at page level using `---` delimiters at the top of the page.
+
+#### out
 
 The `out` property allows to rename the target name of the current file.
-And the `layout` allows to specify the layout we want to be used for this particular page, the layouts are placed by default in the `target/paradox/theme` folder:
 
-```
+```scala
 ---
 out: newIndex.html
-layout: templateName
 ---
-
 /*
- * Content of the page 
+ * Content of the page
  */
 ```
 
-where `newIndex.html` will be the new name of the generated file and `templateName` is the name of a template, which corresponds more precisely to the file `templateName.st`.
+where `newIndex.html` will be the new name of the generated file. Links leading to this page are automatically updated.
 
-Moreover, it is possible to specify the properties defined at page level inside the template files by using the `$` delimiters, for example: `$out$`
+#### layout
+
+The `layout` property allows to specify the layout we want to be used for this particular page. The layouts are placed by default in the `target/paradox/theme` folder, but you can create one in `src/main/paradox/_template folder` as a string template file (.st).
+
+```scala
+---
+layout: templateName
+---
+/*
+ * Content of the page
+ */
+```
+
+where `templateName` is the name of a template, more precisely the `templateName.st` file, which could either be a predefined template, or a created one in the `src/main/paradox/_template` folder.
+
+#### `$` delimiters
+
+Inside the templates (".st" files), it is possible to specify the properties of the page passed to the template by using `$` delimiters. For the following example file:
+
+```scala
+---
+foo: bar
+test: testValue
+---
+```
+
+It is possible to use those properties in the template files by writing `$foo$` and `$test$`, which is similar to `$page.properties.("foo")$` and `$page.properties.("test")$` respectively.
 
 ### Generic directive
 
