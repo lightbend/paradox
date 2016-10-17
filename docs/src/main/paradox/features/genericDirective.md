@@ -1,6 +1,6 @@
 ## Generic directive
 
-In addition Paradox extends Markdown in a principled manner called generic directives syntax,
+Paradox extends Markdown in a principled manner called generic directives syntax,
 which basically means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
 
 ### @ref link
