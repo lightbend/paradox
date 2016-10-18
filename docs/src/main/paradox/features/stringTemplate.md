@@ -29,7 +29,7 @@ where `newIndex.html` will be the new name of the generated file. Links leading 
 
 #### layout
 
-The `layout` property allows to specify the layout we want to be used for this particular page. The layouts are placed by default in the `target/paradox/theme` folder, but you can create one in `src/main/paradox/_template folder` as a string template file (.st).
+The `layout` property allows to specify the layout we want to be used for this particular page. The layouts are placed by default in the `target/paradox/theme` folder, but you can create one in `src/main/paradox/_template` folder as a string template file (.st).
 
 ```scala
 ---
