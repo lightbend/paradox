@@ -16,7 +16,6 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.ast.{ Node, RootNode }
 import org.pegdown.plugins.ToHtmlSerializerPlugin

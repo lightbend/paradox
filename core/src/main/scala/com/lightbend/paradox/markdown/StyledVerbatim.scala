@@ -49,7 +49,7 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
     }
     printer.printEncoded(text.dropWhile(_ == '\n'))
 
-    printer.print("</code></pre>");
+    printer.print("</code></pre>")
   }
 
   def printClass(printer: Printer, value: String): Unit = printAttribute(printer, "class", value)

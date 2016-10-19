@@ -5,7 +5,7 @@
 <title>$page.title$$if(!page.home.active)$ · $page.home.title$$endif$</title>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="$page.properties.("project.description")$"/>
+<meta name="description" content='$page.properties.("project.description")$'/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="$page.base$lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="$page.base$js/page.js"></script>
@@ -67,7 +67,7 @@ $page.content$
 $if(page.next.html)$
 <div class="nav-next">
 <p><strong>Next:</strong> $page.next.html$</p>
-</div class="nav-next">
+</div>
 $endif$
 </div>
 <div class="large-3 show-for-large column" data-sticky-container>
@@ -100,7 +100,7 @@ $endif$
 <div class="nav-links">
 <ul>
 <!-- <li><a href="https://www.example.com/products/">Products</a> -->
-<ul>
+</ul>
 </div>
 </div>
 
