@@ -36,6 +36,30 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
       serializerPlugins(context).asJava))
 
   /**
+   * Write main content.
+   */
+  def writeContent(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write breadcrumbs fragment.
+   */
+  def writeBreadcrumbs(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write navigation fragment.
+   */
+  def writeNavigation(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write navigation fragment.
+   */
+  def writeToc(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
    * Write markdown to HTML, in the context of a page.
    */
   def write(markdown: RootNode, context: Writer.Context): String = {

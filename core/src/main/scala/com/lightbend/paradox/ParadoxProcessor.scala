@@ -76,16 +76,16 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     private val page = loc.tree.label
 
     val getTitle = page.title
-    val getContent = writer.write(page.markdown, context)
+    val getContent = writer.writeContent(page.markdown, context)
 
     lazy val getBase = page.base
     lazy val getHome = link(Some(loc.root))
     lazy val getPrev = link(loc.prev)
     lazy val getNext = link(loc.next)
-    lazy val getBreadcrumbs = writer.writeFragment(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
-    lazy val getNavigation = writer.writeFragment(pageToc.root(loc), context)
+    lazy val getBreadcrumbs = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
+    lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
     lazy val hasSubheaders = page.headers.nonEmpty
-    lazy val getToc = writer.writeFragment(headerToc.headers(loc), context)
+    lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
 
     lazy val getProperties = context.properties.asJava
 
@@ -99,7 +99,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getHref: String = location.map(href).orNull
     lazy val getHtml: String = location.map(link).orNull
     lazy val getTitle: String = location.map(title).orNull
-    lazy val isActive: Boolean = location.map(active).getOrElse(false)
+    lazy val isActive: Boolean = location.exists(active)
 
     private def link(location: Location[Page]): String = {
       val node = if (active(location))
