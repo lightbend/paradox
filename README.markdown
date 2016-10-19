@@ -175,7 +175,8 @@ This will be rendered like this:
 ![multi_snip](docs/multi_snip.png)
 
 In order to specify your snippet source paths off a certain base directory
-you can define a `snippet.base_dir` property, e.g. like this:
+you can define a `snippet.base_dir` property either in the page's front matter
+or globally like this (for example):
 
 ```sbt
 paradoxProperties in Compile ++= Map(
@@ -270,6 +271,29 @@ part of the link URL. For example, given the property:
 
 then `@extref[RFC 2119](rfc:2119)` will resolve to the URL
 <http://tools.ietf.org/html/rfc2119>.
+
+#### Image Base-URL
+
+When placing images via the standard markdown image syntax you can refer
+to a configured base URL by starting the image href with `.../`, e.g. like this:    
+
+```
+![logo](.../logo.png)
+```
+
+The `...` prefix refers to a defined a `image.base_url` property that is
+specified either in the page's front matter or globally like this (for example):
+
+```sbt
+paradoxProperties in Compile ++= Map("image.base_url" -> ".../assets/images")
+```
+
+If the image base URL itself starts with three dots (`...`) then these in turn
+refer to the root URL of the site.
+
+*NOTE*: As with the other "Parameterized Links" directives this feature will not
+allow GitHub to preview the images correctly on the web interface. 
+
 
 License and credits
 -------------------
