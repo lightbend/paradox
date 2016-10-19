@@ -174,6 +174,21 @@ This will be rendered like this:
 
 ![multi_snip](docs/multi_snip.png)
 
+In order to specify your snippet source paths off a certain base directory
+you can define a `snippet.base_dir` property, e.g. like this:
+
+```sbt
+paradoxProperties in Compile ++= Map(
+  "snippet.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example"
+)
+```
+
+You can then refer to this snippet base directory by starting a snippet path with `.../`, e.g.
+
+```
+@@snip [Hello.scala](.../Hello.scala) { #hello_example }
+```
+
 ### Parameterized links
 
 Parameterized link directives help to manage links that references
