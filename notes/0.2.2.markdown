@@ -1,0 +1,6 @@
+### Fixes and enhacements
+
+- Aggregates from multiple snip labels. [#22][22] by [@jonas][@jonas]
+
+  [22]: https://github.com/lightbend/paradox/pull/22
+  [@jonas]: https://github.com/jonas
