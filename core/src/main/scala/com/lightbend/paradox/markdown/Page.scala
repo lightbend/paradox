@@ -200,6 +200,18 @@ object Path {
   }
 
   /**
+   * Provide the final target file given a particular source file/link
+   */
+  def generateTargetFile(localPath: String, globalPageMappings: Map[String, String])(link: String): String = {
+    val mappings = relativeMapping(localPath, globalPageMappings)
+    val uri = new URI(link)
+    mappings.get(uri.getPath) match {
+      case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
+      case None    => sys.error(s"No reference link corresponding to $link")
+    }
+  }
+
+  /**
    * Provide the mappings "source to target" files relative to the current file path given the root mappings
    */
   def relativeMapping(localPath: String, globalPageMappings: Map[String, String]): Map[String, String] = {
