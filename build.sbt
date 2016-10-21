@@ -102,3 +102,10 @@ lazy val genericTheme = (project in (file("themes") / "generic"))
       Library.prettify % "provided"
     )
   )
+
+lazy val docs = (project in file("docs"))
+  .enablePlugins(ParadoxPlugin)
+  .settings(
+    name := "paradox docs",
+    paradoxTheme := Some(builtinParadoxTheme("generic"))
+  )
