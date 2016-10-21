@@ -1,0 +1,75 @@
+### Fixes and enhacements
+
+- Adds per-page properties front matter.
+- Adds parameterized links.
+- Disables pegdown HARDWRAPS option by default to ignore newlines. [#32][32] by [@jrudolph][@jrudolph]
+
+### Properties front matter
+
+Paradox 0.2.3 adds properties front matter:
+
+    ---
+    out : index.html
+    ---
+
+The `out` property allows to rename the target name of the current file.
+And the `layout` allows to specify the layout we want to be used for the
+particular page.
+
+  [#28][28] by [@gsechaud][@gsechaud]
+
+### Parameterized links
+
+Parameterized link directives help to manage links that references external documentation,
+such as API documentation or source code. The directives are configured via base URLs defined in paradoxProperties:
+
+    paradoxProperties in Compile ++= Map(
+      "github.base_url" -> "https://github.com/lightbend/paradox/tree/${version.value}",
+      "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/${Dependencies.akkaVersion}",
+      "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s"
+    )
+
+After which the directives can be used as follows:
+
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as
+    described in @extref[RFC 2119](rfc:2119).
+
+    ...
+
+    Use a @scaladoc[Future](scala.concurrent.Future) to avoid that long
+    running operations block the @scaladoc[Actor](akka.actor.Actor).
+
+    ...
+
+    Issue @github[#1](#1) was fixed in commit @github[83986f9](83986f9).
+
+#### @scaladoc directive
+
+Use the @scaladoc directives to link to Scaladoc sites based on the package prefix.
+Scaladoc URL mappings can be configured via the properties `scaladoc.<package-prefix>.base_url`
+and the default `scaladoc.base_url`. The directive will match the link text with the longest
+common package prefix and use the default base URL as a fall-back if nothing else matches.
+
+#### @github directive
+
+Use the @github directive to link to GitHub issues, commits and files.
+It supports most of [GitHub's autolinking syntax](https://help.github.com/articles/autolinked-references-and-urls/).
+
+The `github.base_url` property must be configured to use shorthands such as `#1`.
+
+#### @extref directive
+
+Use the @extref directive to link to pages using custom URL templates.
+URL templates can be configured via `extref.<scheme>.base_url` and the template may contain
+one `%s` which is replaced with the scheme specific part of the link URL.
+
+  [#27][27] by [@jonas][@jonas]
+
+  [28]: https://github.com/lightbend/paradox/pull/28
+  [32]: https://github.com/lightbend/paradox/pull/32
+  [27]: https://github.com/lightbend/paradox/pull/27
+  [@jrudolph]: https://github.com/jrudolph
+  [@gsechaud]: https://github.com/gsechaud
+  [@jonas]: https://github.com/jonas
