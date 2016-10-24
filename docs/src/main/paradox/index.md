@@ -1,11 +1,3 @@
-# Paradox
-
-Paradox is a documentation tool for software projects.
-
-**Status**: In development.
-
-**Currently Paradox is not supported under Lightbend subscription.**
-
 ## Setup
 
 Find [the latest](https://github.com/lightbend/paradox/releases) version, and create `project/paradox.sbt`:
