@@ -1,6 +1,8 @@
 Paradox
 =======
 
-Paradox is a documentation tool for software projects.
+Paradox is a markdown documentation tool for software projects.
 
-**Currently Paradox is NOT supported under Lightbend subscription.**
+**Paradox is NOT supported under Lightbend subscription.**
+
+See [Paradox docs](http://developer.lightbend.com/docs/paradox/latest/) for details.
