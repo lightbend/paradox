@@ -234,11 +234,15 @@ case class GitHubDirective(currentPath: String, variables: Map[String, String]) 
  *
  * Extracts snippets from source files into verbatim blocks.
  */
-case class SnipDirective(page: Page) extends LeafBlockDirective("snip") {
+case class SnipDirective(page: Page, variables: Map[String, String]) extends LeafBlockDirective("snip") {
+  private lazy val snippetBase =
+    new File(variables.getOrElse("snippet.base_dir", sys.error("Property `snippet.base_dir` is not defined")))
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
       val labels = node.attributes.values("identifier").asScala
-      val file = new File(page.file.getParentFile, node.source)
+      val file =
+        if (node.source startsWith ".../") new File(snippetBase, node.source drop 4)
+        else new File(page.file.getParentFile, node.source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
       new VerbatimNode(text, lang).accept(visitor)

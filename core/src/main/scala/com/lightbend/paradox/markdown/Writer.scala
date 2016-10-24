@@ -16,10 +16,9 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree
 import com.lightbend.paradox.tree.Tree.Location
-import org.pegdown.ast.{ Node, RootNode }
 import org.pegdown.plugins.ToHtmlSerializerPlugin
+import org.pegdown.ast.{ ExpImageNode, Node, RefImageNode, RootNode }
 import org.pegdown.{ LinkRenderer, ToHtmlSerializer, VerbatimSerializer }
 import scala.collection.JavaConverters._
 
@@ -28,13 +27,37 @@ import scala.collection.JavaConverters._
  */
 class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
-  def this(linkRenderer: LinkRenderer = Writer.defaultLinks,
+  def this(linkRenderer: Writer.Context => LinkRenderer = Writer.defaultLinks,
            verbatimSerializers: Map[String, VerbatimSerializer] = Writer.defaultVerbatims,
-           serializerPlugins: Writer.Context => Seq[ToHtmlSerializerPlugin] = (context: Writer.Context) => Writer.defaultPlugins(context)) =
+           serializerPlugins: Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
     this((context: Writer.Context) => new ToHtmlSerializer(
-      linkRenderer,
+      linkRenderer(context),
       verbatimSerializers.asJava,
       serializerPlugins(context).asJava))
+
+  /**
+   * Write main content.
+   */
+  def writeContent(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write breadcrumbs fragment.
+   */
+  def writeBreadcrumbs(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write navigation fragment.
+   */
+  def writeNavigation(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
+   * Write navigation fragment.
+   */
+  def writeToc(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
 
   /**
    * Write markdown to HTML, in the context of a page.
@@ -70,9 +93,8 @@ object Writer {
     targetSuffix: String = DefaultTargetSuffix,
     properties: Map[String, String] = Map.empty)
 
-  def defaultLinks: LinkRenderer = {
-    new LinkRenderer
-  }
+  def defaultLinks(context: Context): LinkRenderer =
+    new DefaultLinkRenderer(context)
 
   def defaultVerbatims: Map[String, VerbatimSerializer] = {
     Map(VerbatimSerializer.DEFAULT -> PrettifyVerbatimSerializer)
@@ -89,10 +111,30 @@ object Writer {
     ExtRefDirective(context.location.tree.label.path, context.properties),
     ScaladocDirective(context.location.tree.label.path, context.properties),
     GitHubDirective(context.location.tree.label.path, context.properties),
-    SnipDirective(context.location.tree.label),
+    SnipDirective(context.location.tree.label, context.properties),
     FiddleDirective(context.location.tree.label),
     TocDirective(context.location),
     VarDirective(context.properties),
     VarsDirective(context.properties)
   )
+
+  class DefaultLinkRenderer(context: Context) extends LinkRenderer {
+    private lazy val imgBase = {
+      val root = context.location.tree.label.base // ends with a slash
+      val base = context.properties.getOrElse("image.base_url", sys.error("Property `image.base_url` is not defined"))
+      val baseUrl = if (base startsWith ".../") root + base.drop(4) else base
+      if (baseUrl endsWith "/") baseUrl dropRight 1 else baseUrl
+    }
+
+    override def render(node: ExpImageNode, text: String): LinkRenderer.Rendering =
+      interpolatedUrl(node.url) map { url =>
+        super.render(new ExpImageNode(node.title, url, node.getChildren.get(0)), text)
+      } getOrElse super.render(node, text)
+
+    override def render(node: RefImageNode, url: String, title: String, alt: String): LinkRenderer.Rendering =
+      super.render(node, interpolatedUrl(url) getOrElse url, title, alt)
+
+    private def interpolatedUrl(url: String): Option[String] =
+      if (url startsWith ".../") Some(imgBase + url.drop(3)) else None
+  }
 }
