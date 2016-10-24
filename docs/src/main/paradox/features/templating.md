@@ -1,4 +1,7 @@
-## StringTemplate
+  [st]: http://www.stringtemplate.org/
+
+Templating
+----------
 
 Paradox uses [StringTemplate][st] for the basic templating. For example:
 

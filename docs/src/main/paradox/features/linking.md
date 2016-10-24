@@ -1,3 +1,17 @@
+Linking
+-------
+
+### @ref link
+
+Paradox extensions are designed so the resulting Markdown is Github friendly.
+For example, you might want to link from one document to the other, let's say from `index.md` to `setup/index.md`.
+
+```
+See @ref:[Setup](setup/index.md) for more information.
+```
+
+This will render to be `setup/index.html` in the HTML, but the source on Github will link correct as well!
+
 ## Parameterized links
 
 Parameterized link directives help to manage links that references
