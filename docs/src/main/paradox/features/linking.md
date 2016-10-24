@@ -93,3 +93,24 @@ part of the link URL. For example, given the property:
 
 then `@extref[RFC 2119](rfc:2119)` will resolve to the URL
 <http://tools.ietf.org/html/rfc2119>.
+
+### image.base_url
+
+When placing images via the standard markdown image syntax you can refer
+to a configured base URL by starting the image href with `.../`, e.g. like this:
+
+```
+![logo](.../logo.png)
+```
+
+The `...` prefix refers to a defined a `image.base_url` property that is
+specified either in the page's front matter or globally like this (for example):
+
+```sbt
+paradoxProperties in Compile ++= Map("image.base_url" -> ".../assets/images")
+```
+
+If the image base URL itself starts with three dots (`...`) then these in turn
+refer to the root URL of the site.
+
+**Note**: Using this feature will not allow GitHub to preview the images correctly on the web.

@@ -38,3 +38,21 @@ Gradle
 This will be rendered like this:
 
 ![multi_snip](../img/multi_snip.png)
+
+### snippet.base_dir
+
+In order to specify your snippet source paths off a certain base directory you can define a snippet.base_dir property either in the page's front matter or globally like this (for example):
+
+```sbt
+paradoxProperties in Compile ++= Map(
+  "snippet.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example"
+)
+```
+
+You can then refer to this snippet base directory by starting a snippet path with .../, e.g.
+
+```markdown
+@@snip [Hello.scala](.../Hello.scala) { #hello_example }
+```
+
+**Note**: Using this feature will not allow GitHub to preview the images correctly on the web.
