@@ -198,11 +198,11 @@ object Path {
 
     val fullPathString =
       if (fullPathWithDriveLetter.getRoot ne null)
-        "\\" + fullPathWithDriveLetter.getRoot.relativize(fullPathWithDriveLetter).toString
+        File.separator + fullPathWithDriveLetter.getRoot.relativize(fullPathWithDriveLetter).toString
       else
         fullPathWithDriveLetter.toString
 
-    fullPathString.replace(File.separatorChar, '/')
+    fullPathString.replace('\\', '/')
   }
 
   /**
