@@ -17,9 +17,10 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
-import com.lightbend.paradox.template.{ PageTemplate }
+import com.lightbend.paradox.template.PageTemplate
 import java.io.File
 import java.net.URI
+import java.nio.file.{ Path, Paths }
 import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
 import scala.annotation.tailrec
 
@@ -183,19 +184,41 @@ object Path {
   }
 
   /**
+   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
+   * Also converts backslashes to slashes.
+   */
+  def toUnixStyleRootPath(pathString: String): String = toUnixStyleRootPath(Paths.get(pathString))
+
+  /**
+   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
+   * Also converts backslashes to slashes.
+   */
+  def toUnixStyleRootPath(path: Path): String = {
+    val fullPathWithDriveLetter = path.toAbsolutePath
+
+    val fullPathString =
+      if (fullPathWithDriveLetter.getRoot ne null)
+        "\\" + fullPathWithDriveLetter.getRoot.relativize(fullPathWithDriveLetter).toString
+      else
+        fullPathWithDriveLetter.toString
+
+    fullPathString.replace(File.separatorChar, '/')
+  }
+
+  /**
    * Provide the relative root path from a local path related to a full path
    */
   def relativeRootPath(file: File, localPath: String): String = {
-    val fullPath = file.getAbsolutePath
-    if (fullPath.endsWith(localPath)) fullPath.dropRight(localPath.length) else fullPath
+    val pathString = toUnixStyleRootPath(file.toPath)
+    if (pathString.endsWith(localPath)) pathString.dropRight(localPath.length) else pathString
   }
 
   /**
    * Provide the local path given the root path and the full path
    */
   def relativeLocalPath(rootPath: String, fullPath: String): String = {
-    val root = new URI(rootPath)
-    val full = new URI(fullPath)
+    val root = new URI(toUnixStyleRootPath(rootPath))
+    val full = new URI(toUnixStyleRootPath(fullPath))
     root.relativize(full).toString
   }
 

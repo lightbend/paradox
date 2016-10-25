@@ -46,7 +46,7 @@ object Snippet {
   }
 
   private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[String]) => Seq[String]): ExtractionState = {
-    val lines = Source.fromFile(file).getLines.toSeq
+    val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
     lines.foldLeft(ExtractionState(inBlock = false, snippetLines = Seq.empty)) {
       case (es, l) =>
         es.inBlock match {
