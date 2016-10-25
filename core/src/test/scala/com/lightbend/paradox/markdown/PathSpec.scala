@@ -87,12 +87,12 @@ class PathSpec extends FlatSpec with Matchers {
 
   "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("../../index.md" -> "../../index.html",
-      "../A.md" -> "../A.html",
-      "../../b/B.md" -> "../../b/B.html",
-      "../a2/A2.md" -> "../a2/A2.html",
-      "sameFolder.md" -> "sameFolder.html",
-      "c/ABC.md" -> "c/ABC.html")
+    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("index.md" -> "../../index.html",
+      "a/A.md" -> "../A.html",
+      "b/B.md" -> "../../b/B.html",
+      "a/a2/A2.md" -> "../a2/A2.html",
+      "a/b/sameFolder.md" -> "sameFolder.html",
+      "a/b/c/ABC.md" -> "c/ABC.html")
   }
 
   "Path.generateTargetFile" should "return the corresponding target file given the relative mapping for the current file" in {

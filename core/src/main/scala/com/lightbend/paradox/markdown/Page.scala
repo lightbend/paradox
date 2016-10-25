@@ -204,7 +204,7 @@ object Path {
    */
   def generateTargetFile(localPath: String, globalPageMappings: Map[String, String])(link: String): String = {
     val mappings = relativeMapping(localPath, globalPageMappings)
-    val uri = new URI(link)
+    val uri = new URI(localPath).resolve(new URI(link))
     mappings.get(uri.getPath) match {
       case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
       case None    => sys.error(s"No reference link corresponding to $link")
@@ -220,7 +220,7 @@ object Path {
     val rootPath = parentsPath(localPath)
     globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
-      (refRelativePath(rootPath, rootMap._1, leaf(mapping._1))) -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
+      mapping._1 -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
     }
   }
 
