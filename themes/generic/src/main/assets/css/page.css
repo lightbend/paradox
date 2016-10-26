@@ -380,6 +380,38 @@ blockquote p code {
   padding-right: 0.4em !important;
 }
 
+/* callout */
+
+.callout {
+  border: none;
+  border-left: 10px solid #4078c0;
+  background-color: rgba(64, 120, 192, 0.1);
+}
+
+.callout.warning {
+  border-color: #DB504A;
+  background-color: #fff3d9;
+}
+
+.callout .callout-title {
+  font-weight: bold;
+  margin-bottom: 0.33em;
+}
+
+.callout div ~ p {
+  margin-top: 0;
+}
+
+.callout p ~ p {
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
+.callout p code {
+  background: #fff;
+  padding-right: 0.4em !important;
+}
+
 /* footnotes */
 
 small {
