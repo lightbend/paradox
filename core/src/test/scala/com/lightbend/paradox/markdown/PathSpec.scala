@@ -25,6 +25,7 @@ class PathSpec extends FlatSpec with Matchers {
       "a/A.md" -> "a/A.html",
       "b/B.md" -> "b/B.html",
       "a/a2/A2.md" -> "a/a2/A2.html",
+      "a/b/source.md" -> "a/b/source.html",
       "a/b/sameFolder.md" -> "a/b/sameFolder.html",
       "a/b/c/ABC.md" -> "a/b/c/ABC.html")
     val sourcePath = "a/b/source.md"
@@ -87,12 +88,13 @@ class PathSpec extends FlatSpec with Matchers {
 
   "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("../../index.md" -> "../../index.html",
-      "../A.md" -> "../A.html",
-      "../../b/B.md" -> "../../b/B.html",
-      "../a2/A2.md" -> "../a2/A2.html",
-      "sameFolder.md" -> "sameFolder.html",
-      "c/ABC.md" -> "c/ABC.html")
+    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("index.md" -> "../../index.html",
+      "a/A.md" -> "../A.html",
+      "b/B.md" -> "../../b/B.html",
+      "a/a2/A2.md" -> "../a2/A2.html",
+      "a/b/source.md" -> "source.html",
+      "a/b/sameFolder.md" -> "sameFolder.html",
+      "a/b/c/ABC.md" -> "c/ABC.html")
   }
 
   "Path.generateTargetFile" should "return the corresponding target file given the relative mapping for the current file" in {
@@ -104,5 +106,12 @@ class PathSpec extends FlatSpec with Matchers {
       newMapping("A.md")
     } should have message "No reference link corresponding to A.md"
     newMapping("../a2/A2.md#someanchor") shouldEqual "../a2/A2.html#someanchor"
+  }
+
+  it should "return the source file for fragment links" in {
+    val (mappings, sourcePath) = provideRelativeMapping
+    val newMapping = Path.generateTargetFile(sourcePath, mappings)_
+
+    newMapping("#frag") shouldEqual "source.html#frag"
   }
 }
