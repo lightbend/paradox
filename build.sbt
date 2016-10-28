@@ -16,7 +16,7 @@
 
 lazy val paradox = project
   .in(file("."))
-  .aggregate(core, plugin, themePlugin, themes)
+  .aggregate(core, plugin, themePlugin, themes, docs)
   .enablePlugins(NoPublish)
   .settings(inThisBuild(List(
     organization := "com.lightbend.paradox",
@@ -104,7 +104,7 @@ lazy val genericTheme = (project in (file("themes") / "generic"))
   )
 
 lazy val docs = (project in file("docs"))
-  .enablePlugins(ParadoxPlugin)
+  .enablePlugins(NoPublish, ParadoxPlugin)
   .settings(
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic"))

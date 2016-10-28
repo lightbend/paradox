@@ -1,0 +1,19 @@
+### Fixes and enhancements
+
+- Fixes handling of paths on Windows. [#42][42] by [@drewhk][@drewhk]
+- Document [Paradox][Paradox] using Paradox. [#44][44] by [@gsechaud][@gsechaud] and [@eed3si9n][@eed3si9n]
+- Validate PRs on Windows using [AppVeyor][AppVeyor]. [#45][45] by [@gsechaud][@gsechaud]
+- Fix `@ref` fragment links and normalize relative links. [#46][46] by [@jonas][@jonas]
+- Add note and warning callout directives. [#47][47] by [@jonas][@jonas]
+
+  [42]: https://github.com/lightbend/paradox/issues/42
+  [44]: https://github.com/lightbend/paradox/pull/44
+  [45]: https://github.com/lightbend/paradox/pull/45
+  [46]: https://github.com/lightbend/paradox/pull/46
+  [47]: https://github.com/lightbend/paradox/pull/47
+  [@drewhk]: https://github.com/drewhk
+  [@eed3si9n]: https://github.com/eed3si9n
+  [@gsechaud]: https://github.com/gsechaud
+  [@jonas]: https://github.com/jonas
+  [AppVeyor]: https://www.appveyor.com/
+  [Paradox]: http://developer.lightbend.com/docs/paradox/latest/

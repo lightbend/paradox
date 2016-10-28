@@ -2,7 +2,7 @@
 
 - `paradoxTheme` now defaults to `Some(builtinParadoxTheme("generic"))`. To opt out of a theme you must set `None` explicitly. [#19][19] by [@eed3si9n][@eed3si9n]
 
-### Fixes and enhacements
+### Fixes and enhancements
 
 - Allows non-H1 headers. [#18][18] by [@dwijnand][@dwijnand]
 - Fixes NPE when `page.st` is not set. [#19][19] by [@eed3si9n][@eed3si9n]

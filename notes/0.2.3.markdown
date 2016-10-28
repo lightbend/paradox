@@ -1,4 +1,4 @@
-### Fixes and enhacements
+### Fixes and enhancements
 
 - Adds per-page properties front matter.
 - Adds parameterized links.

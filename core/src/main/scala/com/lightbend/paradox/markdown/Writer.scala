@@ -115,7 +115,9 @@ object Writer {
     FiddleDirective(context.location.tree.label),
     TocDirective(context.location),
     VarDirective(context.properties),
-    VarsDirective(context.properties)
+    VarsDirective(context.properties),
+    CalloutDirective("note", "Note"),
+    CalloutDirective("warning", "Warning")
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {

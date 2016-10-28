@@ -1,4 +1,4 @@
-### Fixes and enhacements
+### Fixes and enhancements
 
 - Aggregates from multiple snip labels. [#22][22] by [@jonas][@jonas]
 

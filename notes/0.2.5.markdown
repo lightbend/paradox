@@ -1,4 +1,4 @@
-### Fixes and enhacements
+### Fixes and enhancements
 
 - Fixes css/js theme generation. [#30][30] by [@gsechaud][@gsechaud]
 - Fixes ref bug with anchor. [#34][34] by [@gsechaud][@gsechaud]
