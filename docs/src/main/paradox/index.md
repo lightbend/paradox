@@ -6,7 +6,7 @@ The Github repo is [lightbend/paradox][repo].
 
 **Paradox is NOT supported under the Lightbend subscription.**
 
-### Setup
+## Setup
 
 Find [the latest](https://github.com/lightbend/paradox/releases) version, and create `project/paradox.sbt`:
 
@@ -29,7 +29,7 @@ Then call `paradox` which will generate the site in `target/paradox/site/`.
 
 Your markdown documentation will go inside `src/main/paradox/`. For example, you can start with `src/main/paradox/index.md`.
 
-### Key features
+## Key features
 
 - Supports Github flavored Markdown powered by [Pegdown][].
 - Principled markdown extension using generic directives syntax.
@@ -37,12 +37,12 @@ Your markdown documentation will go inside `src/main/paradox/`. For example, you
 - Code snippet inclusion for compilable code examples.
 - Templating and theming.
 
-### Generic directive
+## Generic directive
 
 Paradox extends Markdown in a principled manner called generic directives syntax,
 which basically means that all of our extensions would start with `@` (for inline), `@@` (leaf block), or `@@@` (container block).
 
-### License and credits
+## License and credits
 
 - Copyright 2015-2016 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
 - The markdown engine is based on Mathias's [Pegdown][].
@@ -54,6 +54,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 * [Snippet inclusion](features/snippet-inclusion.md)
 * [Callouts](features/callouts.md)
 * [Templating](features/templating.md)
+* [Themes](features/theming.md)
 
 @@@
 

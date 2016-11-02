@@ -1,5 +1,4 @@
-Linking
--------
+# Linking
 
 ### @ref link
 
