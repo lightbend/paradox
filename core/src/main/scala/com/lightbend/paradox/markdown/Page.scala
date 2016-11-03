@@ -20,6 +20,7 @@ import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import com.lightbend.paradox.template.PageTemplate
 import java.io.File
 import java.net.URI
+import java.nio.file.{ Path => NioPath, Paths => NioPaths }
 import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
 import scala.annotation.tailrec
 
@@ -186,13 +187,13 @@ object Path {
    * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
    * Also converts backslashes to slashes.
    */
-  def toUnixStyleRootPath(pathString: String): String = toUnixStyleRootPath(java.nio.file.Paths.get(pathString))
+  def toUnixStyleRootPath(pathString: String): String = toUnixStyleRootPath(NioPaths.get(pathString))
 
   /**
    * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
    * Also converts backslashes to slashes.
    */
-  def toUnixStyleRootPath(path: java.nio.file.Path): String = {
+  def toUnixStyleRootPath(path: NioPath): String = {
     val fullPathWithDriveLetter = path.toAbsolutePath
 
     val fullPathString =
