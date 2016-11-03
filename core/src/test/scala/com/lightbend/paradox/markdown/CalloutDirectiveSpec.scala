@@ -34,7 +34,36 @@ class CalloutDirectiveSpec extends MarkdownBaseSpec {
       """) shouldEqual html("""
       |<div class="callout note">
       |<div class="callout-title">Note</div>
-      |Latest version is 1.2.3
+      |<p>Latest version is 1.2.3</p>
+      |</div>
+      """)
+
+    markdown("""
+      |@@@ note
+      |
+      |Latest version is @var[version]
+      |
+      |@@@
+      """) shouldEqual html("""
+      |<div class="callout note">
+      |<div class="callout-title">Note</div>
+      |<p>Latest version is 1.2.3</p>
+      |</div>
+      """)
+  }
+
+  it should "render notes regardless of new lines at start/end" in {
+    markdown("""
+      |@@@ note
+      |Latest version is @var[version]
+      |
+      |Get it while it is hot!
+      |@@@
+      """) shouldEqual html("""
+      |<div class="callout note">
+      |<div class="callout-title">Note</div>
+      |<p>Latest version is 1.2.3</p>
+      |<p>Get it while it is hot!</p>
       |</div>
       """)
   }
@@ -77,7 +106,7 @@ class CalloutDirectiveSpec extends MarkdownBaseSpec {
       """) shouldEqual html("""
       |<div class="callout warning">
       |<div class="callout-title">Warning</div>
-      |Version 1.2.3 is deprecated!
+      |<p>Version 1.2.3 is deprecated!</p>
       |</div>
       """)
   }

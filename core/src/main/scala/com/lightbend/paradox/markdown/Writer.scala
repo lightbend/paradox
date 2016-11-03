@@ -119,7 +119,7 @@ object Writer {
     VarsDirective(context.properties),
     CalloutDirective("note", "Note"),
     CalloutDirective("warning", "Warning"),
-    WrapDirective("div"), WrapDirective("p"))
+    WrapDirective("div"))
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {
     private lazy val imgBase = {

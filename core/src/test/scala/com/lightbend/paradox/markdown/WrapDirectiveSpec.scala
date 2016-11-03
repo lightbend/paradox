@@ -32,18 +32,20 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
       |Simple sentence here.
       |@@@""") shouldEqual html("""
       |<div>
-      |Simple sentence here.
+      |<p>Simple sentence here.</p>
       |</div>""")
   }
 
-  it should "render wrapping `p`s with a custom `id`" in {
+  it should "render the example from the docs" in {
     markdown("""
-      |@@@ p { #yeah }
-      |Simple sentence here.
+      |@@@ div { #foo .bar .baz }
+      |
+      |Inner **markdown** content.
+      |
       |@@@""") shouldEqual html("""
-      |<p id="yeah">
-      |Simple sentence here.
-      |</p>""")
+      |<div id="foo" class="bar baz">
+      |<p>Inner <strong>markdown</strong> content.</p>
+      |</div>""")
   }
 
   it should "support a custom id and custom CSS classes at the same time" in {
@@ -52,7 +54,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
       |Simple sentence here.
       |@@@""") shouldEqual html("""
       |<div id="yeah" class="red blue">
-      |Simple sentence here.
+      |<p>Simple sentence here.</p>
       |</div>""")
   }
 
