@@ -1,5 +1,5 @@
 Snippet inclusion
-=================
+-----------------
 
 ### @@snip block
 

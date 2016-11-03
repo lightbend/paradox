@@ -1,8 +1,7 @@
 Theming
-=======
+-------
 
-Paradox uses "theming" to generate its target files. Combined with templates within it, themes can produce a global styling of the site generated.
-A theme is constituted of `.st` template files, javascript files and css files. By default, a simple predefined theme in paradox is used and looks like [this](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets).
+A theme is a collection of templates and other resources like css and image files that can be distributed as a web jar. Using this mechanism, multiple Paradox sites can have consistent look and feel. By default, a simple predefined theme in paradox is used and looks like [this](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets).
 
 If you want to use a template `otherTemplate.st` inside an other template `myTemplate.st`, you need to specify it inside the `myTemplate.st`'s code:
 
@@ -18,15 +17,23 @@ $otherTemplate()$
  */
 ```
 
-## How to use themes
+### How to use themes
 
-Three possibilities are available to deal with themes:
+To use a theme you need to set `paradoxTheme` in your build.
 
-- Create a theme as an external repository
-- Create a theme from scratch locally
-- Modify an existing theme
+- If you want to use the default theme of paradox, you can use it by setting `paradoxTheme := Some(builtinParadoxTheme("generic"))`. Take a look at this [default theme](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets) to get an idea of how it looks like.
+- If you want to use an external theme, you can use it by setting `paradoxTheme := Some("organization" % "name" % "X.Y.Z")`. A good example of an external theme is the [Lightbend theme](https://github.com/typesafehub/paradox-theme-lightbend).
 
-### External theme
+
+### How to create themes
+
+If you don't want to use a predefined theme, or at least the entire theme, you can create one. You have three options:
+
+- Create an external theme
+- Create a local template system
+- Modify a theme
+
+#### External theme
 
 The [Lightbend theme](https://github.com/typesafehub/paradox-theme-lightbend) is a good example of what should look like a paradox theme repository.
 
@@ -55,11 +62,11 @@ Finally, the theme created will be available inside your paradox project by sett
 ```
 
 Concerning the template/css/js files, they need to be placed inside the `src/main/assets` folder.
-Remember that the default template used by paradox at generation will be the template named `page.st`, unless you specify an other one with the `out` property at page level; see the @ref[Templating](templating.md) section.
+Remember that the default template used by paradox at generation will be the template named `page.st`, unless you specify an other one with the `layout` property; see the @ref[Templating](templating.md#layout) section.
 
 In order to use your template in your paradox projects, you need to publish it.
 
-### Create a local theme
+#### Create local templates
 
 If you do not want to use any external theme, you can create your own theme directly inside the paradox project. To do this, you have to build your entire new system of templates from scratch.
 
@@ -70,24 +77,21 @@ The procedure is to indicate to paradox that you don't need to use any theme in 
 ```
 
 All template files need to be created inside the `src/main/paradox/_template` folder of your project. You can specify an other one by setting its new location in the build:
-
 ```scala
 sourceDirectory in Compile in paradoxTheme := sourceDirectory.value / "main" / "paradox" / "templatesConfig"
 ```
 
-Remember that your theme need to contain a page template with the name `page.st` that will be used by default for all your pages. You can specify an other default template for your pages, either by specifying a layout at page level (see @ref[layout templating](templating.md#layout)), or by setting it at global scope in the build:
+Remember that your theme need to contain a page template with the name `page.st` that will be used by default for all your pages. You can specify an other default template for your pages, by specifying a new `layout`; see @ref[layout templating](templating.md#layout):
 
+#### Modify a theme
+
+An other way of dealing with themes is modifying or overwriting an existing one. In your project `build.sbt` file, when you set `paradoxTheme := Some(...)`, you can easily change the theme by modifying the templates or by creating new ones (in the same way than the above section). All those modifications and/or creations must be done inside the `src/main/paradox/_template` folder, which will overwrite the files with the same name in the original template. If you want to modify/create new css or js files for your templates, you can do it inside `src/main/paradox/_template/css` and `src/main/paradox/_template/js` folders respectively.
+
+As in the previous section, you can also change your template folder in the build:
 ```scala
-paradoxProperties += ("layout" -> "myDefault")
+sourceDirectory in Compile in paradoxTheme := sourceDirectory.value / "main" / "paradox" / "templatesConfig"
 ```
 
-considering you have previously created a template with the name `myDefault.st`
+If you use the default paradox theme for example, take a look at the [generic theme](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets) to see the templates you could use or modify for your personal templates.
 
-
-### Modify a theme
-
-An other way of dealing with themes is modifying or overwriting an existing one. In your project `build.sbt` file, when you set `paradoxTheme := Some(...)`, you can easily modify the theme by modifying the templates or by creating new ones (in the same way than the above section). All those modifications and/or creations must be done inside the `src/main/paradox/_template` folder, which will overwrite the files with the same name in the original template. If you want to modify/create new css or js files for your templates, you can do it inside `src/main/paradox/_template/css` and `src/main/paradox/_template/js` folders respectively.
-
-Take a look at [generic template](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets) to see the templates you could use or modify for your personal templates.
-
-An example of modification of this template would be to use some of its templates and modify for example the default `page.st` file to manipulate the other template files differently. If you don't want to modify the `page.st` file but use an other default page built by yourself, you can add the `layout` property as explained in the [previous section](#create-a-local-theme)
+An example of modification of this template would be to use some of its templates and modify for example the default `page.st` file to manipulate the other template files differently. Once again, if you don't want to modify the `page.st` file but use an other default page built by yourself, you can add the `layout` property as explained in the [layout section](templating.md#layout)

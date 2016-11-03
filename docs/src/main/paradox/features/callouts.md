@@ -1,5 +1,5 @@
 Callouts
-========
+--------
 
 Use callouts to discuss and clarify specific topics. In the resulting output,
 the content inside the callout will appear in a separate block.

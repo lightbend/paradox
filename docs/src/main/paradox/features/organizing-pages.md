@@ -1,18 +1,7 @@
 Organizing pages
-================
+----------------
 
-### titles
-
-In your markdown files, you can specify titles by using `#` characters. Less there are `#`, bigger the title is. You can also specify titles by using `=` and `-` respectively giving the same result than `#` and `##`. For example,
-```markdown
-myTitle
--------
-```
-is equivalent to
-```markdown
-## myTitle
-```
-and similarly for `=` and `#`.
+The first header in a markdown page will become the title of this page, even if it's a smaller header than the others.
 
 ### @@@index container
 
