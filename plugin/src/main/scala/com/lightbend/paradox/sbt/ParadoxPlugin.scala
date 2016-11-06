@@ -97,12 +97,12 @@ object ParadoxPlugin extends AutoPlugin {
       CachedTemplates(dir)
     },
 
-    sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template   
+    sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
     includeFilter in paradoxTemplate := AllPassFilter,
     excludeFilter in paradoxTemplate := "*.st" || "*.stg",
     sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate) dependsOn {
-      paradoxThemeDirectory // trigger theme extraction first   
+      paradoxThemeDirectory // trigger theme extraction first
     },
     mappings in paradoxTemplate <<= Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate),
 
@@ -159,14 +159,15 @@ object ParadoxPlugin extends AutoPlugin {
   }
 
   def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL], scmInfo: Option[ScmInfo]): Map[String, String] = {
-    val defaults = Map(
-      "scaladoc.scala.base_url" -> s"http://www.scala-lang.org/api/$scalaVersion"
-    )
-    val scaladoc = apiURL.map("scaladoc.base_url" -> _.toString)
-    val githubUrl = scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")
-    val github = githubUrl.map("github.base_url" -> _.toString)
-
-    defaults ++ scaladoc ++ github
+    val JavaSpecVersion = """\d+\.(\d+)""".r
+    Map(
+      "javadoc.java.base_url" -> sys.props.get("java.specification.version").collect {
+        case JavaSpecVersion(v) => url(s"https://docs.oracle.com/javase/$v/docs/api/")
+      },
+      "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
+      "scaladoc.base_url" -> apiURL,
+      "github.base_url" -> scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")
+    ).collect { case (prop, Some(url)) => (prop, url.toString) }
   }
 
   def readProperty(resource: String, property: String): String = {

@@ -19,9 +19,9 @@ package com.lightbend.paradox.markdown
 class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
-    "scaladoc.base_url" -> "http://example.org/api/0.1.2",
-    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8",
-    "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
+    "scaladoc.base_url" -> "http://example.org/api/0.1.2/",
+    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8/",
+    "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10/index.html",
     "scaladoc.akka.http.base_url" -> "http://doc.akka.io/api/akka-http/10.0.0",
     "scaladoc.broken.base_url" -> "https://c|"
   )
@@ -44,6 +44,8 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   it should "handle object links correctly" in {
     markdown("@scaladoc[Http](akka.http.scaladsl.Http$)") shouldEqual
       html("""<p><a href="http://doc.akka.io/api/akka-http/10.0.0/#akka.http.scaladsl.Http$">Http</a></p>""")
+    markdown("@scaladoc[Actor](akka.actor.Actor)") shouldEqual
+      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/index.html#akka.actor.Actor">Actor</a></p>""")
   }
 
   it should "retain whitespace before or after" in {

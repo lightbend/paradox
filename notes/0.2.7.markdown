@@ -1,0 +1,6 @@
+### Enhancements
+
+- Add `@javadoc` parameterized link directive. [#43][43] by [@jonas][@jonas]
+
+  [43]: https://github.com/lightbend/paradox/issues/43
+  [@jonas]: https://github.com/jonas

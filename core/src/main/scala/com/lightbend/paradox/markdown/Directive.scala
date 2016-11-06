@@ -187,30 +187,53 @@ case class ExtRefDirective(page: Page, variables: Map[String, String])
 }
 
 /**
- * Scaladoc directive.
+ * API doc directive.
  *
- * Link to scaladoc using the package prefix. Will match the configured base URL
- * with the longest package prefix. For example, given:
+ * Link to javadoc and scaladoc based on package prefix. Will match the
+ * configured base URL with the longest package prefix. For example,
+ * given:
  *
- * - `scaladoc.akka.base_url=doc.akka.io/api/akka/x.y.z`
- * - `scaladoc.akka.http.base_url=doc.akka.io/api/akka-http/x.y.z`
+ * - `scaladoc.akka.base_url=http://doc.akka.io/api/akka/x.y.z`
+ * - `scaladoc.akka.http.base_url=http://doc.akka.io/api/akka-http/x.y.z`
  *
  * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
  */
-case class ScaladocDirective(page: Page, variables: Map[String, String])
-    extends ExternalLinkDirective("scaladoc", "scaladoc:") with SourceDirective {
+abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective(name, name + ":") {
 
-  val defaultBaseUrl = PropertyUrl("scaladoc.base_url", variables.get)
-  val ScaladocProperty = """scaladoc\.(.*)\.base_url""".r
+  def resolveApiLink(base: Url, link: String): Url
+
+  val defaultBaseUrl = PropertyUrl(name + ".base_url", variables.get)
+  val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
   val baseUrls = variables.collect {
-    case (property @ ScaladocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+    case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
   def resolveLink(link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
-    baseUrl.resolve / "" withFragment link
+    resolveApiLink(baseUrl.resolve, link)
+  }
+
+}
+
+case class ScaladocDirective(page: Page, variables: Map[String, String])
+    extends ApiDocDirective("scaladoc", page, variables) {
+
+  def resolveApiLink(baseUrl: Url, link: String): Url = {
+    baseUrl.withEndingSlash.withFragment(link)
+  }
+
+}
+
+case class JavadocDirective(page: Page, variables: Map[String, String])
+    extends ApiDocDirective("javadoc", page, variables) {
+
+  def resolveApiLink(baseUrl: Url, link: String): Url = {
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
   }
 
 }

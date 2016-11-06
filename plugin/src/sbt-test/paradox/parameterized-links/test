@@ -3,3 +3,6 @@
 $ must-mirror target/paradox/site/extref.html expected/extref.html
 $ must-mirror target/paradox/site/scaladoc.html expected/scaladoc.html
 $ must-mirror target/paradox/site/github.html expected/github.html
+$ must-mirror target/paradox/site/javadoc.html expected/javadoc.html
+
+> checkJavadocJavalibContent
