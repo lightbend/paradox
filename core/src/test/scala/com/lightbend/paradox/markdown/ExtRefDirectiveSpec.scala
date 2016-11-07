@@ -16,8 +16,6 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.Location
-
 class ExtRefDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -84,4 +82,11 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
     } should have message "Failed to resolve [broken:link] referenced from [test.html] because template resulted in an invalid URL [https://c|link]"
   }
 
+  it should "support referenced links" in {
+    markdown(
+      """@extref[RFC 1234] says it all!
+        |
+        |  [rfc 1234]: rfc:1234
+      """.stripMargin) shouldEqual html("""<p><a href="http://tools.ietf.org/html/rfc1234">RFC 1234</a> says it all!</p>""")
+  }
 }

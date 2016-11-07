@@ -16,8 +16,6 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.Location
-
 class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -70,4 +68,11 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     } should have message "Failed to resolve [broken.URL] referenced from [test.html] because property [scaladoc.broken.base_url] contains an invalid URL [https://c|]"
   }
 
+  it should "support referenced links" in {
+    markdown(
+      """The @scaladoc:[Model][1] spec
+        |
+        |  [1]: org.example.Model
+      """.stripMargin) shouldEqual html("""<p>The <a href="http://example.org/api/0.1.2/#org.example.Model">Model</a> spec</p>""")
+  }
 }

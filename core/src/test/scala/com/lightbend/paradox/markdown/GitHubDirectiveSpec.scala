@@ -16,9 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.Location
-
-class GibHubDirectiveSpec extends MarkdownBaseSpec {
+class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
     "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1")
@@ -92,4 +90,12 @@ class GibHubDirectiveSpec extends MarkdownBaseSpec {
     } should have message "Failed to resolve [#1] referenced from [test.html] because property [github.base_url] contains an invalid URL [https://github.com/broken/project|]"
   }
 
+  it should "support referenced links" in {
+    markdown(
+      """@github[#1234][1]
+        |
+        |  [1]: akka/akka#1234
+      """.stripMargin) shouldEqual
+      html("""<p><a href="https://github.com/akka/akka/issues/1234">#1234</a></p>""")
+  }
 }

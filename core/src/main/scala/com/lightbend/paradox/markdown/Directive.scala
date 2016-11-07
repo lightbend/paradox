@@ -22,7 +22,7 @@ import java.io.{ File, FileNotFoundException }
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
-import org.pegdown.Printer
+import org.pegdown.{ Printer, ToHtmlSerializer }
 
 import scala.collection.JavaConverters._
 
@@ -78,6 +78,35 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
   val format = Set(ContainerBlock)
 }
 
+/**
+ * Directives with defined "source" semantics.
+ */
+sealed trait SourceDirective { this: Directive =>
+  def page: Page
+
+  protected def resolvedSource(node: DirectiveNode, page: Page): String = {
+    def ref(key: String) =
+      referenceMap.get(key.filterNot(_.isWhitespace).toLowerCase).map(_.getUrl).getOrElse(
+        throw new RefDirective.LinkException(s"Undefined reference key [$key] in [${page.path}]"))
+    node.source match {
+      case x: DirectiveNode.Source.Direct => x.value
+      case x: DirectiveNode.Source.Ref    => ref(x.value)
+      case DirectiveNode.Source.Empty     => ref(node.label)
+    }
+  }
+
+  private lazy val referenceMap: Map[String, ReferenceNode] = {
+    val tempRoot = new RootNode
+    tempRoot.setReferences(page.markdown.getReferences)
+    var result = Map.empty[String, ReferenceNode]
+    new ToHtmlSerializer(null) {
+      toHtml(tempRoot)
+      result = references.asScala.toMap
+    }
+    result
+  }
+}
+
 // Default directives
 
 /**
@@ -86,14 +115,15 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
  * Refs are for links to internal pages. The file extension is replaced when rendering.
  * Links are validated to ensure they point to a known page.
  */
-case class RefDirective(currentPath: String, pathExists: String => Boolean, convertPath: String => String) extends InlineDirective("ref", "ref:") {
-  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    new ExpLinkNode("", check(convertPath(node.source)), node.contentsNode).accept(visitor)
-  }
+case class RefDirective(page: Page, pathExists: String => Boolean, convertPath: String => String)
+    extends InlineDirective("ref", "ref:") with SourceDirective {
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
+    new ExpLinkNode("", check(convertPath(resolvedSource(node, page))), node.contentsNode).accept(visitor)
 
   private def check(path: String): String = {
-    if (!pathExists(Path.resolve(currentPath, path)))
-      throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [$currentPath]")
+    if (!pathExists(Path.resolve(page.path, path)))
+      throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [${page.path}]")
     path
   }
 }
@@ -110,26 +140,24 @@ object RefDirective {
 /**
  * Link to external sites using URI templates.
  */
-abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) {
+abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) with SourceDirective {
 
   import ExternalLinkDirective._
 
-  def currentPath: String
   def resolveLink(location: String): UrlResolver
 
-  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    new ExpLinkNode("", resolve(node.source), node.contentsNode).accept(visitor)
-  }
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
+    new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
 
-  private def resolve(link: String): String = {
+  override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
+    val link = super.resolvedSource(node, page)
     try {
       resolveLink(link).resolve.normalize.toString
     } catch {
       case UrlResolver.Error(reason) =>
-        throw new LinkException(s"Failed to resolve [$link] referenced from [$currentPath] because $reason")
+        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
     }
   }
-
 }
 
 object ExternalLinkDirective {
@@ -146,7 +174,8 @@ object ExternalLinkDirective {
  *
  * Link to external pages using URL templates.
  */
-case class ExtRefDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("extref", "extref:") {
+case class ExtRefDirective(page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective("extref", "extref:") with SourceDirective {
 
   def resolveLink(link: String): UrlResolver = {
     link.split(":", 2) match {
@@ -168,7 +197,8 @@ case class ExtRefDirective(currentPath: String, variables: Map[String, String]) 
  *
  * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
  */
-case class ScaladocDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("scaladoc", "scaladoc:") {
+case class ScaladocDirective(page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective("scaladoc", "scaladoc:") with SourceDirective {
 
   val defaultBaseUrl = PropertyUrl("scaladoc.base_url", variables.get)
   val ScaladocProperty = """scaladoc\.(.*)\.base_url""".r
@@ -192,7 +222,8 @@ case class ScaladocDirective(currentPath: String, variables: Map[String, String]
  * Supports most of the references documented in:
  * https://help.github.com/articles/autolinked-references-and-urls/
  */
-case class GitHubDirective(currentPath: String, variables: Map[String, String]) extends ExternalLinkDirective("github", "github:") {
+case class GitHubDirective(page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective("github", "github:") with SourceDirective {
 
   val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
   val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
@@ -234,15 +265,19 @@ case class GitHubDirective(currentPath: String, variables: Map[String, String]) 
  *
  * Extracts snippets from source files into verbatim blocks.
  */
-case class SnipDirective(page: Page, variables: Map[String, String]) extends LeafBlockDirective("snip") {
+case class SnipDirective(page: Page, variables: Map[String, String])
+    extends LeafBlockDirective("snip") with SourceDirective {
+
   private lazy val snippetBase =
     new File(variables.getOrElse("snippet.base_dir", sys.error("Property `snippet.base_dir` is not defined")))
+
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
       val labels = node.attributes.values("identifier").asScala
+      val source = resolvedSource(node, page)
       val file =
-        if (node.source startsWith ".../") new File(snippetBase, node.source drop 4)
-        else new File(page.file.getParentFile, node.source)
+        if (source startsWith ".../") new File(snippetBase, source drop 4)
+        else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
       new VerbatimNode(text, lang).accept(visitor)
@@ -267,7 +302,8 @@ object SnipDirective {
  *
  * Extracts fiddles from source files into fiddle blocks.
  */
-case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") {
+case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") with SourceDirective {
+
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
       val labels = node.attributes.values("identifier").asScala
@@ -279,7 +315,7 @@ case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") {
       val extraParams = node.attributes.value("extraParams", "theme=light")
       val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
 
-      val file = new File(page.file.getParentFile, node.source)
+      val file = new File(page.file.getParentFile, resolvedSource(node, page))
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
 

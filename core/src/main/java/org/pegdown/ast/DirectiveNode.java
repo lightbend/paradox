@@ -31,16 +31,16 @@ public class DirectiveNode extends AbstractNode {
     public final Format format;
     public final String name;
     public final String label;
-    public final String source;
+    public final Source source;
     public final DirectiveAttributes attributes;
     public final String contents;
     public final Node contentsNode;
 
-    public DirectiveNode(Format format, String name, String label, String source, DirectiveAttributes attributes, Node labelNode) {
+    public DirectiveNode(Format format, String name, String label, Source source, DirectiveAttributes attributes, Node labelNode) {
         this(format, name, label, source, attributes, label, labelNode);
     }
 
-    public DirectiveNode(Format format, String name, String label, String source, DirectiveAttributes attributes, String contents, Node contentsNode) {
+    public DirectiveNode(Format format, String name, String label, Source source, DirectiveAttributes attributes, String contents, Node contentsNode) {
         this.format = format;
         this.name = name;
         this.label = label;
@@ -66,12 +66,33 @@ public class DirectiveNode extends AbstractNode {
         if (!label.isEmpty()) {
             sb.append(" [" + StringUtils.escape(label) + "]");
         }
-        if (!source.isEmpty()) {
-            sb.append(" (" + StringUtils.escape(source) + ")");
-        }
+        source.format(sb);
         if (!attributes.isEmpty()) {
             sb.append(" " + attributes.toString());
         }
         return sb.toString();
+    }
+
+    /**
+     * Poor man's ADT ...
+     */
+    public static abstract class Source {
+        public abstract void format(StringBuilder sb);
+
+        public static final class Direct extends Source {
+            public final String value;
+            public Direct(String value) { this.value = value; }
+            public void format(StringBuilder sb) { sb.append('(').append(StringUtils.escape(value)).append(')'); }
+        }
+
+        public static final class Ref extends Source {
+            public final String value;
+            public Ref(String value) { this.value = value; }
+            public void format(StringBuilder sb) { sb.append('[').append(value).append(']'); }
+        }
+
+        public static final Source Empty = new Source() {
+            public void format(StringBuilder sb) { }
+        };
     }
 }

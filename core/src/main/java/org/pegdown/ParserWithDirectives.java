@@ -70,7 +70,7 @@ public class ParserWithDirectives extends Parser {
             directiveMarker,
             DirectiveName(),
             DirectiveLabel(),
-            MaybeDirectiveSource(),
+            DirectiveSource(),
             MaybeDirectiveAttributes(),
             push(inlineDirectiveNode())
         );
@@ -78,7 +78,7 @@ public class ParserWithDirectives extends Parser {
 
     public Node inlineDirectiveNode() {
         DirectiveAttributes attributes = (DirectiveAttributes) pop();
-        String source = popAsString();
+        DirectiveNode.Source source = (DirectiveNode.Source) pop();
         Node labelChild = popAsNode();
         String label = extractLabelText(labelChild);
         String name = popAsString();
@@ -102,7 +102,7 @@ public class ParserWithDirectives extends Parser {
             directiveMarker, directiveMarker, Sp(),
             DirectiveName(),
             MaybeDirectiveLabel(),
-            MaybeDirectiveSource(),
+            DirectiveSource(),
             MaybeDirectiveAttributes(), Sp(), Newline(),
             push(leafBlockDirectiveNode())
         );
@@ -110,7 +110,7 @@ public class ParserWithDirectives extends Parser {
 
     public Node leafBlockDirectiveNode() {
         DirectiveAttributes attributes = (DirectiveAttributes) pop();
-        String source = popAsString();
+        DirectiveNode.Source source = (DirectiveNode.Source) pop();
         Node labelChild = popAsNode();
         String label = extractLabelText(labelChild);
         String name = popAsString();
@@ -135,7 +135,7 @@ public class ParserWithDirectives extends Parser {
             ContainerBlockMarker(markerLength), Sp(),
             DirectiveName(),
             MaybeDirectiveTextLabel(),
-            MaybeDirectiveSource(),
+            DirectiveSource(),
             MaybeDirectiveAttributes(), Sp(), Newline()
         );
     }
@@ -187,7 +187,7 @@ public class ParserWithDirectives extends Parser {
         Node parsedContents = popAsNode();
         String rawContents = popAsString();
         DirectiveAttributes attributes = (DirectiveAttributes) pop();
-        String source = popAsString();
+        DirectiveNode.Source source = (DirectiveNode.Source) pop();
         String label = popAsString();
         String name = popAsString();
         return new DirectiveNode(DirectiveNode.Format.ContainerBlock, name, label, source, attributes, rawContents, parsedContents);
@@ -221,12 +221,20 @@ public class ParserWithDirectives extends Parser {
         return Enclosed('[', ANY, ']');
     }
 
-    public Rule MaybeDirectiveSource() {
-        return FirstOf(Sequence(Sp(), DirectiveSource()), push(""));
+    public Rule DirectiveSource() {
+        return FirstOf(DirectDirectiveSource(), RefDirectiveSource(), EmptyDirectiveSource());
     }
 
-    public Rule DirectiveSource() {
-        return Enclosed('(', ANY, ')');
+    public Rule DirectDirectiveSource() {
+        return Sequence(Sp(), Enclosed('(', ANY, ')'), push(new DirectiveNode.Source.Direct(popAsString())));
+    }
+
+    public Rule RefDirectiveSource() {
+        return Sequence(Sp(), TestNot("[]"), DirectiveTextLabel(), push(new DirectiveNode.Source.Ref(popAsString())));
+    }
+
+    public Rule EmptyDirectiveSource() {
+        return Sequence(Optional(Sequence(Sp(), "[]")), push(DirectiveNode.Source.Empty));
     }
 
     public Rule Enclosed(char start, Rule matching, char end) {
