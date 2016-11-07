@@ -107,10 +107,10 @@ object Writer {
   )
 
   def defaultDirectives(context: Context): Seq[Directive] = Seq(
-    RefDirective(context.location.tree.label.path, context.paths, context.pageMappings),
-    ExtRefDirective(context.location.tree.label.path, context.properties),
-    ScaladocDirective(context.location.tree.label.path, context.properties),
-    GitHubDirective(context.location.tree.label.path, context.properties),
+    RefDirective(context.location.tree.label, context.paths, context.pageMappings),
+    ExtRefDirective(context.location.tree.label, context.properties),
+    ScaladocDirective(context.location.tree.label, context.properties),
+    GitHubDirective(context.location.tree.label, context.properties),
     SnipDirective(context.location.tree.label, context.properties),
     FiddleDirective(context.location.tree.label),
     TocDirective(context.location),

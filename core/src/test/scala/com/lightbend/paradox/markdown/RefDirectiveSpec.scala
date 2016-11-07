@@ -64,4 +64,33 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
     } should have message "Unknown page [page.html] referenced from [test.html]"
   }
 
+  it should "support referenced links with implicit key" in {
+    testMarkdown(
+      """This @ref:[Page] { .ref a=1 } is linked.
+        |
+        |  [Page]: page.md#header
+      """.stripMargin) shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
+  }
+
+  it should "support referenced links with empty key" in {
+    testMarkdown(
+      """This @ref:[Page][] { .ref a=1 } is linked.
+        |
+        |  [Page]: page.md#header
+      """.stripMargin) shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
+  }
+
+  it should "support referenced links with defined key" in {
+    testMarkdown(
+      """This @ref:[Page][123] { .ref a=1 } is linked.
+        |
+        |  [123]: page.md#header
+      """.stripMargin) shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
+  }
+
+  it should "throw link exceptions for invalid reference keys" in {
+    the[RefDirective.LinkException] thrownBy {
+      markdown("@ref[Page][123]")
+    } should have message "Undefined reference key [123] in [test.html]"
+  }
 }
