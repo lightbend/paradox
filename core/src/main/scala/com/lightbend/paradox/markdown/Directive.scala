@@ -406,7 +406,7 @@ case class VarsDirective(variables: Map[String, String]) extends ContainerBlockD
 /**
  * Callout directive.
  *
- * Replaces property values in verbatim blocks.
+ * Renders call-out divs.
  */
 case class CalloutDirective(name: String, defaultTitle: String) extends ContainerBlockDirective(Array(name): _*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
@@ -417,5 +417,28 @@ case class CalloutDirective(name: String, defaultTitle: String) extends Containe
     printer.print(s"""<div class="callout-title">$title</div>""")
     node.contentsNode.accept(visitor)
     printer.print("""</div>""")
+  }
+}
+
+/**
+ * Wrap directive.
+ *
+ * Wraps inner content in a `div` or `p`, optionally with custom `id` and/or `class` attributes.
+ */
+case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ, typ.toUpperCase): _*) {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val id =
+      node.attributes.identifier match {
+        case null => ""
+        case x    => s""" id="$x""""
+      }
+    val classes =
+      node.attributes.classesString match {
+        case "" => ""
+        case x  => s""" class="$x""""
+      }
+    printer.print(s"""<$typ$id$classes>""")
+    node.contentsNode.accept(visitor)
+    printer.print(s"</$typ>")
   }
 }
