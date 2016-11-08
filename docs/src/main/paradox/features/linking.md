@@ -1,7 +1,7 @@
 Linking
 -------
 
-### @ref link
+#### @ref link
 
 Paradox extensions are designed so the resulting Markdown is Github friendly.
 For example, you might want to link from one document to the other, let's say from `index.md` to `setup/index.md`.
@@ -12,7 +12,7 @@ See @ref:[Setup](setup/index.md) for more information.
 
 This will render to be `setup/index.html` in the HTML, but the source on Github will link correct as well!
 
-## Parameterized links
+### Parameterized links
 
 Parameterized link directives help to manage links that references
 external documentation, such as API documentation or source code. The
@@ -47,7 +47,7 @@ Issue @github[#1](#1) was fixed in commit @github[83986f9](83986f9).
 *NOTE*: Only use these directives if standard Markdown and `@ref` does
 not work, since GitHub won't preview them correctly.
 
-### @scaladoc directive
+#### @scaladoc directive
 
 Use the `@scaladoc` directives to link to Scaladoc sites based on the package
 prefix. Scaladoc URL mappings can be configured via the properties
@@ -67,7 +67,7 @@ associated with the configured `scalaVersion`. If the sbt project's
 `apiURL` setting is configured, it is used as the default Scaladoc base
 URL.
 
-### @github directive
+#### @github directive
 
 Use the `@github` directive to link to GitHub issues, commits and files.
 It supports most of [GitHub's autolinking syntax][github-autolinking].
@@ -82,7 +82,7 @@ points to a GitHub project, it is used as the GitHub base URL.
 
 [github-autolinking]: https://help.github.com/articles/autolinked-references-and-urls/
 
-### @extref directive
+#### @extref directive
 
 Use the `@extref` directive to link to pages using custom URL templates.
 URL templates can be configured via `extref.<scheme>.base_url` and the
@@ -94,7 +94,7 @@ part of the link URL. For example, given the property:
 then `@extref[RFC 2119](rfc:2119)` will resolve to the URL
 <http://tools.ietf.org/html/rfc2119>.
 
-### image.base_url
+#### image.base_url
 
 When placing images via the standard markdown image syntax you can refer
 to a configured base URL by starting the image href with `.../`, e.g. like this:

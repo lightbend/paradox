@@ -1,6 +1,8 @@
 Organizing pages
 ----------------
 
+The first header in a markdown page will become the title of this page, even if it's a smaller header than the others.
+
 ### @@@index container
 
 `@@@index` is used to list child pages or sections from a page.

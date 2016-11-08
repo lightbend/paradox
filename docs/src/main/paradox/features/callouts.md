@@ -1,5 +1,5 @@
 Callouts
-========
+--------
 
 Use callouts to discuss and clarify specific topics. In the resulting output,
 the content inside the callout will appear in a separate block.
@@ -7,7 +7,7 @@ the content inside the callout will appear in a separate block.
 Paradox provides callouts for notes and warnings which can further be
 customized to fit specific needs.
 
-## @@@note callout
+### @@@note callout
 
 Notes are written as:
 
@@ -43,7 +43,7 @@ will render as:
 ...
 @@@
 
-## @@@warning callout
+### @@@warning callout
 
 Warnings are written as:
 
