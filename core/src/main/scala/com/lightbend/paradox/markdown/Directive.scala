@@ -144,7 +144,7 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
 
   import ExternalLinkDirective._
 
-  def resolveLink(location: String): UrlResolver
+  def resolveLink(location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
@@ -152,9 +152,9 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
     try {
-      resolveLink(link).resolve.normalize.toString
+      resolveLink(link).base.normalize.toString
     } catch {
-      case UrlResolver.Error(reason) =>
+      case Url.Error(reason) =>
         throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
     }
   }
@@ -177,10 +177,10 @@ object ExternalLinkDirective {
 case class ExtRefDirective(page: Page, variables: Map[String, String])
     extends ExternalLinkDirective("extref", "extref:") with SourceDirective {
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     link.split(":", 2) match {
       case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
-      case _                   => throw UrlResolver.Error("URL has no scheme")
+      case _                   => throw Url.Error("URL has no scheme")
     }
   }
 
@@ -206,11 +206,11 @@ case class ScaladocDirective(page: Page, variables: Map[String, String])
     case (property @ ScaladocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
-    baseUrl / "" withFragment link
+    baseUrl.resolve / "" withFragment link
   }
 
 }
@@ -232,7 +232,7 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   val baseUrl = PropertyUrl("github.base_url", variables.get)
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
@@ -249,13 +249,13 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   private def projectUrl = baseUrl.collect {
     case ProjectUrl(url) => url
-    case _               => throw UrlResolver.Error("[github.base_url] is not a project URL")
+    case _               => throw Url.Error("[github.base_url] is not a project URL")
   }
 
   private def treeUrl = baseUrl.collect {
     case TreeUrl(url)    => url
     case ProjectUrl(url) => url + "/tree/master"
-    case _               => throw UrlResolver.Error("[github.base_url] is not a project or versioned tree URL")
+    case _               => throw Url.Error("[github.base_url] is not a project or versioned tree URL")
   }
 
 }
