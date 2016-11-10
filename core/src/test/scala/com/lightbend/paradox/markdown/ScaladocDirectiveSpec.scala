@@ -70,6 +70,17 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     } should have message "Failed to resolve [broken.URL] referenced from [test.html] because property [scaladoc.broken.base_url] contains an invalid URL [https://c|]"
   }
 
+  it should "support Scala 2.12 links" in {
+    implicit val context = writerContextWithProperties(
+      "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.12.0/",
+      "scaladoc.version" -> "2.12.0")
+
+    markdown("@scaladoc[Int](scala.Int)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/Int.html">Int</a></p>""")
+    markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html">Codec$</a></p>""")
+  }
+
   it should "support referenced links" in {
     markdown(
       """The @scaladoc:[Model][1] spec

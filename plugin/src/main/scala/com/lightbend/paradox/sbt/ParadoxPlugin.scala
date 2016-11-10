@@ -164,6 +164,7 @@ object ParadoxPlugin extends AutoPlugin {
       "javadoc.java.base_url" -> sys.props.get("java.specification.version").collect {
         case JavaSpecVersion(v) => url(s"https://docs.oracle.com/javase/$v/docs/api/")
       },
+      "scaladoc.version" -> scalaVersion,
       "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
       "scaladoc.base_url" -> apiURL,
       "github.base_url" -> scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")

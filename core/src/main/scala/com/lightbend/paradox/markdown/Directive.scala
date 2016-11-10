@@ -222,7 +222,14 @@ case class ScaladocDirective(page: Page, variables: Map[String, String])
     extends ApiDocDirective("scaladoc", page, variables) {
 
   def resolveApiLink(baseUrl: Url, link: String): Url = {
-    baseUrl.withEndingSlash.withFragment(link)
+    variables.getOrElse("scaladoc.version", "???").split('.').take(2) match {
+      case Array("2", "12") =>
+        val url = Url(link).base
+        val path = url.getPath.replace('.', '/') + ".html"
+        baseUrl / path
+      case _ =>
+        baseUrl.withEndingSlash.withFragment(link)
+    }
   }
 
 }
