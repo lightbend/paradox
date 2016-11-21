@@ -144,7 +144,7 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
 
   import ExternalLinkDirective._
 
-  def resolveLink(location: String): UrlResolver
+  def resolveLink(location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
@@ -152,9 +152,9 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
     try {
-      resolveLink(link).resolve.normalize.toString
+      resolveLink(link).base.normalize.toString
     } catch {
-      case UrlResolver.Error(reason) =>
+      case Url.Error(reason) =>
         throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
     }
   }
@@ -177,40 +177,70 @@ object ExternalLinkDirective {
 case class ExtRefDirective(page: Page, variables: Map[String, String])
     extends ExternalLinkDirective("extref", "extref:") with SourceDirective {
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     link.split(":", 2) match {
       case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
-      case _                   => throw UrlResolver.Error("URL has no scheme")
+      case _                   => throw Url.Error("URL has no scheme")
     }
   }
 
 }
 
 /**
- * Scaladoc directive.
+ * API doc directive.
  *
- * Link to scaladoc using the package prefix. Will match the configured base URL
- * with the longest package prefix. For example, given:
+ * Link to javadoc and scaladoc based on package prefix. Will match the
+ * configured base URL with the longest package prefix. For example,
+ * given:
  *
- * - `scaladoc.akka.base_url=doc.akka.io/api/akka/x.y.z`
- * - `scaladoc.akka.http.base_url=doc.akka.io/api/akka-http/x.y.z`
+ * - `scaladoc.akka.base_url=http://doc.akka.io/api/akka/x.y.z`
+ * - `scaladoc.akka.http.base_url=http://doc.akka.io/api/akka-http/x.y.z`
  *
  * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
  */
-case class ScaladocDirective(page: Page, variables: Map[String, String])
-    extends ExternalLinkDirective("scaladoc", "scaladoc:") with SourceDirective {
+abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective(name, name + ":") {
 
-  val defaultBaseUrl = PropertyUrl("scaladoc.base_url", variables.get)
-  val ScaladocProperty = """scaladoc\.(.*)\.base_url""".r
+  def resolveApiLink(base: Url, link: String): Url
+
+  val defaultBaseUrl = PropertyUrl(name + ".base_url", variables.get)
+  val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
   val baseUrls = variables.collect {
-    case (property @ ScaladocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+    case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
-    baseUrl / "" withFragment link
+    resolveApiLink(baseUrl.resolve, link)
+  }
+
+}
+
+case class ScaladocDirective(page: Page, variables: Map[String, String])
+    extends ApiDocDirective("scaladoc", page, variables) {
+
+  def resolveApiLink(baseUrl: Url, link: String): Url = {
+    variables.getOrElse("scaladoc.version", "???").split('.').take(2) match {
+      case Array("2", "12") =>
+        val url = Url(link).base
+        val path = url.getPath.replace('.', '/') + ".html"
+        baseUrl / path
+      case _ =>
+        baseUrl.withEndingSlash.withFragment(link)
+    }
+  }
+
+}
+
+case class JavadocDirective(page: Page, variables: Map[String, String])
+    extends ApiDocDirective("javadoc", page, variables) {
+
+  def resolveApiLink(baseUrl: Url, link: String): Url = {
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
   }
 
 }
@@ -232,7 +262,7 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   val baseUrl = PropertyUrl("github.base_url", variables.get)
 
-  def resolveLink(link: String): UrlResolver = {
+  def resolveLink(link: String): Url = {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
@@ -249,13 +279,13 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   private def projectUrl = baseUrl.collect {
     case ProjectUrl(url) => url
-    case _               => throw UrlResolver.Error("[github.base_url] is not a project URL")
+    case _               => throw Url.Error("[github.base_url] is not a project URL")
   }
 
   private def treeUrl = baseUrl.collect {
     case TreeUrl(url)    => url
     case ProjectUrl(url) => url + "/tree/master"
-    case _               => throw UrlResolver.Error("[github.base_url] is not a project or versioned tree URL")
+    case _               => throw Url.Error("[github.base_url] is not a project or versioned tree URL")
   }
 
 }

@@ -10,8 +10,20 @@ paradoxProperties in Compile ++= Map(
   "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s",
   "extref.akka-docs.base_url" -> s"http://doc.akka.io/docs/akka/$akkaVersion/%s.html",
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/$akkaVersion",
-  "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion"
+  "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion",
+  "javadoc.base_url" -> s"https://api.example.com/java",
+  "javadoc.akka.base_url" -> s"http://doc.akka.io/japi/akka/$akkaVersion",
+  "javadoc.akka.http.base_url" -> s"http://doc.akka.io/japi/akka-http/$akkaHttpVersion"
 )
 
 apiURL := Some(url(s"https://example.org/api/${version.value}"))
 scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git"))
+
+TaskKey[Unit]("checkJavadocJavalibContent") := {
+  val file = (target in (Compile, paradox)).value / "javadoc-javalib.html"
+
+  assert(file.exists, s"${file.getAbsolutePath} did not exist")
+  val content = IO.readLines(file).mkString
+  assert(content.matches(
+    raw"""<p><a href="https://docs.oracle.com/javase/\d+/docs/api/\?java/io/File\.html#separator">File\.separator</a></p>"""))
+}

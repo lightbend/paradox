@@ -19,9 +19,9 @@ package com.lightbend.paradox.markdown
 class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
-    "scaladoc.base_url" -> "http://example.org/api/0.1.2",
-    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8",
-    "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
+    "scaladoc.base_url" -> "http://example.org/api/0.1.2/",
+    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8/",
+    "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10/index.html",
     "scaladoc.akka.http.base_url" -> "http://doc.akka.io/api/akka-http/10.0.0",
     "scaladoc.broken.base_url" -> "https://c|"
   )
@@ -44,6 +44,8 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   it should "handle object links correctly" in {
     markdown("@scaladoc[Http](akka.http.scaladsl.Http$)") shouldEqual
       html("""<p><a href="http://doc.akka.io/api/akka-http/10.0.0/#akka.http.scaladsl.Http$">Http</a></p>""")
+    markdown("@scaladoc[Actor](akka.actor.Actor)") shouldEqual
+      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/index.html#akka.actor.Actor">Actor</a></p>""")
   }
 
   it should "retain whitespace before or after" in {
@@ -66,6 +68,17 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("@scaladoc[URL](broken.URL)")
     } should have message "Failed to resolve [broken.URL] referenced from [test.html] because property [scaladoc.broken.base_url] contains an invalid URL [https://c|]"
+  }
+
+  it should "support Scala 2.12 links" in {
+    implicit val context = writerContextWithProperties(
+      "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.12.0/",
+      "scaladoc.version" -> "2.12.0")
+
+    markdown("@scaladoc[Int](scala.Int)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/Int.html">Int</a></p>""")
+    markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html">Codec$</a></p>""")
   }
 
   it should "support referenced links" in {

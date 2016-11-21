@@ -52,7 +52,8 @@ not work, since GitHub won't preview them correctly.
 Use the `@scaladoc` directives to link to Scaladoc sites based on the package
 prefix. Scaladoc URL mappings can be configured via the properties
 `scaladoc.<package-prefix>.base_url` and the default `scaladoc.base_url`.
-The directive will match the link text with the longest common package prefix and use the default base URL as a fall-back if nothing else matches.
+The directive will match the link text with the longest common package prefix
+and use the default base URL as a fall-back if nothing else matches.
 
 For example, given:
 
@@ -66,6 +67,25 @@ By default, `scaladoc.scala.base_url` is configured to the Scaladoc
 associated with the configured `scalaVersion`. If the sbt project's
 `apiURL` setting is configured, it is used as the default Scaladoc base
 URL.
+
+#### @javadoc directive
+
+Use the `@javadoc` directives to link to Javadoc sites based on the package
+prefix. Javadoc URL mappings can be configured via the properties
+`javadoc.<package-prefix>.base_url` and the default `javadoc.base_url`.
+The directive will match the link text with the longest common package prefix
+and use the default base URL as a fall-back if nothing else matches.
+
+For example, given:
+
+ - `javadoc.akka.base_url=http://doc.akka.io/japi/akka/2.4.10`
+ - `javadoc.akka.http.base_url=http://doc.akka.io/japi/akka-http/10.0.0`
+
+Then `@javadoc[Http](akka.http.javadsl.Http#shutdownAllConnectionPools--)` will resolve to
+<http://doc.akka.io/japi/akka-http/10.0.0/akka/http/javadsl/Http.html#shutdownAllConnectionPools-->.
+
+By default, `javadoc.java.base_url` is configured to the Javadoc
+associated with the `java.specification.version` system property.
 
 #### @github directive
 
