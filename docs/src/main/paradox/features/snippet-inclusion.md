@@ -39,6 +39,14 @@ This will be rendered like this:
 
 ![multi_snip](../img/multi_snip.png)
 
+By default, Paradox uses Prettify to highlight code and will try to detect the
+language of the snippet if it is not explicitly provided. In cases where a
+snippet should not be highlighted use:
+
+```markdown
+@@snip [example.log](example.log) { #example-log type=text }
+```
+
 ### snippet.base_dir
 
 In order to specify your snippet source paths off a certain base directory you can define a snippet.base_dir property either in the page's front matter or globally like this (for example):
