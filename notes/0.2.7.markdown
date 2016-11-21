@@ -1,6 +1,8 @@
 ### Enhancements
 
 - Add `@javadoc` parameterized link directive. [#43][43] by [@jonas][@jonas]
+- Provide ability to disable prettify code highlighting [#64][64] by [@jonas][@jonas]
 
   [43]: https://github.com/lightbend/paradox/issues/43
+  [64]: https://github.com/lightbend/paradox/issues/64
   [@jonas]: https://github.com/jonas

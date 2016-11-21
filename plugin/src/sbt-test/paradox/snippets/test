@@ -4,3 +4,4 @@ $ must-mirror target/paradox/site/snippets.html expected/snippets.html
 $ must-mirror target/paradox/site/reference.html expected/reference.html
 $ must-mirror target/paradox/site/multiple.html expected/multiple.html
 $ must-mirror target/paradox/site/some-xml.html expected/some-xml.html
+$ must-mirror target/paradox/site/nocode.html expected/nocode.html
