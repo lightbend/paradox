@@ -154,7 +154,7 @@ public class ParserWithDirectives extends Parser {
             push(getContext().getCurrentIndex()),
             contents.clearContents(),
             OneOrMore(TestNot(ContainerBlockDirectiveEnd(markerLength)), ANY, contents.append(matchedChar())),
-            push(parseBlockContents(markerLength, contents.appended("\n")))
+            push(parseBlockContents(markerLength, contents.appended("\n\n")))
         );
     }
 

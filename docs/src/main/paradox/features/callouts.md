@@ -20,7 +20,7 @@ pool has no pending requests waiting.
 @@@
 ```
 
-will render as:
+and will render as:
 
 @@@ note
 
