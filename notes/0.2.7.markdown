@@ -1,8 +1,42 @@
-### Enhancements
+### Fixes and enhancements
 
-- Add `@javadoc` parameterized link directive. [#43][43] by [@jonas][@jonas]
-- Provide ability to disable prettify code highlighting [#64][64] by [@jonas][@jonas]
+- Support referenced source definitions. [#59][59] by [@sirthias]
+- Add `@javadoc` parameterized link directive. [#52][52] by [@jonas][@jonas]
+- Provide ability to disable prettify code highlighting. [#64][64] by [@jonas][@jonas]
+- Consistently render content inside block directives. [#51][51] by [@jonas][@jonas]
 
-  [43]: https://github.com/lightbend/paradox/issues/43
-  [64]: https://github.com/lightbend/paradox/issues/64
+### Referenced source definitions
+
+One core markdown feature is support for defining link targets in two
+ways: either in parens directly following the link text or through a
+reference key following the link text in brackets. The first way was always
+supported and this addition allows the second way for Paradox's various
+link directives, such as `@ref`, `@extref` and `@scaladoc`.
+
+```markdown
+Before continuing please read @ref:[the best practices][best-practices] for
+using actors as well as the @scaladoc:[Actor API docs][Actor].
+
+  [Actor]: akka.actor.Actor
+  [best-practices]: actor-systems.md#actor-best-practices
+```
+
+### Disabling code highlighting
+
+In certain cases, fenced code blocks were eagerly highlighted even when a
+specific language was specified. This behaviour can be disabled by explicitly
+specifying `text` as the language type. For example:
+
+    ```text
+    Content which should not be highlighted.
+    ```
+
+    @@snip [example.log](example.log) { #example-log type=text }
+
+
+  [51]: https://github.com/lightbend/paradox/pull/51
+  [52]: https://github.com/lightbend/paradox/pull/52
+  [59]: https://github.com/lightbend/paradox/pull/59
+  [64]: https://github.com/lightbend/paradox/pull/64
   [@jonas]: https://github.com/jonas
+  [@sirthias]: https://github.com/sirthias
