@@ -112,6 +112,7 @@ object Writer {
     ScaladocDirective(context.location.tree.label, context.properties),
     JavadocDirective(context.location.tree.label, context.properties),
     GitHubDirective(context.location.tree.label, context.properties),
+    SourceMarkdownDirective(context.location.tree.label, context.properties),
     SnipDirective(context.location.tree.label, context.properties),
     FiddleDirective(context.location.tree.label),
     TocDirective(context.location),

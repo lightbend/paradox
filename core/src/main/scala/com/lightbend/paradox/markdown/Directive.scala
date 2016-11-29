@@ -18,6 +18,7 @@ package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.Location
 import java.io.{ File, FileNotFoundException }
+import java.nio.file.{ Path => jPath }
 
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
@@ -144,15 +145,16 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
 
   import ExternalLinkDirective._
 
-  def resolveLink(location: String): Url
+  def resolveLink(location: String, relativePath: jPath): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
 
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
+    val relativePath = new File(".").getCanonicalFile.toPath.relativize(page.file.getCanonicalFile.toPath)
     try {
-      resolveLink(link).base.normalize.toString
+      resolveLink(link, relativePath).base.normalize.toString
     } catch {
       case Url.Error(reason) =>
         throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
@@ -177,7 +179,7 @@ object ExternalLinkDirective {
 case class ExtRefDirective(page: Page, variables: Map[String, String])
     extends ExternalLinkDirective("extref", "extref:") with SourceDirective {
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(link: String, relativePath: jPath): Url = {
     link.split(":", 2) match {
       case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
       case _                   => throw Url.Error("URL has no scheme")
@@ -209,7 +211,7 @@ abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, 
     case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(link: String, relativePath: jPath): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
@@ -262,7 +264,7 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   val baseUrl = PropertyUrl("github.base_url", variables.get)
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(link: String, relativePath: jPath): Url = {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
@@ -288,6 +290,28 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
     case _               => throw Url.Error("[github.base_url] is not a project or versioned tree URL")
   }
 
+}
+
+/**
+ * Source directive
+ *
+ * Link to corresponding source file on Github if it exists.
+ * Uses Github directive to generate the directory corresponding to paradox.
+ */
+case class SourceMarkdownDirective(page: Page, variables: Map[String, String])
+    extends ExternalLinkDirective("source", "source:") with SourceDirective {
+
+  val TreeUrl = """(.*github.com/[^/]+/[^/]+/tree/[^/]+)""".r
+  val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
+
+  val baseUrl = PropertyUrl("github.base_url", variables.get)
+  val paradoxDir = PropertyDirectory("github.markdown_dir", variables.get)
+
+  def resolveLink(link: String, relativePath: jPath): Url = baseUrl.collect {
+    case TreeUrl(url)    => url + paradoxDir.normalize(link, relativePath)
+    case ProjectUrl(url) => url + "/tree/master" + paradoxDir.normalize(link, relativePath)
+    case _               => throw Url.Error("[github.base_url] is not a project or versioned tree URL")
+  }
 }
 
 /**
