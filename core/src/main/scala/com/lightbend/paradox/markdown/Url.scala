@@ -82,6 +82,8 @@ case class PropertyDirectory(property: String, variables: String => Option[Strin
 
   def normalize(link: String, sourcePath: jPath): String = {
     val additionalLink = convertLink(link, sourcePath)
+    val normalizeVal = "/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink
+    println("--- Url: normalize = " + normalizeVal)
     Url.parse("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink,
       s"link [$additionalLink] contains an invalid URL").toString
   }
@@ -89,11 +91,17 @@ case class PropertyDirectory(property: String, variables: String => Option[Strin
   private def convertLink(link: String, sourcePath: jPath, extensionExpected: String = ".md"): String = link match {
     case ""                                    => sourcePath.toString
     case l if (!l.endsWith(extensionExpected)) => throw Url.Error(s"[$l] is not a markdown (.md) file")
-    case l                                     => withoutLeaf(sourcePath.toString) + "/" + checkSeparatorDuplicates(normalizeLink(link))
+    case l =>
+      val finalLink = withoutLeaf(sourcePath.toString) + checkSeparatorDuplicates(normalizeLink(link))
+      println("--- Url: finalLink = " + finalLink)
+      return finalLink
   }
 
   private def withoutLeaf(path: String, separator: String = "/"): String = {
-    path.split(separator).reverse.tail.reverse.mkString(separator)
+    path.split(separator).reverse.tail.reverse.mkString(separator) match {
+      case "" => ""
+      case p  => p + "/"
+    }
   }
 
   private def checkSeparatorDuplicates(normalizedPath: String, separator: String = "/"): String = {

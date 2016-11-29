@@ -86,7 +86,7 @@ class FrontinSpec extends MarkdownBaseSpec {
     f3.delete()
   }
 
-  it should "return the corresponding properties at 'out' filed instantiation, but can return an empty String as the body" in {
+  it should "return the corresponding properties at 'out' field instantiation, but can return an empty String as the body" in {
     Frontin(f4).header shouldEqual Map("out" -> "index.html")
     Frontin(f4).body shouldEqual
       prepare("""

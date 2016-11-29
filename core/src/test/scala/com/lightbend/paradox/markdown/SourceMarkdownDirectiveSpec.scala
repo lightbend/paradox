@@ -46,7 +46,7 @@ class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/some/test.md">link</a></p>""")
   }
 
-  it should "throw an error if github.markdown_dir contains '/' duplicates" in {
+  it should "throw an error if github.paradox_dir contains '/' duplicates" in {
     val duplicateSeparatorsContext = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.paradox_dir" -> "docs//dir")
@@ -71,6 +71,6 @@ class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
   it should "throw an error if the link can't be converted into URL" in {
     the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("@source[link](some/dir\\index.md)")
-    } should have message "Failed to resolve [some/dir\\index.md] referenced from [test.html] because link [/some/dir\\index.md] contains an invalid URL [/docs/manual/src/main/paradox//some/dir\\index.md]"
+    } should have message "Failed to resolve [some/dir\\index.md] referenced from [test.html] because link [some/dir\\index.md] contains an invalid URL [/docs/manual/src/main/paradox/some/dir\\index.md]"
   }
 }
