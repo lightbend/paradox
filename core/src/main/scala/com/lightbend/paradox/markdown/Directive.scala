@@ -305,7 +305,7 @@ case class SourceMarkdownDirective(page: Page, variables: Map[String, String])
   val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
 
   val baseUrl = PropertyUrl("github.base_url", variables.get)
-  val paradoxDir = PropertyDirectory("github.markdown_dir", variables.get)
+  val paradoxDir = PropertyDirectory("github.paradox_dir", variables.get)
 
   def resolveLink(link: String, relativePath: jPath): Url = baseUrl.collect {
     case TreeUrl(url)    => url + paradoxDir.normalize(link, relativePath)

@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
   implicit val context = writerContextWithProperties(
     "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
-    "github.markdown_dir" -> "docs/manual")
+    "github.paradox_dir" -> "docs/manual")
 
   "SourceMarkdown Directive" should "create links with configured base URL and markdown directory on github" in {
     markdown("@source[link]()") shouldEqual
@@ -49,7 +49,7 @@ class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
   it should "throw an error if github.markdown_dir contains '/' duplicates" in {
     val duplicateSeparatorsContext = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
-      "github.markdown_dir" -> "docs//dir")
+      "github.paradox_dir" -> "docs//dir")
 
     the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("@source[link]()")(duplicateSeparatorsContext)

@@ -21,6 +21,7 @@ directives are configured via base URLs defined in `paradoxProperties`:
 ```sbt
 paradoxProperties in Compile ++= Map(
   "github.base_url" -> s"https://github.com/lightbend/paradox/tree/${version.value}",
+  "github.paradox_dir" -> "docs",
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/${Dependencies.akkaVersion}",
   "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s"
 )
@@ -101,6 +102,15 @@ If the sbt project's `scmInfo` setting is configured and the `browseUrl`
 points to a GitHub project, it is used as the GitHub base URL.
 
 [github-autolinking]: https://help.github.com/articles/autolinked-references-and-urls/
+
+#### @source directive
+
+Use the `@source` directive to link to corresponding markdown source files on GitHub.
+
+As in the previous section, the `github.base_url` property must be configured as well than the `github.paradox_dir` property which indicates the directory containing the paradox files (not the markdown files!), which are `build.sbt` and `src/main/paradox` files.
+
+To display the source link of a file on GitHub, use its path relative to the current file.
+For example, if the current file is `some/dir/index.md`, we could display a source link of `some/other.md` by writing `@source[link](../other.md)`. To display the source link of the current file, either use the common way `@source[link](index.md)` or simply `@source[link]()`.
 
 #### @extref directive
 
