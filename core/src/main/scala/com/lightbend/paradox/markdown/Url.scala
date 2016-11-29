@@ -89,7 +89,7 @@ case class PropertyDirectory(property: String, variables: String => Option[Strin
 
   private def convertToOsSeparator(path: String): String = {
     if (File.separator == "\\")
-      URLEncoder.encode(path.replace("/", File.separator), "UTF-8")
+      new URI(URLEncoder.encode(path, "UTF-8")).getPath
     else
       path
   }
