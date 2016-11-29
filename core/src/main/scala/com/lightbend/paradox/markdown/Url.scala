@@ -18,6 +18,7 @@ package com.lightbend.paradox.markdown
 
 import java.net.{ URI, URISyntaxException }
 import java.nio.file.{ Path => jPath }
+import java.io.File
 
 /**
  * Small wrapper around URI to help update individual components.
@@ -82,19 +83,14 @@ case class PropertyDirectory(property: String, variables: String => Option[Strin
 
   def normalize(link: String, sourcePath: jPath): String = {
     val additionalLink = convertLink(link, sourcePath)
-    val normalizeVal = "/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink
-    println("--- Url: normalize = " + normalizeVal)
-    Url.parse("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink,
+    Url.parse(("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink).replace("/", File.separator),
       s"link [$additionalLink] contains an invalid URL").toString
   }
 
   private def convertLink(link: String, sourcePath: jPath, extensionExpected: String = ".md"): String = link match {
     case ""                                    => sourcePath.toString
     case l if (!l.endsWith(extensionExpected)) => throw Url.Error(s"[$l] is not a markdown (.md) file")
-    case l =>
-      val finalLink = withoutLeaf(sourcePath.toString) + checkSeparatorDuplicates(normalizeLink(link))
-      println("--- Url: finalLink = " + finalLink)
-      return finalLink
+    case l                                     => withoutLeaf(sourcePath.toString) + checkSeparatorDuplicates(normalizeLink(link))
   }
 
   private def withoutLeaf(path: String, separator: String = "/"): String = {
