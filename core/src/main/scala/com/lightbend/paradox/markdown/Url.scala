@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import java.net.{ URI, URISyntaxException }
+import java.net.{ URI, URISyntaxException, URLEncoder }
 import java.nio.file.{ Path => jPath }
 import java.io.File
 
@@ -83,8 +83,15 @@ case class PropertyDirectory(property: String, variables: String => Option[Strin
 
   def normalize(link: String, sourcePath: jPath): String = {
     val additionalLink = convertLink(link, sourcePath)
-    Url.parse(("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink).replace("/", File.separator),
+    Url.parse(convertToOsSeparator("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink),
       s"link [$additionalLink] contains an invalid URL").toString
+  }
+
+  private def convertToOsSeparator(path: String): String = {
+    if (File.separator == "\\")
+      URLEncoder.encode(path.replace("/", File.separator), "UTF-8")
+    else
+      path
   }
 
   private def convertLink(link: String, sourcePath: jPath, extensionExpected: String = ".md"): String = link match {

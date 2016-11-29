@@ -70,7 +70,7 @@ class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
 
   it should "throw an error if the link can't be converted into URL" in {
     the[ExternalLinkDirective.LinkException] thrownBy {
-      markdown("@source[link](some/dir\\index.md)")
-    } should have message "Failed to resolve [some/dir\\index.md] referenced from [test.html] because link [some/dir\\index.md] contains an invalid URL [/docs/manual/src/main/paradox/some/dir\\index.md]"
+      markdown("@source[link](some/dir|index.md)")
+    } should have message "Failed to resolve [some/dir|index.md] referenced from [test.html] because link [some/dir|index.md] contains an invalid URL [/docs/manual/src/main/paradox/some/dir|index.md]"
   }
 }
