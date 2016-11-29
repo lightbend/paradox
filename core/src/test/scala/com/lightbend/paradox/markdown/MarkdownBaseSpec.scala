@@ -27,8 +27,8 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
   val markdownReader = new Reader
   val markdownWriter = new Writer
 
-  def markdown(text: String)(implicit context: Location[Page] => Writer.Context = writerContext): String = {
-    markdownPages("test.md" -> text).getOrElse("test.html", "")
+  def markdown(text: String, pagePath: String = "test.md")(implicit context: Location[Page] => Writer.Context = writerContext): String = {
+    markdownPages(pagePath -> text).getOrElse(pagePath.dropRight(".md".length) + ".html", "")
   }
 
   def markdownPages(mappings: (String, String)*)(implicit context: Location[Page] => Writer.Context = writerContext): Map[String, String] = {

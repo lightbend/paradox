@@ -16,7 +16,9 @@
 
 package com.lightbend.paradox.markdown
 
-import java.net.{ URI, URISyntaxException }
+import java.net.{ URI, URISyntaxException, URLEncoder }
+import java.nio.file.{ Path => jPath }
+import java.io.File
 
 /**
  * Small wrapper around URI to help update individual components.
@@ -26,13 +28,14 @@ case class Url(base: URI) {
     case path if path.endsWith("/index.html") => this
     case path                                 => copy(path = path + "/")
   }
-  def /(path: String): Url = copy(path = base.getPath + "/" + path)
+  def /(path: String): Url = copy(path = base.getPath + (if (path != "") "/" + path else ""))
   def withQuery(query: String): Url = copy(query = query)
   def withFragment(fragment: String): Url = copy(fragment = fragment)
   def copy(path: String = base.getPath, query: String = base.getQuery, fragment: String = base.getFragment) = {
     val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path, query, fragment)
     Url(uri.normalize)
   }
+  override def toString(): String = base.toString
 }
 
 object Url {
@@ -53,8 +56,8 @@ object Url {
   }
 }
 
-case class PropertyUrl(property: String, variables: String => Option[String]) {
-  def base = variables(property) match {
+class BasePropertyClass(property: String, variables: String => Option[String]) {
+  def base: String = variables(property) match {
     case Some(baseUrl) => baseUrl
     case None          => throw Url.Error(s"property [$property] is not defined")
   }
@@ -62,10 +65,68 @@ case class PropertyUrl(property: String, variables: String => Option[String]) {
   def resolve(): Url = {
     Url.parse(base, s"property [$property] contains an invalid URL")
   }
+}
 
+case class PropertyUrl(property: String, variables: String => Option[String]) extends BasePropertyClass(property, variables) {
   def format(args: String*) = Url(base.format(args: _*))
 
   def collect(f: PartialFunction[String, String]): Url = {
     PropertyUrl(property, variables(_).collect(f)).resolve
+  }
+}
+
+case class PropertyDirectory(property: String, variables: String => Option[String]) extends BasePropertyClass(property, variables) {
+  override def base: String = variables(property) match {
+    case Some(baseUrl) => checkSeparatorDuplicates(normalizeBase(baseUrl))
+    case None          => throw Url.Error(s"property [$property] is not defined")
+  }
+
+  def normalize(link: String, sourcePath: jPath): String = {
+    val additionalLink = convertLink(link, sourcePath)
+    Url.parse(convertToOsSeparator("/" + PropertyDirectory(property, variables).resolve.toString + "/src/main/paradox/" + additionalLink),
+      s"link [$additionalLink] contains an invalid URL").toString
+  }
+
+  private def convertToOsSeparator(path: String): String = {
+    if (File.separator == "\\")
+      new URI(URLEncoder.encode(path, "UTF-8")).getPath
+    else
+      path
+  }
+
+  private def convertLink(link: String, sourcePath: jPath, extensionExpected: String = ".md"): String = link match {
+    case ""                                    => sourcePath.toString
+    case l if (!l.endsWith(extensionExpected)) => throw Url.Error(s"[$l] is not a markdown (.md) file")
+    case l                                     => withoutLeaf(sourcePath.toString) + checkSeparatorDuplicates(normalizeLink(link))
+  }
+
+  private def withoutLeaf(path: String, separator: String = "/"): String = {
+    path.split(separator).reverse.tail.reverse.mkString(separator) match {
+      case "" => ""
+      case p  => p + "/"
+    }
+  }
+
+  private def checkSeparatorDuplicates(normalizedPath: String, separator: String = "/"): String = {
+    normalizedPath.split(separator).contains("") match {
+      case true  => throw Url.Error(s"[$normalizedPath] contains duplicate '/' separators")
+      case false => normalizedPath
+    }
+  }
+
+  private def normalizeBase(baseUrl: String): String = {
+    (baseUrl.startsWith("/"), baseUrl.endsWith("/")) match {
+      case (true, true)  => baseUrl.drop(1).dropRight(1)
+      case (true, false) => baseUrl.drop(1)
+      case (false, true) => baseUrl.dropRight(1)
+      case _             => baseUrl
+    }
+  }
+
+  private def normalizeLink(link: String): String = {
+    link.startsWith("/") match {
+      case true  => link.drop(1)
+      case false => link
+    }
   }
 }
