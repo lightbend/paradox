@@ -18,37 +18,37 @@ package com.lightbend.paradox.markdown
 
 class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
   implicit val context = writerContextWithProperties(
-    "github.base_url" -> "https://github.com/playframework/play-rest-api",
-    "github.markdown_dir" -> "docs")
+    "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
+    "github.markdown_dir" -> "docs/manual")
 
   "SourceMarkdown Directive" should "create links with configured base URL and markdown directory on github" in {
     markdown("@source[link]()") shouldEqual
-      html("""<p><a href="https://github.com/playframework/play-rest-api/tree/master/docs/src/main/paradox/test.md">link</a></p>""")
+      html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/test.md">link</a></p>""")
   }
 
   it should "support 'source:' as an alternative name" in {
     markdown("@source:[link]()") shouldEqual
-      html("""<p><a href="https://github.com/playframework/play-rest-api/tree/master/docs/src/main/paradox/test.md">link</a></p>""")
+      html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/test.md">link</a></p>""")
   }
 
   it should "display markdown source url of the file specified in parameter" in {
     markdown("@source[link](index.md)") shouldEqual
-      html("""<p><a href="https://github.com/playframework/play-rest-api/tree/master/docs/src/main/paradox/index.md">link</a></p>""")
+      html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/index.md">link</a></p>""")
   }
 
   it should "display correct url for 'in-directory' files" in {
     markdown("@source[link](some/index.md)") shouldEqual
-      html("""<p><a href="https://github.com/playframework/play-rest-api/tree/master/docs/src/main/paradox/some/index.md">link</a></p>""")
+      html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/some/index.md">link</a></p>""")
   }
 
   it should "display correct url for relative path to other files" in {
     markdown("@source[link](../test.md)", "some/directory/index.md") shouldEqual
-      html("""<p><a href="https://github.com/playframework/play-rest-api/tree/master/docs/src/main/paradox/some/test.md">link</a></p>""")
+      html("""<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/docs/manual/src/main/paradox/some/test.md">link</a></p>""")
   }
 
   it should "throw an error if github.markdown_dir contains '/' duplicates" in {
     val duplicateSeparatorsContext = writerContextWithProperties(
-      "github.base_url" -> "https://github.com/playframework/play-rest-api",
+      "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.markdown_dir" -> "docs//dir")
 
     the[ExternalLinkDirective.LinkException] thrownBy {
@@ -71,6 +71,6 @@ class SourceMarkdownDirectiveSpec extends MarkdownBaseSpec {
   it should "throw an error if the link can't be converted into URL" in {
     the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("@source[link](some/dir\\index.md)")
-    } should have message "Failed to resolve [some/dir\\index.md] referenced from [test.html] because link [/some/dir\\index.md] contains an invalid URL [/docs/src/main/paradox//some/dir\\index.md]"
+    } should have message "Failed to resolve [some/dir\\index.md] referenced from [test.html] because link [/some/dir\\index.md] contains an invalid URL [/docs/manual/src/main/paradox//some/dir\\index.md]"
   }
 }
