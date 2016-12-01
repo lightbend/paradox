@@ -24,7 +24,7 @@ Here is a list of supported properties that can be used in the string template f
 - `$page.navigation$` : gives the links of all pages in the project (except the main page).
 - `$page.subheaders$` : determines if the current page contains subheaders or not, which concretely means that it contains multiple sections depending on the `toc-.
 - `$page.toc$` : in relation with `$page.subheaders$`, displays the list of all sections on the page as anchor links.
-- `$page.source$` : contains the plain text of the github source url of the current page. Works only if the associated `github.base_url` is defined (see @ref[github directive](linking.md#github-directive) for additional information)
+- `$page.source$` : contains the plain text of the github source url of the current page. Works only if the associated `github.base_url` is defined (see @ref[github directive](linking.md#github-directive) for additional information). If this property is not defined, this field returns a null value; then a condition testing like `$if(page.source)$` would be necessary in this case.
 - `$page.properties$`: displays purely the list of the properties for the current page, which contains the actual properties of the page and the global ones shared to all pages. See next sections to figure out how to deal with properties.
 
 ### Custom properties
