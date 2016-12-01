@@ -16,10 +16,11 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin }
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl }
 import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
+import java.nio.file.{ Path => jPath }
 import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, RootNode }
 import org.stringtemplate.v4.STErrorListener
 import scala.annotation.tailrec
@@ -86,10 +87,12 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
+    lazy val getSource = githubLink(Some(loc)).getHref
 
     lazy val getProperties = context.properties.asJava
 
     private def link(location: Option[Location[Page]]): PageTemplate.Link = PageLink(location, page, writer, context)
+    private def githubLink(location: Option[Location[Page]]): PageTemplate.Link = GithubLink(location, page, writer, context)
   }
 
   /**
@@ -116,6 +119,32 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     private def href(location: Location[Page]): String = current.base + location.tree.label.path
 
     private def title(location: Location[Page]): String = location.tree.label.title
+  }
+
+  /**
+   * Github links, rendered to just a HTML for the link.
+   */
+  case class GithubLink(location: Option[Location[Page]], page: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
+    lazy val getHref: String = buildPath(PropertyUrl("github.base_url", context.properties.get).base, "/tree/master", page.relativePath)
+    lazy val getHtml: String = getHref // TODO: temporary, should provide a link directly
+    lazy val getTitle: String = "source"
+    lazy val isActive: Boolean = false
+
+    private def buildPath(paths: String*): String = {
+      def removeSidesSeparators(path: String): String = {
+        (path.startsWith("/"), path.endsWith("/")) match {
+          case (true, true)  => path.drop(1).dropRight(1)
+          case (true, false) => path.drop(1)
+          case (false, true) => path.dropRight(1)
+          case _             => path
+        }
+      }
+
+      paths.toList.foldLeft("") {
+        case (p1, p2) if (p1 != "") => p1 + "/" + removeSidesSeparators(p2)
+        case (p1, p2)               => removeSidesSeparators(p2)
+      }
+    }
   }
 
   /**
