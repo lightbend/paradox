@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl }
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, Url, PropertyUrl }
 import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
@@ -125,7 +125,11 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
    * Github links, rendered to just a HTML for the link.
    */
   case class GithubLink(location: Option[Location[Page]], page: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
-    lazy val getHref: String = buildPath(PropertyUrl("github.base_url", context.properties.get).base, "/tree/master", page.relativePath)
+    lazy val getHref: String = try {
+      buildPath(PropertyUrl("github.base_url", context.properties.get).base, "/tree/master", page.relativePath)
+    } catch {
+      case e: Url.Error => null
+    }
     lazy val getHtml: String = getHref // TODO: temporary, should provide a link directly
     lazy val getTitle: String = "source"
     lazy val isActive: Boolean = false
