@@ -60,7 +60,7 @@ case class Page(file: File, path: String, label: Node, h1: Header, headers: Fore
     textNodes(label).mkString
   }
 
-  val relativePath: String = {
+  def relativePath: String = {
     val currentPath = new File(".").getCanonicalFile.toPath
     currentPath.relativize(file.toPath).toString
   }
