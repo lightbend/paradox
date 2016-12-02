@@ -20,7 +20,6 @@ import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOf
 import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
-import java.nio.file.{ Path => jPath }
 import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, RootNode }
 import org.stringtemplate.v4.STErrorListener
 import scala.annotation.tailrec
