@@ -33,6 +33,7 @@ case class Url(base: URI) {
     val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path, query, fragment)
     Url(uri.normalize)
   }
+  override def toString: String = base.toString
 }
 
 object Url {

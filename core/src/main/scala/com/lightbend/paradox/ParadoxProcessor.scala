@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, Url, PropertyUrl }
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
 import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
@@ -87,7 +87,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
-    lazy val getSource = githubLink(Some(loc)).getHref
+    lazy val getSource_url = githubLink(Some(loc)).getHtml
 
     lazy val getProperties = context.properties.asJava
 
@@ -125,30 +125,28 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
    * Github links, rendered to just a HTML for the link.
    */
   case class GithubLink(location: Option[Location[Page]], page: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
-    lazy val getHref: String = try {
-      buildPath(PropertyUrl("github.base_url", context.properties.get).base, "/tree/master", page.relativePath)
-    } catch {
-      case e: Url.Error => null
-    }
+    lazy val getHref: String = location.map(href).orNull
     lazy val getHtml: String = getHref // TODO: temporary, should provide a link directly
-    lazy val getTitle: String = "source"
+    lazy val getTitle: String = location.map(title).orNull
     lazy val isActive: Boolean = false
 
-    private def buildPath(paths: String*): String = {
-      def removeSidesSeparators(path: String): String = {
-        (path.startsWith("/"), path.endsWith("/")) match {
-          case (true, true)  => path.drop(1).dropRight(1)
-          case (true, false) => path.drop(1)
-          case (false, true) => path.dropRight(1)
-          case _             => path
-        }
-      }
+    val TreeUrl = """(.*github.com/[^/]+/[^/]+)/tree/[^/]+""".r
 
-      paths.toList.foldLeft("") {
-        case (p1, p2) if (p1 != "") => p1 + "/" + removeSidesSeparators(p2)
-        case (p1, p2)               => removeSidesSeparators(p2)
+    private def href(location: Location[Page]): String = {
+      try {
+        val baseUrl = PropertyUrl("github.base_url", context.properties.get).collect {
+          case TreeUrl(url) => url
+          case url          => url
+        }
+        val sourceFilePath = location.tree.label.file.toString
+        val rootPath = new File(".").getCanonicalFile.toString
+        (baseUrl / "tree/master" / Path.relativeLocalPath(rootPath, sourceFilePath)).toString
+      } catch {
+        case e: Url.Error => null
       }
     }
+
+    private def title(location: Location[Page]): String = location.tree.label.title
   }
 
   /**
