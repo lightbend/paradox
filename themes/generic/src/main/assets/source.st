@@ -1,5 +1,5 @@
-$if(page.source_url)$
+$if(page.sourceUrl)$
 <div class="source-github">
-The source code for this page can be found <a href="$page.source_url$">here</a>.
+The source code for this page can be found <a href="$page.sourceUrl$">here</a>.
 </div>
 $endif$

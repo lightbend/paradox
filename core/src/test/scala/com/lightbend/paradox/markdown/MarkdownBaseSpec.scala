@@ -132,7 +132,7 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
     lazy val getNavigation = ""
     lazy val hasSubheaders = false
     lazy val getToc = ""
-    lazy val getSource_url = ""
+    lazy val getSourceUrl = ""
 
     lazy val getProperties = properties.asJava
   }
