@@ -86,7 +86,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
-    lazy val getSource_url = githubLink(Some(loc)).getHtml
+    lazy val getSourceUrl = githubLink(Some(loc)).getHtml
 
     lazy val getProperties = context.properties.asJava
 

@@ -77,7 +77,7 @@ object PageTemplate {
     def getNavigation: String
     def hasSubheaders: Boolean
     def getToc: String
-    def getSource_url: String
+    def getSourceUrl: String
     def getProperties: JMap[String, String]
   }
 
