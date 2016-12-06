@@ -29,8 +29,10 @@ To display multiple snippets in a tabbed view, use definition list syntax as fol
 ```markdown
 sbt
 :   @@snip [build.sbt](/../../../build.sbt) { #setup_example }
+
 Maven
 :   @@snip [pom.xml](../../../pom.xml) { #setup_example }
+
 Gradle
 :   @@snip [build.gradle](../../../build.gradle) { #setup_example }
 ```
