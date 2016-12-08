@@ -1,10 +1,14 @@
 ### Fixes and enhancements
 
 - Source url. See below. [#69][69] by [@jonas][@jonas] and [@gsechaud][@gsechaud]
+- Fix `@scaladoc` to work for Scala 2.12. [#77][77] by [@jonas][@jonas]
 
 ### Source origin url on GitHub
 
 `$page.source_url$` contains the plain text of the github source url of the current page. Works only if the associated `github.base_url` is defined. If it doesn't, this field returns a null value; then a condition testing like `$if(page.source_url)$` would be necessary in this case.
-Provide a new template "sourc.st" available in the generic theme which allows to display a simple plain text with the link associated to the current file.
+Provide a new template "source.st" available in the generic theme which allows to display a simple plain text with the link associated to the current file.
 
-[69]: https://github.com/lightbend/paradox/pull/69
+  [69]: https://github.com/lightbend/paradox/pull/69
+  [77]: https://github.com/lightbend/paradox/pull/77
+  [@gsechaud]: https://github.com/gsechaud
+  [@jonas]: https://github.com/jonas
