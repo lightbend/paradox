@@ -51,8 +51,8 @@ Gradle
 :   @@snip [build.gradle](../../resources/build.gradle) { #setup_example }
 
 By default, Paradox uses Prettify to highlight code and will try to detect the
-language of the snippet if it is not explicitly provided. In cases where a
-snippet should not be highlighted use:
+language of the snippet using the file extension. In cases where a snippet
+should not be highlighted set `type=text` in the directive's attribute section:
 
 ```markdown
 @@snip [example.log](example.log) { #example-log type=text }

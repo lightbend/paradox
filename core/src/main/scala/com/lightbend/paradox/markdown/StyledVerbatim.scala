@@ -33,7 +33,9 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
     printer.println()
 
     printer.print("<pre")
-    printPreAttributes(printer)
+    if (!StringUtils.isEmpty(node.getType)) {
+      printPreAttributes(printer)
+    }
     printer.print(">")
 
     printer.print("<code")
