@@ -1,0 +1,7 @@
+defaultTasks 'help'
+
+//#setup_example
+dependencies {
+  compile group: "com.lightbend.akka", name: "akka-stream-alpakka-cassandra_2.11", version: "0.3"
+}
+//#setup_example
