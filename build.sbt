@@ -107,5 +107,6 @@ lazy val docs = (project in file("docs"))
   .enablePlugins(NoPublish, ParadoxPlugin)
   .settings(
     name := "paradox docs",
-    paradoxTheme := Some(builtinParadoxTheme("generic"))
+    paradoxTheme := Some(builtinParadoxTheme("generic")),
+    paradoxProperties in Compile += ("empty" -> "")
   )
