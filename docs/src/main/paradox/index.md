@@ -25,12 +25,13 @@ lazy val root = (project in file(".")).
   )
 ```
 
-Then call `paradox` which will generate the site in `target/paradox/site/`.
+Then call `paradox` which will generate the site in `target/paradox/site/main`.
 
 Your markdown documentation will go inside `src/main/paradox/`. For example, you can start with `src/main/paradox/index.md`.
 
 ### Key features
 
+- Supports Multi-configuration
 - Supports Github flavored Markdown powered by [Pegdown][].
 - Principled markdown extension using generic directives syntax.
 - Github-friendly Markdown source (links work).
@@ -49,6 +50,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 
 @@@ index
 
+* [Multi Configuration](features/multi-configuration.md)
 * [Organizing pages](features/organizing-pages.md)
 * [Linking](features/linking.md)
 * [Snippet inclusion](features/snippet-inclusion.md)

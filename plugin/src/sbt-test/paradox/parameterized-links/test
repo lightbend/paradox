@@ -1,8 +1,8 @@
 > paradox
 
-$ must-mirror target/paradox/site/extref.html expected/extref.html
-$ must-mirror target/paradox/site/scaladoc.html expected/scaladoc.html
-$ must-mirror target/paradox/site/github.html expected/github.html
-$ must-mirror target/paradox/site/javadoc.html expected/javadoc.html
+$ must-mirror target/paradox/site/main/extref.html expected/extref.html
+$ must-mirror target/paradox/site/main/scaladoc.html expected/scaladoc.html
+$ must-mirror target/paradox/site/main/github.html expected/github.html
+$ must-mirror target/paradox/site/main/javadoc.html expected/javadoc.html
 
 > checkJavadocJavalibContent

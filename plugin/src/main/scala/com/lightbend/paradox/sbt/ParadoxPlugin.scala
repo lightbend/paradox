@@ -35,7 +35,7 @@ object ParadoxPlugin extends AutoPlugin {
 
   override def trigger = noTrigger
 
-  override def projectSettings: Seq[Setting[_]] = paradoxGlobalSettings ++ inConfig(Compile)(paradoxSettings)
+  override def projectSettings: Seq[Setting[_]] = paradoxSettings(Compile)
 
   def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
     paradoxOrganization := readProperty("paradox.properties", "paradox.organization"),
@@ -49,8 +49,15 @@ object ParadoxPlugin extends AutoPlugin {
     libraryDependencies ++= paradoxTheme.value.toSeq
   )
 
-  def paradoxSettings: Seq[Setting[_]] = Seq(
+  def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++ inConfig(config)(Seq(
     paradoxProcessor := new ParadoxProcessor,
+
+    sourceDirectory := {
+      if (config.name != Compile.name)
+        sourceDirectory.value / config.name
+      else
+        sourceDirectory.value
+    },
 
     name in paradox := name.value,
     version in paradox := version.value,
@@ -135,12 +142,17 @@ object ParadoxPlugin extends AutoPlugin {
       val themeFilter = (managedSourceDirectories in paradoxTheme).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
       (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
     },
-    target in paradox := target.value / "paradox" / "site",
+    target in paradox := {
+      if (config.name != Compile.name)
+        target.value / "paradox" / "site" / config.name
+      else
+        target.value / "paradox" / "site" / "main"
+    },
 
     watchSources in Defaults.ConfigGlobal ++= (sourceDirectories in paradox).value.***.get,
 
     paradox := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradox).value, (target in paradox).value)
-  )
+  ))
 
   def shortVersion(version: String): String = version.replace("-SNAPSHOT", "*")
 
