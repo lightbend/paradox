@@ -40,7 +40,7 @@ case class Header(path: String, label: Node) extends Linkable
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Page.Properties) extends Linkable {
+case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Page.Properties) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -91,12 +91,13 @@ object Page {
     // TODO: get default label node from page index link?
     val properties = Page.Properties(page.properties)
     val targetPath = properties.convertToTarget(convertPath)(page.path)
+    val rootSrcPage = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
       case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
-    Page(page.file, targetPath, h1.label, h1, headers, page.markdown, properties)
+    Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, properties)
   }
 
   /**
