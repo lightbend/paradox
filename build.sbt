@@ -52,6 +52,7 @@ lazy val plugin = project
   .in(file("plugin"))
   .dependsOn(core)
   .enablePlugins(BintrayPublish)
+  .disablePlugins(Sonatype)
   .settings(
     name := "sbt-paradox",
     sbtPlugin := true,
@@ -82,6 +83,7 @@ lazy val plugin = project
 
 lazy val themePlugin = (project in file("theme-plugin"))
   .enablePlugins(BintrayPublish)
+  .disablePlugins(Sonatype)
   .settings(
     name := "sbt-paradox-theme",
     sbtPlugin := true,
