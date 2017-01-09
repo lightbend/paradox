@@ -112,3 +112,23 @@ lazy val docs = (project in file("docs"))
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxProperties in Compile += ("empty" -> "")
   )
+
+sonatypeProfileName := "com.lightbend"
+releaseProcess := {
+  import sbtrelease.ReleaseStateTransformations._
+  Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    publishArtifacts,
+    releaseStepCommand("bintrayRelease"),
+    releaseStepCommand("sonatypeRelease"),
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  )
+}
