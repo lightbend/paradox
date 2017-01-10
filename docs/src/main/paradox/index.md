@@ -37,6 +37,7 @@ Your markdown documentation will go inside `src/main/paradox/`. For example, you
 - Github-friendly Markdown source (links work).
 - Code snippet inclusion for compilable code examples.
 - Templating and theming.
+- Documentation overlay.
 
 ### Generic directive
 
@@ -58,6 +59,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 * [CSS Friendliness](features/css-friendliness.md)
 * [Templating](features/templating.md)
 * [Theming](features/theming.md)
+* [Documentation Overlay](features/documentation-overlay.md)
 
 @@@
 

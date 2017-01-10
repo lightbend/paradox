@@ -71,7 +71,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value),
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
-    sourceDirectories in paradox := Seq((sourceDirectory in paradox).value),
+    sourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.?.value.getOrElse(Nil),
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,

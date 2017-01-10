@@ -1,0 +1,14 @@
+> docs-first:paradox
+> docs-second:paradox
+
+$ must-mirror target/paradox/site/docs-first/docsFirstFile.html expected/docs-first/docsFirstFile.html
+$ must-mirror target/paradox/site/docs-first/docsFirstDir/docsFirstSubfile.html expected/docs-first/docsFirstDir/docsFirstSubfile.html
+$ must-mirror target/paradox/site/docs-first/commonFirst.html expected/docs-first/commonFirst.html
+$ must-mirror target/paradox/site/docs-first/commonFirstDir/commonFirstFile.html expected/docs-first/commonFirstDir/commonFirstFile.html
+
+$ must-mirror target/paradox/site/docs-second/docsSecondFile.html expected/docs-second/docsSecondFile.html
+$ must-mirror target/paradox/site/docs-second/docsSecondDir/docsSecondSubfile.html expected/docs-second/docsSecondDir/docsSecondSubfile.html
+$ must-mirror target/paradox/site/docs-second/commonFirst.html expected/docs-second/commonFirst.html
+$ must-mirror target/paradox/site/docs-second/commonFirstDir/commonFirstFile.html expected/docs-second/commonFirstDir/commonFirstFile.html
+$ must-mirror target/paradox/site/docs-second/commonSecond.html expected/docs-second/commonSecond.html
+$ must-mirror target/paradox/site/docs-second/commonSecondDir/commonSecondFile.html expected/docs-second/commonSecondDir/commonSecondFile.html
