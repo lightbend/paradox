@@ -298,16 +298,17 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 case class SnipDirective(page: Page, variables: Map[String, String])
     extends LeafBlockDirective("snip") with SourceDirective {
 
-  private lazy val snippetBase =
-    new File(variables.getOrElse("snippet.base_dir", sys.error("Property `snippet.base_dir` is not defined")))
-
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
       val file =
-        if (source startsWith ".../") new File(snippetBase, source drop 4)
-        else new File(page.file.getParentFile, source)
+        if (source startsWith "$") {
+          val baseKey = source.drop(1).takeWhile(_ != '$')
+          val base = new File(PropertyUrl(s"snip.$baseKey.base_dir", variables.get).base.trim)
+          val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+          new File(effectiveBase, source.drop(baseKey.length + 2))
+        } else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
       new VerbatimNode(text, lang).accept(visitor)

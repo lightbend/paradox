@@ -56,10 +56,12 @@ object ParadoxPlugin extends AutoPlugin {
     version in paradox := version.value,
     description in paradox := description.value,
 
-    paradoxProperties += "project.name" -> (name in paradox).value,
-    paradoxProperties += "project.version" -> (version in paradox).value,
-    paradoxProperties += "project.version.short" -> shortVersion((version in paradox).value),
-    paradoxProperties += "project.description" -> (description in paradox).value,
+    paradoxProperties ++= Map(
+      "project.name" -> (name in paradox).value,
+      "project.version" -> (version in paradox).value,
+      "project.version.short" -> shortVersion((version in paradox).value),
+      "project.description" -> (description in paradox).value,
+      "snip.root.base_dir" -> baseDirectory.value.toString),
     paradoxProperties ++= dateProperties,
     paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value),
 
