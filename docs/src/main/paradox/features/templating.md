@@ -31,8 +31,11 @@ Here is a list of supported properties that can be used in the string template f
 
 Properties are key-value pairs available in your pages. For a property named `foo`:
 
-- Inside template files, you can use `$page.properties.("foo")`, or `$foo$` if the template's name does not contain dots.
-- Inside markdown files, you can use either `@var[foo]` (or `@var:[foo]`) inline block, or in container block if you want to call properties inside @var[tripleDelimiters] delimiters using `@@@ vars` around the block and using `$foo$` to call the property.
+- Inside template files use `$page.properties.("foo")` or `$foo$` if the template's name does not contain dots.
+- Inside markdown files use either `$foo$` inline.
+- Inside markdown file container blocks delimited by @var[tripleDelimiters] use `@@@vars` around the block and `$foo$` to call the property.
+
+The special `$` character can always be escaped with a back slash, i.e. `\$`.
 
 To add properties to your pages, there exists two ways for doing this:
 
