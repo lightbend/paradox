@@ -58,20 +58,31 @@ should not be highlighted set `type=text` in the directive's attribute section:
 @@snip [example.log](example.log) { #example-log type=text }
 ```
 
-### snippet.base_dir
+### snip.*.base_dir
 
-In order to specify your snippet source paths off a certain base directory you can define a snippet.base_dir property either in the page's front matter or globally like this (for example):
+In order to specify your snippet source paths off certain base directories you can define placeholders
+either in the page's front matter or globally like this (for example):
 
 ```sbt
 paradoxProperties in Compile ++= Map(
-  "snippet.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example"
+  "snip.foo.base_dir" -> "../../../some/dir",
+  "snip.test.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example"
 )
 ```
 
-You can then refer to this snippet base directory by starting a snippet path with .../, e.g.
+You can then refer to one of the defined base directories by starting the snippet's target path with `$placeholder$`,
+for example:
 
 ```markdown
-@@snip [Hello.scala](.../Hello.scala) { #hello_example }
+@@snip [Hello.scala]($foo$/Hello.scala) { #hello_example }
+
+@@snip [Yeah.scala]($test$/Yeah.scala) { #yeah_example }
+
+@@snip [Yeah.scala]($root$/src/test/scala/org/example/Yeah.scala) { #yeah_example }
 ```
 
-**Note**: Using this feature will not allow GitHub to preview the images correctly on the web.
+If a placeholder directory is relative (like `$foo$` in this example) it'll be based of the path of the respective page
+it is used in. Also, *paradox* always auto-defines the placeholder `$root$` to denote the absolute path of the
+SBT project's root directory.
+
+**Note**: Using this feature will not allow GitHub to follow the snippet links correctly on the web UI.

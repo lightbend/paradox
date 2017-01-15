@@ -20,4 +20,8 @@ object Snippets {
     }
     #config
     """
+
+  //#foo
+  val foo = 42
+  //#foo
 }

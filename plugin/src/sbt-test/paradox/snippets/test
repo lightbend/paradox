@@ -5,3 +5,4 @@ $ must-mirror target/paradox/site/main/reference.html expected/reference.html
 $ must-mirror target/paradox/site/main/multiple.html expected/multiple.html
 $ must-mirror target/paradox/site/main/some-xml.html expected/some-xml.html
 $ must-mirror target/paradox/site/main/nocode.html expected/nocode.html
+$ must-mirror target/paradox/site/main/configured-bases.html expected/configured-bases.html
