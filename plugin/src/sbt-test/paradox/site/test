@@ -1,12 +1,12 @@
 > paradox
 
-$ must-mirror target/paradox/site/a.html expected/a.html
-$ must-mirror target/paradox/site/a/a.html expected/a/a.html
-$ must-mirror target/paradox/site/a/b.html expected/a/b.html
-$ must-mirror target/paradox/site/a/c.html expected/a/c.html
-$ must-mirror target/paradox/site/b/a.html expected/b/a.html
-$ must-mirror target/paradox/site/b/a/a.html expected/b/a/a.html
-$ must-mirror target/paradox/site/b/b.html expected/b/b.html
-$ must-mirror target/paradox/site/c/a.html expected/c/a.html
-$ must-mirror target/paradox/site/css/page.css expected/css/page.css
-$ must-mirror target/paradox/site/images/a.png expected/images/a.png
+$ must-mirror target/paradox/site/main/a.html expected/a.html
+$ must-mirror target/paradox/site/main/a/a.html expected/a/a.html
+$ must-mirror target/paradox/site/main/a/b.html expected/a/b.html
+$ must-mirror target/paradox/site/main/a/c.html expected/a/c.html
+$ must-mirror target/paradox/site/main/b/a.html expected/b/a.html
+$ must-mirror target/paradox/site/main/b/a/a.html expected/b/a/a.html
+$ must-mirror target/paradox/site/main/b/b.html expected/b/b.html
+$ must-mirror target/paradox/site/main/c/a.html expected/c/a.html
+$ must-mirror target/paradox/site/main/css/page.css expected/css/page.css
+$ must-mirror target/paradox/site/main/images/a.png expected/images/a.png
