@@ -26,36 +26,45 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
     writerContext(loc).copy(properties = testProperties)
   }
 
-  "Var directive" should "insert property values" in {
-    markdown("@var[version]") shouldEqual html("<p>1.2.3</p>")
-  }
-
-  it should "support 'var:' as an alternative name" in {
-    markdown("@var:[version]") shouldEqual html("<p>1.2.3</p>")
+  "Var substitution" should "insert property values" in {
+    markdown("$version$") shouldEqual html("<p>1.2.3</p>")
   }
 
   it should "work within markdown inlines" in {
-    markdown("Version is *@var[version]*.") shouldEqual html("<p>Version is <em>1.2.3</em>.</p>")
+    markdown("Version is *$version$*.") shouldEqual html("<p>Version is <em>1.2.3</em>.</p>")
   }
 
   it should "work within markdown blocks" in {
-    markdown("- @var[version]") shouldEqual html("<ul><li>1.2.3</li></ul>")
+    markdown("- $version$") shouldEqual html("<ul><li>1.2.3</li></ul>")
   }
 
   it should "work within link labels" in {
-    markdown("[Version @var[version]](version.html)") shouldEqual html("""<p><a href="version.html">Version 1.2.3</a></p>""")
+    markdown("[Version $version$](version.html)") shouldEqual html("""<p><a href="version.html">Version 1.2.3</a></p>""")
   }
 
   it should "work within other inline directives" in {
-    markdown("@ref:[Version @var[version]](test.md)") shouldEqual html("""<p><a href="test.html">Version 1.2.3</a></p>""")
+    markdown("@ref:[Version $version$](test.md)") shouldEqual html("""<p><a href="test.html">Version 1.2.3</a></p>""")
   }
 
   it should "retain whitespace before and after" in {
-    markdown("The @var[version] version.") shouldEqual html("<p>The 1.2.3 version.</p>")
+    markdown("The $version$ version.") shouldEqual html("<p>The 1.2.3 version.</p>")
   }
 
-  it should "parse but ignore directive source and attributes" in {
+  it should "support escaping the $ delimiter" in {
+    markdown("The \\$version$ version.") shouldEqual html("<p>The $version$ version.</p>")
+    markdown("The \\$version\\$ ver.$s$.ion.") shouldEqual html("<p>The $version$ ver.&lt;s&gt;.ion.</p>")
+    markdown("The $ver\\$ion$ version.") shouldEqual html("<p>The &lt;ver$ion&gt; version.</p>")
+  }
+
+  it should "support the legacy @var directive notation" in {
+    markdown("@var[version]") shouldEqual html("<p>1.2.3</p>")
+  }
+
+  it should "support the legacy 'var:' alternative name" in {
+    markdown("@var:[version]") shouldEqual html("<p>1.2.3</p>")
+  }
+
+  it should "parse but ignore legacy directive source and attributes" in {
     markdown("The @var[version] (xxx) { .var a=1 } version.") shouldEqual html("<p>The 1.2.3 version.</p>")
   }
-
 }

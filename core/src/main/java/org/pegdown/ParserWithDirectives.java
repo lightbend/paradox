@@ -32,17 +32,11 @@ import java.util.List;
  */
 public class ParserWithDirectives extends Parser {
 
-    public static char DEFAULT_DIRECTIVE_MARKER = '@';
-
-    public final char directiveMarker;
+    public static char DIRECTIVE_MARKER = '@';
+    public static char VAR_SUBSTITUTION_MARKER = '$';
 
     public ParserWithDirectives(Integer options, Long maxParsingTimeInMillis, Parser.ParseRunnerProvider parseRunnerProvider, PegDownPlugins plugins) {
-        this(DEFAULT_DIRECTIVE_MARKER, options, maxParsingTimeInMillis, parseRunnerProvider, plugins);
-    }
-
-    public ParserWithDirectives(Character directiveMarker, Integer options, Long maxParsingTimeInMillis, Parser.ParseRunnerProvider parseRunnerProvider, PegDownPlugins plugins) {
         super(options, maxParsingTimeInMillis, parseRunnerProvider, plugins);
-        this.directiveMarker = directiveMarker;
     }
 
     // Add directive rules into parser
@@ -51,7 +45,7 @@ public class ParserWithDirectives extends Parser {
     @Override
     public Rule NonLinkInline() {
         Rule nonLinkInline = super.NonLinkInline();
-        return FirstOf(InlineDirective(), nonLinkInline);
+        return FirstOf(EscapedVarSubstitutionStart(), VarSubstitution(), InlineDirective(), nonLinkInline);
     }
 
     @Override
@@ -63,11 +57,42 @@ public class ParserWithDirectives extends Parser {
         );
     }
 
+    // var substitution
+
+    public Rule EscapedVarSubstitutionStart() {
+        return Sequence('\\', VAR_SUBSTITUTION_MARKER, push(new SpecialTextNode(match())));
+    }
+
+    public Rule VarSubstitution() {
+        return Sequence(
+                VAR_SUBSTITUTION_MARKER,
+                VarName(),
+                VAR_SUBSTITUTION_MARKER,
+                push(new DirectiveNode(DirectiveNode.Format.Inline, "var", popAsString(),
+                        DirectiveNode.Source.Empty, new DirectiveAttributes.AttributeMap(), new SuperNode()))
+        );
+    }
+
+    public Rule VarName() {
+        StringBuilderVar name = new StringBuilderVar();
+        return Sequence(
+                name.clearContents(),
+                Letter(), name.append(matchedChar()),
+                ZeroOrMore(
+                        FirstOf(
+                                Sequence(FirstOf(Alphanumeric(), AnyOf("+-_")), name.append(matchedChar())),
+                                Sequence('\\', VAR_SUBSTITUTION_MARKER, name.append(VAR_SUBSTITUTION_MARKER))
+                        )
+                ),
+                push(name.getString())
+        );
+    }
+
     // Inline directive
 
     public Rule InlineDirective() {
         return NodeSequence(
-            directiveMarker,
+            DIRECTIVE_MARKER,
             DirectiveName(),
             DirectiveLabel(),
             DirectiveSource(),
@@ -99,7 +124,7 @@ public class ParserWithDirectives extends Parser {
 
     public Rule LeafBlockDirective() {
         return NodeSequence(
-            directiveMarker, directiveMarker, Sp(),
+            DIRECTIVE_MARKER, DIRECTIVE_MARKER, Sp(),
             DirectiveName(),
             MaybeDirectiveLabel(),
             DirectiveSource(),
@@ -142,7 +167,7 @@ public class ParserWithDirectives extends Parser {
 
     public Rule ContainerBlockMarker(Var<Integer> markerLength) {
         return Sequence(
-            NOrMore(directiveMarker, 3),
+            NOrMore(DIRECTIVE_MARKER, 3),
             (markerLength.isSet() && matchLength() == markerLength.get()) ||
               (markerLength.isNotSet() && markerLength.set(matchLength()))
         );
