@@ -59,7 +59,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 * [CSS Friendliness](features/css-friendliness.md)
 * [Templating](features/templating.md)
 * [Theming](features/theming.md)
-* [Documentation Overlay](features/documentation-overlay.md)
+* [Documentation Overlay](features/overlay.md)
 
 @@@
 

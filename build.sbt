@@ -67,10 +67,6 @@ lazy val plugin = project
       val p2 = publishLocal.value
       val p3 = (publishLocal in genericTheme).value
     },
-    test in Test := {
-      (test in Test).value
-      scripted.toTask("").value
-    },
     resourceGenerators in Compile += Def.task {
       val file = (resourceManaged in Compile).value / "paradox.properties"
       IO.write(file,
@@ -112,6 +108,8 @@ lazy val docs = (project in file("docs"))
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxProperties in Compile += ("empty" -> "")
   )
+
+addCommandAlias("verify", ";test ;scripted ;docs/paradox")
 
 sonatypeProfileName := "com.lightbend"
 releaseProcess := {
