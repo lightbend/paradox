@@ -1,0 +1,3 @@
+> paradox
+
+$ must-mirror target/paradox/site/main/index.html expected/index.html
