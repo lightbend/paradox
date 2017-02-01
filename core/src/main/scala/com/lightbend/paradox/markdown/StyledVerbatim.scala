@@ -17,7 +17,7 @@
 package com.lightbend.paradox.markdown
 
 import org.parboiled.common.StringUtils
-import org.pegdown.ast.VerbatimNode
+import org.pegdown.ast.{ VerbatimNode, VerbatimGroupNode }
 import org.pegdown.{ Printer, VerbatimSerializer }
 
 /**
@@ -25,7 +25,7 @@ import org.pegdown.{ Printer, VerbatimSerializer }
  */
 abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
-  def printPreAttributes(printer: Printer): Unit
+  def printPreAttributes(printer: Printer, nodeGroup: String = ""): Unit
 
   def printCodeAttributes(printer: Printer, nodeType: String): Unit
 
@@ -34,7 +34,10 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
     printer.print("<pre")
     if (!StringUtils.isEmpty(node.getType)) {
-      printPreAttributes(printer)
+      node match {
+        case vgn: VerbatimGroupNode => printPreAttributes(printer, vgn.getGroup)
+        case vn: VerbatimNode       => printPreAttributes(printer)
+      }
     }
     printer.print(">")
 
@@ -66,7 +69,13 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
  * Add prettify markup around verbatim blocks.
  */
 object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
-  override def printPreAttributes(printer: Printer): Unit = printClass(printer, "prettyprint")
+  override def printPreAttributes(printer: Printer, nodeGroup: String): Unit = {
+    nodeGroup match {
+      case "" => printClass(printer, "prettyprint")
+      case g  => printClass(printer, "prettyprint tab-group-" + g)
+    }
+  }
+
   override def printCodeAttributes(printer: Printer, nodeType: String): Unit = nodeType match {
     case "text" | "nocode" => printClass(printer, "nocode")
     case _                 => printClass(printer, s"language-$nodeType")
