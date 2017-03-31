@@ -50,8 +50,8 @@ object Common extends AutoPlugin {
 
   // Header text generation
 
-  val scalaOrJavaHeader = header(before = Some("/*"), prefix = " * ", after = Some(" */"))
-  val confHeader = header(before = None, prefix = "# ", after = None)
+  val scalaOrJavaHeader = header(before = Some("/*"), prefix = " *", after = Some(" */"))
+  val confHeader = header(before = None, prefix = "#", after = None)
 
   def header(before: Option[String], prefix: String, after: Option[String]): String = {
     val content = Seq("Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>",
@@ -67,6 +67,7 @@ object Common extends AutoPlugin {
       """WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.""",
       """See the License for the specific language governing permissions and""",
       """limitations under the License.""")
-    (before.toSeq ++ content.map(prefix.+) ++ after.toSeq).mkString("", "\n", "\n\n")
+    def addPrefix(line: String) = if (line.isEmpty) prefix else s"$prefix $line"
+    (before.toSeq ++ content.map(addPrefix) ++ after.toSeq).mkString("", "\n", "\n\n")
   }
 }
