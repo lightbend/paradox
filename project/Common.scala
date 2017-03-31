@@ -54,7 +54,7 @@ object Common extends AutoPlugin {
   val confHeader = header(before = None, prefix = "# ", after = None)
 
   def header(before: Option[String], prefix: String, after: Option[String]): String = {
-    val content = Seq("Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>",
+    val content = Seq("Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>",
       "",
       """Licensed under the Apache License, Version 2.0 (the "License");""",
       """you may not use this file except in compliance with the License.""",
