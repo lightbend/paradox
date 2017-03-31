@@ -32,15 +32,16 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Process all mappings to build the site.
    */
-  def process(mappings: Seq[(File, String)],
-              leadingBreadcrumbs: List[(String, String)],
-              outputDirectory: File,
-              sourceSuffix: String,
-              targetSuffix: String,
-              properties: Map[String, String],
-              navigationDepth: Int,
-              themeDir: File,
-              errorListener: STErrorListener): Seq[(File, String)] = {
+  def process(
+    mappings:           Seq[(File, String)],
+    leadingBreadcrumbs: List[(String, String)],
+    outputDirectory:    File,
+    sourceSuffix:       String,
+    targetSuffix:       String,
+    properties:         Map[String, String],
+    navigationDepth:    Int,
+    themeDir:           File,
+    errorListener:      STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
     val globalPageMappings = rootPageMappings(pages)

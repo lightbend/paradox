@@ -69,7 +69,8 @@ class LayoutSpec extends MarkdownBaseSpec {
       |#Foo
       |some text
       """
-    )("page.st" -> defaultTemplate,
+    )(
+        "page.st" -> defaultTemplate,
         "noPageRef.st" -> """
       |<div>
       |No page ref

@@ -21,7 +21,8 @@ import java.io.File
 
 class PathSpec extends FlatSpec with Matchers {
   def provideRelativeMapping: (Map[String, String], String) = {
-    val mappings = Map("index.md" -> "index.html",
+    val mappings = Map(
+      "index.md" -> "index.html",
       "a/A.md" -> "a/A.html",
       "b/B.md" -> "b/B.html",
       "a/a2/A2.md" -> "a/a2/A2.html",
@@ -88,7 +89,8 @@ class PathSpec extends FlatSpec with Matchers {
 
   "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("index.md" -> "../../index.html",
+    Path.relativeMapping(sourcePath, mappings) shouldEqual Map(
+      "index.md" -> "../../index.html",
       "a/A.md" -> "../A.html",
       "b/B.md" -> "../../b/B.html",
       "a/a2/A2.md" -> "../a2/A2.html",

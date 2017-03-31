@@ -23,14 +23,16 @@ class FrontinSpec extends MarkdownBaseSpec {
   val second = "second line"
 
   val f1 = new File("f1.md")
-  writeInFile(f1,
+  writeInFile(
+    f1,
     """
     |%s
     |%s
     """ format (first, second))
 
   val f2 = new File("f2.md")
-  writeInFile(f2,
+  writeInFile(
+    f2,
     """
     |---
     |---
@@ -39,7 +41,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     """ format (first, second))
 
   val f3 = new File("f3.md")
-  writeInFile(f3,
+  writeInFile(
+    f3,
     """
     |---
     |out: index.html
@@ -49,7 +52,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     """ format (first, second))
 
   val f4 = new File("f4.md")
-  writeInFile(f4,
+  writeInFile(
+    f4,
     """
     |---
     |out: index.html

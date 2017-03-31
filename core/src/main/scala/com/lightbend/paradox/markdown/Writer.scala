@@ -27,9 +27,10 @@ import scala.collection.JavaConverters._
  */
 class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
-  def this(linkRenderer: Writer.Context => LinkRenderer = Writer.defaultLinks,
-           verbatimSerializers: Map[String, VerbatimSerializer] = Writer.defaultVerbatims,
-           serializerPlugins: Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
+  def this(
+    linkRenderer:        Writer.Context => LinkRenderer                = Writer.defaultLinks,
+    verbatimSerializers: Map[String, VerbatimSerializer]               = Writer.defaultVerbatims,
+    serializerPlugins:   Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
     this((context: Writer.Context) => new ToHtmlSerializer(
       linkRenderer(context),
       verbatimSerializers.asJava,
@@ -86,12 +87,12 @@ object Writer {
    * Write context which is passed through to directives.
    */
   case class Context(
-    location: Location[Page],
-    paths: Set[String],
-    pageMappings: String => String = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-    sourceSuffix: String = DefaultSourceSuffix,
-    targetSuffix: String = DefaultTargetSuffix,
-    properties: Map[String, String] = Map.empty)
+    location:     Location[Page],
+    paths:        Set[String],
+    pageMappings: String => String    = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+    sourceSuffix: String              = DefaultSourceSuffix,
+    targetSuffix: String              = DefaultTargetSuffix,
+    properties:   Map[String, String] = Map.empty)
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)

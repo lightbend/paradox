@@ -27,10 +27,11 @@ import scala.concurrent.duration._
  */
 class Reader(parser: Parser) {
 
-  def this(options: Int = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */ ,
-           maxParsingTime: Duration = 2.seconds,
-           parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
-           plugins: PegDownPlugins = PegDownPlugins.NONE) =
+  def this(
+    options:             Int                        = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */ ,
+    maxParsingTime:      Duration                   = 2.seconds,
+    parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
+    plugins:             PegDownPlugins             = PegDownPlugins.NONE) =
     this(Parboiled.createParser[ParserWithDirectives, AnyRef](
       classOf[ParserWithDirectives],
       options: java.lang.Integer,

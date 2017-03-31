@@ -17,7 +17,7 @@
 import sbt._
 import sbt.Keys._
 import de.heikoseeberger.sbtheader.{ HeaderPattern, HeaderPlugin, AutomateHeaderPlugin }
-import com.typesafe.sbt.SbtScalariform.{ scalariformSettings, ScalariformKeys }
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 
 /**
@@ -30,7 +30,7 @@ object Common extends AutoPlugin {
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
-  override def projectSettings = scalariformSettings ++ AutomateHeaderPlugin.projectSettings ++ Seq(
+  override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.6", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.6", "-target", "1.6"),
     // Scalariform settings
@@ -38,7 +38,7 @@ object Common extends AutoPlugin {
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
       .setPreference(DoubleIndentClassDeclaration, true)
-      .setPreference(PreserveDanglingCloseParenthesis, true)
+      .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(AlignParameters, true),
     // Header settings
     HeaderPlugin.autoImport.headers := Map(
