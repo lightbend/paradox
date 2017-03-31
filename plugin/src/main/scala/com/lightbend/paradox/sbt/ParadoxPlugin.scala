@@ -79,8 +79,8 @@ object ParadoxPlugin extends AutoPlugin {
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
-    sources in paradoxMarkdownToHtml <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml),
-    mappings in paradoxMarkdownToHtml <<= Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox),
+    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
+    mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
@@ -90,10 +90,10 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectories in paradoxTheme := (managedSourceDirectories in paradoxTheme).value :+ (sourceDirectory in paradoxTheme).value,
     includeFilter in paradoxTheme := AllPassFilter,
     excludeFilter in paradoxTheme := HiddenFileFilter,
-    sources in paradoxTheme <<= Defaults.collectFiles(sourceDirectories in paradoxTheme, includeFilter in paradoxTheme, excludeFilter in paradoxTheme) dependsOn {
+    sources in paradoxTheme := (Defaults.collectFiles(sourceDirectories in paradoxTheme, includeFilter in paradoxTheme, excludeFilter in paradoxTheme) dependsOn {
       WebKeys.webJars in Assets // extract webjars first
-    },
-    mappings in paradoxTheme <<= Defaults.relativeMappings(sources in paradoxTheme, sourceDirectories in paradoxTheme),
+    }).value,
+    mappings in paradoxTheme := Defaults.relativeMappings(sources in paradoxTheme, sourceDirectories in paradoxTheme).value,
     // if there are duplicates, select the file from the local template to allow overrides/extensions in themes
     WebKeys.deduplicators in paradoxTheme += SbtWeb.selectFileFrom((sourceDirectory in paradoxTheme).value),
     mappings in paradoxTheme := SbtWeb.deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
@@ -112,10 +112,10 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
     includeFilter in paradoxTemplate := AllPassFilter,
     excludeFilter in paradoxTemplate := "*.st" || "*.stg",
-    sources in paradoxTemplate <<= Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate) dependsOn {
+    sources in paradoxTemplate := (Defaults.collectFiles(sourceDirectories in paradoxTemplate, includeFilter in paradoxTemplate, excludeFilter in paradoxTemplate) dependsOn {
       paradoxThemeDirectory // trigger theme extraction first
-    },
-    mappings in paradoxTemplate <<= Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate),
+    }).value,
+    mappings in paradoxTemplate := Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate).value,
 
     paradoxMarkdownToHtml := {
       IO.delete((target in paradoxMarkdownToHtml).value)
@@ -137,8 +137,8 @@ object ParadoxPlugin extends AutoPlugin {
       // exclude markdown sources and the _template directory sources
       (includeFilter in paradoxMarkdownToHtml).value || InDirectoryFilter((sourceDirectory in paradoxTheme).value)
     },
-    sources in paradox <<= Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox),
-    mappings in paradox <<= Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox),
+    sources in paradox := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox).value,
+    mappings in paradox := Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox).value,
     mappings in paradox ++= (mappings in paradoxTemplate).value,
     mappings in paradox ++= paradoxMarkdownToHtml.value,
     mappings in paradox ++= {
