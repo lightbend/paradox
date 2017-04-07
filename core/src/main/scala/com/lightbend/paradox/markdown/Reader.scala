@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,11 @@ import scala.concurrent.duration._
  */
 class Reader(parser: Parser) {
 
-  def this(options: Int = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */ ,
-           maxParsingTime: Duration = 2.seconds,
-           parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
-           plugins: PegDownPlugins = PegDownPlugins.NONE) =
+  def this(
+    options:             Int                        = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */ ,
+    maxParsingTime:      Duration                   = 2.seconds,
+    parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
+    plugins:             PegDownPlugins             = PegDownPlugins.NONE) =
     this(Parboiled.createParser[ParserWithDirectives, AnyRef](
       classOf[ParserWithDirectives],
       options: java.lang.Integer,

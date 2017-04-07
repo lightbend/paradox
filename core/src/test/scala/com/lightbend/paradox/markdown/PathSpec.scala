@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,8 @@ import java.io.File
 
 class PathSpec extends FlatSpec with Matchers {
   def provideRelativeMapping: (Map[String, String], String) = {
-    val mappings = Map("index.md" -> "index.html",
+    val mappings = Map(
+      "index.md" -> "index.html",
       "a/A.md" -> "a/A.html",
       "b/B.md" -> "b/B.html",
       "a/a2/A2.md" -> "a/a2/A2.html",
@@ -88,7 +89,8 @@ class PathSpec extends FlatSpec with Matchers {
 
   "Path.relativeMapping" should "return the correct mapping given the current source file and the global Mappings" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    Path.relativeMapping(sourcePath, mappings) shouldEqual Map("index.md" -> "../../index.html",
+    Path.relativeMapping(sourcePath, mappings) shouldEqual Map(
+      "index.md" -> "../../index.html",
       "a/A.md" -> "../A.html",
       "b/B.md" -> "../../b/B.html",
       "a/a2/A2.md" -> "../a2/A2.html",
