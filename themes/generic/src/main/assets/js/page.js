@@ -1,10 +1,11 @@
 $(function() {
 
-  // Tabbed code samples
-  
-  var tabGroupClass = "tab-group";
-  var tabGroupCookie = "tabGroupsPref";
-  var cookieTg = getCookie(tabGroupCookie);
+  // Groups (like 'java' and 'scala') represent groups of 'switchable' content, either in tabs or in regular text.
+  // Supergroups can be defined (such as 'languages', containing 'scala' and 'java') to initialize the group.
+
+  var groupClass = "group";
+  var groupCookie = "groupsPref";
+  var cookieTg = getCookie(groupCookie);
   var cookieTgList = [];
   if(cookieTg != "")
     cookieTgList = JSON.parse(cookieTg);
@@ -52,6 +53,30 @@ $(function() {
     return unique(arr);
   }
 
+  $(".supergroup").each(function() {
+    var groups = $(this).find(".group")
+
+    var current;
+    for(var i = 0; i < cookieTgList.length && !current; i++) {
+      groups.each(function() {
+        var group = "group-" + $(this).text();
+        if(group == cookieTgList[i])
+          current = group;
+      });
+    }
+    if (!current) {
+      current = "group-" + groups.first().text();
+      cookieTgList = addToList(cookieTgList, current);
+    }
+
+    groups.each(function() {
+      var group = "group-" + $(this).text();
+      if(group != current) {
+        $("span." + group).hide()
+      }
+    });
+  });
+
   $("dl").has("dd > pre").each(function() {
     var dl = $(this);
     dl.addClass("tabbed");
@@ -91,16 +116,8 @@ $(function() {
     e.preventDefault();
     var currentDt = $(this).parent("dt");
     var currentDl = currentDt.parent("dl");
-    var currentClasses = currentDt.next("dd").find("pre").attr("class").split(' ');
-    var currentGroup;
-    var regex = new RegExp("^" + tabGroupClass + "-.*");
-    for(var i = 0; i < currentClasses.length && !currentGroup; i++) {
-      if(regex.test(currentClasses[i])) {
-        currentGroup = currentClasses[i];
-        cookieTgList = addToList(cookieTgList, currentGroup);
-        setCookie(tabGroupCookie, arrayToJson(cookieTgList));
-      }
-    }
+
+    var currentGroup = groupOf(currentDt);
 
     if(!currentGroup) {
       currentDl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
@@ -108,6 +125,7 @@ $(function() {
       var currentContent = currentDt.next("dd").addClass("current").show();
       currentDl.css("height", currentDt.height() + currentContent.height());
     } else {
+      $("span ." + currentGroup).show();
       $("dl").has("dd > pre").each(function() {
         var dl = $(this);
         dl.find("dt").each(function() {
@@ -118,10 +136,25 @@ $(function() {
             dt.addClass("current");
             var currentContent = dt.next("dd").addClass("current").show();
             dl.css("height", dt.height() + currentContent.height());
+            $("span." + currentGroup).show()
+          } else {
+            $("span." + groupOf(dt)).hide()
           }
         });
       });
     }
   });
 
+  function groupOf(elem) {
+    var currentClasses = elem.next("dd").find("pre").attr("class").split(' ');
+    var regex = new RegExp("^" + groupClass + "-.*");
+    for(var i = 0; i < currentClasses.length; i++) {
+      if(regex.test(currentClasses[i])) {
+        var currentGroup = currentClasses[i];
+        cookieTgList = addToList(cookieTgList, currentGroup);
+        setCookie(groupCookie, arrayToJson(cookieTgList));
+        return currentGroup;
+      }
+    }
+  }
 });

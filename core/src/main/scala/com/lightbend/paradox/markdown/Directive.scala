@@ -474,3 +474,34 @@ case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ,
     printer.print(s"</$typ>")
   }
 }
+
+/**
+ * Inline wrap directive
+ *
+ * Wraps inner contents in a `span`, optionally with custom `id` and/or `class` attributes.
+ */
+case class InlineWrapDirective(typ: String) extends InlineDirective("span") {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val id =
+      node.attributes.identifier match {
+        case null => ""
+        case x    => s""" id="$x""""
+      }
+    val classes =
+      node.attributes.classesString match {
+        case "" => ""
+        case x  => s""" class="$x""""
+      }
+    printer.print(s"""<$typ$id$classes>""")
+    node.contentsNode.accept(visitor)
+    printer.print(s"</$typ>")
+  }
+}
+
+case object SupergroupDirective extends LeafBlockDirective("supergroup") {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    printer.print("""<span class="supergroup" style="display: none  ">""")
+    printer.print(node.attributes.value("groups").split(",").map(group => s"""<span class="group">$group</span>""").mkString)
+    printer.print("""</span>""")
+  }
+}

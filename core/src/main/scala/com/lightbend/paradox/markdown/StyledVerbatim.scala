@@ -72,7 +72,7 @@ object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
   override def printPreAttributes(printer: Printer, nodeGroup: String): Unit = {
     nodeGroup match {
       case "" => printClass(printer, "prettyprint")
-      case g  => printClass(printer, "prettyprint tab-group-" + g)
+      case g  => printClass(printer, "prettyprint group-" + g)
     }
   }
 
