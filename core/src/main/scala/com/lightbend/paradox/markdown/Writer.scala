@@ -91,6 +91,7 @@ object Writer {
     pageMappings: String => String = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
     sourceSuffix: String = DefaultSourceSuffix,
     targetSuffix: String = DefaultTargetSuffix,
+    groups: Map[String, Seq[String]] = Map.empty,
     properties: Map[String, String] = Map.empty)
 
   def defaultLinks(context: Context): LinkRenderer =
@@ -121,6 +122,7 @@ object Writer {
     CalloutDirective("warning", "Warning"),
     WrapDirective("div"),
     InlineWrapDirective("span"),
+    InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
     SupergroupDirective
   )
 

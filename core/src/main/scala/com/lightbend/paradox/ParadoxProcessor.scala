@@ -37,6 +37,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
               outputDirectory: File,
               sourceSuffix: String,
               targetSuffix: String,
+              groups: Map[String, Seq[String]],
               properties: Map[String, String],
               navigationDepth: Int,
               themeDir: File,
@@ -51,7 +52,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val page = loc.tree.label
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)_
-        val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, pageProperties)
+        val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)

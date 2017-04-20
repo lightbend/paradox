@@ -498,6 +498,14 @@ case class InlineWrapDirective(typ: String) extends InlineDirective("span") {
   }
 }
 
+case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(groups: _*) {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    printer.print(s"""<span class="group-${node.name}">""")
+    node.contentsNode.accept(visitor)
+    printer.print(s"</span>")
+  }
+}
+
 case object SupergroupDirective extends LeafBlockDirective("supergroup") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     printer.print("""<span class="supergroup" style="display: none  ">""")

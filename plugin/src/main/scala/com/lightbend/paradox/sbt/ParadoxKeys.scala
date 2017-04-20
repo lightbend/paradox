@@ -35,4 +35,5 @@ trait ParadoxKeys {
   val paradoxOverlayDirectories = settingKey[Seq[File]]("Directory containing common source files for configuration.")
   val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
   val paradoxVersion = settingKey[String]("Paradox plugin version.")
+  val paradoxGroups = settingKey[Map[String, Seq[String]]]("Paradox groups.")
 }
