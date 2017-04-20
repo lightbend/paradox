@@ -70,11 +70,7 @@ $empty$
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 $empty$
-@@supergroup { name=Language groups=scala,java }
-$empty$
 Some separator with text describing the @span[Java variant] { .group-java } @span[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)] { .group-scala }
-$empty$
-Some separator.
 $empty$
 Second-java
 :   @@snip [example-second.java](../../resources/tab-switching/examples.java) { #java_second group=java }
@@ -91,8 +87,6 @@ First-java
 
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
-
-@@supergroup { name=Language groups=scala,java }
 
 Some separator with text describing the @span[Java variant] { .group-java } @span[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)] { .group-scala }
 

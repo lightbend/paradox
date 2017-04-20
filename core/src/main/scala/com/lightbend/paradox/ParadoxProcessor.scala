@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Groups, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
 import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
@@ -55,7 +55,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
-        val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
+        val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
         val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
@@ -69,7 +69,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Default template contents for a markdown page at a particular location.
    */
-  case class PageContents(leadingBreadcrumbs: List[(String, String)], loc: Location[Page], writer: Writer, context: Writer.Context, pageToc: TableOfContents, headerToc: TableOfContents) extends PageTemplate.Contents {
+  case class PageContents(leadingBreadcrumbs: List[(String, String)], groups: Map[String, Seq[String]], loc: Location[Page], writer: Writer, context: Writer.Context, pageToc: TableOfContents, headerToc: TableOfContents) extends PageTemplate.Contents {
     import scala.collection.JavaConverters._
 
     private val page = loc.tree.label
@@ -83,6 +83,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getNext = link(loc.next)
     lazy val getBreadcrumbs = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
+    lazy val getGroups = Groups.html(groups)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
     lazy val getSource_url = githubLink(Some(loc)).getHtml

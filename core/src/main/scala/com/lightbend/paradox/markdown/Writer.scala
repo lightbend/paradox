@@ -54,6 +54,12 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
     writeFragment(node, context)
 
   /**
+   * Write groups fragment.
+   */
+  def writeGroups(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
    * Write navigation fragment.
    */
   def writeToc(node: Node, context: Writer.Context): String =
@@ -122,8 +128,7 @@ object Writer {
     CalloutDirective("warning", "Warning"),
     WrapDirective("div"),
     InlineWrapDirective("span"),
-    InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
-    SupergroupDirective
+    InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq)
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {

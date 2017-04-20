@@ -505,11 +505,3 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
     printer.print(s"</span>")
   }
 }
-
-case object SupergroupDirective extends LeafBlockDirective("supergroup") {
-  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    printer.print("""<span class="supergroup" style="display: none  ">""")
-    printer.print(node.attributes.value("groups").split(",").map(group => s"""<span class="group">$group</span>""").mkString)
-    printer.print("""</span>""")
-  }
-}

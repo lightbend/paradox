@@ -1,7 +1,7 @@
 $(function() {
 
   // Groups (like 'java' and 'scala') represent groups of 'switchable' content, either in tabs or in regular text.
-  // Supergroups can be defined (such as 'languages', containing 'scala' and 'java') to initialize the group.
+  // The catalog of groups can be defined in the sbt parameters to initialize the group.
 
   var groupClass = "group";
   var groupCookie = "groupsPref";
@@ -59,7 +59,7 @@ $(function() {
     var current;
     for(var i = 0; i < cookieTgList.length && !current; i++) {
       groups.each(function() {
-        var group = "group-" + $(this).text();
+        var group = "group-" + $(this).text().toLowerCase();
         if(group == cookieTgList[i])
           current = group;
       });
