@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.lightbend.paradox.markdown
+package com.lightbend.paradox.markdown;
 
-import com.lightbend.paradox.tree.Tree.Location
-
-class InlineGroupDirectiveSpec extends MarkdownBaseSpec {
-
-  "The inline `group` directive" should "render wrapping groups" in {
-    markdown("@scala[Simple sentence here]") shouldEqual html("""<p><span class="group-scala">Simple sentence here</span></p>""")
-  }
-
+//#example2
+public class example2 {
+    public static void main(String[] args) {
+        System.out.println("Hello, World");
+    }
 }
+//#example2

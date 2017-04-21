@@ -311,7 +311,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
         } else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
-      val group = Option(node.attributes.value("group")).getOrElse("")
+      val group = Option(node.attributes.value("group")).getOrElse(lang)
       new VerbatimGroupNode(text, lang, group).accept(visitor)
     } catch {
       case e: FileNotFoundException =>

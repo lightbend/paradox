@@ -3,7 +3,6 @@ $(function() {
   // Groups (like 'java' and 'scala') represent groups of 'switchable' content, either in tabs or in regular text.
   // The catalog of groups can be defined in the sbt parameters to initialize the group.
 
-  var groupClass = "group";
   var groupCookie = "groupsPref";
   var cookieTg = getCookie(groupCookie);
   var cookieTgList = [];
@@ -65,15 +64,21 @@ $(function() {
       });
     }
     if (!current) {
-      current = "group-" + groups.first().text();
+      current = "group-" + groups.first().text().toLowerCase();
       cookieTgList = addToList(cookieTgList, current);
     }
 
     groups.each(function() {
-      var group = "group-" + $(this).text();
-      if(group != current) {
+      var group = "group-" + $(this).text().toLowerCase();
+      if(group == current) {
+        switchToGroup(this.value);
+      } else {
         $("span." + group).hide()
       }
+    });
+
+    $(this).on("change", function() {
+      switchToGroup(this.value);
     });
   });
 
@@ -125,35 +130,48 @@ $(function() {
       var currentContent = currentDt.next("dd").addClass("current").show();
       currentDl.css("height", currentDt.height() + currentContent.height());
     } else {
-      $("span ." + currentGroup).show();
-      $("dl").has("dd > pre").each(function() {
-        var dl = $(this);
-        dl.find("dt").each(function() {
-          var dt = $(this);
-          var pre = dt.next("dd").find("pre");
-          if(pre.hasClass(currentGroup)) {
-            dl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
-            dt.addClass("current");
-            var currentContent = dt.next("dd").addClass("current").show();
-            dl.css("height", dt.height() + currentContent.height());
-            $("span." + currentGroup).show()
-          } else {
-            $("span." + groupOf(dt)).hide()
-          }
-        });
-      });
+      switchToGroup(currentGroup);
     }
   });
 
+  function switchToGroup(group) {
+    // Cookie:
+    cookieTgList = addToList(cookieTgList, group);
+    setCookie(groupCookie, arrayToJson(cookieTgList));
+
+    // Dropdown switcher:
+    $("select")
+      .has("option[value=" + group +"]")
+      .val(group);
+
+    // Inline snippets:
+    $("span ." + group).show();
+
+    // Tabbed snippets:
+    $("dl").has("dd > pre").each(function() {
+      var dl = $(this);
+      dl.find("dt").each(function() {
+        var dt = $(this);
+        var pre = dt.next("dd").find("pre");
+        if(pre.hasClass(group)) {
+          dl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
+          dt.addClass("current");
+          var currentContent = dt.next("dd").addClass("current").show();
+          dl.css("height", dt.height() + currentContent.height());
+          $("span." + group).show()
+        } else {
+          $("span." + groupOf(dt)).hide()
+        }
+      });
+    });
+  }
+
   function groupOf(elem) {
     var currentClasses = elem.next("dd").find("pre").attr("class").split(' ');
-    var regex = new RegExp("^" + groupClass + "-.*");
+    var regex = new RegExp("^group-.*");
     for(var i = 0; i < currentClasses.length; i++) {
       if(regex.test(currentClasses[i])) {
-        var currentGroup = currentClasses[i];
-        cookieTgList = addToList(cookieTgList, currentGroup);
-        setCookie(groupCookie, arrayToJson(cookieTgList));
-        return currentGroup;
+        return currentClasses[i];
       }
     }
   }

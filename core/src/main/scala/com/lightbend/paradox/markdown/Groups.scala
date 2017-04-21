@@ -20,7 +20,9 @@ object Groups {
   def html(supergroups: Map[String, Seq[String]]) = {
     supergroups.map {
       case (_, groups) =>
-        """<select class="supergroup" style="display: none">""" + groups.map(group => s"""<option class="group">$group</option>""").mkString + "</select>"
+        """<select class="supergroup">""" +
+          groups.map(group => s"""<option class="group" value="group-${group.toLowerCase}">$group</option>""").mkString +
+          "</select>"
     }.mkString("\n")
   }
 }

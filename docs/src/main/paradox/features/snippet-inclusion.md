@@ -70,13 +70,13 @@ $empty$
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 $empty$
-Some separator with text describing the @span[Java variant] { .group-java } @span[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)] { .group-scala }
+Some separator with text describing the @java[Java variant] @scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)]. The group defaults to the snippet language:
 $empty$
 Second-java
-:   @@snip [example-second.java](../../resources/tab-switching/examples.java) { #java_second group=java }
+:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
 $empty$
 Second-scala
-:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala) { #scala_second group=scala }
+:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
 ```
 @@@
 
@@ -88,13 +88,13 @@ First-java
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 
-Some separator with text describing the @span[Java variant] { .group-java } @span[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)] { .group-scala }
+Some separator with text describing the @java[Java variant] @scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)]. The group defaults to the snippet language:
 
-Second-java
-:   @@snip [example-second.java](../../resources/tab-switching/examples.java) { #java_second group=java }
+Java
+:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
 
-Second-scala
-:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala) { #scala_second group=scala }
+Scala
+:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
 
 
 ### snip.*.base_dir
