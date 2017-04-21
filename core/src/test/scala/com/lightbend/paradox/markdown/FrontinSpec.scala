@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,14 +23,16 @@ class FrontinSpec extends MarkdownBaseSpec {
   val second = "second line"
 
   val f1 = new File("f1.md")
-  writeInFile(f1,
+  writeInFile(
+    f1,
     """
     |%s
     |%s
     """ format (first, second))
 
   val f2 = new File("f2.md")
-  writeInFile(f2,
+  writeInFile(
+    f2,
     """
     |---
     |---
@@ -39,7 +41,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     """ format (first, second))
 
   val f3 = new File("f3.md")
-  writeInFile(f3,
+  writeInFile(
+    f3,
     """
     |---
     |out: index.html
@@ -49,7 +52,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     """ format (first, second))
 
   val f4 = new File("f4.md")
-  writeInFile(f4,
+  writeInFile(
+    f4,
     """
     |---
     |out: index.html

@@ -17,7 +17,7 @@
 import sbt._
 import sbt.Keys._
 import de.heikoseeberger.sbtheader.{ HeaderPattern, HeaderPlugin, AutomateHeaderPlugin }
-import com.typesafe.sbt.SbtScalariform.{ scalariformSettings, ScalariformKeys }
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 
 /**
@@ -30,7 +30,7 @@ object Common extends AutoPlugin {
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
-  override def projectSettings = scalariformSettings ++ AutomateHeaderPlugin.projectSettings ++ Seq(
+  override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.6", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.6", "-target", "1.6"),
     // Scalariform settings
@@ -38,7 +38,7 @@ object Common extends AutoPlugin {
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
       .setPreference(DoubleIndentClassDeclaration, true)
-      .setPreference(PreserveDanglingCloseParenthesis, true)
+      .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(AlignParameters, true),
     // Header settings
     HeaderPlugin.autoImport.headers := Map(
@@ -50,11 +50,11 @@ object Common extends AutoPlugin {
 
   // Header text generation
 
-  val scalaOrJavaHeader = header(before = Some("/*"), prefix = " * ", after = Some(" */"))
-  val confHeader = header(before = None, prefix = "# ", after = None)
+  val scalaOrJavaHeader = header(before = Some("/*"), prefix = " *", after = Some(" */"))
+  val confHeader = header(before = None, prefix = "#", after = None)
 
   def header(before: Option[String], prefix: String, after: Option[String]): String = {
-    val content = Seq("Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>",
+    val content = Seq("Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>",
       "",
       """Licensed under the Apache License, Version 2.0 (the "License");""",
       """you may not use this file except in compliance with the License.""",
@@ -67,6 +67,7 @@ object Common extends AutoPlugin {
       """WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.""",
       """See the License for the specific language governing permissions and""",
       """limitations under the License.""")
-    (before.toSeq ++ content.map(prefix.+) ++ after.toSeq).mkString("", "\n", "\n\n")
+    def addPrefix(line: String) = if (line.isEmpty) prefix else s"$prefix $line"
+    (before.toSeq ++ content.map(addPrefix) ++ after.toSeq).mkString("", "\n", "\n\n")
   }
 }

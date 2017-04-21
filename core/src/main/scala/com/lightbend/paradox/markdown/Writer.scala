@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,9 +27,10 @@ import scala.collection.JavaConverters._
  */
 class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
-  def this(linkRenderer: Writer.Context => LinkRenderer = Writer.defaultLinks,
-           verbatimSerializers: Map[String, VerbatimSerializer] = Writer.defaultVerbatims,
-           serializerPlugins: Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
+  def this(
+    linkRenderer:        Writer.Context => LinkRenderer                = Writer.defaultLinks,
+    verbatimSerializers: Map[String, VerbatimSerializer]               = Writer.defaultVerbatims,
+    serializerPlugins:   Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
     this((context: Writer.Context) => new ToHtmlSerializer(
       linkRenderer(context),
       verbatimSerializers.asJava,
@@ -92,13 +93,13 @@ object Writer {
    * Write context which is passed through to directives.
    */
   case class Context(
-    location: Location[Page],
-    paths: Set[String],
-    pageMappings: String => String = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-    sourceSuffix: String = DefaultSourceSuffix,
-    targetSuffix: String = DefaultTargetSuffix,
-    groups: Map[String, Seq[String]] = Map.empty,
-    properties: Map[String, String] = Map.empty)
+    location:     Location[Page],
+    paths:        Set[String],
+    pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+    sourceSuffix: String                   = DefaultSourceSuffix,
+    targetSuffix: String                   = DefaultTargetSuffix,
+    groups:       Map[String, Seq[String]] = Map.empty,
+    properties:   Map[String, String]      = Map.empty)
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)

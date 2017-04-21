@@ -1,0 +1,13 @@
+### Fixes and enhancements
+
+- Adds support for multiple ivy configurations and doc overlays. [#54][]/[#83][] by [@gsechaud][]
+- Add support for multiple snippet base directories via configurable placeholders. [#60][] by [@sirthias][]
+- Deprecate `@var[foo]` directive in favor of `$foo$`. [#85][] by [@sirthias][]
+
+  [#54]: https://github.com/lightbend/paradox/issues/54
+  [#83]: https://github.com/lightbend/paradox/pull/83
+  [#60]: https://github.com/lightbend/paradox/pull/60
+  [#85]: https://github.com/lightbend/paradox/pull/85
+
+  [@gsechaud]: https://github.com/gsechaud
+  [@sirthias]: https://github.com/sirthias

@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ object Frontin {
     (str.trim == separator) && (str startsWith separator)
 
   def apply(file: File): Frontin =
-    apply(scala.io.Source.fromFile(file).getLines.mkString("\n"))
+    apply(scala.io.Source.fromFile(file)("UTF-8").getLines.mkString("\n"))
 
   def apply(str: String): Frontin =
     str.linesWithSeparators.toList match {

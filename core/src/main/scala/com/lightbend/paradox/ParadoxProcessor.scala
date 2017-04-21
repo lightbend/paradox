@@ -1,12 +1,12 @@
 /*
- * Copyright © 2015 - 2016 Lightbend, Inc. <http://www.lightbend.com>
- * 
+ * Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,16 +32,17 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Process all mappings to build the site.
    */
-  def process(mappings: Seq[(File, String)],
-              leadingBreadcrumbs: List[(String, String)],
-              outputDirectory: File,
-              sourceSuffix: String,
-              targetSuffix: String,
-              groups: Map[String, Seq[String]],
-              properties: Map[String, String],
-              navigationDepth: Int,
-              themeDir: File,
-              errorListener: STErrorListener): Seq[(File, String)] = {
+  def process(
+    mappings:           Seq[(File, String)],
+    leadingBreadcrumbs: List[(String, String)],
+    outputDirectory:    File,
+    sourceSuffix:       String,
+    targetSuffix:       String,
+    groups:             Map[String, Seq[String]],
+    properties:         Map[String, String],
+    navigationDepth:    Int,
+    themeDir:           File,
+    errorListener:      STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
     val globalPageMappings = rootPageMappings(pages)
