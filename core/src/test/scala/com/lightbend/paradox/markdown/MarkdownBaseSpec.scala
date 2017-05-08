@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, PrintWriter }
 import org.scalatest.{ FlatSpec, Matchers }
-import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
+import com.lightbend.paradox.template.PageTemplate
 import java.nio.file._
 
 abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
@@ -51,8 +51,8 @@ abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
         val html = normalize(markdownWriter.write(page.markdown, context(loc)))
         val outputFile = new File(page.path)
         val emptyPageContext = PartialPageContent(page.properties.get, html)
-        val template = CachedTemplates(new File(templateDirectory.toString), page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
-        template.write(emptyPageContext, outputFile, new PageTemplate.ErrorLogger(s => println("[error] " + s)))
+        val template = new PageTemplate(new File(templateDirectory.toString))
+        template.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, template.defaultName), emptyPageContext, outputFile, new PageTemplate.ErrorLogger(s => println("[error] " + s)))
         val fileContent = fileToContent(outputFile)
         outputFile.delete
         render(loc.next, rendered :+ (page.path, normalize(fileContent)))

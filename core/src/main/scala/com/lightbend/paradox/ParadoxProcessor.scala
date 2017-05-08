@@ -17,7 +17,7 @@
 package com.lightbend.paradox
 
 import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
-import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
+import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, RootNode }
@@ -40,7 +40,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     targetSuffix:       String,
     properties:         Map[String, String],
     navigationDepth:    Int,
-    themeDir:           File,
+    pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
@@ -57,9 +57,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
-        val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
-        template.write(pageContext, outputFile, errorListener)
+        pageTemplate.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, pageTemplate.defaultName), pageContext, outputFile, errorListener)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
