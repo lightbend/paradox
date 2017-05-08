@@ -1,0 +1,7 @@
+https://github.com/lightbend/paradox/compare/v0.2.9...v0.2.10
+
+### Fixes and enhancements
+
+- Fixes indentation in code snippets. #84/#86 by @gsechaud
+- Fixes character encoding to use UTF-8. #99 by @kamijin-fanta
+- Exposes page URL to template. #110 by @raboof
