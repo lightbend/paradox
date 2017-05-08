@@ -16,10 +16,10 @@
 
 package com.lightbend.paradox.template
 
-import java.io.File
+import java.io.{ File, OutputStreamWriter, FileOutputStream }
 import java.util.{ Map => JMap }
 import org.stringtemplate.v4.misc.STMessage
-import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST }
+import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST, NoIndentWriter }
 import collection.concurrent.TrieMap
 
 object CachedTemplates {
@@ -54,7 +54,10 @@ class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, sta
         t.add("page", contents)
       case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
-    template.write(target, errorListener)
+    val osWriter = new OutputStreamWriter(new FileOutputStream(target))
+    val noIndentWriter = new NoIndentWriter(osWriter)
+    template.write(noIndentWriter) // does not take into account the errorListener any more...
+    osWriter.close
     target
   }
 
