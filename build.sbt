@@ -60,7 +60,7 @@ lazy val plugin = project
     scriptedSettings,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
-      a => Seq("-Xmx", "-Xms", "-XX").exists(a.startsWith)
+      a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)
     ),
     scriptedDependencies := {
       val p1 = (publishLocal in core).value
