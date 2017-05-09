@@ -20,7 +20,7 @@ import sbt._
 import sbt.Keys._
 
 import com.lightbend.paradox.ParadoxProcessor
-import com.lightbend.paradox.template.{ PageTemplate, CachedTemplates }
+import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.SbtWeb
 
@@ -45,6 +45,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxProperties := Map.empty,
     paradoxTheme := Some(builtinParadoxTheme("generic")),
+    paradoxDefaultTemplateName := "page",
     paradoxLeadingBreadcrumbs := Nil,
     libraryDependencies ++= paradoxTheme.value.toSeq
   )
@@ -105,7 +106,7 @@ object ParadoxPlugin extends AutoPlugin {
       if (!dir.exists) {
         IO.createDirectory(dir)
       }
-      CachedTemplates(dir)
+      new PageTemplate(dir, paradoxDefaultTemplateName.value)
     },
 
     sourceDirectory in paradoxTemplate := (target in paradoxTheme).value, // result of combining published theme and local theme template
@@ -127,7 +128,7 @@ object ParadoxPlugin extends AutoPlugin {
         paradoxTargetSuffix.value,
         paradoxProperties.value,
         paradoxNavigationDepth.value,
-        paradoxThemeDirectory.value,
+        paradoxTemplate.value,
         new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
       )
     },

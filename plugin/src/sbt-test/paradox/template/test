@@ -1,0 +1,20 @@
+# check that the page.st from generic theme has been overridden
+> paradox
+$ must-mirror target/paradox/site/main/page.html expected/page1.html
+
+# make a change to page.st and check that the template has been updated
+$ copy-file changes/page2.st src/main/paradox/_template/page.st
+$ sleep 1000
+> paradox
+$ must-mirror target/paradox/site/main/page.html expected/page2.html
+
+# switch to a different default template
+> 'set paradoxDefaultTemplateName := "alt"'
+> paradox
+$ must-mirror target/paradox/site/main/page.html expected/page3.html
+
+# make a change to alt.st and check that the template has been updated
+$ copy-file changes/alt2.st src/main/paradox/_template/alt.st
+$ sleep 1000
+> paradox
+$ must-mirror target/paradox/site/main/page.html expected/page4.html
