@@ -58,6 +58,45 @@ should not be highlighted set `type=text` in the directive's attribute section:
 @@snip [example.log](example.log) { #example-log type=text }
 ```
 
+#### tab switching
+
+It is possible to associate multiple snippets under the same "tag". If some tab of a snippet is switched by the user, all tabs associated with the selected one will be switched as well. To associate snippet tabs under some tag, set the `group` field of the snippet:
+
+@@@vars
+```markdown
+First-java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+$empty$
+First-scala
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+$empty$
+Some separator.
+$empty$
+Second-java
+:   @@snip [example-second.java](../../resources/tab-switching/examples.java) { #java_second group=java }
+$empty$
+Second-scala
+:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala) { #scala_second group=scala }
+```
+@@@
+
+The result will be rendered like this (try to switch tabs):
+
+First-java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+
+First-scala
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+
+Some separator.
+
+Second-java
+:   @@snip [example-second.java](../../resources/tab-switching/examples.java) { #java_second group=java }
+
+Second-scala
+:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala) { #scala_second group=scala }
+
+
 ### snip.*.base_dir
 
 In order to specify your snippet source paths off certain base directories you can define placeholders
