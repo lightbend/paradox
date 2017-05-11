@@ -19,8 +19,8 @@ package com.lightbend.paradox.markdown
 object Groups {
   def html(supergroups: Map[String, Seq[String]]) = {
     supergroups.map {
-      case (_, groups) =>
-        """<select class="supergroup">""" +
+      case (supergroup, groups) =>
+        s"""<select class="supergroup" name="$supergroup">""" +
           groups.map(group => s"""<option class="group" value="group-${group.toLowerCase}">$group</option>""").mkString +
           "</select>"
     }.mkString("\n")

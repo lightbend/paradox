@@ -43,6 +43,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     navigationDepth:    Int,
     pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
+    require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
+
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
     val globalPageMappings = rootPageMappings(pages)

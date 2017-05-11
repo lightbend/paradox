@@ -3,11 +3,15 @@ $(function() {
   // Groups (like 'java' and 'scala') represent groups of 'switchable' content, either in tabs or in regular text.
   // The catalog of groups can be defined in the sbt parameters to initialize the group.
 
-  var groupCookie = "groupsPref";
+  var groupCookie = "paradoxGroups";
   var cookieTg = getCookie(groupCookie);
-  var cookieTgList = [];
+  var currentGroups = {};
+
+  var catalog = {}
+  var supergroupByGroup = {};
+
   if(cookieTg != "")
-    cookieTgList = JSON.parse(cookieTg);
+    currentGroups = JSON.parse(cookieTg);
 
   // http://www.w3schools.com/js/js_cookies.asp
   function setCookie(cname,cvalue,exdays) {
@@ -35,50 +39,31 @@ $(function() {
     return "";
   }
 
-  function arrayToJson(arr) {
-    return JSON.stringify(arr);
-  }
-
-  // http://stackoverflow.com/questions/12551635/jquery-remove-duplicates-from-an-array-of-strings/12551709#12551709
-  function addToList(arr, elem) {
-    function unique(list) {
-      var result = [];
-      $.each(list, function(i, e) {
-        if ($.inArray(e, result) == -1) result.push(e);
-      });
-      return result;
-    }
-    arr.unshift(elem);
-    return unique(arr);
-  }
-
   $(".supergroup").each(function() {
-    var groups = $(this).find(".group")
+    var supergroup = $(this).attr('name').toLowerCase();
+    var groups = $(this).find(".group");
 
-    var current;
-    for(var i = 0; i < cookieTgList.length && !current; i++) {
-      groups.each(function() {
-        var group = "group-" + $(this).text().toLowerCase();
-        if(group == cookieTgList[i])
-          current = group;
-      });
-    }
+    var current = currentGroups[supergroup];
     if (!current) {
       current = "group-" + groups.first().text().toLowerCase();
-      cookieTgList = addToList(cookieTgList, current);
+      currentGroups[supergroup] = current;
     }
+
+    catalog[supergroup] = [];
 
     groups.each(function() {
       var group = "group-" + $(this).text().toLowerCase();
+      catalog[supergroup].push(group);
+      supergroupByGroup[group] = supergroup;
       if(group == current) {
-        switchToGroup(this.value);
+        switchToGroup(supergroup, this.value);
       } else {
         $("span." + group).hide()
       }
     });
 
     $(this).on("change", function() {
-      switchToGroup(this.value);
+      switchToGroup(supergroup, this.value);
     });
   });
 
@@ -100,11 +85,11 @@ $(function() {
     });
 
     var current;
-    for(var i = 0; i < cookieTgList.length && !current; i++) {
+    for (var supergroup in currentGroups) {
       dts.each(function() {
         var dt = $(this);
         var pre = dt.next("dd").find("pre");
-        if(pre.hasClass(cookieTgList[i]))
+        if(pre.hasClass(currentGroups[supergroup]))
           current = dt.addClass("current");
       });
     }
@@ -130,14 +115,18 @@ $(function() {
       var currentContent = currentDt.next("dd").addClass("current").show();
       currentDl.css("height", currentDt.height() + currentContent.height());
     } else {
-      switchToGroup(currentGroup);
+      var supergroup = supergroupByGroup[currentGroup]
+      if (supergroup) {
+        switchToGroup(supergroup, currentGroup);
+      } else {
+        switchToTab(currentDt);
+      }
     }
   });
 
-  function switchToGroup(group) {
-    // Cookie:
-    cookieTgList = addToList(cookieTgList, group);
-    setCookie(groupCookie, arrayToJson(cookieTgList));
+  function switchToGroup(supergroup, group) {
+    currentGroups[supergroup] = group;
+    setCookie(groupCookie, JSON.stringify(currentGroups));
 
     // Dropdown switcher:
     $("select")
@@ -145,7 +134,14 @@ $(function() {
       .val(group);
 
     // Inline snippets:
-    $("span ." + group).show();
+    for (var i = 0; i < catalog[supergroup].length; i++) {
+      var peer = catalog[supergroup][i];
+      if (peer == group) {
+        $("span." + group).show();
+      } else {
+        $("span." + peer).hide();
+      }
+    }
 
     // Tabbed snippets:
     $("dl").has("dd > pre").each(function() {
@@ -154,16 +150,18 @@ $(function() {
         var dt = $(this);
         var pre = dt.next("dd").find("pre");
         if(pre.hasClass(group)) {
-          dl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
-          dt.addClass("current");
-          var currentContent = dt.next("dd").addClass("current").show();
-          dl.css("height", dt.height() + currentContent.height());
-          $("span." + group).show()
-        } else {
-          $("span." + groupOf(dt)).hide()
+          switchToTab(dt);
         }
       });
     });
+  }
+
+  function switchToTab(dt) {
+    var dl = dt.parent("dl");
+    dl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
+    dt.addClass("current");
+    var currentContent = dt.next("dd").addClass("current").show();
+    dl.css("height", dt.height() + currentContent.height());
   }
 
   function groupOf(elem) {
