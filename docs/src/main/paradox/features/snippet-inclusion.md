@@ -60,15 +60,15 @@ should not be highlighted set `type=text` in the directive's attribute section:
 
 #### tab switching
 
-It is possible to associate multiple snippets under the same "tag". If some tab of a snippet is switched by the user, all tabs associated with the selected one will be switched as well. To associate snippet tabs under some tag, set the `group` field of the snippet:
+It is possible to associate multiple snippets under the same "tag". If some tab of a snippet is switched by the user, all tabs associated with the selected one will be switched as well.
 
 @@@vars
 ```markdown
 First-java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
 $empty$
 First-scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
 $empty$
 Some separator.
 $empty$

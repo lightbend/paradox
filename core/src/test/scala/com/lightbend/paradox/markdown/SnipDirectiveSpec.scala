@@ -28,7 +28,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
   "The `snip` directive" should "render code snippets" in {
     markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) {#example }""") shouldEqual html("""
-      |<pre class="prettyprint group-scala">
+      |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
       |  println("Hello, World!")
@@ -47,7 +47,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<dl>
       |<dt>Scala</dt>
       |<dd>
-      |<pre class="prettyprint group-scala">
+      |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
       |  println("Hello, World!")
@@ -56,7 +56,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |</dd>
       |<dt>Java</dt>
       |<dd>
-      |<pre class="prettyprint group-java">
+      |<pre class="prettyprint">
       |<code class="language-java">
       |public class example2 {
       |    public static void main(String[] args) {

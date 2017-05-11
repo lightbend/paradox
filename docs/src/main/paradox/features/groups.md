@@ -21,7 +21,17 @@ Groups must be configured through sbt:
 
 ### Tabs
 
-Groups are used for tabs:
+Groups are used for tabs, where the group is determined by the tab name:
+
+@@@vars
+```markdown
+Java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
+$empty$
+Scala
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
+```
+@@@
 
 Java
 :   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
@@ -29,13 +39,23 @@ Java
 Scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
 
-And will synchronize:
+or by the group parameter on the snippet:
 
-Java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
+@@@vars
+```markdown
+example-first.java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+$empty$
+example-first.scala
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+```
+@@@
 
-Scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
+example-first.java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+
+example-first.scala
+:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 
 
 But tabs not associated with groups are left alone:
