@@ -16,36 +16,22 @@
 
 package com.lightbend.paradox.template
 
-import java.io.File
+import java.io.{ File, OutputStreamWriter, FileOutputStream }
 import java.util.{ Map => JMap }
 import org.stringtemplate.v4.misc.STMessage
-import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST }
+import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST, NoIndentWriter }
 import collection.concurrent.TrieMap
-
-object CachedTemplates {
-  def apply(dir: File, templateName: String = PageTemplate.DefaultName): PageTemplate = {
-    cache.get((dir, templateName)) match {
-      case Some(t) => t
-      case _ =>
-        val newTemplate = new PageTemplate(dir, templateName)
-        cache((dir, templateName)) = newTemplate
-        newTemplate
-    }
-  }
-
-  val cache: TrieMap[(File, String), PageTemplate] = TrieMap()
-}
 
 /**
  * Page template writer.
  */
-class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, startDelimiter: Char = '$', stopDelimiter: Char = '$') {
+class PageTemplate(directory: File, val defaultName: String = "page", startDelimiter: Char = '$', stopDelimiter: Char = '$') {
   private val templates = new STRawGroupDir(directory.getAbsolutePath, startDelimiter, stopDelimiter)
 
   /**
    * Write a templated page to the target file.
    */
-  def write(contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
+  def write(name: String, contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
     import scala.collection.JavaConverters._
 
     val template = Option(templates.getInstanceOf(name)) match {
@@ -54,15 +40,16 @@ class PageTemplate(directory: File, name: String = PageTemplate.DefaultName, sta
         t.add("page", contents)
       case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
-    template.write(target, errorListener)
+    val osWriter = new OutputStreamWriter(new FileOutputStream(target))
+    val noIndentWriter = new NoIndentWriter(osWriter)
+    template.write(noIndentWriter) // does not take into account the errorListener any more...
+    osWriter.close
     target
   }
 
 }
 
 object PageTemplate {
-  val DefaultName = "page"
-
   /**
    * All page information to give to the template.
    */

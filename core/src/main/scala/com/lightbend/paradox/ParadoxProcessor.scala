@@ -16,8 +16,8 @@
 
 package com.lightbend.paradox
 
+import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown.{ Breadcrumbs, Groups, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
-import com.lightbend.paradox.template.{ CachedTemplates, PageTemplate }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, RootNode }
@@ -41,7 +41,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     groups:             Map[String, Seq[String]],
     properties:         Map[String, String],
     navigationDepth:    Int,
-    themeDir:           File,
+    pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
@@ -58,9 +58,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
         val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
-        val template = CachedTemplates(themeDir, page.properties(Page.Properties.DefaultLayoutMdIndicator, PageTemplate.DefaultName))
         outputFile.getParentFile.mkdirs
-        template.write(pageContext, outputFile, errorListener)
+        pageTemplate.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, pageTemplate.defaultName), pageContext, outputFile, errorListener)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
@@ -81,6 +80,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getBase = page.base
     lazy val getHome = link(Some(loc.root))
     lazy val getPrev = link(loc.prev)
+    lazy val getSelf = link(Some(loc))
     lazy val getNext = link(loc.next)
     lazy val getBreadcrumbs = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
@@ -102,6 +102,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getHref: String = location.map(href).orNull
     lazy val getHtml: String = location.map(link).orNull
     lazy val getTitle: String = location.map(title).orNull
+    lazy val getAbsolute: PageLink = PageLink(location, location.map(_.root.tree.label).getOrElse(current), writer, context)
     lazy val isActive: Boolean = location.exists(active)
 
     private def link(location: Location[Page]): String = {

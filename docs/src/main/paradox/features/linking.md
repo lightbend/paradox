@@ -109,7 +109,9 @@ URL templates can be configured via `extref.<scheme>.base_url` and the
 template may contain one `%s` which is replaced with the scheme specific
 part of the link URL. For example, given the property:
 
-    scaladoc.rfc.base_url=http://tools.ietf.org/html/rfc%s
+```text
+extref.rfc.base_url=http://tools.ietf.org/html/rfc%s
+```
 
 then `@extref[RFC 2119](rfc:2119)` will resolve to the URL
 <http://tools.ietf.org/html/rfc2119>.

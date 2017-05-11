@@ -33,6 +33,7 @@ trait ParadoxKeys {
   val paradoxTheme = settingKey[Option[ModuleID]]("Web module name of the paradox theme, otherwise local template.")
   val paradoxThemeDirectory = taskKey[File]("Sync combined theme and local template to a directory.")
   val paradoxOverlayDirectories = settingKey[Seq[File]]("Directory containing common source files for configuration.")
+  val paradoxDefaultTemplateName = settingKey[String]("Name of default template for generating pages.")
   val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
   val paradoxVersion = settingKey[String]("Paradox plugin version.")
   val paradoxGroups = settingKey[Map[String, Seq[String]]]("Paradox groups.")
