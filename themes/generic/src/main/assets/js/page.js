@@ -39,34 +39,6 @@ $(function() {
     return "";
   }
 
-  $(".supergroup").each(function() {
-    var supergroup = $(this).attr('name').toLowerCase();
-    var groups = $(this).find(".group");
-
-    var current = currentGroups[supergroup];
-    if (!current) {
-      current = "group-" + groups.first().text().toLowerCase();
-      currentGroups[supergroup] = current;
-    }
-
-    catalog[supergroup] = [];
-
-    groups.each(function() {
-      var group = "group-" + $(this).text().toLowerCase();
-      catalog[supergroup].push(group);
-      supergroupByGroup[group] = supergroup;
-      if(group == current) {
-        switchToGroup(supergroup, this.value);
-      } else {
-        $("span." + group).hide()
-      }
-    });
-
-    $(this).on("change", function() {
-      switchToGroup(supergroup, this.value);
-    });
-  });
-
   $("dl").has("dd > pre").each(function() {
     var dl = $(this);
     dl.addClass("tabbed");
@@ -84,22 +56,36 @@ $(function() {
       }
     });
 
-    var current;
-    for (var supergroup in currentGroups) {
-      dts.each(function() {
-        var dt = $(this);
-        var pre = dt.next("dd").find("pre");
-        if(pre.hasClass(currentGroups[supergroup]))
-          current = dt.addClass("current");
-      });
-    }
+    // Default to the first tab, for grouped tabs switch again later
+    switchToTab(dts.first());
 
-    if(!current)
-      current = dts.first().addClass("current");
-    var currentContent = current.next("dd").addClass("current").show();
     dts.first().addClass("first");
     dts.last().addClass("last");
-    dl.css("height", current.height() + currentContent.height());
+  });
+
+  $(".supergroup").each(function() {
+    var supergroup = $(this).attr('name').toLowerCase();
+    var groups = $(this).find(".group");
+
+    var current = currentGroups[supergroup];
+    if (!current) {
+      current = "group-" + groups.first().text().toLowerCase();
+      currentGroups[supergroup] = current;
+    }
+
+    catalog[supergroup] = [];
+
+    groups.each(function() {
+      var group = "group-" + $(this).text().toLowerCase();
+      catalog[supergroup].push(group);
+      supergroupByGroup[group] = supergroup;
+    });
+
+    switchToGroup(supergroup, current);
+
+    $(this).on("change", function() {
+      switchToGroup(supergroup, this.value);
+    });
   });
 
   $("dl.tabbed dt a").click(function(e){
@@ -109,18 +95,11 @@ $(function() {
 
     var currentGroup = groupOf(currentDt);
 
-    if(!currentGroup) {
-      currentDl.find(".current").removeClass("current").next("dd").removeClass("current").hide();
-      currentDt.addClass("current");
-      var currentContent = currentDt.next("dd").addClass("current").show();
-      currentDl.css("height", currentDt.height() + currentContent.height());
+    var supergroup = supergroupByGroup[currentGroup]
+    if (supergroup) {
+      switchToGroup(supergroup, currentGroup);
     } else {
-      var supergroup = supergroupByGroup[currentGroup]
-      if (supergroup) {
-        switchToGroup(supergroup, currentGroup);
-      } else {
-        switchToTab(currentDt);
-      }
+      switchToTab(currentDt);
     }
   });
 
@@ -144,12 +123,11 @@ $(function() {
     }
 
     // Tabbed snippets:
-    $("dl").has("dd > pre").each(function() {
+    $("dl.tabbed").each(function() {
       var dl = $(this);
       dl.find("dt").each(function() {
         var dt = $(this);
-        var pre = dt.next("dd").find("pre");
-        if(pre.hasClass(group)) {
+        if(groupOf(dt) == group) {
           switchToTab(dt);
         }
       });
@@ -165,12 +143,18 @@ $(function() {
   }
 
   function groupOf(elem) {
-    var currentClasses = elem.next("dd").find("pre").attr("class").split(' ');
-    var regex = new RegExp("^group-.*");
-    for(var i = 0; i < currentClasses.length; i++) {
-      if(regex.test(currentClasses[i])) {
-        return currentClasses[i];
+    var classAttribute = elem.next("dd").find("pre").attr("class");
+    if (classAttribute) {
+      var currentClasses = classAttribute.split(' ');
+      var regex = new RegExp("^group-.*");
+      for(var i = 0; i < currentClasses.length; i++) {
+        if(regex.test(currentClasses[i])) {
+          return currentClasses[i];
+        }
       }
     }
+
+    // No class found? Then use the tab title
+    return "group-" + elem.find('a').text().toLowerCase();
   }
 });
