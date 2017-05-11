@@ -86,7 +86,17 @@ Text describing the @java[Java variant]@scala[Scala variant containing ***markdo
 
 Switching is currently done in javascript. When the page loads, a script in
 `page.js` looks for entities with class `supergroup` and derives the groups
-catalog from that. If you use a custom theme, use `$groups()$` to generate
+catalog from that. If you use a custom theme, use `$page.groups$` to generate
 the catalog in javascript.
 
 The currently selected group for each category is stored in a cookie.
+
+## Extending
+
+You can register an event listener that will be called whenever a group is switched:
+
+```
+window.groupChanged(function(group, supergroup, catalog) {
+  // your code here
+});
+```

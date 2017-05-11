@@ -1,3 +1,9 @@
+groupChangeListeners = [];
+
+window.groupChanged = function(callback) {
+  groupChangeListeners.push(callback);
+}
+
 $(function() {
 
   // Groups (like 'java' and 'scala') represent groups of 'switchable' content, either in tabs or in regular text.
@@ -9,6 +15,7 @@ $(function() {
 
   var catalog = {}
   var supergroupByGroup = {};
+
 
   if(cookieTg != "")
     currentGroups = JSON.parse(cookieTg);
@@ -132,6 +139,10 @@ $(function() {
         }
       });
     });
+
+    for (var i = 0; i < groupChangeListeners.length; i++) {
+      groupChangeListeners[i](group, supergroup, catalog);
+    }
   }
 
   function switchToTab(dt) {
