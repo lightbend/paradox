@@ -70,12 +70,12 @@ $empty$
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 $empty$
-Some separator with text describing the @java[Java variant] @scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)]. The group defaults to the snippet language:
+Some separator.
 $empty$
-Second-java
+Java
 :   @@snip [example-second.java](../../resources/tab-switching/examples.java)
 $empty$
-Second-scala
+Scala
 :   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
 ```
 @@@
@@ -88,7 +88,7 @@ First-java
 First-scala
 :   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
 
-Some separator with text describing the @java[Java variant] @scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)]. The group defaults to the snippet language:
+Some separator.
 
 Java
 :   @@snip [example-second.java](../../resources/tab-switching/examples.java)
@@ -96,6 +96,13 @@ Java
 Scala
 :   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
 
+This is also synced if some tabs have no snippet:
+
+Java
+:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
+
+Scala
+:   More inline tabbing
 
 ### snip.*.base_dir
 
