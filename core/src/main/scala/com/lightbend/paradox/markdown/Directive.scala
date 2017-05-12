@@ -311,7 +311,8 @@ case class SnipDirective(page: Page, variables: Map[String, String])
         } else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
-      new VerbatimNode(text, lang).accept(visitor)
+      val group = Option(node.attributes.value("group")).getOrElse("")
+      new VerbatimGroupNode(text, lang, group).accept(visitor)
     } catch {
       case e: FileNotFoundException =>
         throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")
@@ -471,5 +472,36 @@ case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ,
     printer.print(s"""<$typ$id$classes>""")
     node.contentsNode.accept(visitor)
     printer.print(s"</$typ>")
+  }
+}
+
+/**
+ * Inline wrap directive
+ *
+ * Wraps inner contents in a `span`, optionally with custom `id` and/or `class` attributes.
+ */
+case class InlineWrapDirective(typ: String) extends InlineDirective("span") {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val id =
+      node.attributes.identifier match {
+        case null => ""
+        case x    => s""" id="$x""""
+      }
+    val classes =
+      node.attributes.classesString match {
+        case "" => ""
+        case x  => s""" class="$x""""
+      }
+    printer.print(s"""<$typ$id$classes>""")
+    node.contentsNode.accept(visitor)
+    printer.print(s"</$typ>")
+  }
+}
+
+case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(groups: _*) {
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    printer.print(s"""<span class="group-${node.name}">""")
+    node.contentsNode.accept(visitor)
+    printer.print(s"</span>")
   }
 }

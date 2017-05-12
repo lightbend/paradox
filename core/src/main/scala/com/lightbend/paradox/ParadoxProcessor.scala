@@ -16,8 +16,8 @@
 
 package com.lightbend.paradox
 
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
 import com.lightbend.paradox.template.PageTemplate
+import com.lightbend.paradox.markdown.{ Breadcrumbs, Groups, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 import org.pegdown.ast.{ ActiveLinkNode, ExpLinkNode, RootNode }
@@ -38,10 +38,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     outputDirectory:    File,
     sourceSuffix:       String,
     targetSuffix:       String,
+    groups:             Map[String, Seq[String]],
     properties:         Map[String, String],
     navigationDepth:    Int,
     pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
+    require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
+
     val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
     val paths = Page.allPaths(pages).toSet
     val globalPageMappings = rootPageMappings(pages)
@@ -52,10 +55,10 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val page = loc.tree.label
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)_
-        val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, pageProperties)
+        val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageToc = new TableOfContents(pages = true, headers = false, ordered = false, maxDepth = navigationDepth)
         val headerToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navigationDepth)
-        val pageContext = PageContents(leadingBreadcrumbs, loc, writer, writerContext, pageToc, headerToc)
+        val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, pageToc, headerToc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs
         pageTemplate.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, pageTemplate.defaultName), pageContext, outputFile, errorListener)
@@ -68,7 +71,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Default template contents for a markdown page at a particular location.
    */
-  case class PageContents(leadingBreadcrumbs: List[(String, String)], loc: Location[Page], writer: Writer, context: Writer.Context, pageToc: TableOfContents, headerToc: TableOfContents) extends PageTemplate.Contents {
+  case class PageContents(leadingBreadcrumbs: List[(String, String)], groups: Map[String, Seq[String]], loc: Location[Page], writer: Writer, context: Writer.Context, pageToc: TableOfContents, headerToc: TableOfContents) extends PageTemplate.Contents {
     import scala.collection.JavaConverters._
 
     private val page = loc.tree.label
@@ -83,6 +86,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getNext = link(loc.next)
     lazy val getBreadcrumbs = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
     lazy val getNavigation = writer.writeNavigation(pageToc.root(loc), context)
+    lazy val getGroups = Groups.html(groups)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(headerToc.headers(loc), context)
     lazy val getSource_url = githubLink(Some(loc)).getHtml

@@ -47,6 +47,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxDefaultTemplateName := "page",
     paradoxLeadingBreadcrumbs := Nil,
+    paradoxGroups := Map.empty,
     libraryDependencies ++= paradoxTheme.value.toSeq
   )
 
@@ -126,6 +127,7 @@ object ParadoxPlugin extends AutoPlugin {
         (target in paradoxMarkdownToHtml).value,
         paradoxSourceSuffix.value,
         paradoxTargetSuffix.value,
+        paradoxGroups.value,
         paradoxProperties.value,
         paradoxNavigationDepth.value,
         paradoxTemplate.value,

@@ -55,6 +55,12 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
     writeFragment(node, context)
 
   /**
+   * Write groups fragment.
+   */
+  def writeGroups(node: Node, context: Writer.Context): String =
+    writeFragment(node, context)
+
+  /**
    * Write navigation fragment.
    */
   def writeToc(node: Node, context: Writer.Context): String =
@@ -89,10 +95,11 @@ object Writer {
   case class Context(
     location:     Location[Page],
     paths:        Set[String],
-    pageMappings: String => String    = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-    sourceSuffix: String              = DefaultSourceSuffix,
-    targetSuffix: String              = DefaultTargetSuffix,
-    properties:   Map[String, String] = Map.empty)
+    pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+    sourceSuffix: String                   = DefaultSourceSuffix,
+    targetSuffix: String                   = DefaultTargetSuffix,
+    groups:       Map[String, Seq[String]] = Map.empty,
+    properties:   Map[String, String]      = Map.empty)
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)
@@ -120,7 +127,10 @@ object Writer {
     VarsDirective(context.properties),
     CalloutDirective("note", "Note"),
     CalloutDirective("warning", "Warning"),
-    WrapDirective("div"))
+    WrapDirective("div"),
+    InlineWrapDirective("span"),
+    InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq)
+  )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {
     private lazy val imgBase = {

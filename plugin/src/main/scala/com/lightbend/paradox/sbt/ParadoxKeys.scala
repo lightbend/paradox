@@ -36,4 +36,5 @@ trait ParadoxKeys {
   val paradoxDefaultTemplateName = settingKey[String]("Name of default template for generating pages.")
   val paradoxTemplate = taskKey[PageTemplate]("PageTemplate to use when generating HTML pages.")
   val paradoxVersion = settingKey[String]("Paradox plugin version.")
+  val paradoxGroups = settingKey[Map[String, Seq[String]]]("Paradox groups.")
 }

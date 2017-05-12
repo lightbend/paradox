@@ -6,6 +6,7 @@
 $page.properties.("project.version.short")$
 </div>
 </div>
+$groups()$
 <div class="nav-toc">
 $page.navigation$
 </div>
