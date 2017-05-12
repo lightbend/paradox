@@ -14,31 +14,23 @@
  * limitations under the License.
  */
 
-package org.pegdown.ast;
+package com.lightbend.paradox.markdown
 
-import org.parboiled.common.ImmutableList;
-
-import java.util.List;
+import org.pegdown.ast._
+import org.pegdown.plugins.ToHtmlSerializerPlugin
+import org.pegdown.Printer
+import scala.collection.JavaConverters._
 
 /**
- * An active link is an explicit link with an 'active' class attribute.
+ * Serialize a ClassyLink, adding the class attribute.
  */
-public class ActiveLinkNode extends AbstractNode {
-
-    public final String href;
-    public final Node child;
-
-    public ActiveLinkNode(String href, Node child) {
-        this.href = href;
-        this.child = child;
-    }
-
-    public List<Node> getChildren() {
-        return ImmutableList.of(child);
-    }
-
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
-    }
-
+class ClassyLinkSerializer extends ToHtmlSerializerPlugin {
+  def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
+    case link: ClassyLinkNode =>
+      printer.print(s"""<a href="${link.href}" class="${link.classAttribute}">""")
+      link.getChildren.asScala.foreach(_.accept(visitor))
+      printer.print("</a>")
+      true
+    case _ => false
+  }
 }

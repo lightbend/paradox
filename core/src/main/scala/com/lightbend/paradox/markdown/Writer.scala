@@ -109,7 +109,7 @@ object Writer {
   }
 
   def defaultPlugins(context: Context): Seq[ToHtmlSerializerPlugin] = Seq(
-    new ActiveLinkSerializer,
+    new ClassyLinkSerializer,
     new AnchorLinkSerializer,
     new DirectiveSerializer(defaultDirectives(context))
   )
