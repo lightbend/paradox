@@ -1,0 +1,11 @@
+> paradox
+
+$ must-mirror target/paradox/site/main/index.html  expected/index.html
+$ must-mirror target/paradox/site/main/1.html      expected/1.html
+$ must-mirror target/paradox/site/main/1/a.html    expected/1/a.html
+$ must-mirror target/paradox/site/main/1/a/i.html  expected/1/a/i.html
+$ must-mirror target/paradox/site/main/1/a/ii.html expected/1/a/ii.html
+$ must-mirror target/paradox/site/main/1/b.html    expected/1/b.html
+$ must-mirror target/paradox/site/main/2.html      expected/2.html
+$ must-mirror target/paradox/site/main/2/a.html    expected/2/a.html
+$ must-mirror target/paradox/site/main/2/b.html    expected/2/b.html

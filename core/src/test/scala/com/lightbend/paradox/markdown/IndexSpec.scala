@@ -92,7 +92,8 @@ class IndexSpec extends MarkdownBaseSpec {
         |@@@ index
         |  - [b](b.md)
         |    - [c](c.md)
-        |  - [d](d.md)
+        |    - [d](d.md)
+        |  - [h](h.md)
         |@@@
       """,
       "b.md" -> """
@@ -100,6 +101,7 @@ class IndexSpec extends MarkdownBaseSpec {
         |@@@ index
         |  - [e](e.md)
         |    - [f](f.md)
+        |    - [g](g.md)
         |@@@
       """,
       "c.md" -> """
@@ -113,14 +115,22 @@ class IndexSpec extends MarkdownBaseSpec {
       """,
       "f.md" -> """
         |# F
+      """,
+      "g.md" -> """
+        |# G
+      """,
+      "h.md" -> """
+        |# H
       """) shouldEqual index(
         """
         |- a.html
         |  - b.html
         |    - c.html
+        |    - d.html
         |    - e.html
         |      - f.html
-        |  - d.html
+        |      - g.html
+        |  - h.html
       """)
   }
 

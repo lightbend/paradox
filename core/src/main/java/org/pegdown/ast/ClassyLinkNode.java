@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
-package com.lightbend.paradox.markdown
+package org.pegdown.ast;
 
-import org.pegdown.ast._
-import org.pegdown.plugins.ToHtmlSerializerPlugin
-import org.pegdown.Printer
-import scala.collection.JavaConverters._
+import org.parboiled.common.ImmutableList;
+
+import java.util.List;
 
 /**
- * Serialize an ActiveLinkNode, adding the active class attribute.
+ * Explicit link with class attribute.
  */
-class ActiveLinkSerializer extends ToHtmlSerializerPlugin {
-  def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
-    case link: ActiveLinkNode =>
-      printer.print(s"""<a href="${link.href}" class="active">""")
-      link.getChildren.asScala.foreach(_.accept(visitor))
-      printer.print("</a>")
-      true
-    case _ => false
-  }
+public class ClassyLinkNode extends AbstractNode {
+
+    public final String href;
+    public final String classAttribute;
+    public final Node child;
+
+    public ClassyLinkNode(String href, String classAttribute, Node child) {
+        this.href = href;
+        this.classAttribute = classAttribute;
+        this.child = child;
+    }
+
+    public List<Node> getChildren() {
+        return ImmutableList.of(child);
+    }
+
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
 }

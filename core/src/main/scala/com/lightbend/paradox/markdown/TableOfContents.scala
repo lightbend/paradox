@@ -23,34 +23,34 @@ import org.pegdown.ast._
 /**
  * Create markdown list for table of contents on a page.
  */
-class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: Boolean = true, maxDepth: Int = 6) {
+class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: Boolean = true, maxDepth: Int = 6, maxExpandDepth: Option[Int] = None) {
 
   /**
    * Create a TOC bullet list for a Page.
    */
   def markdown(location: Location[Page]): Node = {
-    markdown(location.tree.label.base, location.tree.label.path, location.tree)
+    markdown(location.tree.label.base, Some(location), location.tree)
   }
 
   /**
    * Create a TOC bullet list for a TOC at a certain point within the section hierarchy.
    */
   def markdown(location: Location[Page], tocIndex: Int): Node = {
-    markdown(location.tree.label.base, location.tree.label.path, nested(location.tree, tocIndex))
+    markdown(location.tree.label.base, Some(location), nested(location.tree, tocIndex))
   }
 
   /**
-   * Create a TOC bullet list for a Page tree, given the base and active paths.
+   * Create a TOC bullet list for a Page tree, given the base path and active location.
    */
-  def markdown(base: String, active: String, tree: Tree[Page]): Node = {
-    subList(base, active, tree, depth = 0).getOrElse(list(Nil))
+  def markdown(base: String, active: Option[Location[Page]], tree: Tree[Page]): Node = {
+    subList(base, active, tree, depth = 0, expandDepth = None).getOrElse(list(Nil))
   }
 
   /**
    * Create a TOC bullet list from the root location.
    */
   def root(location: Location[Page]): Node = {
-    markdown(location.tree.label.base, location.tree.label.path, location.root.tree)
+    markdown(location.tree.label.base, Some(location), location.root.tree)
   }
 
   /**
@@ -59,7 +59,7 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
   def headers(location: Location[Page]): Node = {
     val page = location.tree.label
     val tree = Tree.leaf(page.copy(headers = List(Tree(page.h1, page.headers))))
-    markdown(base = page.base, active = "", tree)
+    markdown(base = page.base, active = None, tree)
   }
 
   /**
@@ -83,14 +83,14 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
     case None => (0, Nil)
   }
 
-  private def subList[A <: Linkable](base: String, active: String, tree: Tree[A], depth: Int): Option[Node] = {
+  private def subList[A <: Linkable](base: String, active: Option[Location[Page]], tree: Tree[A], depth: Int, expandDepth: Option[Int]): Option[Node] = {
     tree.label match {
       case page: Page =>
-        val subHeaders = if (headers) items(base + page.path, active, page.headers, depth) else Nil
-        val subPages = if (pages) items(base, active, tree.children, depth) else Nil
+        val subHeaders = if (headers) items(base + page.path, active, page.headers, depth, expandDepth) else Nil
+        val subPages = if (pages) items(base, active, tree.children, depth, expandDepth) else Nil
         optList(subHeaders ::: subPages)
       case header: Header =>
-        val subHeaders = if (headers) items(base, active, tree.children, depth) else Nil
+        val subHeaders = if (headers) items(base, active, tree.children, depth, expandDepth) else Nil
         optList(subHeaders)
     }
   }
@@ -106,22 +106,37 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
     else new BulletListNode(parent)
   }
 
-  private def items[A <: Linkable](base: String, active: String, forest: Forest[A], depth: Int): List[Node] = {
-    forest map item(base, active, depth + 1)
+  private def items[A <: Linkable](base: String, active: Option[Location[Page]], forest: Forest[A], depth: Int, expandDepth: Option[Int]): List[Node] = {
+    forest map item(base, active, depth + 1, expandDepth.map(_ + 1))
   }
 
-  private def item[A <: Linkable](base: String, active: String, depth: Int)(tree: Tree[A]): Node = {
+  private def item[A <: Linkable](base: String, active: Option[Location[Page]], depth: Int, expandDepth: Option[Int])(tree: Tree[A]): Node = {
     val linkable = tree.label
-    val label = link(base, linkable.path, linkable.label, active)
+    val label = link(base, linkable, active)
     val parent = new SuperNode
     parent.getChildren.add(label)
-    if (depth < maxDepth) subList(base, active, tree, depth).foreach(parent.getChildren.add)
+    val autoExpandDepth = autoExpand(linkable, active, expandDepth)
+    if ((depth < maxDepth) || autoExpandDepth.isDefined)
+      subList(base, active, tree, depth, autoExpandDepth).foreach(parent.getChildren.add)
     new ListItemNode(parent)
   }
 
-  private def link(base: String, path: String, label: Node, active: String): Node = {
-    if (path == active) new ActiveLinkNode(base + path, label)
-    else new ExpLinkNode("", base + path, label)
+  private def autoExpand[A <: Linkable](linkable: A, active: Option[Location[Page]], expandDepth: Option[Int]): Option[Int] = {
+    maxExpandDepth flatMap { max =>
+      expandDepth.filter(_ < max) orElse // currently expanding and still below max
+        (if (active.exists(_.path.drop(1).exists(_.tree.label == linkable))) Some(max) else None) orElse // expand ancestors of the active page
+        (if ((max > 0) && active.exists(_.tree.label == linkable)) Some(0) else None) // expand from the active page
+    }
+  }
+
+  private def link[A <: Linkable](base: String, linkable: A, active: Option[Location[Page]]): Node = {
+    val (path, classAttribute) = linkable match {
+      case page: Page =>
+        val isActive = active.exists(_.tree.label.path == page.path)
+        (if (headers && isActive) (page.path + page.h1.path) else page.path, if (isActive) "active page" else "page")
+      case header: Header => (header.path, "header")
+    }
+    new ClassyLinkNode(base + path, classAttribute, linkable.label)
   }
 
 }

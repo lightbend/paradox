@@ -39,16 +39,16 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
           |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
           |<div class="toc">
           |  <ul>
-          |    <li><a href="foo.html#a">A</a>
+          |    <li><a href="foo.html#a" class="header">A</a>
           |      <ul>
-          |        <li><a href="foo.html#b">B</a></li>
+          |        <li><a href="foo.html#b" class="header">B</a></li>
           |      </ul>
           |    </li>
-          |    <li><a href="bar.html">Bar</a>
+          |    <li><a href="bar.html" class="page">Bar</a>
           |      <ul>
-          |        <li><a href="bar.html#a">A</a>
+          |        <li><a href="bar.html#a" class="header">A</a>
           |          <ul>
-          |            <li><a href="bar.html#b">B</a></li>
+          |            <li><a href="bar.html#b" class="header">B</a></li>
           |          </ul>
           |        </li>
           |      </ul>
@@ -80,15 +80,15 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
       |<div class="toc">
       |  <ul>
-      |    <li><a href="a.html#b">B</a>
+      |    <li><a href="a.html#b" class="header">B</a>
       |      <ul>
-      |        <li><a href="a.html#c">C</a></li>
-      |        <li><a href="a.html#e">E</a></li>
+      |        <li><a href="a.html#c" class="header">C</a></li>
+      |        <li><a href="a.html#e" class="header">E</a></li>
       |      </ul>
       |    </li>
-      |    <li><a href="a.html#f">F</a>
+      |    <li><a href="a.html#f" class="header">F</a>
       |      <ul>
-      |        <li><a href="a.html#g">G</a></li>
+      |        <li><a href="a.html#g" class="header">G</a></li>
       |      </ul>
       |    </li>
       |  </ul>
@@ -119,12 +119,12 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
         |<h2><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h2>
         |<div class="toc">
         |  <ul>
-        |    <li><a href="a.html#c">C</a>
+        |    <li><a href="a.html#c" class="header">C</a>
         |      <ul>
-        |        <li><a href="a.html#d">D</a></li>
+        |        <li><a href="a.html#d" class="header">D</a></li>
         |      </ul>
         |    </li>
-        |    <li><a href="a.html#e">E</a></li>
+        |    <li><a href="a.html#e" class="header">E</a></li>
         |  </ul>
         |</div>
         |<h3><a href="#c" name="c" class="anchor"><span class="anchor-link"></span></a>C</h3>
@@ -146,9 +146,9 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
       |<div class="toc foo bar">
       |  <ul>
-      |    <li><a href="a.html#b">B</a>
+      |    <li><a href="a.html#b" class="header">B</a>
       |      <ul>
-      |        <li><a href="a.html#c">C</a></li>
+      |        <li><a href="a.html#c" class="header">C</a></li>
       |      </ul>
       |    </li>
       |  </ul>
@@ -168,9 +168,9 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
       |<h1><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h1>
       |<div class="toc">
       |  <ol>
-      |    <li><a href="a.html#b">B</a>
+      |    <li><a href="a.html#b" class="header">B</a>
       |      <ol>
-      |        <li><a href="a.html#c">C</a></li>
+      |        <li><a href="a.html#c" class="header">C</a></li>
       |      </ol>
       |    </li>
       |  </ol>
