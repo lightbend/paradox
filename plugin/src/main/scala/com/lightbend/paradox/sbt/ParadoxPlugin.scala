@@ -20,6 +20,7 @@ import sbt._
 import sbt.Keys._
 
 import com.lightbend.paradox.ParadoxProcessor
+import com.lightbend.paradox.markdown.Writer
 import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.SbtWeb
@@ -45,6 +46,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxNavigationExpandDepth := None,
     paradoxNavigationIncludeHeaders := false,
+    paradoxDirectives := Writer.defaultDirectives,
     paradoxProperties := Map.empty,
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxDefaultTemplateName := "page",
@@ -54,7 +56,7 @@ object ParadoxPlugin extends AutoPlugin {
   )
 
   def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++ inConfig(config)(Seq(
-    paradoxProcessor := new ParadoxProcessor,
+    paradoxProcessor := new ParadoxProcessor(writer = new Writer(serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value))),
 
     sourceDirectory := {
       if (config.name != Compile.name)
