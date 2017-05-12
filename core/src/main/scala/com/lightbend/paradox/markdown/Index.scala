@@ -141,7 +141,8 @@ object Index {
     }
 
     def add(path: String, page: Page, indices: Forest[Ref], nested: Boolean): Unit = {
-      indices foreach { i =>
+      // if nested then prepending children, so process this level in reverse to retain order
+      (if (nested) indices.reverse else indices) foreach { i =>
         val child = lookup(path, i.label.path)
         val current = edges(page)
         // nested links have priority (being further up the overall hierarchy)
