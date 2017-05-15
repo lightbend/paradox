@@ -30,11 +30,11 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
   def this(
     linkRenderer:        Writer.Context => LinkRenderer                = Writer.defaultLinks,
     verbatimSerializers: Map[String, VerbatimSerializer]               = Writer.defaultVerbatims,
-    serializerPlugins:   Writer.Context => Seq[ToHtmlSerializerPlugin] = Writer.defaultPlugins) =
+    serializerPlugins:   Seq[Writer.Context => ToHtmlSerializerPlugin] = Writer.defaultPlugins(Writer.defaultDirectives)) =
     this((context: Writer.Context) => new ToHtmlSerializer(
       linkRenderer(context),
       verbatimSerializers.asJava,
-      serializerPlugins(context).asJava))
+      serializerPlugins.map(p => p(context)).asJava))
 
   /**
    * Write main content.
@@ -108,28 +108,28 @@ object Writer {
     Map(VerbatimSerializer.DEFAULT -> PrettifyVerbatimSerializer)
   }
 
-  def defaultPlugins(context: Context): Seq[ToHtmlSerializerPlugin] = Seq(
-    new ClassyLinkSerializer,
-    new AnchorLinkSerializer,
-    new DirectiveSerializer(defaultDirectives(context))
+  def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] = Seq(
+    context => new ClassyLinkSerializer,
+    context => new AnchorLinkSerializer,
+    context => new DirectiveSerializer(directives.map(d => d(context)))
   )
 
-  def defaultDirectives(context: Context): Seq[Directive] = Seq(
-    RefDirective(context.location.tree.label, context.paths, context.pageMappings),
-    ExtRefDirective(context.location.tree.label, context.properties),
-    ScaladocDirective(context.location.tree.label, context.properties),
-    JavadocDirective(context.location.tree.label, context.properties),
-    GitHubDirective(context.location.tree.label, context.properties),
-    SnipDirective(context.location.tree.label, context.properties),
-    FiddleDirective(context.location.tree.label),
-    TocDirective(context.location),
-    VarDirective(context.properties),
-    VarsDirective(context.properties),
-    CalloutDirective("note", "Note"),
-    CalloutDirective("warning", "Warning"),
-    WrapDirective("div"),
-    InlineWrapDirective("span"),
-    InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq)
+  def defaultDirectives: Seq[Context => Directive] = Seq(
+    context => RefDirective(context.location.tree.label, context.paths, context.pageMappings),
+    context => ExtRefDirective(context.location.tree.label, context.properties),
+    context => ScaladocDirective(context.location.tree.label, context.properties),
+    context => JavadocDirective(context.location.tree.label, context.properties),
+    context => GitHubDirective(context.location.tree.label, context.properties),
+    context => SnipDirective(context.location.tree.label, context.properties),
+    context => FiddleDirective(context.location.tree.label),
+    context => TocDirective(context.location),
+    context => VarDirective(context.properties),
+    context => VarsDirective(context.properties),
+    context => CalloutDirective("note", "Note"),
+    context => CalloutDirective("warning", "Warning"),
+    context => WrapDirective("div"),
+    context => InlineWrapDirective("span"),
+    context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq)
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {

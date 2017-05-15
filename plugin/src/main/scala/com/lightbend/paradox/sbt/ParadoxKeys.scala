@@ -18,6 +18,7 @@ package com.lightbend.paradox.sbt
 
 import sbt._
 import com.lightbend.paradox.ParadoxProcessor
+import com.lightbend.paradox.markdown.{ Directive, Writer }
 import com.lightbend.paradox.template.PageTemplate
 
 trait ParadoxKeys {
@@ -28,6 +29,7 @@ trait ParadoxKeys {
   val paradoxNavigationIncludeHeaders = settingKey[Boolean]("Whether to include headers in the navigation.")
   val paradoxLeadingBreadcrumbs = settingKey[List[(String, String)]]("Any leading breadcrumbs (label -> url)")
   val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
+  val paradoxDirectives = taskKey[Seq[Writer.Context => Directive]]("Enabled paradox directives.")
   val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
   val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
   val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
