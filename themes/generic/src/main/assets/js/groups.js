@@ -123,9 +123,9 @@ $(function() {
     for (var i = 0; i < catalog[supergroup].length; i++) {
       var peer = catalog[supergroup][i];
       if (peer == group) {
-        $("span." + group).show();
+        $("." + group).show();
       } else {
-        $("span." + peer).hide();
+        $("." + peer).hide();
       }
     }
 
