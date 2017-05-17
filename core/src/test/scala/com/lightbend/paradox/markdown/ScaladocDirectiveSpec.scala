@@ -85,6 +85,8 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/Int.html">Int</a></p>""")
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
       html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html">Codec$</a></p>""")
+    markdown("@scaladoc[scala.io package](scala.io.index)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/index.html">scala.io package</a></p>""")
   }
 
   it should "support Scala 2.11 links" in {
@@ -96,6 +98,8 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/Int.html">Int</a></p>""")
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
       html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/io/Codec$.html">Codec$</a></p>""")
+    markdown("@scaladoc[scala.io package](scala.io.package)") shouldEqual
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/io/package.html">scala.io package</a></p>""")
   }
 
   it should "support referenced links" in {
