@@ -2,4 +2,6 @@ Use a @scaladoc[Future](scala.concurrent.Future) to avoid that long running oper
 
 @scaladoc[Http](akka.http.scaladsl.Http$)
 
-@scaladoc[Server](org.example.Server)
+@scaladoc[Server#start]
+
+   [Server#start]: org.example.Server#start():Unit
