@@ -334,7 +334,8 @@ object SnipDirective {
  *
  * Extracts fiddles from source files into fiddle blocks.
  */
-case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") with SourceDirective {
+case class FiddleDirective(page: Page, variables: Map[String, String])
+    extends LeafBlockDirective("fiddle") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
@@ -346,20 +347,25 @@ case class FiddleDirective(page: Page) extends LeafBlockDirective("fiddle") with
       val height = Option(node.attributes.value("height")).map("height=" + _).getOrElse("")
       val extraParams = node.attributes.value("extraParams", "theme=light")
       val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
-
-      val file = new File(page.file.getParentFile, resolvedSource(node, page))
+      val source = resolvedSource(node, page)
+      val file = if (source startsWith "$") {
+        val baseKey = source.drop(1).takeWhile(_ != '$')
+        val base = new File(PropertyUrl(s"fiddle.$baseKey.base_dir", variables.get).base.trim)
+        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+        new File(effectiveBase, source.drop(baseKey.length + 2))
+      } else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
 
       val fiddleSource = java.net.URLEncoder.encode(
-        """|
-           | import fiddle.Fiddle, Fiddle.println
-           | @scalajs.js.annotation.JSExport
-           | object ScalaFiddle {
-           |   // $FiddleStart
-                  """ + text + """
-           |   // $FiddleEnd
-           | }
+        """
+            |import fiddle.Fiddle, Fiddle.println
+            | @scalajs.js.annotation.JSExport
+            | object ScalaFiddle {
+            |   // $FiddleStart
+            |""".stripMargin + text + """
+            |   // $FiddleEnd
+            | }
           """.stripMargin, "UTF-8")
 
       printer.println.print(s"""

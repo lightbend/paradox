@@ -28,35 +28,31 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
     |@@fiddle [FiddleDirectiveSpec.scala](./FiddleDirectiveSpec.scala) { #fiddle_code extraParams=theme=light&layout=v75 cssStyle=width:100%; }
     """).values.head shouldEqual html("""
       |<iframe class="fiddle" src=
-"https://embed.scalafiddle.io/embed?theme=light&amp;layout=v75&amp;source=%7C%0A+++++++++++%7C+import+fiddle.Fiddle%2C+Fiddle.println%0A+++++++++++%7C+%40scalajs.js.annotation.JSExport%0A+++++++++++%7C+object+ScalaFiddle+%7B%0A+++++++++++%7C+++%2F%2F+%24FiddleStart%0A++++++++++++++++++val+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
+"https://embed.scalafiddle.io/embed?theme=light&amp;layout=v75&amp;source=%0Aimport+fiddle.Fiddle%2C+Fiddle.println%0A+%40scalajs.js.annotation.JSExport%0A+object+ScalaFiddle+%7B%0A+++%2F%2F+%24FiddleStart%0Aval+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
  frameborder="0" style="width:100%;"></iframe>
-    """)
+    """.stripMargin)
   }
 
   it should "properly add width and height" in {
-    {
-      markdownPages(
-        sourcePath + "com/lightbend/paradox/markdown/FiddleDirectiveSpec.scala" -> """
+    markdownPages(
+      sourcePath + "com/lightbend/paradox/markdown/FiddleDirectiveSpec.scala" -> """
       |@@fiddle [FiddleDirectiveSpec.scala](./FiddleDirectiveSpec.scala) { #fiddle_code width=100px height=100px extraParams=theme=light&layout=v75 cssStyle=width:100%; }
       """).values.head shouldEqual html("""
         |<iframe class="fiddle" width="100px" height="100px" src=
-"https://embed.scalafiddle.io/embed?theme=light&amp;layout=v75&amp;source=%7C%0A+++++++++++%7C+import+fiddle.Fiddle%2C+Fiddle.println%0A+++++++++++%7C+%40scalajs.js.annotation.JSExport%0A+++++++++++%7C+object+ScalaFiddle+%7B%0A+++++++++++%7C+++%2F%2F+%24FiddleStart%0A++++++++++++++++++val+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
+"https://embed.scalafiddle.io/embed?theme=light&amp;layout=v75&amp;source=%0Aimport+fiddle.Fiddle%2C+Fiddle.println%0A+%40scalajs.js.annotation.JSExport%0A+object+ScalaFiddle+%7B%0A+++%2F%2F+%24FiddleStart%0Aval+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
  frameborder="0" style="width:100%;"></iframe>
-      """)
-    }
+      """.stripMargin)
   }
 
   it should "change base url" in {
-    {
-      markdownPages(
-        sourcePath + "com/lightbend/paradox/markdown/FiddleDirectiveSpec.scala" -> """
+    markdownPages(
+      sourcePath + "com/lightbend/paradox/markdown/FiddleDirectiveSpec.scala" -> """
       |@@fiddle [FiddleDirectiveSpec.scala](./FiddleDirectiveSpec.scala) { #fiddle_code baseUrl=http://shadowscalafiddle.io width=100px height=100px extraParams=theme=light&layout=v75 cssStyle=width:100%; }
       """).values.head shouldEqual html("""
         |<iframe class="fiddle" width="100px" height="100px" src=
-"http://shadowscalafiddle.io?theme=light&amp;layout=v75&amp;source=%7C%0A+++++++++++%7C+import+fiddle.Fiddle%2C+Fiddle.println%0A+++++++++++%7C+%40scalajs.js.annotation.JSExport%0A+++++++++++%7C+object+ScalaFiddle+%7B%0A+++++++++++%7C+++%2F%2F+%24FiddleStart%0A++++++++++++++++++val+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
+"http://shadowscalafiddle.io?theme=light&amp;layout=v75&amp;source=%0Aimport+fiddle.Fiddle%2C+Fiddle.println%0A+%40scalajs.js.annotation.JSExport%0A+object+ScalaFiddle+%7B%0A+++%2F%2F+%24FiddleStart%0Aval+sourcePath+%3D+new+java.io.File%28%22.%22%29.getAbsolutePath+%2B+%22%2Fcore%2Fsrc%2Ftest%2Fscala%2F%22%0A+++%2F%2F+%24FiddleEnd%0A+%7D%0A++++++++++"
  frameborder="0" style="width:100%;"></iframe>
-      """)
-    }
+      """.stripMargin)
   }
 
 }

@@ -121,7 +121,7 @@ object Writer {
     context => JavadocDirective(context.location.tree.label, context.properties),
     context => GitHubDirective(context.location.tree.label, context.properties),
     context => SnipDirective(context.location.tree.label, context.properties),
-    context => FiddleDirective(context.location.tree.label),
+    context => FiddleDirective(context.location.tree.label, context.properties),
     context => TocDirective(context.location),
     context => VarDirective(context.properties),
     context => VarsDirective(context.properties),
