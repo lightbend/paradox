@@ -61,7 +61,11 @@ For example, given:
  - `scaladoc.akka.http.base_url=http://doc.akka.io/api/akka-http/10.0.0`
 
 Then `@scaladoc[Http](akka.http.scaladsl.Http$)` will resolve to
-<http://doc.akka.io/api/akka-http/10.0.0/#akka.http.scaladsl.Http$>.
+<http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html>. To link
+to a package page append `.index` for Scala 2.12 and `.package` for Scaladoc
+generated with versions earlier than 2.12, for example `@scaladoc[scaladsl
+package](akka.http.scaladsl.index)` will resolve to
+<http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/index.html>.
 
 By default, `scaladoc.scala.base_url` is configured to the Scaladoc
 associated with the configured `scalaVersion`. If the sbt project's

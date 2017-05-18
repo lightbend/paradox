@@ -140,7 +140,8 @@ object RefDirective {
 /**
  * Link to external sites using URI templates.
  */
-abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) with SourceDirective {
+abstract class ExternalLinkDirective(names: String*)
+    extends InlineDirective(names: _*) with SourceDirective {
 
   import ExternalLinkDirective._
 
@@ -175,7 +176,7 @@ object ExternalLinkDirective {
  * Link to external pages using URL templates.
  */
 case class ExtRefDirective(page: Page, variables: Map[String, String])
-    extends ExternalLinkDirective("extref", "extref:") with SourceDirective {
+    extends ExternalLinkDirective("extref", "extref:") {
 
   def resolveLink(link: String): Url = {
     link.split(":", 2) match {
@@ -222,14 +223,9 @@ case class ScaladocDirective(page: Page, variables: Map[String, String])
     extends ApiDocDirective("scaladoc", page, variables) {
 
   def resolveApiLink(baseUrl: Url, link: String): Url = {
-    variables.getOrElse("scaladoc.version", "???").split('.').take(2) match {
-      case Array("2", "12") =>
-        val url = Url(link).base
-        val path = url.getPath.replace('.', '/') + ".html"
-        baseUrl / path
-      case _ =>
-        baseUrl.withEndingSlash.withFragment(link)
-    }
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    (baseUrl / path) withFragment (url.getFragment)
   }
 
 }
@@ -253,7 +249,7 @@ case class JavadocDirective(page: Page, variables: Map[String, String])
  * https://help.github.com/articles/autolinked-references-and-urls/
  */
 case class GitHubDirective(page: Page, variables: Map[String, String])
-    extends ExternalLinkDirective("github", "github:") with SourceDirective {
+    extends ExternalLinkDirective("github", "github:") {
 
   val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
   val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
