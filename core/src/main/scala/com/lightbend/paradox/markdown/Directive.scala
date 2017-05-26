@@ -351,18 +351,16 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
         new File(effectiveBase, source.drop(baseKey.length + 2))
       } else new File(page.file.getParentFile, source)
       val text = Snippet(file, labels)
-      val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
 
       val fiddleSource = java.net.URLEncoder.encode(
-        """
-            |import fiddle.Fiddle, Fiddle.println
-            | @scalajs.js.annotation.JSExport
-            | object ScalaFiddle {
-            |   // $FiddleStart
-            |""".stripMargin + text + """
-            |   // $FiddleEnd
-            | }
-          """.stripMargin, "UTF-8")
+        """import fiddle.Fiddle, Fiddle.println
+          |@scalajs.js.annotation.JSExport
+          |object ScalaFiddle {
+          |  // $FiddleStart
+          |""".stripMargin + text + """
+          |  // $FiddleEnd
+          |}
+          |""".stripMargin, "UTF-8")
 
       printer.println.print(s"""
         <iframe class="$cssClass" $width $height src="$baseUrl?$extraParams&source=$fiddleSource" frameborder="0" style="$cssStyle"></iframe>
