@@ -81,6 +81,36 @@ Text describing the @java[Java variant]@scala[Scala variant containing ***markdo
 
 Text describing the @java[Java variant]@scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)].
 
+### Directives
+
+You can also use groups with directives such as `@@@ div` [(link)](http://developer.lightbend.com/docs/paradox/latest/features/css-friendliness.html#div)
+and `@@@ note` [(link)](http://developer.lightbend.com/docs/paradox/latest/features/css-friendliness.html#div) as follows:
+
+```
+@@@ div { .group-scala }
+
+This only shows up when the `group` is "scala"
+
+@@@
+
+@@@ note { .group-java }
+
+This only shows up when the `group` is "java"
+
+@@@
+```
+
+@@@ div { .group-scala }
+
+This only shows up when the `group` is "scala"
+
+@@@
+
+@@@ note { .group-java }
+
+This only shows up when the `group` is "java"
+
+@@@
 
 ## Behavior
 
