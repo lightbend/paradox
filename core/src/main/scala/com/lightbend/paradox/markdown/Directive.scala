@@ -298,15 +298,8 @@ case class SnipDirective(page: Page, variables: Map[String, String])
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
-      val file =
-        if (source startsWith "$") {
-          val baseKey = source.drop(1).takeWhile(_ != '$')
-          val base = new File(PropertyUrl(s"snip.$baseKey.base_dir", variables.get).base.trim)
-          val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-          new File(effectiveBase, source.drop(baseKey.length + 2))
-        } else new File(page.file.getParentFile, source)
-      val text = Snippet(file, labels)
-      val lang = Option(node.attributes.value("type")).getOrElse(Snippet.language(file))
+      val (text, snippetLang) = Snippet("snip", source, labels, page, variables)
+      val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       new VerbatimGroupNode(text, lang, group).accept(visitor)
     } catch {
@@ -344,13 +337,7 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       val extraParams = node.attributes.value("extraParams", "theme=light")
       val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
       val source = resolvedSource(node, page)
-      val file = if (source startsWith "$") {
-        val baseKey = source.drop(1).takeWhile(_ != '$')
-        val base = new File(PropertyUrl(s"fiddle.$baseKey.base_dir", variables.get).base.trim)
-        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-        new File(effectiveBase, source.drop(baseKey.length + 2))
-      } else new File(page.file.getParentFile, source)
-      val text = Snippet(file, labels)
+      val (text, _) = Snippet("fiddle", source, labels, page, variables)
 
       val fiddleSource = java.net.URLEncoder.encode(
         """import fiddle.Fiddle, Fiddle.println

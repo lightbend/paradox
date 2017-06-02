@@ -24,7 +24,19 @@ object Snippet {
 
   class SnippetException(message: String) extends RuntimeException(message)
 
-  def apply(file: File, labels: Seq[String]): String = labels match {
+  def apply(propPrefix: String, source: String, labels: Seq[String], page: Page, variables: Map[String, String]): (String, String) = {
+    val file =
+      if (source startsWith "$") {
+        val baseKey = source.drop(1).takeWhile(_ != '$')
+        val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
+        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+        new File(effectiveBase, source.drop(baseKey.length + 2))
+      } else new File(page.file.getParentFile, source)
+
+    (extract(file, labels), language(file))
+  }
+
+  def extract(file: File, labels: Seq[String]): String = labels match {
     case Seq() => extract(file, _ => true, _ => false, addFilteredLine).snippetLines.mkString("\n")
     case _     => labels.map(label => extract(file, label)).mkString("\n")
   }
