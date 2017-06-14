@@ -80,7 +80,11 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     private val page = loc.tree.label
 
     val getTitle = page.title
-    val getContent = writer.writeContent(page.markdown, context)
+    val getContent =
+      try writer.writeContent(page.markdown, context)
+      catch {
+        case e: Throwable => throw new RuntimeException(s"Error writing content for page ${page.path}: ${e.getMessage}", e)
+      }
 
     lazy val getBase = page.base
     lazy val getHome = link(Some(loc.root))
