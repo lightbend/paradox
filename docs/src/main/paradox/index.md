@@ -52,6 +52,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 @@@ index
 
 * [Multi Configuration](features/multi-configuration.md)
+* [Markdown](features/markdown.md)
 * [Organizing pages](features/organizing-pages.md)
 * [Linking](features/linking.md)
 * [Groups](features/groups.md)
