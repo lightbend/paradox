@@ -1,7 +1,7 @@
 Markdown flavour
 ----------------
 
-Paradox source files are formatted in [Markdown syntax](https://daringfireball.net/projects/markdown/syntax).
+Paradox source files are formatted in [Markdown syntax](https://daringfireball.net/projects/markdown/syntax), and by convention we prefer the [GitHub-flavored style](https://help.github.com/articles/basic-writing-and-formatting-syntax/).
 
 We currently use the [Pegdown](https://github.com/sirthias/pegdown#introduction) processor, though this may not [remain the case](https://github.com/lightbend/paradox/issues/81).
 
