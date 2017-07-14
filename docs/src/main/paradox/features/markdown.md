@@ -1,5 +1,5 @@
-Markdown
---------
+Markdown flavour
+----------------
 
 Paradox source files are formatted in [Markdown syntax](https://daringfireball.net/projects/markdown/syntax).
 
