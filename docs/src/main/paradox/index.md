@@ -2,7 +2,7 @@ Paradox
 =======
 
 Paradox is a Markdown documentation tool for software projects.
-The Github repo is [lightbend/paradox][repo].
+The GitHub repo is [lightbend/paradox][repo].
 
 **Paradox is NOT supported under the Lightbend subscription.**
 
@@ -31,10 +31,10 @@ Your markdown documentation will go inside `src/main/paradox/`. For example, you
 
 ### Key features
 
-- Supports Multi-configuration
-- Supports Github flavored Markdown powered by [Pegdown][].
+- Supports Multi-configuration.
+- Supports @ref[GitHub flavored Markdown](features/markdown.md).
 - Principled markdown extension using generic directives syntax.
-- Github-friendly Markdown source (links work).
+- GitHub-friendly Markdown source (links work).
 - Code snippet inclusion for compilable code examples.
 - Templating and theming.
 - Documentation overlay.
@@ -52,6 +52,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 @@@ index
 
 * [Multi Configuration](features/multi-configuration.md)
+* [Markdown flavour](features/markdown.md)
 * [Organizing pages](features/organizing-pages.md)
 * [Linking](features/linking.md)
 * [Groups](features/groups.md)
