@@ -16,7 +16,7 @@
 
 import sbt._
 import sbt.Keys._
-import de.heikoseeberger.sbtheader.{ HeaderPattern, HeaderPlugin, AutomateHeaderPlugin }
+import de.heikoseeberger.sbtheader.{ CommentStyle, FileType, License, HeaderPlugin, AutomateHeaderPlugin }
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 
@@ -41,33 +41,27 @@ object Common extends AutoPlugin {
       .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(AlignParameters, true),
     // Header settings
-    HeaderPlugin.autoImport.headers := Map(
-      "scala" -> (HeaderPattern.cStyleBlockComment, scalaOrJavaHeader),
-      "java" -> (HeaderPattern.cStyleBlockComment, scalaOrJavaHeader),
-      "conf" -> (HeaderPattern.hashLineComment, confHeader)
-    )
+    HeaderPlugin.autoImport.headerMappings := Map(
+      FileType.scala -> CommentStyle.CStyleBlockComment,
+      FileType.java -> CommentStyle.CStyleBlockComment,
+      FileType.conf -> CommentStyle.HashLineComment
+    ),
+    HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText))
   )
 
-  // Header text generation
+  val licenseText: String = {
+    """|Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>
 
-  val scalaOrJavaHeader = header(before = Some("/*"), prefix = " *", after = Some(" */"))
-  val confHeader = header(before = None, prefix = "#", after = None)
-
-  def header(before: Option[String], prefix: String, after: Option[String]): String = {
-    val content = Seq("Copyright © 2015 - 2017 Lightbend, Inc. <http://www.lightbend.com>",
-      "",
-      """Licensed under the Apache License, Version 2.0 (the "License");""",
-      """you may not use this file except in compliance with the License.""",
-      """You may obtain a copy of the License at""",
-      "",
-      """http://www.apache.org/licenses/LICENSE-2.0""",
-      "",
-      """Unless required by applicable law or agreed to in writing, software""",
-      """distributed under the License is distributed on an "AS IS" BASIS,""",
-      """WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.""",
-      """See the License for the specific language governing permissions and""",
-      """limitations under the License.""")
-    def addPrefix(line: String) = if (line.isEmpty) prefix else s"$prefix $line"
-    (before.toSeq ++ content.map(addPrefix) ++ after.toSeq).mkString("", "\n", "\n\n")
+       |Licensed under the Apache License, Version 2.0 (the "License");
+       |you may not use this file except in compliance with the License.
+       |You may obtain a copy of the License at
+       |
+       |http://www.apache.org/licenses/LICENSE-2.0
+       |
+       |Unless required by applicable law or agreed to in writing, software
+       |distributed under the License is distributed on an "AS IS" BASIS,
+       |WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       |See the License for the specific language governing permissions and
+       |limitations under the License.""".stripMargin
   }
 }
