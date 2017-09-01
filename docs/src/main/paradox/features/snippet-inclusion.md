@@ -104,7 +104,7 @@ Java
 Scala
 :   More inline tabbing
 
-### snip.*.base_dir
+### `snip.*.base_dir`
 
 In order to specify your snippet source paths off certain base directories you can define placeholders
 either in the page's front matter or globally like this (for example):

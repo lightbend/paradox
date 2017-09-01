@@ -492,3 +492,88 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
     printer.print(s"</span>")
   }
 }
+
+/**
+ * Dependency directive.
+ */
+case class DependencyDirective(variables: Map[String, String]) extends LeafBlockDirective("dependency") {
+  val ScalaSuffix = List("_2.10", "_2.11", "_2.12")
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    node.contentsNode.getChildren.asScala.headOption match {
+      case Some(text: TextNode) => renderDependency(text.getText, node, printer)
+      case _                    => node.contentsNode.accept(visitor)
+    }
+  }
+
+  def renderDependency(tools: String, node: DirectiveNode, printer: Printer): Unit = {
+    val classes = node.attributes.classesString
+
+    val startDelimiter = node.attributes.value("start-delimiter", "$")
+    val stopDelimiter = node.attributes.value("stop-delimiter", "$")
+    def coordinate(name: String): Option[String] =
+      Option(node.attributes.value(name)).map { value =>
+        variables.foldLeft(value) {
+          case (str, (key, value)) =>
+            str.replace(startDelimiter + key + stopDelimiter, value)
+        }
+      }
+
+    def requiredCoordinate(name: String): String =
+      coordinate(name).getOrElse(throw DependencyDirective.UndefinedVariable(name))
+
+    val group = requiredCoordinate("group")
+    val artifact = requiredCoordinate("artifact")
+    val version = requiredCoordinate("version")
+    val scope = coordinate("scope")
+    val classifier = coordinate("classifier")
+
+    printer.print(s"""<dl class="dependency $classes">""")
+    tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
+      val (lang, code) = tool match {
+        case "sbt" =>
+          val scopeString = scope.map {
+            case s @ ("runtime" | "compile" | "test") => " % " + s.capitalize
+            case s                                    => s""" % "$s""""
+          }
+          val classifierString = classifier.map(" classifier " + '"' + _ + '"')
+          val extra = (scopeString ++ classifierString).mkString
+          val libraryDependencies = ScalaSuffix.find(artifact.endsWith) match {
+            case Some(suffix) =>
+              val strippedArtifact = artifact.substring(0, artifact.length - suffix.length)
+              s"""libraryDependencies += "$group" %% "$strippedArtifact" % "$version""""
+            case None =>
+              s"""libraryDependencies += "$group" % "$artifact" % "$version""""
+          }
+          ("scala", libraryDependencies + extra)
+
+        case "gradle" | "Gradle" =>
+          val conf = scope.getOrElse("compile")
+          val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
+          val code =
+            s"""dependencies {
+             |  $conf group: '$group', name: '$artifact', version: '$version'$extra
+             |}""".stripMargin
+          ("gradle", code)
+        case "maven" | "Maven" | "mvn" =>
+          val elements =
+            Seq("groupId" -> group, "artifactId" -> artifact, "version" -> version) ++
+              classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
+          val code = elements.map {
+            case (element, value) => s"  <$element>$value</$element>"
+          }.mkString("<dependency>\n", "\n", "\n</dependency>").replace("<", "&lt;").replace(">", "&gt;")
+          ("xml", code)
+      }
+
+      printer.print(s"""<dt>$tool</dt>""")
+      printer.print(s"""<dd>""")
+      printer.print(s"""<pre class="prettyprint"><code class="language-$lang">$code</code></pre>""")
+      printer.print(s"""</dd>""")
+    }
+    printer.print("""</dl>""")
+  }
+}
+
+object DependencyDirective {
+  case class UndefinedVariable(name: String) extends RuntimeException(s"'$name' is not defined")
+}

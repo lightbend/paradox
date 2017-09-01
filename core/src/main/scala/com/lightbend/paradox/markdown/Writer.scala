@@ -129,7 +129,8 @@ object Writer {
     context => CalloutDirective("warning", "Warning"),
     context => WrapDirective("div"),
     context => InlineWrapDirective("span"),
-    context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq)
+    context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
+    context => DependencyDirective(context.properties)
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {
