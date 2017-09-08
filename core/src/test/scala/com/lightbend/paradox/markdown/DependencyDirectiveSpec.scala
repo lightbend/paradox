@@ -22,6 +22,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
 
   val testProperties = Map(
     "project.version" -> "10.0.10",
+    "scala.version" -> "2.12.3",
     "scala.binary.version" -> "2.12"
   )
 
@@ -119,6 +120,67 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |  runtime group: 'com.example', name: 'domain', version: '0.1.0-RC2', classifier: 'assets'
       |}</code>
       |</pre>
+      |</dd>
+      |</dl>""")
+  }
+
+  it should "only simplify sbt definition if the scalaBinaryVersion matches" in {
+    markdown("""
+      |@@dependency [sbt] {
+      |  group=org.example
+      |  artifact=lib_2.12.1
+      |  version=0.1.0
+      |}""") shouldEqual html("""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |libraryDependencies += "org.example" % "lib_2.12.1" % "0.1.0"</code></pre>
+      |</dd>
+      |</dl>""")
+  }
+
+  it should "use CrossVersion.full when scalaVersion matches" in {
+    markdown("""
+      |@@dependency [sbt] {
+      |  group=org.example
+      |  artifact=lib_2.12.3
+      |  version=0.1.0
+      |}""") shouldEqual html("""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |libraryDependencies += "org.example" % "lib" % "0.1.0" cross CrossVersion.full</code></pre>
+      |</dd>
+      |</dl>""")
+  }
+
+  it should "use CrossVersion.full when scalaVersion and scalaBinaryVersion matches" in {
+    val scalaVersion = "2.13.0-M1"
+    val testProperties = Map(
+      "scala.version" -> scalaVersion,
+      "scala.binary.version" -> scalaVersion
+    )
+
+    implicit val context: Location[Page] => Writer.Context = { loc =>
+      writerContext(loc).copy(properties = testProperties)
+    }
+
+    markdown("""
+      |@@dependency [sbt] {
+      |  group=org.example
+      |  artifact=lib_2.13.0-M1
+      |  version=0.1.0
+      |}""") shouldEqual html("""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |libraryDependencies += "org.example" % "lib" % "0.1.0" cross CrossVersion.full</code></pre>
       |</dd>
       |</dl>""")
   }

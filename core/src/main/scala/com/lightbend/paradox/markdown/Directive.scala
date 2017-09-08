@@ -497,7 +497,8 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
  * Dependency directive.
  */
 case class DependencyDirective(variables: Map[String, String]) extends LeafBlockDirective("dependency") {
-  val ScalaSuffix = List("_2.10", "_2.11", "_2.12")
+  val ScalaVersion = variables.get("scala.version")
+  val ScalaBinaryVersion = variables.get("scala.binary.version")
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     node.contentsNode.getChildren.asScala.headOption match {
@@ -507,7 +508,7 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
   }
 
   def renderDependency(tools: String, node: DirectiveNode, printer: Printer): Unit = {
-    val classes = node.attributes.classesString
+    val classes = Seq("dependency", node.attributes.classesString).filter(_.nonEmpty)
 
     val startDelimiter = node.attributes.value("start-delimiter", "$")
     val stopDelimiter = node.attributes.value("stop-delimiter", "$")
@@ -528,7 +529,7 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
     val scope = coordinate("scope")
     val classifier = coordinate("classifier")
 
-    printer.print(s"""<dl class="dependency $classes">""")
+    printer.print(s"""<dl class="${classes.mkString(" ")}">""")
     tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
       val (lang, code) = tool match {
         case "sbt" =>
@@ -538,14 +539,19 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
           }
           val classifierString = classifier.map(" classifier " + '"' + _ + '"')
           val extra = (scopeString ++ classifierString).mkString
-          val libraryDependencies = ScalaSuffix.find(artifact.endsWith) match {
-            case Some(suffix) =>
-              val strippedArtifact = artifact.substring(0, artifact.length - suffix.length)
-              s"""libraryDependencies += "$group" %% "$strippedArtifact" % "$version""""
-            case None =>
-              s"""libraryDependencies += "$group" % "$artifact" % "$version""""
+          val libraryDependencies = (ScalaVersion, ScalaBinaryVersion) match {
+            case (Some(scalaVersion), _) if artifact.endsWith("_" + scalaVersion) =>
+              val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaVersion.length)
+              s"""libraryDependencies += "$group" % "$strippedArtifact" % "$version"$extra cross CrossVersion.full"""
+
+            case (_, Some(scalaBinVersion)) if artifact.endsWith("_" + scalaBinVersion) =>
+              val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaBinVersion.length)
+              s"""libraryDependencies += "$group" %% "$strippedArtifact" % "$version"$extra"""
+
+            case _ =>
+              s"""libraryDependencies += "$group" % "$artifact" % "$version"$extra"""
           }
-          ("scala", libraryDependencies + extra)
+          ("scala", libraryDependencies)
 
         case "gradle" | "Gradle" =>
           val conf = scope.getOrElse("compile")
