@@ -98,4 +98,23 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       """.stripMargin) shouldEqual
       html("""<p><a href="https://github.com/akka/akka/issues/1234">#1234</a></p>""")
   }
+
+  it should "support line numbers" in {
+    markdown("""
+      |@github[build.sbt]
+      |@github[response test](/akka-http-core/src/test/scala/akka/http/impl/engine/rendering/ResponseRendererSpec.scala#L422)
+      |
+      |  [build.sbt]: /build.sbt#L5
+      |""") shouldEqual html("""
+      |<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/build.sbt#L5">build.sbt</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/akka-http-core/src/test/scala/akka/http/impl/engine/rendering/ResponseRendererSpec.scala#L422">response test</a></p>
+      |""")
+  }
+
+  it should "throw exceptions for invalid GitHub tree path" in {
+    the[ExternalLinkDirective.LinkException] thrownBy {
+      markdown("@github[path](/|)")
+    } should have message "Failed to resolve [/|] referenced from [test.html] because path is invalid"
+  }
+
 }

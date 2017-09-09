@@ -262,7 +262,9 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
-      case _                              => treeUrl / link
+      case path =>
+        val pathUrl = Url.parse(path, "path is invalid")
+        (treeUrl / pathUrl.base.getPath) withFragment pathUrl.base.getFragment
     }
   }
 
