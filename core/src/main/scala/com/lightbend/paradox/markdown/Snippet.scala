@@ -25,14 +25,7 @@ object Snippet {
   class SnippetException(message: String) extends RuntimeException(message)
 
   def apply(propPrefix: String, source: String, labels: Seq[String], page: Page, variables: Map[String, String]): (String, String) = {
-    val file =
-      if (source startsWith "$") {
-        val baseKey = source.drop(1).takeWhile(_ != '$')
-        val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
-        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-        new File(effectiveBase, source.drop(baseKey.length + 2))
-      } else new File(page.file.getParentFile, source)
-
+    val file = resolveFile(propPrefix, source, page, variables)
     (extract(file, labels), language(file))
   }
 
@@ -41,7 +34,26 @@ object Snippet {
     case _     => labels.map(label => extract(file, label)).mkString("\n")
   }
 
-  def extract(file: File, label: String): String = {
+  def extractLabelRange(file: File, label: String): Option[(Int, Int)] = {
+    val lineNumbers = extractState(file, label).lines.map(_._1)
+    if (lineNumbers.isEmpty)
+      None
+    else
+      Some((lineNumbers.min, lineNumbers.max))
+  }
+
+  type Line = (Int, String)
+
+  private def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File = {
+    if (source startsWith "$") {
+      val baseKey = source.drop(1).takeWhile(_ != '$')
+      val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
+      val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+      new File(effectiveBase, source.drop(baseKey.length + 2))
+    } else new File(page.file.getParentFile, source)
+  }
+
+  private def extractState(file: File, label: String): ExtractionState = {
     if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
       "Only [a-zA-Z0-9_-] are allowed.")
     // A label can be followed by an end of line or one or more spaces followed by an
@@ -50,31 +62,40 @@ object Snippet {
     val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
     val extractionState = extract(file, hasLabel, hasLabel, addFilteredLine)
+    if (extractionState.snippetLines.isEmpty)
+      throw new SnippetException(s"Label [$label] not found in [$file]")
+    if (extractionState.inBlock)
+      throw new SnippetException(s"Label [$label] block not closed in [$file]")
+    extractionState
+  }
+
+  private def extract(file: File, label: String): String = {
+    val extractionState = extractState(file, label)
     val snippetLines = extractionState.snippetLines
-    if (snippetLines.isEmpty) throw new SnippetException(s"Label [$label] not found in [$file]")
-    if (extractionState.inBlock) throw new SnippetException(s"Label [$label] block not closed in [$file]")
     val indent = snippetLines.flatMap(l => Some(l.indexWhere(_ != ' ')).filter(_ >= 0)).min
     (snippetLines map (_ drop indent)).mkString("\n")
   }
 
-  private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[String]) => Seq[String]): ExtractionState = {
+  private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
     val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
-    lines.foldLeft(ExtractionState(inBlock = false, snippetLines = Seq.empty)) {
-      case (es, l) =>
+    lines.zipWithIndex.foldLeft(ExtractionState(inBlock = false, lines = Seq.empty)) {
+      case (es, (l, lineIndex)) =>
         es.inBlock match {
-          case false if (blockStart(l)) => es.copy(inBlock = true, snippetLines = addLine(l, es.snippetLines))
+          case false if (blockStart(l)) => es.copy(inBlock = true, lines = addLine(l, es.lines, lineIndex + 1))
           case false                    => es
-          case true if (blockEnd(l))    => es.copy(inBlock = false, snippetLines = addLine(l, es.snippetLines))
-          case true                     => es.copy(snippetLines = addLine(l, es.snippetLines))
+          case true if (blockEnd(l))    => es.copy(inBlock = false, lines = addLine(l, es.lines, lineIndex + 1))
+          case true                     => es.copy(lines = addLine(l, es.lines, lineIndex + 1))
         }
     }
   }
 
-  private case class ExtractionState(inBlock: Boolean, snippetLines: Seq[String])
+  private case class ExtractionState(inBlock: Boolean, lines: Seq[Line]) {
+    def snippetLines = lines.map(_._2)
+  }
 
   private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
-  private def addFilteredLine(line: String, lines: Seq[String]): Seq[String] =
-    anyLabelRegex.findFirstIn(line).map(_ => lines).getOrElse(lines :+ line)
+  private def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
+    anyLabelRegex.findFirstIn(line).map(_ => lines).getOrElse(lines :+ (lineNumber, line))
   private def verifyLabel(label: String): Boolean = anyLabelRegex.findFirstIn(s"#$label").nonEmpty
 
   def language(file: File): String = {

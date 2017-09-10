@@ -75,6 +75,7 @@ object ParadoxPlugin extends AutoPlugin {
       "project.version.short" -> shortVersion((version in paradox).value),
       "project.description" -> (description in paradox).value,
       "snip.root.base_dir" -> baseDirectory.value.toString,
+      "github.root.base_dir" -> (baseDirectory in ThisBuild).value.toString,
       "scala.version" -> scalaVersion.value,
       "scala.binary.version" -> scalaBinaryVersion.value),
     paradoxProperties ++= dateProperties,
