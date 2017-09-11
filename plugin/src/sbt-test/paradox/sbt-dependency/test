@@ -1,0 +1,5 @@
+> paradox
+
+$ must-mirror release/target/paradox/site/main/index.html expected/release.html
+$ must-mirror releaseCandidate/target/paradox/site/main/index.html expected/releaseCandidate.html
+$ must-mirror milestone/target/paradox/site/main/index.html expected/milestone.html

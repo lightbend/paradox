@@ -58,6 +58,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 * [Groups](features/groups.md)
 * [Snippet inclusion](features/snippet-inclusion.md)
 * [Callouts](features/callouts.md)
+* [Library dependencies](features/dependencies.md)
 * [CSS Friendliness](features/css-friendliness.md)
 * [Templating](features/templating.md)
 * [Theming](features/theming.md)
