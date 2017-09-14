@@ -130,3 +130,9 @@ window.groupChanged(function(group, supergroup, catalog) {
   // your code here
 });
 ```
+
+## Linking
+
+The current group is typically determined by the order in which is was defined, or the previously-selected
+group as stored in a cookie. It is also possible to specify the desired group as a query paramter,
+so you can link to [this page with Java selected](?language=java) or [this page with Scala selected](?language=scala).
