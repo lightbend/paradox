@@ -31,8 +31,23 @@ object Common extends AutoPlugin {
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
   override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
-    scalacOptions ++= Seq("-encoding", "UTF-8", "-target:jvm-1.6", "-unchecked", "-deprecation", "-feature"),
-    javacOptions ++= Seq("-encoding", "UTF-8", "-source", "1.6", "-target", "1.6"),
+    scalaVersion := { (sbtBinaryVersion in pluginCrossBuild).value match {
+      case "0.13" => "2.10.6"
+      case _ => "2.12.3"
+    }},
+    crossSbtVersions := Seq("0.13.16", "1.0.0"),
+    // fixed in https://github.com/sbt/sbt/pull/3397 (for sbt 0.13.17)
+    sbtBinaryVersion in update := (sbtBinaryVersion in pluginCrossBuild).value,
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
+    scalacOptions ++= { (sbtBinaryVersion in pluginCrossBuild).value match {
+      case "0.13" => Seq("-target:jvm-1.6")
+      case _ => Seq.empty
+    }},
+    javacOptions ++= Seq("-encoding", "UTF-8"),
+    javacOptions ++= { (sbtBinaryVersion in pluginCrossBuild).value match {
+      case "0.13" => Seq("-source", "1.6", "-target", "1.6")
+      case _ => Seq.empty
+    }},
     // Scalariform settings
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
       .setPreference(AlignSingleLineCaseStatements, true)

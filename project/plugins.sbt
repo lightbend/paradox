@@ -30,6 +30,9 @@ lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
     sbtPlugin := true,
     scalaVersion := "2.10.6",
+    // Change this version to 1.4.2 after a new version of sbt-paradox has been published.
+    // It can't be changed now since there will be a failure in docs/paradox where the
+    // cache directory structure of the new sbt-web and the old sbt-paradox clashes.
     addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.1.1"),
     unmanagedSourceDirectories in Compile :=
       mirrorScalaSource((baseDirectory in ThisBuild).value.getParentFile / "theme-plugin")

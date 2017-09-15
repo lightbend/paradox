@@ -22,6 +22,7 @@ lazy val paradox = project
     organization := "com.lightbend.paradox",
     licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
     scalaVersion := "2.10.6",
+    crossScalaVersions := Seq("2.10.6", "2.12.3"),
     organizationName := "lightbend",
     organizationHomepage := Some(url("http://lightbend.com/")),
     homepage := Some(url("https://github.com/lightbend/paradox")),
@@ -110,7 +111,7 @@ lazy val docs = (project in file("docs"))
     paradoxGroups := Map("Languages" -> Seq("Scala", "Java"))
   )
 
-addCommandAlias("verify", ";test ;scripted ;docs/paradox")
+addCommandAlias("verify", ";^ test:compile ;^ compile:doc ;^ test ;^ scripted ;docs/paradox")
 
 sonatypeProfileName := "com.lightbend"
 releaseProcess := {
@@ -119,11 +120,11 @@ releaseProcess := {
     checkSnapshotDependencies,
     inquireVersions,
     runClean,
-    runTest,
+    releaseStepCommandAndRemaining("^ test"),
     setReleaseVersion,
     commitReleaseVersion,
     tagRelease,
-    publishArtifacts,
+    releaseStepCommandAndRemaining("^ publish"),
     releaseStepCommand("bintrayRelease"),
     releaseStepCommand("sonatypeRelease"),
     setNextVersion,
