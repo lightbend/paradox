@@ -13,7 +13,7 @@ Groups must be configured through sbt:
   .settings(
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
-    paradoxGroups := Map("Languages" -> Seq("Scala", "Java"))
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
   )
 ```
 
