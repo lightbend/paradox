@@ -108,7 +108,7 @@ lazy val docs = (project in file("docs"))
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxProperties in Compile += ("empty" -> ""),
-    paradoxGroups := Map("Languages" -> Seq("Scala", "Java"))
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
   )
 
 addCommandAlias("verify", ";^ test:compile ;^ compile:doc ;^ test ;^ scripted ;docs/paradox")

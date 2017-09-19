@@ -13,7 +13,7 @@ Groups must be configured through sbt:
   .settings(
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
-    paradoxGroups := Map("Languages" -> Seq("Scala", "Java"))
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
   )
 ```
 
@@ -130,3 +130,9 @@ window.groupChanged(function(group, supergroup, catalog) {
   // your code here
 });
 ```
+
+## Linking
+
+The current group is typically determined by the order in which is was defined, or the previously-selected
+group as stored in a cookie. It is also possible to specify the desired group as a query paramter,
+so you can link to [this page with Java selected](?language=java) or [this page with Scala selected](?language=scala).
