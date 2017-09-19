@@ -43,13 +43,13 @@ object Url {
   case class Error(reason: String) extends RuntimeException(reason)
 
   def apply(base: String): Url = {
-    parse(base, "template resulted in an invalid URL")
+    parse(base, s"template resulted in an invalid URL [$base]")
   }
 
   def parse(base: String, msg: String): Url = {
     try Url(new URI(base)) catch {
       case e: URISyntaxException =>
-        throw Url.Error(s"$msg [$base]")
+        throw Url.Error(msg)
     }
   }
 }
@@ -61,7 +61,7 @@ case class PropertyUrl(property: String, variables: String => Option[String]) {
   }
 
   def resolve(): Url = {
-    Url.parse(base, s"property [$property] contains an invalid URL")
+    Url.parse(base, s"property [$property] contains an invalid URL [$base]")
   }
 
   def format(args: String*) = Url(base.format(args: _*))

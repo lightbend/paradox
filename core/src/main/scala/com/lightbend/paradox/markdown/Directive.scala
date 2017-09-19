@@ -145,7 +145,7 @@ abstract class ExternalLinkDirective(names: String*)
 
   import ExternalLinkDirective._
 
-  def resolveLink(location: String): Url
+  def resolveLink(node: DirectiveNode, location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
@@ -153,10 +153,14 @@ abstract class ExternalLinkDirective(names: String*)
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
     try {
-      resolveLink(link).base.normalize.toString
+      resolveLink(node: DirectiveNode, link).base.normalize.toString
     } catch {
       case Url.Error(reason) =>
         throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
+      case e: FileNotFoundException =>
+        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] to a file: ${e.getMessage}")
+      case e: Snippet.SnippetException =>
+        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}]: ${e.getMessage}")
     }
   }
 }
@@ -178,7 +182,7 @@ object ExternalLinkDirective {
 case class ExtRefDirective(page: Page, variables: Map[String, String])
     extends ExternalLinkDirective("extref", "extref:") {
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(node: DirectiveNode, link: String): Url = {
     link.split(":", 2) match {
       case Array(scheme, expr) => PropertyUrl(s"extref.$scheme.base_url", variables.get).format(expr)
       case _                   => throw Url.Error("URL has no scheme")
@@ -210,7 +214,7 @@ abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, 
     case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(node: DirectiveNode, link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
@@ -258,12 +262,38 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
 
   val baseUrl = PropertyUrl("github.base_url", variables.get)
 
-  def resolveLink(link: String): Url = {
+  def resolveLink(node: DirectiveNode, link: String): Url = {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
-      case _                              => treeUrl / link
+      case path                           => resolvePath(path, Option(node.attributes.value("identifier")))
     }
+  }
+
+  private def resolvePath(source: String, labelOpt: Option[String]) = {
+    val pathUrl = Url.parse(source, "path is invalid")
+    val path = pathUrl.base.getPath
+    val root = variables.get("github.root.base_dir") match {
+      case None      => throw Url.Error("[github.root.base_dir] is not defined")
+      case Some(dir) => new File(dir)
+    }
+    val file =
+      if (path.startsWith("/")) new File(root, path.drop(1))
+      else new File(page.file.getParentFile, path)
+    val labelFragment =
+      for {
+        label <- labelOpt
+        (min, max) <- Snippet.extractLabelRange(file, label)
+      } yield {
+        if (min == max)
+          s"L$min"
+        else
+          s"L$min-L$max"
+      }
+    val fragment = labelFragment.getOrElse(pathUrl.base.getFragment)
+    val treePath = Path.relativeLocalPath(root.getAbsolutePath, file.getAbsolutePath)
+
+    (treeUrl / treePath) withFragment fragment
   }
 
   private def resolveProject(project: String) = {

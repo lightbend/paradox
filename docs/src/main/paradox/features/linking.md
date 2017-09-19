@@ -42,6 +42,7 @@ running operations block the @scaladoc[Actor](akka.actor.Actor).
 ...
 
 Issue @github[#1](#1) was fixed in commit @github[83986f9](83986f9).
+See @github[example](/src/test/scala/ServerSetup.scala) { #ssl-setup } for more info.
 ```
 
 *NOTE*: Only use these directives if standard Markdown and `@ref` does
@@ -97,12 +98,23 @@ Use the `@github` directive to link to GitHub issues, commits and files.
 It supports most of [GitHub's autolinking syntax][github-autolinking].
 
 The `github.base_url` property must be configured to use shorthands such
-as `#1`. For source code links to a specific version set the base URL to
+as `#1`. To link to a directory or file in a specific version, set the base URL to
 a tree revision, for example:
 <https://github.com/lightbend/paradox/tree/v0.2.1>.
 
 If the sbt project's `scmInfo` setting is configured and the `browseUrl`
 points to a GitHub project, it is used as the GitHub base URL.
+
+Relative as well as absolute file and directory paths use the value of the
+`github.root.base_dir` property to resolve the absolute project path. The sbt
+plugin automatically sets this property to the absolute path of the root project.
+
+Links to a specific line or line range in a file can use snippet labels to ensure
+that line numbers are up-to-date. Example:
+
+```markdown
+@github[../../resources/build.sbt] { #setup_example }
+```
 
 [github-autolinking]: https://help.github.com/articles/autolinked-references-and-urls/
 

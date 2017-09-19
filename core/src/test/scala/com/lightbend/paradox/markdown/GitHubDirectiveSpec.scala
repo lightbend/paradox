@@ -19,7 +19,8 @@ package com.lightbend.paradox.markdown
 class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
-    "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1")
+    "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
+    "github.root.base_dir" -> ".")
 
   "GitHub directive" should "create links using configured base URL" in {
     markdown("@github[#1](#1)") shouldEqual
@@ -58,7 +59,8 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
   it should "handle tree links with automatic versioning" in {
     val context = writerContextWithProperties(
-      "github.base_url" -> "https://github.com/lightbend/paradox")
+      "github.base_url" -> "https://github.com/lightbend/paradox",
+      "github.root.base_dir" -> ".")
 
     markdown("@github[See build.sbt](/build.sbt)")(context) shouldEqual
       html("""<p><a href="https://github.com/lightbend/paradox/tree/master/build.sbt">See build.sbt</a></p>""")
@@ -71,7 +73,9 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for invalid GitHub URLs" in {
-    val invalidContext = writerContextWithProperties("github.base_url" -> "https://github.com/project")
+    val invalidContext = writerContextWithProperties(
+      "github.base_url" -> "https://github.com/project",
+      "github.root.base_dir" -> ".")
 
     the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("@github[#1](#1)")(invalidContext)
@@ -98,4 +102,58 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       """.stripMargin) shouldEqual
       html("""<p><a href="https://github.com/akka/akka/issues/1234">#1234</a></p>""")
   }
+
+  it should "support line numbers" in {
+    markdown("""
+      |@github[build.sbt]
+      |@github[response test](/akka-http-core/src/test/scala/akka/http/impl/engine/rendering/ResponseRendererSpec.scala#L422)
+      |
+      |  [build.sbt]: /build.sbt#L5
+      |""") shouldEqual html("""
+      |<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/build.sbt#L5">build.sbt</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/akka-http-core/src/test/scala/akka/http/impl/engine/rendering/ResponseRendererSpec.scala#L422">response test</a></p>
+      |""")
+  }
+
+  it should "throw exceptions for invalid GitHub tree path" in {
+    the[ExternalLinkDirective.LinkException] thrownBy {
+      markdown("@github[path](/|)")
+    } should have message "Failed to resolve [/|] referenced from [test.html] because path is invalid"
+  }
+
+  it should "support line labels" in {
+    markdown("""
+      |@github[example.scala] { #github-path-link }
+      |@github[neither](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
+      |@github[neither](/core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
+      |
+      |  [example.scala]: core/src/test/scala/com/lightbend/paradox/markdown/example.scala
+      |""") shouldEqual html("""
+      |<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L20-L24">example.scala</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a></p>
+      |""")
+  }
+
+  it should "throw exceptions for non-existing GitHub tree path with label" in {
+    val ex = the[ExternalLinkDirective.LinkException] thrownBy {
+      markdown("""
+        |@github[oops](does/not/exist.scala) { #broken }
+        |""")
+    }
+
+    ex.getMessage.startsWith("Failed to resolve [does/not/exist.scala] referenced from [test.html] to a file") shouldBe true
+  }
+
+  it should "throw exceptions for non-existing GitHub tree path with invalid label" in {
+    val ex = the[ExternalLinkDirective.LinkException] thrownBy {
+      markdown("""
+        |@github[neither](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #does-not-exist }
+        |""")
+    }
+
+    ex.getMessage.replace('\\', '/') shouldBe
+      "Failed to resolve [core/src/test/scala/com/lightbend/paradox/markdown/example.scala] referenced from [test.html]: Label [does-not-exist] not found in [core/src/test/scala/com/lightbend/paradox/markdown/example.scala]"
+  }
+
 }

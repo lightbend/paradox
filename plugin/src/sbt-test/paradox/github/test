@@ -1,0 +1,3 @@
+> docs/paradox
+
+$ must-mirror docs/target/paradox/site/main/github.html expected/github.html

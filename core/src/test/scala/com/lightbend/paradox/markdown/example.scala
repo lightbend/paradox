@@ -16,6 +16,14 @@
 
 package com.lightbend.paradox.markdown
 
+//#github-path-link
+object GithubPathLink {
+  //#github-neither-path-link
+  type Neither[A, B] = Nothing
+  //#github-neither-path-link
+}
+//#github-path-link
+
 //#example
 object example extends App {
   println("Hello, World!")
