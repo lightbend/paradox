@@ -18,12 +18,11 @@ package com.lightbend.paradox.sbt
 
 import sbt._
 import sbt.Keys._
-
 import com.lightbend.paradox.ParadoxProcessor
 import com.lightbend.paradox.markdown.Writer
 import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
-import com.typesafe.sbt.web.SbtWeb
+import com.typesafe.sbt.web.{ Compat => WCompat, SbtWeb }
 
 object ParadoxPlugin extends AutoPlugin {
   object autoImport extends ParadoxKeys {
@@ -106,7 +105,7 @@ object ParadoxPlugin extends AutoPlugin {
     WebKeys.deduplicators in paradoxTheme += SbtWeb.selectFileFrom((sourceDirectory in paradoxTheme).value),
     mappings in paradoxTheme := SbtWeb.deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
     target in paradoxTheme := target.value / "paradox" / "theme",
-    paradoxThemeDirectory := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradoxTheme).value, (target in paradoxTheme).value),
+    paradoxThemeDirectory := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox-theme"), (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
     paradoxTemplate := {
       val dir = paradoxThemeDirectory.value
@@ -125,23 +124,26 @@ object ParadoxPlugin extends AutoPlugin {
     }).value,
     mappings in paradoxTemplate := Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate).value,
 
-    paradoxMarkdownToHtml := {
+    paradoxMarkdownToHtml := (Def.taskDyn {
+      val strms = streams.value
       IO.delete((target in paradoxMarkdownToHtml).value)
-      paradoxProcessor.value.process(
-        (mappings in paradoxMarkdownToHtml).value,
-        paradoxLeadingBreadcrumbs.value,
-        (target in paradoxMarkdownToHtml).value,
-        paradoxSourceSuffix.value,
-        paradoxTargetSuffix.value,
-        paradoxGroups.value,
-        paradoxProperties.value,
-        paradoxNavigationDepth.value,
-        paradoxNavigationExpandDepth.value,
-        paradoxNavigationIncludeHeaders.value,
-        paradoxTemplate.value,
-        new PageTemplate.ErrorLogger(s => streams.value.log.error(s))
-      )
-    },
+      Def.task {
+        paradoxProcessor.value.process(
+          (mappings in paradoxMarkdownToHtml).value,
+          paradoxLeadingBreadcrumbs.value,
+          (target in paradoxMarkdownToHtml).value,
+          paradoxSourceSuffix.value,
+          paradoxTargetSuffix.value,
+          paradoxGroups.value,
+          paradoxProperties.value,
+          paradoxNavigationDepth.value,
+          paradoxNavigationExpandDepth.value,
+          paradoxNavigationIncludeHeaders.value,
+          paradoxTemplate.value,
+          new PageTemplate.ErrorLogger(s => strms.log.error(s))
+        )
+      }
+    }).value,
 
     includeFilter in paradox := AllPassFilter,
     excludeFilter in paradox := {
@@ -164,9 +166,9 @@ object ParadoxPlugin extends AutoPlugin {
         target.value / "paradox" / "site" / "main"
     },
 
-    watchSources in Defaults.ConfigGlobal ++= (sourceDirectories in paradox).value.***.get,
+    watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
 
-    paradox := SbtWeb.syncMappings(streams.value.cacheDirectory, (mappings in paradox).value, (target in paradox).value)
+    paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
   ))
 
   def shortVersion(version: String): String = version.replace("-SNAPSHOT", "*")

@@ -16,10 +16,9 @@
 
 package org.pegdown.ast;
 
+import java.util.List;
 import org.parboiled.common.ImmutableList;
 import org.parboiled.common.StringUtils;
-
-import java.util.List;
 
 /**
  * General node for directives.
@@ -36,11 +35,13 @@ public class DirectiveNode extends AbstractNode {
     public final String contents;
     public final Node contentsNode;
 
-    public DirectiveNode(Format format, String name, String label, Source source, DirectiveAttributes attributes, Node labelNode) {
+    // Workaround for bug in ScalaDoc for Scala 2.12.x https://github.com/scala/bug/issues/10509
+    public DirectiveNode(DirectiveNode.Format format, String name, String label, DirectiveNode.Source source, DirectiveAttributes attributes, Node labelNode) {
         this(format, name, label, source, attributes, label, labelNode);
     }
 
-    public DirectiveNode(Format format, String name, String label, Source source, DirectiveAttributes attributes, String contents, Node contentsNode) {
+    // Workaround for bug in ScalaDoc for Scala 2.12.x https://github.com/scala/bug/issues/10509
+    public DirectiveNode(DirectiveNode.Format format, String name, String label, DirectiveNode.Source source, DirectiveAttributes attributes, String contents, Node contentsNode) {
         this.format = format;
         this.name = name;
         this.label = label;

@@ -56,16 +56,18 @@ object ParadoxThemePlugin extends AutoPlugin {
         libReference.findAllIn(IO.read(template)).matchData.flatMap(_.subgroups).toSeq
       }).toSet
     },
-    WebKeys.exportedMappings ++= {
+    WebKeys.exportedMappings ++= (Def.taskDyn {
       if (includeMinimalWebjars.value) {
         val prefix = SbtWeb.path(s"${WEBJARS_PATH_PREFIX}/${moduleName.value}/${version.value}/")
         val include = referencedWebjarAssets.value
-        (mappings in WebKeys.webModules).value flatMap {
-          case (file, path) if include(path) => Some(file -> (prefix + path))
-          case _                             => None
+        Def.task {
+          (mappings in WebKeys.webModules).value flatMap {
+            case (file, path) if include(path) => Some(file -> (prefix + path))
+            case _                             => None
+          }
         }
-      } else Seq.empty
-    }
+      } else Def.task { Seq.empty[(java.io.File, String)] }
+    }).value
   ))
 
 }
