@@ -112,7 +112,8 @@ either in the page's front matter or globally like this (for example):
 ```sbt
 paradoxProperties in Compile ++= Map(
   "snip.foo.base_dir" -> "../../../some/dir",
-  "snip.test.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example"
+  "snip.test.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example",
+  "snip.project.base_dir" -> (baseDirectory in ThisBuild).value.getAbsolutePath
 )
 ```
 
@@ -129,6 +130,6 @@ for example:
 
 If a placeholder directory is relative (like `$foo$` in this example) it'll be based of the path of the respective page
 it is used in. Also, *paradox* always auto-defines the placeholder `$root$` to denote the absolute path of the
-SBT project's root directory.
+sbt (sub)project's root directory.
 
 **Note**: Using this feature will not allow GitHub to follow the snippet links correctly on the web UI.
