@@ -19,7 +19,7 @@ addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.7.1")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "2.0.0")
 addSbtPlugin("org.foundweekends"     % "sbt-bintray"     % "0.5.1")
 addSbtPlugin("com.jsuereth"          % "sbt-pgp"         % "1.1.0-M1")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.2.12")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.3.0")
 
 libraryDependencies += "org.scala-sbt" % "scripted-plugin" % sbtVersion.value
 
