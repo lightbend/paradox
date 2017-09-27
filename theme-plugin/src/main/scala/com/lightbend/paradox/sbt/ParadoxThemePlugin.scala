@@ -39,6 +39,7 @@ object ParadoxThemePlugin extends AutoPlugin {
   override def requires = SbtWeb
 
   override def projectSettings = minimalWebjarSettings ++ Seq(
+    autoScalaLibrary := false,
     crossPaths := false
   )
 
