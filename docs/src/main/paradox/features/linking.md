@@ -73,6 +73,8 @@ associated with the configured `scalaVersion`. If the sbt project's
 `apiURL` setting is configured, it is used as the default Scaladoc base
 URL.
 
+The `@scaladoc` directive also supports site root relative base URLs using the `.../` syntax.
+
 #### @javadoc directive
 
 Use the `@javadoc` directives to link to Javadoc sites based on the package
@@ -91,6 +93,8 @@ Then `@javadoc[Http](akka.http.javadsl.Http#shutdownAllConnectionPools--)` will 
 
 By default, `javadoc.java.base_url` is configured to the Javadoc
 associated with the `java.specification.version` system property.
+
+The `@javadoc` directive also supports site root relative base URLs using the `.../` syntax.
 
 #### @github directive
 
@@ -131,6 +135,8 @@ extref.rfc.base_url=http://tools.ietf.org/html/rfc%s
 
 then `@extref[RFC 2119](rfc:2119)` will resolve to the URL
 <http://tools.ietf.org/html/rfc2119>.
+
+The `@extref` directive also supports site root relative base URLs using the `.../` syntax.
 
 #### image.base_url
 

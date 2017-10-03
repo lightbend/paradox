@@ -25,6 +25,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
     "javadoc.java.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
     "javadoc.akka.base_url" -> "http://doc.akka.io/japi/akka/2.4.10",
     "javadoc.akka.http.base_url" -> "http://doc.akka.io/japi/akka-http/10.0.0/index.html",
+    "javadoc.root.relative.base_url" -> ".../javadoc/api/",
     "javadoc.broken.base_url" -> "https://c|"
   )
 
@@ -36,6 +37,11 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
   it should "support 'javadoc:' as an alternative name" in {
     markdown("@javadoc:[Publisher](org.reactivestreams.Publisher)") shouldEqual
       html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html">Publisher</a></p>""")
+  }
+
+  it should "support root relative '...' base urls" in {
+    markdown("@javadoc[Url](root.relative.Url)") shouldEqual
+      html("""<p><a href="javadoc/api/?root/relative/Url.html">Url</a></p>""")
   }
 
   it should "handle method links correctly" in {

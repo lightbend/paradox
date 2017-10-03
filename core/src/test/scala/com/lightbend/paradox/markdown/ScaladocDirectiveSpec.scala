@@ -23,6 +23,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8/",
     "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
     "scaladoc.akka.http.base_url" -> "http://doc.akka.io/api/akka-http/10.0.0",
+    "scaladoc.root.relative.base_url" -> ".../scaladoc/api/",
     "scaladoc.broken.base_url" -> "https://c|"
   )
 
@@ -34,6 +35,11 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   it should "support 'scaladoc:' as an alternative name" in {
     markdown("@scaladoc:[Model](org.example.Model)") shouldEqual
       html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a></p>""")
+  }
+
+  it should "support root relative '...' base urls" in {
+    markdown("@scaladoc:[Url](root.relative.Url)") shouldEqual
+      html("""<p><a href="scaladoc/api/root/relative/Url.html">Url</a></p>""")
   }
 
   it should "handle method links correctly" in {
