@@ -153,7 +153,8 @@ abstract class ExternalLinkDirective(names: String*)
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
     try {
-      resolveLink(node: DirectiveNode, link).base.normalize.toString
+      val resolvedLink = resolveLink(node: DirectiveNode, link).base.normalize.toString
+      if (resolvedLink startsWith (".../")) page.base + resolvedLink.drop(4) else resolvedLink
     } catch {
       case Url.Error(reason) =>
         throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
@@ -217,8 +218,10 @@ abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, 
   def resolveLink(node: DirectiveNode, link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
-    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl)
-    resolveApiLink(baseUrl.resolve, link)
+    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
+    val resolvedLink = resolveApiLink(baseUrl, link)
+    val resolvedPath = resolvedLink.base.getPath
+    if (resolvedPath startsWith ".../") resolvedLink.copy(path = page.base + resolvedPath.drop(4)) else resolvedLink
   }
 
 }

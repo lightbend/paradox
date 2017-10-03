@@ -22,6 +22,7 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
     "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s",
     "extref.issue.base_url" -> "https://github.com/lightbend/paradox/issues/%s",
     "extref.docs.base_url" -> "https://docs.example.org/%s",
+    "extref.root_relative.base_url" -> ".../root/relative/%s",
     "extref.broken.base_url" -> "https://c|%s")
 
   "ExtRef directive" should "create links using configured URL templates" in {
@@ -41,6 +42,11 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
   it should "support 'extref:' as an alternative name" in {
     markdown("@extref:[RFC 1234](rfc:1234)") shouldEqual
       html("""<p><a href="http://tools.ietf.org/html/rfc1234">RFC 1234</a></p>""")
+  }
+
+  it should "support root relative '...' base urls" in {
+    markdown("@extref:[Root Relative 1729](root_relative:1729)") shouldEqual
+      html("""<p><a href="root/relative/1729">Root Relative 1729</a></p>""")
   }
 
   it should "handle anchored links correctly" in {
