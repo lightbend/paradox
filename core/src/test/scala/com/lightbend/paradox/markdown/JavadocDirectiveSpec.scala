@@ -46,7 +46,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "handle method links correctly" in {
     markdown("@javadoc[File.pathSeparator](java.io.File#pathSeparator)") shouldEqual
-      html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/?java/io/File.html#pathSeparator">File.pathSeparator</a></p>""")
+      html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html#pathSeparator">File.pathSeparator</a></p>""")
   }
 
   it should "handle class links correctly" in {
