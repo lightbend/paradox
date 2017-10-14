@@ -246,19 +246,17 @@ case class JavadocDirective(page: Page, variables: Map[String, String])
     else
       resolveClassLink(baseUrl, link)
 
-  private def resolveClassLink(baseUrl: Url, link: String): Url =
-    {
-      val url = Url(link).base
-      val path = url.getPath.replace('.', '/') + ".html"
-      baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
-    }
+  private def resolveClassLink(baseUrl: Url, link: String): Url = {
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+  }
 
-  private def resolveMethodLink(baseUrl: Url, link: String): Url =
-    {
-      val url = Url(link).base
-      val path = url.getPath.replace('.', '/') + ".html"
-      (baseUrl / path) withFragment (url.getFragment)
-    }
+  private def resolveMethodLink(baseUrl: Url, link: String): Url = {
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    (baseUrl / path) withFragment (url.getFragment)
+  }
 }
 
 /**
