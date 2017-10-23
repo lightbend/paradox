@@ -8,19 +8,14 @@ Paradox [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] [![gitter-ba
 [gitter]:                    https://gitter.im/lightbend/paradox
 [gitter-badge]:       https://badges.gitter.im/lightbend/paradox.svg
 
-Paradox is a markdown documentation tool for software projects.
-
-**Paradox is NOT supported under the Lightbend subscription.**
-
-See [Paradox docs](http://developer.lightbend.com/docs/paradox/latest/) for details.
+Paradox is a markdown documentation tool for software projects. See [Paradox docs](http://developer.lightbend.com/docs/paradox/latest/) for details.
 
 ## License
 
 This software is licensed under the Apache 2 license.
 
-### Developed by Lightbend
+## Maintenance notes
+
 **Paradox is NOT supported under the Lightbend subscription.**
 
-Maintained by [Paradox Team](https://github.com/orgs/lightbend/teams/paradox)
-
-Pull requests are very welcome–thanks in advance!
+The project is maintained by the [Paradox Team](https://github.com/orgs/lightbend/teams/paradox) and all [the contributors](https://github.com/lightbend/paradox/graphs/contributors). Pull requests are very welcome–thanks in advance!
