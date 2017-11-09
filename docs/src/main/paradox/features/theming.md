@@ -94,4 +94,4 @@ sourceDirectory in Compile in paradoxTheme := sourceDirectory.value / "main" / "
 
 If you use the default paradox theme for example, take a look at the [generic theme](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets) to see the templates you could use or modify for your personal templates.
 
-An example of modification of this template would be to use some of its templates and modify for example the default `page.st` file to manipulate the other template files differently. Once again, if you don't want to modify the `page.st` file but use an other default page built by yourself, you can add the `layout` property as explained in the [layout section](templating.md#layout)
+An example of modification of this template would be to use some of its templates and modify for example the default `page.st` file to manipulate the other template files differently. Once again, if you don't want to modify the `page.st` file but use an other default page built by yourself, you can add the `layout` property as explained in the @ref[layout section](templating.md#layout)
