@@ -28,7 +28,7 @@ import scala.collection.JavaConverters._
  */
 object Index {
 
-  case class Ref(level: Int, path: String, markdown: Node)
+  case class Ref(level: Int, path: String, markdown: Node, group: Option[String])
 
   case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref])
 
@@ -46,20 +46,25 @@ object Index {
    * Create a tree of header refs from a parsed markdown page.
    */
   def headers(root: RootNode): Forest[Ref] = {
-    Tree.hierarchy(headerRefs(root))(Ordering[Int].on[Ref](_.level))
+    Tree.hierarchy(headerRefs(root, group = None))(Ordering[Int].on[Ref](_.level))
   }
 
   /**
    * Extract refs from markdown headers.
    */
-  private def headerRefs(root: RootNode): List[Ref] = {
+  private def headerRefs(root: RootNode, group: Option[String]): List[Ref] = {
     root.getChildren.asScala.toList.flatMap {
       case header: HeaderNode =>
         header.getChildren.asScala.toList.flatMap {
-          case anchor: AnchorLinkSuperNode => List(Ref(header.getLevel, "#" + anchor.name, anchor.contents))
-          case anchor: AnchorLinkNode      => List(Ref(header.getLevel, "#" + anchor.getName, new TextNode(anchor.getText)))
+          case anchor: AnchorLinkSuperNode => List(Ref(header.getLevel, "#" + anchor.name, anchor.contents, group))
+          case anchor: AnchorLinkNode      => List(Ref(header.getLevel, "#" + anchor.getName, new TextNode(anchor.getText), group))
           case _                           => Nil
         }
+      case node: DirectiveNode if node.format == DirectiveNode.Format.ContainerBlock =>
+        // TODO check whether my assumption that Container DirectiveNode's always contain RootNode's holds,
+        // if so maybe move that cast to DirectiveNode
+        val newGroup = node.attributes.classes().asScala.find(_.startsWith("group-")).map(_.substring("group-".size))
+        headerRefs(node.contentsNode.asInstanceOf[RootNode], newGroup)
       case _ => Nil
     }
   }
@@ -104,7 +109,7 @@ object Index {
   @tailrec
   private def linkRef(node: Node, level: Int): Option[Ref] = {
     node match {
-      case link: ExpLinkNode => Some(Ref(level, link.url, link.getChildren.get(0)))
+      case link: ExpLinkNode => Some(Ref(level, link.url, link.getChildren.get(0), group = None))
       case other => other.getChildren.asScala.toList match {
         // only check first children
         case first :: _ => linkRef(first, level)

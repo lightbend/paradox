@@ -130,13 +130,13 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
   }
 
   private def link[A <: Linkable](base: String, linkable: A, active: Option[Location[Page]]): Node = {
-    val (path, classAttribute) = linkable match {
+    val (path, classAttributes) = linkable match {
       case page: Page =>
         val isActive = active.exists(_.tree.label.path == page.path)
-        (if (headers && isActive) (page.path + page.h1.path) else page.path, if (isActive) "active page" else "page")
-      case header: Header => (header.path, "header")
+        (if (headers && isActive) (page.path + page.h1.path) else page.path, (if (isActive) List("active") else Nil) :+ "page")
+      case header: Header => (header.path, List("header"))
     }
-    new ClassyLinkNode(base + path, classAttribute, linkable.label)
+    new ClassyLinkNode(base + path, (classAttributes ++ linkable.group.map("group-" + _)).mkString(" "), linkable.label)
   }
 
 }
