@@ -30,6 +30,7 @@ import scala.annotation.tailrec
 sealed abstract class Linkable {
   def path: String
   def label: Node
+  def classAttributes: List[String] = Nil
 }
 
 /**
@@ -59,6 +60,11 @@ case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: 
     }
     textNodes(label).mkString
   }
+
+  /**
+   * Attributes to add to links to this page
+   */
+  override val classAttributes: List[String] = properties.get.get("group").map("group-" + _).toList
 }
 
 object Page {
