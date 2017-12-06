@@ -43,7 +43,11 @@ class NavigationSpec extends MarkdownBaseSpec {
       |# 2
     """,
     "2/a.md" -> """
+      |---
+      |group: scala
+      |---
       |# 2/a
+      |@@@
     """,
     "2/b.md" -> """
       |# 2/b
@@ -88,7 +92,7 @@ class NavigationSpec extends MarkdownBaseSpec {
       |<li><a href="1.html" class="page">1</a></li>
       |<li><a href="2.html" class="page">2</a>
       |<ul>
-      |<li><a href="2/a.html" class="page">2/a</a></li>
+      |<li><a href="2/a.html" class="group-scala page">2/a</a></li>
       |<li><a href="2/b.html" class="page">2/b</a></li>
       |</ul>
       |</li>
@@ -147,7 +151,7 @@ class NavigationSpec extends MarkdownBaseSpec {
       |<li><a href="1.html" class="page">1</a></li>
       |<li><a href="2.html" class="page">2</a>
       |<ul>
-      |<li><a href="2/a.html" class="page">2/a</a></li>
+      |<li><a href="2/a.html" class="group-scala page">2/a</a></li>
       |<li><a href="2/b.html" class="page">2/b</a></li>
       |</ul>
       |</li>
