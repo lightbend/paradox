@@ -381,6 +381,7 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
           |  // $FiddleEnd
           |}
           |""".stripMargin, "UTF-8")
+        .replace("+", "%20") // due to: https://stackoverflow.com/questions/4737841/urlencoder-not-able-to-translate-space-character
 
       printer.println.print(s"""
         <iframe class="$cssClass" $width $height src="$baseUrl?$extraParams&source=$fiddleSource" frameborder="0" style="$cssStyle"></iframe>
