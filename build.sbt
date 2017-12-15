@@ -120,7 +120,7 @@ releaseProcess := {
     checkSnapshotDependencies,
     inquireVersions,
     runClean,
-    releaseStepCommandAndRemaining("^ test"),
+    releaseStepCommandAndRemaining("verify"),
     setReleaseVersion,
     commitReleaseVersion,
     tagRelease,
