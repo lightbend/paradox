@@ -59,7 +59,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       case Some(loc) =>
         val page = loc.tree.label
         val pageProperties = properties ++ page.properties.get
-        val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)_
+        val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
         val writerContext = Writer.Context(loc, paths, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, navToc, pageToc)
         val outputFile = new File(outputDirectory, page.path)
