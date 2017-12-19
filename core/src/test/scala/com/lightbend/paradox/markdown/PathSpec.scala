@@ -101,7 +101,7 @@ class PathSpec extends FlatSpec with Matchers {
 
   "Path.generateTargetFile" should "return the corresponding target file given the relative mapping for the current file" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    val newMapping = Path.generateTargetFile(sourcePath, mappings)_
+    val newMapping = Path.generateTargetFile(sourcePath, mappings)
 
     newMapping("../../index.md") shouldEqual "../../index.html"
     the[RuntimeException] thrownBy {
@@ -112,7 +112,7 @@ class PathSpec extends FlatSpec with Matchers {
 
   it should "return the source file for fragment links" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    val newMapping = Path.generateTargetFile(sourcePath, mappings)_
+    val newMapping = Path.generateTargetFile(sourcePath, mappings)
 
     newMapping("#frag") shouldEqual "source.html#frag"
   }

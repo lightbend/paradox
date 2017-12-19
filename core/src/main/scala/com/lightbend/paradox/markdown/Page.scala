@@ -226,12 +226,15 @@ object Path {
   /**
    * Provide the final target file given a particular source file/link
    */
-  def generateTargetFile(localPath: String, globalPageMappings: Map[String, String])(link: String): String = {
+  def generateTargetFile(localPath: String, globalPageMappings: Map[String, String]): String => String = {
     val mappings = relativeMapping(localPath, globalPageMappings)
-    val uri = new URI(localPath).resolve(new URI(link))
-    mappings.get(uri.getPath) match {
-      case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
-      case None    => sys.error(s"No reference link corresponding to $link")
+
+    { link =>
+      val uri = new URI(localPath).resolve(new URI(link))
+      mappings.get(uri.getPath) match {
+        case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
+        case None    => sys.error(s"No reference link corresponding to $link")
+      }
     }
   }
 
