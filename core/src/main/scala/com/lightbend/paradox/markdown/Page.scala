@@ -30,17 +30,18 @@ import scala.annotation.tailrec
 sealed abstract class Linkable {
   def path: String
   def label: Node
+  def group: Option[String]
 }
 
 /**
  * Header in a page, with anchor path and markdown nodes.
  */
-case class Header(path: String, label: Node) extends Linkable
+case class Header(path: String, label: Node, group: Option[String]) extends Linkable
 
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, properties: Page.Properties) extends Linkable {
+case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, group: Option[String], properties: Page.Properties) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -93,11 +94,11 @@ object Page {
     val targetPath = properties.convertToTarget(convertPath)(page.path)
     val rootSrcPage = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
-      case h :: hs => (Header(h.label.path, h.label.markdown), h.children ++ hs)
-      case hs      => (Header(targetPath, new SpecialTextNode(targetPath)), hs)
+      case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group), h.children ++ hs)
+      case Nil      => (Header(targetPath, new SpecialTextNode(targetPath), None), Nil)
     }
-    val headers = subheaders map (_ map (h => Header(h.path, h.markdown)))
-    Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, properties)
+    val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group)))
+    Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, h1.group, properties)
   }
 
   /**
