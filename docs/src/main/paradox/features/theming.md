@@ -35,7 +35,11 @@ If you don't want to use a predefined theme, or at least the entire theme, you c
 
 #### External theme
 
-The [Lightbend theme](https://github.com/typesafehub/paradox-theme-lightbend) is a good example of what should look like a paradox theme repository.
+External themes use the paradox theme plugin to package files into a JAR which
+can be published to Maven Central or some other repository. The
+[Akka theme](https://github.com/akka/akka-paradox) and
+[Material Design theme](https://github.com/jonas/paradox-material-theme) are
+good examples of what a paradox theme repository should look like.
 
 Add to the `project/plugins.sbt` file of your theme repository:
 
@@ -52,7 +56,8 @@ lazy val myTheme = (project in file("."))
     inThisBuild(List(
       organization := "com.organization.paradox"
     )),
-    name := "paradox-theme-organization",
+    name := "paradox-theme-organization"
+  )
 ```
 
 Finally, the theme created will be available inside your paradox project by setting the `paradoxTheme` like this:
