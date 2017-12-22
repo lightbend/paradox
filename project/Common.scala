@@ -52,14 +52,14 @@ object Common extends AutoPlugin {
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-      .setPreference(DoubleIndentClassDeclaration, true)
+      .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(AlignParameters, true),
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
-      FileType.scala -> CommentStyle.CStyleBlockComment,
-      FileType.java -> CommentStyle.CStyleBlockComment,
-      FileType.conf -> CommentStyle.HashLineComment
+      FileType.scala -> CommentStyle.cStyleBlockComment,
+      FileType.java -> CommentStyle.cStyleBlockComment,
+      FileType.conf -> CommentStyle.hashLineComment
     ),
     HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText))
   )
