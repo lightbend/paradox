@@ -35,7 +35,7 @@ object Common extends AutoPlugin {
       case "0.13" => "2.10.7"
       case _ => "2.12.6"
     }},
-    crossSbtVersions := Seq("0.13.17", "1.0.0"),
+    crossSbtVersions := Seq("0.13.17", "1.0.4"),
     // fixed in https://github.com/sbt/sbt/pull/3397 (for sbt 0.13.17)
     sbtBinaryVersion in update := (sbtBinaryVersion in pluginCrossBuild).value,
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
