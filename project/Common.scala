@@ -48,6 +48,7 @@ object Common extends AutoPlugin {
       case "0.13" => Seq("-source", "1.6", "-target", "1.6")
       case _ => Seq.empty
     }},
+    resolvers += Resolver.typesafeIvyRepo("releases"),
     // Scalariform settings
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
       .setPreference(AlignSingleLineCaseStatements, true)
