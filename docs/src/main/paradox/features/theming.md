@@ -22,7 +22,7 @@ $otherTemplate()$
 To use a theme you need to set `paradoxTheme` in your build.
 
 - If you want to use the default theme of paradox, you can use it by setting `paradoxTheme := Some(builtinParadoxTheme("generic"))`. Take a look at this [default theme](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets) to get an idea of how it looks like.
-- If you want to use an external theme, you can use it by setting `paradoxTheme := Some("organization" % "name" % "X.Y.Z")`. A good example of an external theme is the [Lightbend theme](https://github.com/typesafehub/paradox-theme-lightbend).
+- If you want to use an external theme, you can use it by setting `paradoxTheme := Some("organization" % "name" % "X.Y.Z")`. A good example of an external theme is the [Material theme](https://github.com/jonas/paradox-material-theme).
 
 
 ### How to create themes
