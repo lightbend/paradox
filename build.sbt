@@ -107,7 +107,10 @@ lazy val docs = (project in file("docs"))
   .settings(
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
-    paradoxProperties in Compile += ("empty" -> ""),
+    paradoxProperties in Compile ++= Map(
+      "empty" -> "",
+      "version" -> version.value
+    ),
     paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
   )
 
