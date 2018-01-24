@@ -43,9 +43,11 @@ good examples of what a paradox theme repository should look like.
 
 Add to the `project/plugins.sbt` file of your theme repository:
 
+@@@vars
 ```scala
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-theme" % "X.Y.Z")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-theme" % "$version$")
 ```
+@@@
 
 and in your `build.sbt` file the information that will be used to generate your theme.
 
