@@ -501,7 +501,7 @@ case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ,
  *
  * Wraps inner contents in a `span`, optionally with custom `id` and/or `class` attributes.
  */
-case class InlineWrapDirective(typ: String) extends InlineDirective("span") {
+case class InlineWrapDirective(typ: String) extends InlineDirective(typ) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val id =
       node.attributes.identifier match {
