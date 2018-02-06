@@ -95,7 +95,7 @@ object Page {
     val rootSrcPage = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group), h.children ++ hs)
-      case Nil      => (Header(targetPath, new SpecialTextNode(targetPath), None), Nil)
+      case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None), Nil)
     }
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group)))
     Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, h1.group, properties)

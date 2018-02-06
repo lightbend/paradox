@@ -58,4 +58,24 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
       |</div>""")
   }
 
+  it should "render nested blocks" in {
+    markdown("""
+      |@@@ div
+      |Simple sentence here.
+      |
+      |@@@@ warning
+      |
+      |warning inside a div
+      |
+      |@@@@
+      |
+      |@@@""") shouldEqual html("""
+      |<div>
+      |<p>Simple sentence here.</p>
+      |<div class="callout warning">
+      |<div class="callout-title">Warning</div>
+      |<p>warning inside a div</p>
+      |</div>
+      |</div>""")
+  }
 }
