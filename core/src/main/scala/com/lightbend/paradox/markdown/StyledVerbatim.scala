@@ -16,6 +16,9 @@
 
 package com.lightbend.paradox.markdown
 
+import scala.collection.mutable.Buffer
+import scala.collection.JavaConverters._
+
 import org.parboiled.common.StringUtils
 import org.pegdown.ast.{ VerbatimNode, VerbatimGroupNode }
 import org.pegdown.{ Printer, VerbatimSerializer }
@@ -25,7 +28,7 @@ import org.pegdown.{ Printer, VerbatimSerializer }
  */
 abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
-  def printPreAttributes(printer: Printer, nodeGroup: String = ""): Unit
+  def printPreAttributes(printer: Printer, nodeGroup: String = "", classes: Buffer[String] = Buffer.empty[String]): Unit
 
   def printCodeAttributes(printer: Printer, nodeType: String): Unit
 
@@ -35,7 +38,7 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
     printer.print("<pre")
     if (!StringUtils.isEmpty(node.getType)) {
       node match {
-        case vgn: VerbatimGroupNode => printPreAttributes(printer, vgn.getGroup)
+        case vgn: VerbatimGroupNode => printPreAttributes(printer, vgn.getGroup, vgn.getClasses.asScala)
         case vn: VerbatimNode       => printPreAttributes(printer)
       }
     }
@@ -69,11 +72,12 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
  * Add prettify markup around verbatim blocks.
  */
 object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
-  override def printPreAttributes(printer: Printer, nodeGroup: String): Unit = {
-    nodeGroup match {
-      case "" => printClass(printer, "prettyprint")
-      case g  => printClass(printer, "prettyprint group-" + g)
-    }
+  override def printPreAttributes(printer: Printer, nodeGroup: String, classes: Buffer[String]): Unit = {
+    val allClasses = "prettyprint" +: (nodeGroup match {
+      case "" => classes
+      case g  => ("group-" + g) +: classes
+    })
+    printClass(printer, allClasses.mkString(" "))
   }
 
   override def printCodeAttributes(printer: Printer, nodeType: String): Unit = nodeType match {
