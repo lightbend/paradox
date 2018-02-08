@@ -29,7 +29,7 @@ will render as:
 </div>
 ```
 
-You can even nest blocks like this:
+You can even nest blocks by using more `@` characters like this:
 
 ```
 @@@ div { #foo .bar .baz }
