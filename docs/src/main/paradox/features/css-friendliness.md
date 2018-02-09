@@ -28,3 +28,19 @@ will render as:
   <p>Inner <strong>markdown</strong> content.</p>    
 </div>
 ```
+
+You can even nest blocks by using more `@` characters like this:
+
+```
+@@@ div { #foo .bar .baz }
+
+Inner **markdown** content.
+
+@@@@ warning
+
+With an embedded warning
+
+@@@@
+
+@@@
+```
