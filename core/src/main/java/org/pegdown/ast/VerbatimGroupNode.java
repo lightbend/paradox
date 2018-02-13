@@ -16,20 +16,25 @@
 
 package org.pegdown.ast;
 
+import java.util.Collections;
+import java.util.List;
+
 public class VerbatimGroupNode extends VerbatimNode {
     private final String group;
+    private final List<String> classes;
 
     public VerbatimGroupNode(String text) {
-        this(text, "", "");
+        this(text, "", "", Collections.<String>emptyList());
     }
 
     public VerbatimGroupNode(String text, String type) {
-    	this(text, type, "");
+    	this(text, type, "", Collections.<String>emptyList());
     }
 
-    public VerbatimGroupNode(String text, String type, String group) {
+    public VerbatimGroupNode(String text, String type, String group, List<String> classes) {
     	super(text, type);
     	this.group = group;
+      this.classes = classes;
     }
 
     @Override
@@ -39,5 +44,9 @@ public class VerbatimGroupNode extends VerbatimNode {
 
     public String getGroup() {
     	return group;
+    }
+
+    public List<String> getClasses() {
+      return classes;
     }
 }

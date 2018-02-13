@@ -68,14 +68,18 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |</dl>""")
   }
 
-  it should "support a custom id and custom CSS classes at the same time" in {
+  it should "support custom CSS classes" in {
     markdown("""
-      |@@@ div { #yeah .red .blue }
-      |Simple sentence here.
-      |@@@""") shouldEqual html("""
-      |<div id="yeah" class="red blue">
-      |<p>Simple sentence here.</p>
-      |</div>""")
+      |@@snip[example2.java](core/src/test/scala/com/lightbend/paradox/markdown/example2.java){ #example2 .red .blue }
+      |""") shouldEqual html("""
+      |<pre class="prettyprint red blue">
+      |<code class="language-java">
+      |public class example2 {
+      |    public static void main(String[] args) {
+      |        System.out.println("Hello, World");
+      |    }
+      |}</code>
+      |</pre>""")
   }
 
 }

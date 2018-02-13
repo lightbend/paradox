@@ -334,7 +334,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       val (text, snippetLang) = Snippet("snip", source, labels, page, variables)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
-      new VerbatimGroupNode(text, lang, group).accept(visitor)
+      new VerbatimGroupNode(text, lang, group, node.attributes.classes).accept(visitor)
     } catch {
       case e: FileNotFoundException =>
         throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")
