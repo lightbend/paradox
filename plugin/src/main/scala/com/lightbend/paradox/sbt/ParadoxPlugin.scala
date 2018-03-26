@@ -169,6 +169,8 @@ object ParadoxPlugin extends AutoPlugin {
 
     watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
 
+    paradoxBrowse := openInBrowser((paradox in Compile).value / "index.html", streams.value.log),
+
     paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
   ))
 
@@ -212,5 +214,11 @@ object ParadoxPlugin extends AutoPlugin {
 
   def InDirectoryFilter(base: File): FileFilter =
     new SimpleFileFilter(_.getAbsolutePath.startsWith(base.getAbsolutePath))
+
+  def openInBrowser(rootDocFile: File, log: Logger): Unit = {
+    import java.awt.Desktop
+    if (Desktop.isDesktopSupported) Desktop.getDesktop.open(rootDocFile)
+    else log.info(s"Couldn't open default browser, but docs are at $rootDocFile")
+  }
 
 }
