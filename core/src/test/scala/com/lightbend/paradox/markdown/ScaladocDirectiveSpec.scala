@@ -20,7 +20,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
     "scaladoc.base_url" -> "http://example.org/api/0.1.2/",
-    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.8/",
+    "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.12/",
     "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
     "scaladoc.akka.http.base_url" -> "http://doc.akka.io/api/akka-http/10.0.0",
     "scaladoc.root.relative.base_url" -> ".../scaladoc/api/",
@@ -44,7 +44,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "handle method links correctly" in {
     markdown("@scaladoc[???](scala.Predef$#???:Nothing)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.8/scala/Predef$.html#???:Nothing">???</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Predef$.html#???:Nothing">???</a></p>""")
 
     markdown(
       """@scaladoc:[Actor#preStart]
@@ -97,15 +97,15 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "support Scala 2.11 links" in {
     implicit val context = writerContextWithProperties(
-      "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.11/",
-      "scaladoc.version" -> "2.11.11")
+      "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.12/",
+      "scaladoc.version" -> "2.11.12")
 
     markdown("@scaladoc[Int](scala.Int)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/Int.html">Int</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Int.html">Int</a></p>""")
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/io/Codec$.html">Codec$</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/Codec$.html">Codec$</a></p>""")
     markdown("@scaladoc[scala.io package](scala.io.package)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.11/scala/io/package.html">scala.io package</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/package.html">scala.io package</a></p>""")
   }
 
   it should "support referenced links" in {

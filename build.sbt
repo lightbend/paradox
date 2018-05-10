@@ -21,8 +21,8 @@ lazy val paradox = project
   .settings(inThisBuild(List(
     organization := "com.lightbend.paradox",
     licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
-    scalaVersion := "2.10.6",
-    crossScalaVersions := Seq("2.10.6", "2.12.3"),
+    scalaVersion := "2.10.7",
+    crossScalaVersions := Seq("2.10.7", "2.12.6"),
     organizationName := "lightbend",
     organizationHomepage := Some(url("http://lightbend.com/")),
     homepage := Some(url("https://github.com/lightbend/paradox")),
