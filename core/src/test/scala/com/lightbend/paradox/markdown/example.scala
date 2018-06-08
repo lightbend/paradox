@@ -29,3 +29,15 @@ object example extends App {
   println("Hello, World!")
 }
 //#example
+
+object IndentedExample {
+  //#indented-example
+  case object Dent
+  //#indented-example
+
+  object EventMore {
+    //#indented-example
+    case object DoubleDent
+    //#indented-example
+  }
+}

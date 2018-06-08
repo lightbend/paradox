@@ -27,7 +27,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "The `snip` directive" should "render code snippets" in {
-    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) {#example }""") shouldEqual html("""
+    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
@@ -79,6 +79,15 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |        System.out.println("Hello, World");
       |    }
       |}</code>
+      |</pre>""")
+  }
+
+  it should "trim indentation from snippets" in {
+    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |case object Dent
+      |case object DoubleDent</code>
       |</pre>""")
   }
 

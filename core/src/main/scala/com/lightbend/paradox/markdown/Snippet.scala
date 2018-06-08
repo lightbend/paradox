@@ -64,34 +64,41 @@ object Snippet {
     val extractionState = extract(file, hasLabel, hasLabel, addFilteredLine)
     if (extractionState.snippetLines.isEmpty)
       throw new SnippetException(s"Label [$label] not found in [$file]")
-    if (extractionState.inBlock)
-      throw new SnippetException(s"Label [$label] block not closed in [$file]")
+    extractionState.block match {
+      case InBlock(_) => throw new SnippetException(s"Label [$label] block not closed in [$file]")
+      case _          =>
+    }
     extractionState
   }
 
   private def extract(file: File, label: String): String = {
     val extractionState = extractState(file, label)
     val snippetLines = extractionState.snippetLines
-    val indent = snippetLines.flatMap(l => Some(l.indexWhere(_ != ' ')).filter(_ >= 0)).min
-    (snippetLines map (_ drop indent)).mkString("\n")
+    snippetLines.mkString("\n")
   }
 
   private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
     val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
-    lines.zipWithIndex.foldLeft(ExtractionState(inBlock = false, lines = Seq.empty)) {
+    lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) {
       case (es, (l, lineIndex)) =>
-        es.inBlock match {
-          case false if (blockStart(l)) => es.copy(inBlock = true, lines = addLine(l, es.lines, lineIndex + 1))
-          case false                    => es
-          case true if (blockEnd(l))    => es.copy(inBlock = false, lines = addLine(l, es.lines, lineIndex + 1))
-          case true                     => es.copy(lines = addLine(l, es.lines, lineIndex + 1))
+        es.block match {
+          case NoBlock if (blockStart(l)) =>
+            val indent = l.indexWhere(_ != ' ')
+            es.copy(block = InBlock(indent), lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
+          case NoBlock                          => es
+          case InBlock(indent) if (blockEnd(l)) => es.copy(block = NoBlock, lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
+          case InBlock(indent)                  => es.copy(lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
         }
     }
   }
 
-  private case class ExtractionState(inBlock: Boolean, lines: Seq[Line]) {
+  private case class ExtractionState(block: Block, lines: Seq[Line]) {
     def snippetLines = lines.map(_._2)
   }
+
+  private sealed trait Block
+  private case object NoBlock extends Block
+  private case class InBlock(indent: Int) extends Block
 
   private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
   private def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
