@@ -35,7 +35,7 @@ object Common extends AutoPlugin {
       case "0.13" => "2.10.7"
       case _ => "2.12.6"
     }},
-    crossSbtVersions := Seq("0.13.17", "1.0.0"),
+    crossSbtVersions := Seq("0.13.17", "1.0.4"),
     // fixed in https://github.com/sbt/sbt/pull/3397 (for sbt 0.13.17)
     sbtBinaryVersion in update := (sbtBinaryVersion in pluginCrossBuild).value,
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
@@ -48,18 +48,19 @@ object Common extends AutoPlugin {
       case "0.13" => Seq("-source", "1.6", "-target", "1.6")
       case _ => Seq.empty
     }},
+    resolvers += Resolver.typesafeIvyRepo("releases"),
     // Scalariform settings
     ScalariformKeys.preferences := ScalariformKeys.preferences.value
       .setPreference(AlignSingleLineCaseStatements, true)
       .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-      .setPreference(DoubleIndentClassDeclaration, true)
+      .setPreference(DoubleIndentConstructorArguments, true)
       .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(AlignParameters, true),
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
-      FileType.scala -> CommentStyle.CStyleBlockComment,
-      FileType.java -> CommentStyle.CStyleBlockComment,
-      FileType.conf -> CommentStyle.HashLineComment
+      FileType.scala -> CommentStyle.cStyleBlockComment,
+      FileType.java -> CommentStyle.cStyleBlockComment,
+      FileType.conf -> CommentStyle.hashLineComment
     ),
     HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText))
   )

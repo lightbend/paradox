@@ -21,10 +21,10 @@ lazy val paradox = project
   .settings(inThisBuild(List(
     organization := "com.lightbend.paradox",
     licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
-    scalaVersion := "2.10.7",
+    scalaVersion := "2.12.6",
     crossScalaVersions := Seq("2.10.7", "2.12.6"),
     organizationName := "lightbend",
-    organizationHomepage := Some(url("http://lightbend.com/")),
+    organizationHomepage := Some(url("https://lightbend.com/")),
     homepage := Some(url("https://github.com/lightbend/paradox")),
     scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
     developers := List(
@@ -58,7 +58,6 @@ lazy val plugin = project
     name := "sbt-paradox",
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
-    scriptedSettings,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
       a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)

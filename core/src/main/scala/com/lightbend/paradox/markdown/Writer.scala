@@ -93,13 +93,13 @@ object Writer {
    * Write context which is passed through to directives.
    */
   case class Context(
-    location:     Location[Page],
-    paths:        Set[String],
-    pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-    sourceSuffix: String                   = DefaultSourceSuffix,
-    targetSuffix: String                   = DefaultTargetSuffix,
-    groups:       Map[String, Seq[String]] = Map.empty,
-    properties:   Map[String, String]      = Map.empty)
+      location:     Location[Page],
+      paths:        Set[String],
+      pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+      sourceSuffix: String                   = DefaultSourceSuffix,
+      targetSuffix: String                   = DefaultTargetSuffix,
+      groups:       Map[String, Seq[String]] = Map.empty,
+      properties:   Map[String, String]      = Map.empty)
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)
