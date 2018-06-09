@@ -10,9 +10,11 @@ The GitHub repo is [lightbend/paradox][repo].
 
 Find [the latest](https://github.com/lightbend/paradox/releases) version, and create `project/paradox.sbt`:
 
+@@@vars
 ```scala
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "X.Y.Z")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "$version$")
 ```
+@@@
 
 Inside `build.sbt`, add `ParadoxPlugin` to a subproject:
 
