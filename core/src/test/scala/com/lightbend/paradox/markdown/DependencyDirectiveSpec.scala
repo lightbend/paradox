@@ -188,7 +188,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
   it should "render multiple dependencies" in {
     markdown("""
       |@@dependency [sbt,maven,gradle] {
-      |  group1=org.example artifact1=foo_2.12 version1=0.1.0
+      |  group=org.example  artifact=foo_2.12  version=0.1.0
       |  group2=org.example artifact2=bar_2.12 version2=0.2.0
       |}""") shouldEqual html("""
       |<dl class="dependency">
