@@ -137,7 +137,7 @@ sbt (sub)project's root directory.
 
 ### Link to full source at GitHub
 
-By default a snippet is followed by a link to the source file at Github. This can be switched off by `snip.github_link` to `false`.
+By default a snippet is followed by a link to the source file at Github. This can be switched off by setting `snip.github_link` to `false`.
 
 ```sbt
 paradoxProperties in Compile ++= Map(
