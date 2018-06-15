@@ -144,7 +144,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     private def href(location: Location[Page]): String = {
       try {
-        val baseUrl = PropertyUrl("github.base_url", context.properties.get).collect {
+        val baseUrl = PropertyUrl(GitHubResolver.baseUrl, context.properties.get).collect {
           case TreeUrl(url) => url
           case url          => url
         }

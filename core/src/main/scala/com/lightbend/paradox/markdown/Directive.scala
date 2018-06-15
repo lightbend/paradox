@@ -248,32 +248,23 @@ case class JavadocDirective(page: Page, variables: Map[String, String])
 
 }
 
-/**
- * GitHub directive.
- *
- * Link to GitHub project entities like issues, commits and source code.
- * Supports most of the references documented in:
- * https://help.github.com/articles/autolinked-references-and-urls/
- */
-case class GitHubDirective(page: Page, variables: Map[String, String])
-  extends ExternalLinkDirective("github", "github:") {
+object GitHubResolver {
+  val baseUrl = "github.base_url"
+
+}
+
+trait GitHubResolver {
+
+  def variables: Map[String, String]
 
   val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
   val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
   val TreeUrl = """(.*github.com/[^/]+/[^/]+/tree/[^/]+)""".r
   val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
 
-  val baseUrl = PropertyUrl("github.base_url", variables.get)
+  val baseUrl = PropertyUrl(GitHubResolver.baseUrl, variables.get)
 
-  def resolveLink(node: DirectiveNode, link: String): Url = {
-    link match {
-      case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
-      case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
-      case path                           => resolvePath(path, Option(node.attributes.value("identifier")))
-    }
-  }
-
-  private def resolvePath(source: String, labelOpt: Option[String]) = {
+  protected def resolvePath(page: Page, source: String, labelOpt: Option[String]): Url = {
     val pathUrl = Url.parse(source, "path is invalid")
     val path = pathUrl.base.getPath
     val root = variables.get("github.root.base_dir") match {
@@ -299,22 +290,42 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
     (treeUrl / treePath) withFragment fragment
   }
 
-  private def resolveProject(project: String) = {
+  protected def resolveProject(project: String) = {
     Option(project) match {
       case Some(path) => Url("https://github.com") / path
       case None       => projectUrl
     }
   }
 
-  private def projectUrl = baseUrl.collect {
+  protected def projectUrl = baseUrl.collect {
     case ProjectUrl(url) => url
-    case _               => throw Url.Error("[github.base_url] is not a project URL")
+    case _               => throw Url.Error(s"[${GitHubResolver.baseUrl}] is not a project URL")
   }
 
-  private def treeUrl = baseUrl.collect {
+  protected def treeUrl = baseUrl.collect {
     case TreeUrl(url)    => url
     case ProjectUrl(url) => url + "/tree/master"
-    case _               => throw Url.Error("[github.base_url] is not a project or versioned tree URL")
+    case _               => throw Url.Error(s"[${GitHubResolver.baseUrl}] is not a project or versioned tree URL")
+  }
+
+}
+
+/**
+ * GitHub directive.
+ *
+ * Link to GitHub project entities like issues, commits and source code.
+ * Supports most of the references documented in:
+ * https://help.github.com/articles/autolinked-references-and-urls/
+ */
+case class GitHubDirective(page: Page, variables: Map[String, String])
+  extends ExternalLinkDirective("github", "github:") with GitHubResolver {
+
+  def resolveLink(node: DirectiveNode, link: String): Url = {
+    link match {
+      case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
+      case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
+      case path                           => resolvePath(page, path, Option(node.attributes.identifier()))
+    }
   }
 
 }
@@ -325,7 +336,7 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
  * Extracts snippets from source files into verbatim blocks.
  */
 case class SnipDirective(page: Page, variables: Map[String, String])
-  extends LeafBlockDirective("snip") with SourceDirective {
+  extends LeafBlockDirective("snip") with SourceDirective with GitHubResolver {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     try {
@@ -335,14 +346,22 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       new VerbatimGroupNode(text, lang, group, node.attributes.classes).accept(visitor)
+      if (variables.contains(GitHubResolver.baseUrl) &&
+        variables.get(SnipDirective.showGithubLinks).contains("true")) {
+        val p = resolvePath(page, source, labels.headOption).base.normalize.toString
+        new ExpLinkNode("", p, new TextNode("Full source at GitHub")).accept(visitor)
+      }
     } catch {
       case e: FileNotFoundException =>
         throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")
     }
   }
+
 }
 
 object SnipDirective {
+
+  val showGithubLinks = "snip.github_link"
 
   /**
    * Exception thrown for unknown snip links.

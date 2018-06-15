@@ -19,10 +19,10 @@ package com.lightbend.paradox.sbt
 import sbt._
 import sbt.Keys._
 import com.lightbend.paradox.ParadoxProcessor
-import com.lightbend.paradox.markdown.Writer
+import com.lightbend.paradox.markdown.{ GitHubResolver, SnipDirective, Writer }
 import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
-import com.typesafe.sbt.web.{ Compat => WCompat, SbtWeb }
+import com.typesafe.sbt.web.{ SbtWeb, Compat => WCompat }
 
 object ParadoxPlugin extends AutoPlugin {
   object autoImport extends ParadoxKeys {
@@ -74,6 +74,7 @@ object ParadoxPlugin extends AutoPlugin {
       "project.version.short" -> shortVersion((version in paradox).value),
       "project.description" -> (description in paradox).value,
       "snip.root.base_dir" -> baseDirectory.value.toString,
+      SnipDirective.showGithubLinks -> "true",
       "github.root.base_dir" -> (baseDirectory in ThisBuild).value.toString,
       "scala.version" -> scalaVersion.value,
       "scala.binary.version" -> scalaBinaryVersion.value),
@@ -199,7 +200,7 @@ object ParadoxPlugin extends AutoPlugin {
       "scaladoc.version" -> Some(scalaVersion),
       "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
       "scaladoc.base_url" -> apiURL,
-      "github.base_url" -> scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")
+      GitHubResolver.baseUrl -> scmInfo.map(_.browseUrl).filter(_.getHost == "github.com")
     ).collect { case (prop, Some(value)) => (prop, value.toString) }
   }
 
