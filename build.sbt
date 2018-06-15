@@ -126,7 +126,7 @@ releaseProcess := {
     setReleaseVersion,
     commitReleaseVersion,
     tagRelease,
-    releaseStepCommandAndRemaining("^ publish"),
+    releaseStepCommandAndRemaining("^ publishSigned"),
     releaseStepCommand("bintrayRelease"),
     releaseStepCommand("sonatypeRelease"),
     setNextVersion,
