@@ -43,3 +43,20 @@ Which will render as:
   scope="runtime"
   classifier="assets"
 }
+
+It is also possible to render more than one dependency in a list. In that case library coordinates need to be appended with the
+same suffix. For example
+
+```scala
+@@dependency[sbt,Maven,Gradle] {
+  group="com.example" artifact="domain" version="0.1.0"
+  group2="com.example" artifact2="another-domain" version2="0.2.1"
+}
+```
+
+will be rendered as:
+
+@@dependency[sbt,Maven,Gradle] {
+  group="com.example" artifact="domain" version="0.1.0"
+  group2="com.example" artifact2="another-domain" version2="0.2.1"
+}

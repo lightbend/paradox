@@ -184,4 +184,51 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |</dd>
       |</dl>""")
   }
+
+  it should "render multiple dependencies" in {
+    markdown("""
+      |@@dependency [sbt,maven,gradle] {
+      |  group=org.example  artifact=foo_2.12  version=0.1.0
+      |  group2=org.example artifact2=bar_2.12 version2=0.2.0
+      |}""") shouldEqual html("""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |libraryDependencies ++= Seq(
+      |  "org.example" %% "foo" % "0.1.0",
+      |  "org.example" %% "bar" % "0.2.0"
+      |)</code>
+      |</pre>
+      |</dd>
+      |<dt>maven</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-xml">
+      |&lt;dependency&gt;
+      |  &lt;groupId&gt;org.example&lt;/groupId&gt;
+      |  &lt;artifactId&gt;foo_2.12&lt;/artifactId&gt;
+      |  &lt;version&gt;0.1.0&lt;/version&gt;
+      |&lt;/dependency&gt;
+      |&lt;dependency&gt;
+      |  &lt;groupId&gt;org.example&lt;/groupId&gt;
+      |  &lt;artifactId&gt;bar_2.12&lt;/artifactId&gt;
+      |  &lt;version&gt;0.2.0&lt;/version&gt;
+      |&lt;/dependency&gt;</code>
+      |</pre>
+      |</dd>
+      |<dt>gradle</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-gradle">
+      |dependencies {
+      |  compile group: 'org.example', name: 'foo_2.12', version: '0.1.0',
+      |  compile group: 'org.example', name: 'bar_2.12', version: '0.2.0'
+      |}</code>
+      |</pre>
+      |</dd>
+      |</dl>
+      """)
+  }
 }

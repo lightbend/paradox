@@ -545,6 +545,9 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
   def renderDependency(tools: String, node: DirectiveNode, printer: Printer): Unit = {
     val classes = Seq("dependency", node.attributes.classesString).filter(_.nonEmpty)
 
+    val dependencyPostfixes = node.attributes.keys().asScala.toSeq
+      .filter(_.startsWith("group")).sorted.map(_.replace("group", ""))
+
     val startDelimiter = node.attributes.value("start-delimiter", "$")
     val stopDelimiter = node.attributes.value("stop-delimiter", "$")
     def coordinate(name: String): Option[String] =
@@ -558,52 +561,92 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
     def requiredCoordinate(name: String): String =
       coordinate(name).getOrElse(throw DependencyDirective.UndefinedVariable(name))
 
-    val group = requiredCoordinate("group")
-    val artifact = requiredCoordinate("artifact")
-    val version = requiredCoordinate("version")
-    val scope = coordinate("scope")
-    val classifier = coordinate("classifier")
+    def sbt(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+      val scopeString = scope.map {
+        case s @ ("runtime" | "compile" | "test") => " % " + s.capitalize
+        case s                                    => s""" % "$s""""
+      }
+      val classifierString = classifier.map(" classifier " + '"' + _ + '"')
+      val extra = (scopeString ++ classifierString).mkString
+      (ScalaVersion, ScalaBinaryVersion) match {
+        case (Some(scalaVersion), _) if artifact.endsWith("_" + scalaVersion) =>
+          val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaVersion.length)
+          s""""$group" % "$strippedArtifact" % "$version"$extra cross CrossVersion.full"""
+
+        case (_, Some(scalaBinVersion)) if artifact.endsWith("_" + scalaBinVersion) =>
+          val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaBinVersion.length)
+          s""""$group" %% "$strippedArtifact" % "$version"$extra"""
+
+        case _ =>
+          s""""$group" % "$artifact" % "$version"$extra"""
+      }
+    }
+
+    def gradle(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+      val conf = scope.getOrElse("compile")
+      val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
+      s"""$conf group: '$group', name: '$artifact', version: '$version'$extra""".stripMargin
+    }
+
+    def mvn(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+      val elements =
+        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> version) ++
+          classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
+      elements.map {
+        case (element, value) => s"  <$element>$value</$element>"
+      }.mkString("<dependency>\n", "\n", "\n</dependency>").replace("<", "&lt;").replace(">", "&gt;")
+    }
 
     printer.print(s"""<dl class="${classes.mkString(" ")}">""")
     tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
       val (lang, code) = tool match {
         case "sbt" =>
-          val scopeString = scope.map {
-            case s @ ("runtime" | "compile" | "test") => " % " + s.capitalize
-            case s                                    => s""" % "$s""""
+          val artifacts = dependencyPostfixes.map { dp =>
+            sbt(
+              requiredCoordinate(s"group$dp"),
+              requiredCoordinate(s"artifact$dp"),
+              requiredCoordinate(s"version$dp"),
+              coordinate(s"scope$dp"),
+              coordinate(s"classifier$dp")
+            )
           }
-          val classifierString = classifier.map(" classifier " + '"' + _ + '"')
-          val extra = (scopeString ++ classifierString).mkString
-          val libraryDependencies = (ScalaVersion, ScalaBinaryVersion) match {
-            case (Some(scalaVersion), _) if artifact.endsWith("_" + scalaVersion) =>
-              val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaVersion.length)
-              s"""libraryDependencies += "$group" % "$strippedArtifact" % "$version"$extra cross CrossVersion.full"""
 
-            case (_, Some(scalaBinVersion)) if artifact.endsWith("_" + scalaBinVersion) =>
-              val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaBinVersion.length)
-              s"""libraryDependencies += "$group" %% "$strippedArtifact" % "$version"$extra"""
-
-            case _ =>
-              s"""libraryDependencies += "$group" % "$artifact" % "$version"$extra"""
+          val libraryDependencies = artifacts match {
+            case Seq(artifact) => s"libraryDependencies += $artifact"
+            case artifacts =>
+              Seq("libraryDependencies ++= Seq(", artifacts.map(a => s"  $a").mkString(",\n"), ")").mkString("\n")
           }
+
           ("scala", libraryDependencies)
 
         case "gradle" | "Gradle" =>
-          val conf = scope.getOrElse("compile")
-          val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
-          val code =
-            s"""dependencies {
-             |  $conf group: '$group', name: '$artifact', version: '$version'$extra
-             |}""".stripMargin
-          ("gradle", code)
+          val artifacts = dependencyPostfixes.map { dp =>
+            gradle(
+              requiredCoordinate(s"group$dp"),
+              requiredCoordinate(s"artifact$dp"),
+              requiredCoordinate(s"version$dp"),
+              coordinate(s"scope$dp"),
+              coordinate(s"classifier$dp")
+            )
+          }
+
+          val libraryDependencies =
+            Seq("dependencies {", artifacts.map(a => s"  $a").mkString(",\n"), "}").mkString("\n")
+
+          ("gradle", libraryDependencies)
+
         case "maven" | "Maven" | "mvn" =>
-          val elements =
-            Seq("groupId" -> group, "artifactId" -> artifact, "version" -> version) ++
-              classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
-          val code = elements.map {
-            case (element, value) => s"  <$element>$value</$element>"
-          }.mkString("<dependency>\n", "\n", "\n</dependency>").replace("<", "&lt;").replace(">", "&gt;")
-          ("xml", code)
+          val artifacts = dependencyPostfixes.map { dp =>
+            mvn(
+              requiredCoordinate(s"group$dp"),
+              requiredCoordinate(s"artifact$dp"),
+              requiredCoordinate(s"version$dp"),
+              coordinate(s"scope$dp"),
+              coordinate(s"classifier$dp")
+            )
+          }
+
+          ("xml", artifacts.mkString("\n"))
       }
 
       printer.print(s"""<dt>$tool</dt>""")
