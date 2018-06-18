@@ -18,10 +18,10 @@ package com.lightbend.paradox
 
 import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
-import com.lightbend.paradox.tree.Tree.{Forest, Location}
+import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
 
-import org.pegdown.ast.{ClassyLinkNode, ExpLinkNode, RootNode}
+import org.pegdown.ast.{ ClassyLinkNode, ExpLinkNode, RootNode }
 import org.stringtemplate.v4.STErrorListener
 
 import scala.annotation.tailrec

@@ -347,7 +347,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       val group = Option(node.attributes.value("group")).getOrElse("")
       new VerbatimGroupNode(text, lang, group, node.attributes.classes).accept(visitor)
       if (variables.contains(GitHubResolver.baseUrl) &&
-        variables.get(SnipDirective.showGithubLinks).contains("true")) {
+        variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
         val p = resolvePath(page, source, labels.headOption).base.normalize.toString
         new ExpLinkNode("", p, new TextNode("Full source at GitHub")).accept(visitor)
       }
