@@ -53,7 +53,7 @@ $navigation()$
 <div class="small-12 medium-9 large-10 column">
 <section class="site-content">
 
-<span id="version-warning"/>
+<span id="version-warning"></span>
 
 <div class="page-header row">
 <div class="medium-12 show-for-medium column">

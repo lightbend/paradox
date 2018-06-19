@@ -80,8 +80,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     val osWriter = new OutputStreamWriter(new FileOutputStream(target))
     osWriter.write(
       s"""{
-         |  "name" : "${properties.get("project.name")}",
-         |  "version" : "${properties.get("project.version")}"
+         |  "name" : "${properties("project.name")}",
+         |  "version" : "${properties("project.version")}"
          |}""".stripMargin)
     osWriter.close()
     (target, metadataFilename)
