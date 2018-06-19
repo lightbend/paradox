@@ -2,7 +2,7 @@ function initOldVersionWarnings($, thisVersion, projectUrl) {
     var schemeLessUrl = projectUrl;
     if (projectUrl.startsWith("http://")) projectUrl = schemeLessUrl.substring(5);
     else if (projectUrl.startsWith("https://")) projectUrl = schemeLessUrl.substring(6);
-    const url = schemeLessUrl + "/paradox-data.json";
+    const url = schemeLessUrl + "/paradox.json";
     console.log("trying to read version data from " + url);
     $.get(url, function (versionData) {
         const currentVersion = versionData.version;

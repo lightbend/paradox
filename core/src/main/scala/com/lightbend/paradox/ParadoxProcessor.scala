@@ -75,7 +75,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   }
 
   private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {
-    val metadataFilename = "paradox-data.json"
+    val metadataFilename = "paradox.json"
     val target = new File(outputDirectory, metadataFilename)
     val osWriter = new OutputStreamWriter(new FileOutputStream(target))
     osWriter.write(
