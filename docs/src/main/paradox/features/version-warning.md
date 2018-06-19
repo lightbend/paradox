@@ -7,6 +7,6 @@ The built in theme (`generic`) contains Javascript to fetch the JSON file and co
 
 To use this functionality, add `project.url` to Paradox properties
 
-```$scala
+```scala
 paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/paradox/current/")
 ```
