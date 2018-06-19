@@ -2,8 +2,7 @@ function initOldVersionWarnings($, thisVersion, projectUrl) {
     var schemeLessUrl = projectUrl;
     if (projectUrl.startsWith("http://")) projectUrl = schemeLessUrl.substring(5);
     else if (projectUrl.startsWith("https://")) projectUrl = schemeLessUrl.substring(6);
-    const url = schemeLessUrl + "/paradox.json";
-    console.log("trying to read version data from " + url);
+    const url = schemeLessUrl + (schemeLessUrl.endsWith("\/") ? "" : "/") + "paradox.json";
     $.get(url, function (versionData) {
         const currentVersion = versionData.version;
         if (thisVersion !== currentVersion) {
@@ -14,7 +13,7 @@ function initOldVersionWarnings($, thisVersion, projectUrl) {
 
 function showVersionWarning(thisVersion, currentVersion, projectUrl) {
     $('#version-warning').prepend(
-        '<div id="floaty-warning" class="warning"/>' +
+        '<div class="callout warning" style="margin-top: 16px">' +
         '<p><span style="font-weight: bold">This documentation regards version ' + thisVersion + ', ' +
         'however the current version is <a href="' + projectUrl + '">' + currentVersion + '</a>.</span></p>' +
         '</div>'
