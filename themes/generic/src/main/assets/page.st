@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="$page.base$lib/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="$page.base$js/page.js"></script>
+<script type="text/javascript" src="$page.base$js/warnOldVersion.js"></script>
 <script type="text/javascript" src="$page.base$js/groups.js"></script>
 <link rel="stylesheet" type="text/css" href="$page.base$lib/normalize.css/normalize.css"/>
 <link rel="stylesheet" type="text/css" href="$page.base$lib/foundation/dist/foundation.min.css"/>
@@ -51,6 +52,8 @@ $navigation()$
 
 <div class="small-12 medium-9 large-10 column">
 <section class="site-content">
+
+<span id="version-warning"/>
 
 <div class="page-header row">
 <div class="medium-12 show-for-medium column">
@@ -145,5 +148,7 @@ $endif$
 <script type="text/javascript" src="$page.base$lib/prettify/prettify.js"></script>
 <script type="text/javascript" src="$page.base$lib/prettify/lang-scala.js"></script>
 <script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '$page.properties.("project.version")$', '$page.properties.("project.url")$')});</script>
+
 
 </html>

@@ -19,7 +19,7 @@ package com.lightbend.paradox
 import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
-import java.io.File
+import java.io.{ File, FileOutputStream, OutputStreamWriter }
 
 import org.pegdown.ast.{ ClassyLinkNode, ExpLinkNode, RootNode }
 import org.stringtemplate.v4.STErrorListener
@@ -70,7 +70,21 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
-    pages flatMap { root => render(Some(root.location)) }
+    outputDirectory.mkdirs()
+    createMetadata(outputDirectory, properties) :: (pages flatMap { root => render(Some(root.location)) })
+  }
+
+  private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {
+    val metadataFilename = "paradox-data.json"
+    val target = new File(outputDirectory, metadataFilename)
+    val osWriter = new OutputStreamWriter(new FileOutputStream(target))
+    osWriter.write(
+      s"""{
+         |  "name" : "${properties.get("project.name")}",
+         |  "version" : "${properties.get("project.version")}"
+         |}""".stripMargin)
+    osWriter.close()
+    (target, metadataFilename)
   }
 
   /**
