@@ -1,14 +1,16 @@
 function initOldVersionWarnings($, thisVersion, projectUrl) {
-    var schemeLessUrl = projectUrl;
-    if (projectUrl.startsWith("http://")) projectUrl = schemeLessUrl.substring(5);
-    else if (projectUrl.startsWith("https://")) projectUrl = schemeLessUrl.substring(6);
-    const url = schemeLessUrl + (schemeLessUrl.endsWith("\/") ? "" : "/") + "paradox.json";
-    $.get(url, function (versionData) {
-        const currentVersion = versionData.version;
-        if (thisVersion !== currentVersion) {
-            showVersionWarning(thisVersion, currentVersion, projectUrl);
-        }
-    });
+    if (projectUrl && projectUrl !== "") {
+        var schemeLessUrl = projectUrl;
+        if (projectUrl.startsWith("http://")) projectUrl = schemeLessUrl.substring(5);
+        else if (projectUrl.startsWith("https://")) projectUrl = schemeLessUrl.substring(6);
+        const url = schemeLessUrl + (schemeLessUrl.endsWith("\/") ? "" : "/") + "paradox.json";
+        $.get(url, function (versionData) {
+            const currentVersion = versionData.version;
+            if (thisVersion !== currentVersion) {
+                showVersionWarning(thisVersion, currentVersion, projectUrl);
+            }
+        });
+    }
 }
 
 function showVersionWarning(thisVersion, currentVersion, projectUrl) {
