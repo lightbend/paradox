@@ -27,7 +27,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "The `snip` directive" should "render code snippets" in {
-    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
@@ -39,10 +39,10 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "render code snippets in definition lists" in {
     markdown("""
       |Scala
-      |:   @@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }
+      |:   @@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }
       |
       |Java
-      |:   @@snip[example2.java](core/src/test/scala/com/lightbend/paradox/markdown/example2.java) { #example2 }
+      |:   @@snip[example2.java](tests/src/test/scala/com/lightbend/paradox/markdown/example2.java) { #example2 }
       |""") shouldEqual html("""
       |<dl>
       |<dt>Scala</dt>
@@ -70,7 +70,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
   it should "support custom CSS classes" in {
     markdown("""
-      |@@snip[example2.java](core/src/test/scala/com/lightbend/paradox/markdown/example2.java){ #example2 .red .blue }
+      |@@snip[example2.java](tests/src/test/scala/com/lightbend/paradox/markdown/example2.java){ #example2 .red .blue }
       |""") shouldEqual html("""
       |<pre class="prettyprint red blue">
       |<code class="language-java">
@@ -83,7 +83,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "trim indentation from snippets" in {
-    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
       |<pre class="prettyprint">
       |<code class="language-scala">
       |case object Dent
