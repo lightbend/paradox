@@ -133,3 +133,14 @@ it is used in. Also, *paradox* always auto-defines the placeholder `$root$` to d
 sbt (sub)project's root directory.
 
 **Note**: Using this feature will not allow GitHub to follow the snippet links correctly on the web UI.
+
+
+### Link to full source at GitHub
+
+By default a snippet is followed by a link to the source file at Github. This can be switched off by setting `snip.github_link` to `false`.
+
+```sbt
+paradoxProperties in Compile ++= Map(
+  "snip.github_link" -> "false"
+)
+```

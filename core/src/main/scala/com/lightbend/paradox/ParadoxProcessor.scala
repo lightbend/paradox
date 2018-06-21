@@ -17,11 +17,13 @@
 package com.lightbend.paradox
 
 import com.lightbend.paradox.template.PageTemplate
-import com.lightbend.paradox.markdown.{ Breadcrumbs, Groups, Page, Path, Reader, TableOfContents, Writer, Frontin, PropertyUrl, Url }
+import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.File
+
 import org.pegdown.ast.{ ClassyLinkNode, ExpLinkNode, RootNode }
 import org.stringtemplate.v4.STErrorListener
+
 import scala.annotation.tailrec
 
 /**
@@ -144,7 +146,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     private def href(location: Location[Page]): String = {
       try {
-        val baseUrl = PropertyUrl("github.base_url", context.properties.get).collect {
+        val baseUrl = PropertyUrl(GitHubResolver.baseUrl, context.properties.get).collect {
           case TreeUrl(url) => url
           case url          => url
         }
