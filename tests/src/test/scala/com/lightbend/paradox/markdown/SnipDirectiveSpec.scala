@@ -97,14 +97,14 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       "github.root.base_dir" -> ".",
       "snip.github_link" -> "true")
 
-    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
         |<code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
         |</pre>
-        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30">Full source at GitHub</a>""")
+        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30">Full source at GitHub</a>""")
   }
 
   it should "not link to source if config says so" in {
@@ -113,7 +113,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       "github.root.base_dir" -> ".",
       "snip.github_link" -> "false")
 
-    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
         |<code class="language-scala">
         |object example extends App {
