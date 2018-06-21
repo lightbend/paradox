@@ -8,4 +8,4 @@ We currently use the [Pegdown](https://github.com/sirthias/pegdown#introduction)
 Some aspects of our Markdown dialect worth noting are:
 
 * Bulleted lists must always be preceded by an empty line (otherwise they'll be considered to be a 'normal' part of the previous paragraph)
-* For references within a paradox tree, we prefer `@ref[Link Text](../other-file.md#some-anchor)` syntax over free-form `[Link Text](../other-file.html#some-anchor)`. This introduces opportunities for [validation](https://github.com/lightbend/paradox/issues/53)
+* For references within a paradox tree, we prefer `@ref:[Link Text](../other-file.md#some-anchor)` syntax over free-form `[Link Text](../other-file.html#some-anchor)`. This introduces opportunities for [validation](https://github.com/lightbend/paradox/issues/53)
