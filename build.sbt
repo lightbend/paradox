@@ -16,7 +16,7 @@
 
 lazy val paradox = project
   .in(file("."))
-  .aggregate(core, plugin, themePlugin, themes, docs)
+  .aggregate(core, testkit, tests, plugin, themePlugin, themes, docs)
   .enablePlugins(NoPublish)
   .settings(inThisBuild(List(
     organization := "com.lightbend.paradox",
@@ -42,11 +42,32 @@ lazy val core = project
     name := "paradox",
     libraryDependencies ++= Seq(
       Library.pegdown,
-      Library.st4,
-      Library.scalatest % "test",
-      Library.jtidy % "test"
+      Library.st4
     ),
     parallelExecution in Test := false
+  )
+
+lazy val testkit = project
+  .in(file("testkit"))
+  .dependsOn(core)
+  .disablePlugins(BintrayPlugin)
+  .enablePlugins(SonatypePublish)
+  .settings(
+    name := "testkit",
+    libraryDependencies ++= Seq(
+      Library.jtidy
+    )
+  )
+
+lazy val tests = project
+  .in(file("tests"))
+  .dependsOn(core, testkit)
+  .enablePlugins(NoPublish)
+  .settings(
+    name := "tests",
+    libraryDependencies ++= Seq(
+      Library.scalatest % "test"
+    )
   )
 
 lazy val plugin = project

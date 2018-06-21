@@ -18,11 +18,10 @@ package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, PrintWriter }
-import org.scalatest.{ FlatSpec, Matchers }
 import com.lightbend.paradox.template.PageTemplate
 import java.nio.file._
 
-abstract class MarkdownBaseSpec extends FlatSpec with Matchers {
+abstract class MarkdownTestkit {
 
   val markdownReader = new Reader
   val markdownWriter = new Writer

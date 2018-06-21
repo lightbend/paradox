@@ -124,14 +124,14 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   it should "support line labels" in {
     markdown("""
       |@github[example.scala] { #github-path-link }
-      |@github[neither](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
-      |@github[neither](/core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
+      |@github[neither](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
+      |@github[neither](/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #github-neither-path-link }
       |
-      |  [example.scala]: core/src/test/scala/com/lightbend/paradox/markdown/example.scala
+      |  [example.scala]: tests/src/test/scala/com/lightbend/paradox/markdown/example.scala
       |""") shouldEqual html("""
-      |<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L20-L24">example.scala</a>
-      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a>
-      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/core/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a></p>
+      |<p><a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L20-L24">example.scala</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a>
+      |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L22">neither</a></p>
       |""")
   }
 
@@ -148,12 +148,12 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   it should "throw exceptions for non-existing GitHub tree path with invalid label" in {
     val ex = the[ExternalLinkDirective.LinkException] thrownBy {
       markdown("""
-        |@github[neither](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #does-not-exist }
+        |@github[neither](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #does-not-exist }
         |""")
     }
 
     ex.getMessage.replace('\\', '/') shouldBe
-      "Failed to resolve [core/src/test/scala/com/lightbend/paradox/markdown/example.scala] referenced from [test.html]: Label [does-not-exist] not found in [core/src/test/scala/com/lightbend/paradox/markdown/example.scala]"
+      "Failed to resolve [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala] referenced from [test.html]: Label [does-not-exist] not found in [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]"
   }
 
 }
