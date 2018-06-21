@@ -48,7 +48,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 
 ### License and credits
 
-- Copyright 2015-2017 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
+- Copyright 2015-2018 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
 - The markdown engine is based on Mathias's [Pegdown][].
 
 @@@ index
@@ -63,6 +63,7 @@ which basically means that all of our extensions would start with `@` (for inlin
 * [Library dependencies](features/dependencies.md)
 * [CSS Friendliness](features/css-friendliness.md)
 * [Templating](features/templating.md)
+* [Version warning](features/version-warning.md)
 * [Theming](features/theming.md)
 * [Documentation Overlay](features/overlay.md)
 
