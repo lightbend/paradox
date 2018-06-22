@@ -24,8 +24,7 @@ object Snippet {
 
   class SnippetException(message: String) extends RuntimeException(message)
 
-  def apply(propPrefix: String, source: String, labels: Seq[String], page: Page, variables: Map[String, String]): (String, String) = {
-    val file = resolveFile(propPrefix, source, page, variables)
+  def apply(file: File, labels: Seq[String]): (String, String) = {
     (extract(file, labels), language(file))
   }
 
@@ -43,15 +42,6 @@ object Snippet {
   }
 
   type Line = (Int, String)
-
-  private def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File = {
-    if (source startsWith "$") {
-      val baseKey = source.drop(1).takeWhile(_ != '$')
-      val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
-      val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-      new File(effectiveBase, source.drop(baseKey.length + 2))
-    } else new File(page.file.getParentFile, source)
-  }
 
   private def extractState(file: File, label: String): ExtractionState = {
     if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +

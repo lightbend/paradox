@@ -95,6 +95,15 @@ sealed trait SourceDirective { this: Directive =>
     }
   }
 
+  protected def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File = {
+    if (source startsWith "$") {
+      val baseKey = source.drop(1).takeWhile(_ != '$')
+      val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
+      val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+      new File(effectiveBase, source.drop(baseKey.length + 2))
+    } else new File(page.file.getParentFile, source)
+  }
+
   private lazy val referenceMap: Map[String, ReferenceNode] = {
     val tempRoot = new RootNode
     tempRoot.setReferences(page.markdown.getReferences)
@@ -271,9 +280,11 @@ trait GitHubResolver {
       case None      => throw Url.Error("[github.root.base_dir] is not defined")
       case Some(dir) => new File(dir)
     }
-    val file =
-      if (path.startsWith("/")) new File(root, path.drop(1))
-      else new File(page.file.getParentFile, path)
+    val file = path match {
+      case p if p.startsWith(root.getAbsolutePath) => new File(p)
+      case p if p.startsWith("/")                  => new File(root, path.drop(1))
+      case p                                       => new File(page.file.getParentFile, path)
+    }
     val labelFragment =
       for {
         label <- labelOpt
@@ -342,13 +353,14 @@ case class SnipDirective(page: Page, variables: Map[String, String])
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
-      val (text, snippetLang) = Snippet("snip", source, labels, page, variables)
+      val file = resolveFile("snip", source, page, variables)
+      val (text, snippetLang) = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       new VerbatimGroupNode(text, lang, group, node.attributes.classes).accept(visitor)
       if (variables.contains(GitHubResolver.baseUrl) &&
         variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
-        val p = resolvePath(page, source, labels.headOption).base.normalize.toString
+        val p = resolvePath(page, file.getAbsolutePath, labels.headOption).base.normalize.toString
         new ExpLinkNode("", p, new TextNode("Full source at GitHub")).accept(visitor)
       }
     } catch {
@@ -389,7 +401,8 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       val extraParams = node.attributes.value("extraParams", "theme=light")
       val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
       val source = resolvedSource(node, page)
-      val (text, _) = Snippet("fiddle", source, labels, page, variables)
+      val file = resolveFile("fiddle", source, page, variables)
+      val (text, _) = Snippet(file, labels)
 
       val fiddleSource = java.net.URLEncoder.encode(
         """import fiddle.Fiddle, Fiddle.println
