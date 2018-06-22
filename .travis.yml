@@ -1,12 +1,7 @@
 language: scala
 jdk: oraclejdk8
 scala: 2.12.6
-script: sbt ";^^$TRAVIS_SBT_VERSION;verify"
-
-matrix:
-  include:
-  - env: TRAVIS_SBT_VERSION="0.13.17"
-  - env: TRAVIS_SBT_VERSION="1.0.4"
+script: sbt verify
 
 cache:
   directories:
