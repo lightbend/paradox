@@ -281,9 +281,9 @@ trait GitHubResolver {
       case Some(dir) => new File(dir)
     }
     val file = path match {
-      case p if p.startsWith(root.getAbsolutePath) => new File(p)
-      case p if p.startsWith("/")                  => new File(root, path.drop(1))
-      case p                                       => new File(page.file.getParentFile, path)
+      case p if p.startsWith(Path.toUnixStyleRootPath(root.getAbsolutePath)) => new File(p)
+      case p if p.startsWith("/")                                            => new File(root, path.drop(1))
+      case p                                                                 => new File(page.file.getParentFile, path)
     }
     val labelFragment =
       for {
