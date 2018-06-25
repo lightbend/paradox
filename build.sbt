@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import scala.collection.JavaConverters._
+import java.lang.management.ManagementFactory
+
 lazy val paradox = project
   .in(file("."))
   .aggregate(core, testkit, tests, plugin, themePlugin, themes, docs)
@@ -80,7 +83,7 @@ lazy val plugin = project
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
-    scriptedLaunchOpts ++= sys.process.javaVmArguments.filter(
+    scriptedLaunchOpts ++= ManagementFactory.getRuntimeMXBean.getInputArguments.asScala.filter(
       a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)
     ),
     scriptedDependencies := {
