@@ -3,7 +3,6 @@ lazy val libraryDependencyTest = project
   .enablePlugins(ParadoxPlugin)
   .enablePlugins(ParadoxMaterialThemePlugin)
   .settings(
-    // paradoxTheme := Some(builtinParadoxTheme("generic")),
     TaskKey[Unit]("check") := {
       val (_, file) = (packagedArtifact in makePom).value
       assert(file.exists, s"${file.getAbsolutePath} did not exist")
