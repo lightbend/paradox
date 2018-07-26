@@ -1,0 +1,11 @@
+> paradox
+
+# make sure that theme is retrieved
+$ exists target/paradox/site/main/assets/stylesheets/paradox-material-theme.css
+
+# check that the paradox theme is not listed as a dependency
+> check
+
+> set paradoxTheme := Some(builtinParadoxTheme("generic"))
+
+> check

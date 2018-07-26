@@ -35,6 +35,10 @@ object ParadoxPlugin extends AutoPlugin {
 
   override def trigger = noTrigger
 
+  lazy val ParadoxTheme = config("paradox-theme").hide
+
+  override def projectConfigurations: Seq[Configuration] = super.projectConfigurations :+ ParadoxTheme
+
   override def projectSettings: Seq[Setting[_]] = paradoxSettings(Compile)
 
   def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
@@ -51,13 +55,23 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxDefaultTemplateName := "page",
     paradoxLeadingBreadcrumbs := Nil,
     paradoxGroups := Map.empty,
-    libraryDependencies ++= paradoxTheme.value.toSeq
+    libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme)
   )
 
-  def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++ inConfig(config)(Seq(
+  def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++
+    inConfig(ParadoxTheme)(Defaults.configSettings) ++
+    inConfig(config)(baseParadoxSettings)
+
+  private def classLoader(classpath: Classpath): ClassLoader =
+    new java.net.URLClassLoader(Path.toURLs(classpath.files), null)
+
+  def baseParadoxSettings: Seq[Setting[_]] = Seq(
+    WebKeys.webJarsClassLoader in Assets := classLoader((dependencyClasspath in ParadoxTheme).value),
+
     paradoxProcessor := new ParadoxProcessor(writer = new Writer(serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value))),
 
     sourceDirectory := {
+      val config = configuration.value
       if (config.name != Compile.name)
         sourceDirectory.value / config.name
       else
@@ -162,6 +176,7 @@ object ParadoxPlugin extends AutoPlugin {
       (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
     },
     target in paradox := {
+      val config = configuration.value
       if (config.name != Compile.name)
         target.value / "paradox" / "site" / config.name
       else
@@ -173,7 +188,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxBrowse := openInBrowser((paradox in Compile).value / "index.html", streams.value.log),
 
     paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
-  ))
+  )
 
   def shortVersion(version: String): String = version.replace("-SNAPSHOT", "*")
 
