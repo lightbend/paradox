@@ -95,14 +95,19 @@ sealed trait SourceDirective { this: Directive =>
     }
   }
 
-  protected def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File = {
-    if (source startsWith "$") {
-      val baseKey = source.drop(1).takeWhile(_ != '$')
-      val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
-      val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-      new File(effectiveBase, source.drop(baseKey.length + 2))
-    } else new File(page.file.getParentFile, source)
-  }
+  protected def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File =
+    source match {
+      case s if s startsWith "$" =>
+        val baseKey = s.drop(1).takeWhile(_ != '$')
+        val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
+        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
+        new File(effectiveBase, s.drop(baseKey.length + 2))
+      case s if s startsWith "/" =>
+        val base = new File(PropertyUrl(SnipDirective.buildBaseDir, variables.get).base.trim)
+        new File(base, s)
+      case s =>
+        new File(page.file.getParentFile, s)
+    }
 
   private lazy val referenceMap: Map[String, ReferenceNode] = {
     val tempRoot = new RootNode
@@ -374,6 +379,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
 object SnipDirective {
 
   val showGithubLinks = "snip.github_link"
+  val buildBaseDir = "snip.build.base_dir"
 
   /**
    * Exception thrown for unknown snip links.
