@@ -264,7 +264,6 @@ case class JavadocDirective(page: Page, variables: Map[String, String])
 
 object GitHubResolver {
   val baseUrl = "github.base_url"
-
 }
 
 trait GitHubResolver {
