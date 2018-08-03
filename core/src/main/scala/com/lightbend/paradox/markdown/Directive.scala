@@ -81,7 +81,7 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
 /**
  * Directives with defined "source" semantics.
  */
-sealed trait SourceDirective { this: Directive =>
+trait SourceDirective { this: Directive =>
   def page: Page
 
   protected def resolvedSource(node: DirectiveNode, page: Page): String = {
