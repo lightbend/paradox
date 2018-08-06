@@ -20,7 +20,7 @@ import com.lightbend.paradox.tree.Tree.Location
 
 class VarDirectiveSpec extends MarkdownBaseSpec {
 
-  val testProperties = Map("version" -> "1.2.3")
+  val testProperties = Map("version" -> "1.2.3", "scala.version" -> "2.12.6")
 
   implicit val context: Location[Page] => Writer.Context = { loc =>
     writerContext(loc).copy(properties = testProperties)
@@ -28,26 +28,38 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
 
   "Var substitution" should "insert property values" in {
     markdown("$version$") shouldEqual html("<p>1.2.3</p>")
+    // work for dotted vars as well
+    markdown("$scala.version$") shouldEqual html("<p>2.12.6</p>")
   }
 
   it should "work within markdown inlines" in {
     markdown("Version is *$version$*.") shouldEqual html("<p>Version is <em>1.2.3</em>.</p>")
+    // work for dotted vars as well
+    markdown("Version is *$scala.version$*.") shouldEqual html("<p>Version is <em>2.12.6</em>.</p>")
   }
 
   it should "work within markdown blocks" in {
     markdown("- $version$") shouldEqual html("<ul><li>1.2.3</li></ul>")
+    // work for dotted vars as well
+    markdown("- $scala.version$") shouldEqual html("<ul><li>2.12.6</li></ul>")
   }
 
   it should "work within link labels" in {
     markdown("[Version $version$](version.html)") shouldEqual html("""<p><a href="version.html">Version 1.2.3</a></p>""")
+    // work for dotted vars as well
+    markdown("[Version $scala.version$](version.html)") shouldEqual html("""<p><a href="version.html">Version 2.12.6</a></p>""")
   }
 
   it should "work within other inline directives" in {
     markdown("@ref:[Version $version$](test.md)") shouldEqual html("""<p><a href="test.html">Version 1.2.3</a></p>""")
+    // work for dotted vars as well
+    markdown("@ref:[Version $scala.version$](test.md)") shouldEqual html("""<p><a href="test.html">Version 2.12.6</a></p>""")
   }
 
   it should "retain whitespace before and after" in {
     markdown("The $version$ version.") shouldEqual html("<p>The 1.2.3 version.</p>")
+    // work for dotted vars as well
+    markdown("The $scala.version$ version.") shouldEqual html("<p>The 2.12.6 version.</p>")
   }
 
   it should "support escaping the $ delimiter" in {
