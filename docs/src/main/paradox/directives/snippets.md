@@ -6,7 +6,7 @@ Snippet inclusion
 The `@@snip` block is used to include code snippets from another file.
 
 ```markdown
-@@snip [Hello.scala](../../scala/Hello.scala) { #hello_example }
+@@snip [Hello.scala](/docs/src/main/scala/Hello.scala) { #hello_example }
 ```
 
 Inside of `Hello.scala` mark the desired section you want to extract using the `#hello_example` label as follows:
@@ -22,33 +22,33 @@ object Hello extends App {
 This lets us compile and test the source before including it in the documentation.
 The snippet is rendered with code formatting like this:
 
-@@snip [Hello.scala](../../scala/Hello.scala) { #hello_example }
+@@snip [Hello.scala](/docs/src/main/scala/Hello.scala) { #hello_example }
 
 To display multiple snippets in a tabbed view, use definition list syntax as follows:
 
 @@@vars
 ```markdown
 sbt
-:   @@snip [build.sbt](../../resources/build.sbt) { #setup_example }
+:   @@snip [build.sbt](/docs/src/main/resources/build.sbt) { #setup_example }
 $empty$
 Maven
-:   @@snip [pom.xml](../../resources/pom.xml) { #setup_example }
+:   @@snip [pom.xml](/docs/src/main/resources/pom.xml) { #setup_example }
 $empty$
 Gradle
-:   @@snip [build.gradle](../../resources/build.gradle) { #setup_example }
+:   @@snip [build.gradle](/docs/src/main/resources/build.gradle) { #setup_example }
 ```
 @@@
 
 This will be rendered like this:
 
 sbt
-:   @@snip [build.sbt](../../resources/build.sbt) { #setup_example }
+:   @@snip [build.sbt](/docs/src/main/resources/build.sbt) { #setup_example }
 
 Maven
-:   @@snip [pom.xml](../../resources/pom.xml) { #setup_example }
+:   @@snip [pom.xml](/docs/src/main/resources/pom.xml) { #setup_example }
 
 Gradle
-:   @@snip [build.gradle](../../resources/build.gradle) { #setup_example }
+:   @@snip [build.gradle](/docs/src/main/resources/build.gradle) { #setup_example }
 
 By default, Paradox uses Prettify to highlight code and will try to detect the
 language of the snippet using the file extension. In cases where a snippet
@@ -58,48 +58,48 @@ should not be highlighted set `type=text` in the directive's attribute section:
 @@snip [example.log](example.log) { #example-log type=text }
 ```
 
-#### tab switching
+#### Tab Switching
 
 It is possible to associate multiple snippets under the same "tag". If some tab of a snippet is switched by the user, all tabs associated with the selected one will be switched as well.
 
 @@@vars
 ```markdown
 First-java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first }
 $empty$
 First-scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first }
 $empty$
 Some separator.
 $empty$
 Java
-:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
+:   @@snip [example-second.java](/docs/src/main/resources/tab-switching/examples.java)
 $empty$
 Scala
-:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
+:   @@snip [example-second.scala](/docs/src/main/resources/tab-switching/examples.scala)
 ```
 @@@
 
 The result will be rendered like this (try to switch tabs):
 
 First-java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first group=java }
 
 First-scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first group=scala }
 
 Some separator.
 
 Java
-:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
+:   @@snip [example-second.java](/docs/src/main/resources/tab-switching/examples.java)
 
 Scala
-:   @@snip [example-second.scala](../../resources/tab-switching/examples.scala)
+:   @@snip [example-second.scala](/docs/src/main/resources/tab-switching/examples.scala)
 
 This is also synced if some tabs have no snippet:
 
 Java
-:   @@snip [example-second.java](../../resources/tab-switching/examples.java)
+:   @@snip [example-second.java](/docs/src/main/resources/tab-switching/examples.java)
 
 Scala
 :   More inline tabbing
@@ -111,7 +111,7 @@ either in the page's front matter or globally like this (for example):
 
 ```sbt
 paradoxProperties in Compile ++= Map(
-  "snip.foo.base_dir" -> "../../../some/dir",
+  "snip.foo.base_dir" -> "/docs/src/main/../some/dir",
   "snip.test.base_dir" -> s"${(sourceDirectory in Test).value}/scala/org/example",
   "snip.project.base_dir" -> (baseDirectory in ThisBuild).value.getAbsolutePath
 )
