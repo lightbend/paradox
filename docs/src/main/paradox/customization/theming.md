@@ -1,5 +1,4 @@
-Theming
--------
+# Theming
 
 A theme is a collection of templates and other resources like css and image files that can be distributed as a web jar. Using this mechanism, multiple Paradox sites can have consistent look and feel. By default, a simple predefined theme in paradox is used and looks like [this](https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets).
 
