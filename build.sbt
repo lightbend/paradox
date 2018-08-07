@@ -134,8 +134,6 @@ lazy val docs = (project in file("docs"))
       "empty" -> "",
       "version" -> version.value
     ),
-    paradoxNavigationDepth := 1,
-    paradoxNavigationExpandDepth := Some(1),
     paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
   )
 
