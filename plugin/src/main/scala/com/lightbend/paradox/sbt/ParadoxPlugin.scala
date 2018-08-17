@@ -210,9 +210,10 @@ object ParadoxPlugin extends AutoPlugin {
   def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL], scmInfo: Option[ScmInfo], isSnapshot: Boolean, version: String): Map[String, String] = {
     val JavaSpecVersion = """\d+\.(\d+)""".r
     Map(
-      "javadoc.java.base_url" -> sys.props.get("java.specification.version").collect {
-        case JavaSpecVersion(v) => url(s"https://docs.oracle.com/javase/$v/docs/api/")
-      },
+      "javadoc.java.base_url" -> sys.props.get("java.specification.version").map {
+        case JavaSpecVersion(v) => v
+        case v                  => v
+      }.map { v => url(s"https://docs.oracle.com/javase/$v/docs/api/") },
       "scaladoc.version" -> Some(scalaVersion),
       "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
       "scaladoc.base_url" -> apiURL,

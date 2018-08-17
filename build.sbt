@@ -43,8 +43,8 @@ lazy val core = project
   .enablePlugins(SonatypePublish)
   .settings(
     name := "paradox",
+    libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
-      Library.pegdown,
       Library.st4
     ),
     parallelExecution in Test := false
