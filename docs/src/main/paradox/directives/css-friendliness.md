@@ -8,8 +8,7 @@ difficult and brittle.
 Paradox comes with a "wrapping directive" which addresses this problem by allowing you to introduce additional
 `div` elements, with custom `id` or `class` attributes, at arbitrary points in the document structure.
 
-
-### @@@ div
+### @@@div
 
 Wrapping content with `@@@ div`, e.g. like this:
 

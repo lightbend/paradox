@@ -4,10 +4,15 @@ tripleDelimiters: ```
 
   [st]: http://www.stringtemplate.org/
 
-Templating
-----------
+# Templating
 
-Paradox uses [StringTemplate][st] for the basic templating.
+Paradox uses [StringTemplate][st] for the basic templating, i.e. for creating full HTML documents from documentation content
+generated from markdown. A set of templates of assets that comprises all that is needed for a full documentation page,
+is called a @ref[theme](theming.md). There's a default theme that is used if nothing else was specified.
+
+String Templates are text files that include placeholders where property values are to be inserted during generation
+
+## Properties  
 
 Here is a list of supported properties that can be used in the string template files:
 
@@ -24,7 +29,7 @@ Here is a list of supported properties that can be used in the string template f
 - `$page.navigation$` : gives the links of all pages in the project (except the main page).
 - `$page.subheaders$` : determines if the current page contains subheaders or not, which concretely means that it contains multiple sections depending on the `toc-.
 - `$page.toc$` : in relation with `$page.subheaders$`, displays the list of all sections on the page as anchor links.
-- `$page.source_url$` : contains the plain text of the github source url of the current page. Works only if the associated `github.base_url` is defined (see @ref[github directive](linking.md#github-directive) for additional information). If this property is not defined, this field returns a null value; then a condition testing like `$if(page.source_url)$` would be necessary in this case.
+- `$page.source_url$` : contains the plain text of the github source url of the current page. Works only if the associated `github.base_url` is defined (see @ref[github directive](../directives/linking.md#github-directive) for additional information). If this property is not defined, this field returns a null value; then a condition testing like `$if(page.source_url)$` would be necessary in this case.
 - `$page.properties$`: displays purely the list of the properties for the current page, which contains the actual properties of the page and the global ones shared to all pages. See next sections to figure out how to deal with properties.
 
 ### Custom properties
@@ -40,7 +45,7 @@ The special `$` character can always be escaped with a back slash, i.e. `\$`.
 To add properties to your pages, there exists two ways for doing this:
 
 - To add properties to the entire document, common to all pages, you can add them in your build: `paradoxProperties += ("foo" -> "bar")`
-- To add propreties at page level, use Properties front matter (next section)
+- To add properties at page level, use Properties front matter (next section)
 
 ### Properties front matter
 

@@ -1,8 +1,7 @@
-Groups
-------
+# Groups
 
 Paradox supports 'groups' which allow users to easily switch between different
-'variations' of the documentation.
+variants of the documentation.
 
 ## Configuration
 
@@ -26,18 +25,18 @@ Groups are used for tabs, where the group is determined by the tab name:
 @@@vars
 ```markdown
 Java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first }
 $empty$
 Scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first }
 ```
 @@@
 
 Java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first }
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first }
 
 Scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first }
 
 or by the group parameter on the snippet:
 
@@ -47,24 +46,24 @@ example-first.java
 :   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
 $empty$
 example-first.scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first group=scala }
 ```
 @@@
 
 example-first.java
-:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first group=java }
 
 example-first.scala
-:   @@snip [example-first.scala](../../resources/tab-switching/examples.scala) { #scala_first group=scala }
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first group=scala }
 
 
 But tabs not associated with groups are left alone:
 
 sbt
-:   @@snip [build.sbt](../../resources/build.sbt) { #setup_example }
+:   @@snip [build.sbt](/docs/src/main/resources/build.sbt) { #setup_example }
 
 Maven
-:   @@snip [pom.xml](../../resources/pom.xml) { #setup_example }
+:   @@snip [pom.xml](/docs/src/main/resources/pom.xml) { #setup_example }
 
 Gradle
 :   Non-snippet tab body
@@ -79,12 +78,12 @@ switching inline text:
 Text describing the @java[Java variant]@scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)].
 ```
 
-Text describing the @java[Java variant]@scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)].
+Text describing the @java[Java variant]@scala[Scala variant containing ***markdown*** and @ref:[Linking](directives/linking.md)].
 
 ### Directives
 
-You can also use groups with directives such as `@@@ div` [(link)](http://developer.lightbend.com/docs/paradox/latest/features/css-friendliness.html#div)
-and `@@@ note` [(link)](http://developer.lightbend.com/docs/paradox/latest/features/css-friendliness.html#div) as follows:
+You can also use groups with directives such as @ref[`@@@div`](directives/css-friendliness.md#div)
+and @ref[`@@@note`](directives/callouts.md#note) as follows:
 
 ```
 @@@ div { .group-scala }

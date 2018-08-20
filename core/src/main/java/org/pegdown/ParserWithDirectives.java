@@ -80,7 +80,7 @@ public class ParserWithDirectives extends Parser {
                 Letter(), name.append(matchedChar()),
                 ZeroOrMore(
                         FirstOf(
-                                Sequence(FirstOf(Alphanumeric(), AnyOf("+-_")), name.append(matchedChar())),
+                                Sequence(FirstOf(Alphanumeric(), AnyOf("+-_.")), name.append(matchedChar())),
                                 Sequence('\\', VAR_SUBSTITUTION_MARKER, name.append(VAR_SUBSTITUTION_MARKER))
                         )
                 ),
