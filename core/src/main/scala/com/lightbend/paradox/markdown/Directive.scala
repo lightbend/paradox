@@ -399,29 +399,26 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
     try {
       val labels = node.attributes.values("identifier").asScala
 
-      val baseUrl = node.attributes.value("baseUrl", "https://embed.scalafiddle.io/embed")
-      val cssClass = node.attributes.value("cssClass", "fiddle")
-      val width = Option(node.attributes.value("width")).map("width=" + _).getOrElse("")
-      val height = Option(node.attributes.value("height")).map("height=" + _).getOrElse("")
-      val extraParams = node.attributes.value("extraParams", "theme=light")
-      val cssStyle = node.attributes.value("cssStyle", "overflow: hidden;")
+      val integrationScriptUrl =
+        node.attributes.value("integrationScriptUrl", "https://embed.scalafiddle.io/integration.js")
+
+      // integration params as listed here:
+      // https://github.com/scalafiddle/scalafiddle-core/tree/master/integrations#scalafiddle-integration
+      // 'selector' is excluded on purpose to not complicate logic and increase maintainability
+      val validParams = Seq("prefix", "dependency", "scalaversion", "template", "theme", "minheight", "layout")
+
+      val params = validParams.map(k => Option(node.attributes.value(k)).map(x => s"data-$k=$x").getOrElse("")).mkString(" ")
+
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
-      val (text, _) = Snippet(file, labels)
-
-      val fiddleSource = java.net.URLEncoder.encode(
-        """import fiddle.Fiddle, Fiddle.println
-          |@scalajs.js.annotation.JSExport
-          |object ScalaFiddle {
-          |  // $FiddleStart
-          |""".stripMargin + text + """
-          |  // $FiddleEnd
-          |}
-          |""".stripMargin, "UTF-8")
-        .replace("+", "%20") // due to: https://stackoverflow.com/questions/4737841/urlencoder-not-able-to-translate-space-character
+      val (code, _) = Snippet(file, labels)
 
       printer.println.print(s"""
-        <iframe class="$cssClass" $width $height src="$baseUrl?$extraParams&source=$fiddleSource" frameborder="0" style="$cssStyle"></iframe>
+        <div data-scalafiddle $params>
+          <pre class="prettyprint"><code class="language-scala">$code</code></pre>
+          </pre>
+        </div>
+        <script defer src="$integrationScriptUrl"></script>
         """
       )
     } catch {
