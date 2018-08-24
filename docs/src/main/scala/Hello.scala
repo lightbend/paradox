@@ -16,6 +16,8 @@
 
 // #hello_example
 object Hello extends App {
+  // #hello_fiddle
   println("hello")
+  // #hello_fiddle
 }
 // #hello_example
