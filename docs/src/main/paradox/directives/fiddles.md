@@ -3,18 +3,18 @@ Fiddle inclusion
 
 ### @@fiddle block
 
-The `@@fiddle` block is used to include code snippets from another file that are runnable in [scalafiddle.io](https://scalafiddle.io/).
+The `@@fiddle` block is used to include Scala code snippets from a separate file that are runnable in [scalafiddle.io](https://scalafiddle.io/):
 
 ```markdown
-@@fiddle [Hello.scala](/docs/src/main/scala/Hello.scala) { #hello_example }
+@@fiddle [Hello.scala](/docs/src/main/scala/Hello.scala) { #hello_fiddle }
 ```
 
 Inside of `Hello.scala` mark the desired section you want to extract using the `#hello_fiddle` label as follows:
 
 ```scala
-// #hello_fiddle
-  println("hello")
-// #hello_fiddle
+//#hello_fiddle
+println("hello")
+//#hello_fiddle
 ```
 
 This lets us compile and test the source before including it in the documentation.
@@ -32,9 +32,9 @@ Valid fiddle directive's attributes are:
   - minheight
   - layout
 
-and their usage is described [here](https://github.com/scalafiddle/scalafiddle-core/blob/master/integrations/README.md#integration-parameters).
+and their usage is described [in the upstream fiddle README](https://github.com/scalafiddle/scalafiddle-core/blob/master/integrations/README.md#integration-parameters).
 
-### `fiddle.*.base_dir`
+### Source base directories
 
 In order to specify your fiddle source paths off certain base directories you can define placeholders
 either in the page's front matter or globally like this (for example):
@@ -47,4 +47,4 @@ paradoxProperties in Compile ++= Map(
 )
 ```
 
-and it will work such as described for `snippets`.
+and it will work such as described for @ref[snippets](snippets.md).
