@@ -11,6 +11,7 @@ which signifies a directive usage. Depending on the scope of the directive you w
  * [Index and Table Of Contents Directives](organizing-pages.md)
  * [Linking Directives](linking.md)
  * [Snippet Directives](snippets.md)
+ * [Fiddle Directives](fiddles.md)
  * [Callout Directives](callouts.md)
  * [Variable Substitution Directives](vars.md)
  * [CSS Friendliness Directives](css-friendliness.md)
