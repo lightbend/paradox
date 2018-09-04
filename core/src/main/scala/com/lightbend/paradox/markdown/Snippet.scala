@@ -91,7 +91,7 @@ object Snippet {
   def dropIndent(indent: Int, line: String): String = {
     @tailrec
     def loop(idx: Int): Int = {
-      if (idx == indent) idx
+      if (idx == indent || idx == line.length) idx
       else if (line(idx) == ' ' || line(idx) == '\t') loop(idx + 1)
       else idx
     }

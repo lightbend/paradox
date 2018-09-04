@@ -101,7 +101,8 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
                                                                                                                                                       |def rendered(): Unit = {
                                                                                                                                                       |}
                                                                                                                                                       |}
-                                                                                                                                                      |class AnotherClass</code>
+                                                                                                                                                      |class AnotherClass
+                                                                                                                                                      |</code>
                                                                                                                                                       |</pre>""")
   }
 

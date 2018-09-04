@@ -66,3 +66,10 @@ object AnotherIndentedExample {
 //#multi-indented-example
 class AnotherClass
 //#multi-indented-example
+
+// check empty line with indented blocks!
+// format: OFF
+  //#multi-indented-example
+
+  //#multi-indented-example
+// format: ON
