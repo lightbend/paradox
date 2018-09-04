@@ -93,6 +93,18 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |</pre>""")
   }
 
+  it should "not truncate snippets" in {
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }""") shouldEqual html("""
+                                                                                                                                                      |<pre class="prettyprint">
+                                                                                                                                                      |<code class="language-scala">
+                                                                                                                                                      |object AnotherIndentedExample {
+                                                                                                                                                      |def rendered(): Unit = {
+                                                                                                                                                      |}
+                                                                                                                                                      |}
+                                                                                                                                                      |class AnotherClass</code>
+                                                                                                                                                      |</pre>""")
+  }
+
   it should "add link to source" in {
     implicit val context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",

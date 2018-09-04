@@ -41,3 +41,28 @@ object IndentedExample {
     //#indented-example
   }
 }
+
+//#multi-indented-example
+//#some-other-anchor
+object AnotherIndentedExample {
+  //#multi-indented-example
+
+  def notRendered(): Unit = {
+  }
+
+  //#multi-indented-example
+  def rendered(): Unit = {
+  }
+  //#some-other-anchor
+  //#multi-indented-example
+
+  def alsoNotRendered(): Unit = {
+
+  }
+  //#multi-indented-example
+}
+//#multi-indented-example
+
+//#multi-indented-example
+class AnotherClass
+//#multi-indented-example
