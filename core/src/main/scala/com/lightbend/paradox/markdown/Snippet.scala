@@ -17,7 +17,10 @@
 package com.lightbend.paradox.markdown
 
 import java.io.File
+
 import org.parboiled.common.FileUtils
+
+import scala.annotation.tailrec
 import scala.io.Source
 
 object Snippet {
@@ -74,12 +77,27 @@ object Snippet {
         es.block match {
           case NoBlock if (blockStart(l)) =>
             val indent = l.indexWhere(_ != ' ')
-            es.copy(block = InBlock(indent), lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
-          case NoBlock                          => es
-          case InBlock(indent) if (blockEnd(l)) => es.copy(block = NoBlock, lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
-          case InBlock(indent)                  => es.copy(lines = addLine(l.drop(indent), es.lines, lineIndex + 1))
+            es.copy(block = InBlock(indent), lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
+          case NoBlock => es
+          case InBlock(indent) if (blockEnd(l)) =>
+            es.copy(block = NoBlock, lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
+          case InBlock(indent) =>
+            es.copy(lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
         }
     }
+  }
+
+  // drop indent, but don't drop other characters than whitespace
+  def dropIndent(indent: Int, line: String): String = {
+    @tailrec
+    def loop(idx: Int): Int = {
+      if (idx == indent || idx == line.length) idx
+      else if (line(idx) == ' ' || line(idx) == '\t') loop(idx + 1)
+      else idx
+    }
+
+    val charsToDrop = loop(0)
+    line.substring(charsToDrop)
   }
 
   private case class ExtractionState(block: Block, lines: Seq[Line]) {
