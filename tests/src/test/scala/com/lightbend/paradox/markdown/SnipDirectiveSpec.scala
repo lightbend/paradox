@@ -95,15 +95,15 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
   it should "not truncate snippets" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }""") shouldEqual html("""
-                                                                                                                                                      |<pre class="prettyprint">
-                                                                                                                                                      |<code class="language-scala">
-                                                                                                                                                      |object AnotherIndentedExample {
-                                                                                                                                                      |def rendered(): Unit = {
-                                                                                                                                                      |}
-                                                                                                                                                      |}
-                                                                                                                                                      |class AnotherClass
-                                                                                                                                                      |</code>
-                                                                                                                                                      |</pre>""")
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |object AnotherIndentedExample {
+      |def rendered(): Unit = {
+      |}
+      |}
+      |class AnotherClass
+      |</code>
+      |</pre>""")
   }
 
   it should "add link to source" in {
