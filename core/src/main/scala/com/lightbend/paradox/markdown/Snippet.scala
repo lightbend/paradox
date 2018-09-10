@@ -46,14 +46,19 @@ object Snippet {
 
   type Line = (Int, String)
 
-  private def extractState(file: File, label: String): ExtractionState = {
-    if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
-      "Only [a-zA-Z0-9_-] are allowed.")
+  def lineHasLabel(label: String): String => Boolean = {
     // A label can be followed by an end of line or one or more spaces followed by an
     // optional single sequence of contiguous (no whitespace) non-word characters
     // (anything not in the group [a-zA-Z0-9_])
     val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
+    hasLabel
+  }
+
+  private def extractState(file: File, label: String): ExtractionState = {
+    if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
+      "Only [a-zA-Z0-9_-] are allowed.")
+    val hasLabel = lineHasLabel(label)
     val extractionState = extract(file, hasLabel, hasLabel, addFilteredLine)
     if (extractionState.snippetLines.isEmpty)
       throw new SnippetException(s"Label [$label] not found in [$file]")
@@ -72,6 +77,10 @@ object Snippet {
 
   private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
     val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
+    extractFrom(lines, blockStart, blockEnd, addLine)
+  }
+
+  def extractFrom(lines: Seq[String], blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
     lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) {
       case (es, (l, lineIndex)) =>
         es.block match {
@@ -88,7 +97,7 @@ object Snippet {
   }
 
   // drop indent, but don't drop other characters than whitespace
-  def dropIndent(indent: Int, line: String): String = {
+  private def dropIndent(indent: Int, line: String): String = {
     @tailrec
     def loop(idx: Int): Int = {
       if (idx == indent || idx == line.length) idx
@@ -100,16 +109,16 @@ object Snippet {
     line.substring(charsToDrop)
   }
 
-  private case class ExtractionState(block: Block, lines: Seq[Line]) {
+  final case class ExtractionState(block: Block, lines: Seq[Line]) {
     def snippetLines = lines.map(_._2)
   }
 
-  private sealed trait Block
-  private case object NoBlock extends Block
-  private case class InBlock(indent: Int) extends Block
+  sealed trait Block
+  case object NoBlock extends Block
+  case class InBlock(indent: Int) extends Block
 
   private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
-  private def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
+  def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
     anyLabelRegex.findFirstIn(line).map(_ => lines).getOrElse(lines :+ (lineNumber, line))
   private def verifyLabel(label: String): Boolean = anyLabelRegex.findFirstIn(s"#$label").nonEmpty
 
