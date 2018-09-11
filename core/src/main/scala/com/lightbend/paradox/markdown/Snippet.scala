@@ -26,8 +26,13 @@ object Snippet {
   class SnippetException(message: String) extends RuntimeException(message)
 
   def apply(file: File, labels: Seq[String]): (String, String) = {
-    val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
-    (extract(file, lines, labels), language(file))
+    val source = Source.fromFile(file)("UTF-8")
+    try {
+      val lines = source.getLines.toSeq
+      (extract(file, lines, labels), language(file))
+    } finally {
+      source.close()
+    }
   }
 
   def extract(file: File, lines: Seq[String], labels: Seq[String]): String = {
@@ -58,12 +63,17 @@ object Snippet {
   }
 
   def extractLabelRange(file: File, label: String): Option[(Int, Int)] = {
-    val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
-    val lineNumbers = extractState(file, lines, label).lines.map(_._1)
-    if (lineNumbers.isEmpty)
-      None
-    else
-      Some((lineNumbers.min, lineNumbers.max))
+    val source = Source.fromFile(file)("UTF-8")
+    try {
+      val lines = source.getLines.toSeq
+      val lineNumbers = extractState(file, lines, label).lines.map(_._1)
+      if (lineNumbers.isEmpty)
+        None
+      else
+        Some((lineNumbers.min, lineNumbers.max))
+    } finally {
+      source.close()
+    }
   }
 
   type Line = (Int, String)
