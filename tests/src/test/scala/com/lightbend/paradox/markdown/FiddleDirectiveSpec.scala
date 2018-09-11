@@ -83,7 +83,7 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-scala">
       |case object Dent
-      |case object DoubleDent</code>
+      |  case object DoubleDent</code>
       |</pre>
       |</div>
       |<script defer src="https://embed.scalafiddle.io/integration.js">

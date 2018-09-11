@@ -16,8 +16,10 @@
 
 package com.lightbend.paradox.markdown
 
+import java.io.File
+
 import scala.collection.immutable.Seq
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
 class SnippetIndentationTest extends FlatSpec with Matchers {
 
@@ -25,7 +27,7 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
     val in =
       """|object IndentedExample {
          |  //#indented-example
-         |  case object Dent
+         |    case object Dent
          |  //#indented-example
          |
          |  object EventMore {
@@ -41,14 +43,14 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
     )
   }
 
-  it should "keep indentation" in {
+  it should "be removed" in {
     val in =
       """|//#indented
          |  case object WithIndentation
          |//#indented
          |""".stripMargin
     extractToString(in, "indented") should be(
-      """  case object WithIndentation""".stripMargin
+      """case object WithIndentation""".stripMargin
     )
   }
 
@@ -67,7 +69,7 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
     )
   }
 
-  it should "cope with markers indented more than the text" in pendingUntilFixed {
+  it should "cope with markers indented more than the text" in {
     val in =
       """|//#multi-indented-example
          |//#some-other-anchor
@@ -77,7 +79,7 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
          |  def notRendered(): Unit = {
          |  }
          |
-         |  //#multi-indented-example
+         |//#multi-indented-example
          |  def rendered(): Unit = {
          |  }
          |  //#some-other-anchor
@@ -103,7 +105,7 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
     )
   }
 
-  "imports" should "align" in {
+  "imports" should "align with indentationPerSnippet" in {
     val in =
       """//#indentation
         |import static java.lang.System.out;
@@ -125,11 +127,30 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
     )
   }
 
+  it should "align even without indentationPerSnippet" in {
+    val in =
+      """//#indentation
+        |import static java.lang.System.out;
+        |//#indentation
+        |...
+        |        //#indentation
+        |
+        |        for (int i = 0; i < 10; i++) {
+        |            out.println(i);
+        |        }
+        |        //#indentation
+      """.stripMargin
+    extractToString(in, "indentation", indentationPerSnippet = false) should be(
+      """import static java.lang.System.out;
+        |
+        |for (int i = 0; i < 10; i++) {
+        |    out.println(i);
+        |}""".stripMargin
+    )
+  }
 
-  def extractToString(inString: String, label: String): String = {
+  def extractToString(inString: String, label: String, indentationPerSnippet: Boolean = true): String = {
     val in = inString.split("\n").toList
-    val hasLabel = Snippet.lineHasLabel(label)
-    val es = Snippet.extractFrom(in, hasLabel, hasLabel, Snippet.addFilteredLine)
-    es.snippetLines.mkString("\n")
+    Snippet.extract(new File(""), in, Seq(label))
   }
 }
