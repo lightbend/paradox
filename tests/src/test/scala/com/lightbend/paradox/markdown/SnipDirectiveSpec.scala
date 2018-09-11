@@ -89,7 +89,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-scala">
       |case object Dent
-      |case object DoubleDent</code>
+      |  case object DoubleDent</code>
       |</pre>""")
   }
 
@@ -98,8 +98,8 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object AnotherIndentedExample {
-      |def rendered(): Unit = {
-      |}
+      |  def rendered(): Unit = {
+      |  }
       |}
       |class AnotherClass
       |</code>

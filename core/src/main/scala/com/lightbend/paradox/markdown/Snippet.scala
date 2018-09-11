@@ -18,8 +18,6 @@ package com.lightbend.paradox.markdown
 
 import java.io.File
 
-import org.parboiled.common.FileUtils
-
 import scala.annotation.tailrec
 import scala.io.Source
 
@@ -28,25 +26,59 @@ object Snippet {
   class SnippetException(message: String) extends RuntimeException(message)
 
   def apply(file: File, labels: Seq[String]): (String, String) = {
-    (extract(file, labels), language(file))
+    val source = Source.fromFile(file)("UTF-8")
+    try {
+      val lines = source.getLines.toSeq
+      (extract(file, lines, labels), language(file))
+    } finally {
+      source.close()
+    }
   }
 
-  def extract(file: File, labels: Seq[String]): String = labels match {
-    case Seq() => extract(file, _ => true, _ => false, addFilteredLine).snippetLines.mkString("\n")
-    case _     => labels.map(label => extract(file, label)).mkString("\n")
+  def extract(file: File, lines: Seq[String], labels: Seq[String]): String = {
+    labels match {
+      case Seq() =>
+        val extractionState = extractFrom(lines, _ => true, _ => false, addFilteredLine)
+        cutIndentation(extractionState.snippetLines)
+      case _ =>
+        labels.map { label =>
+          val extractionState = extractState(file, lines, label)
+          cutIndentation(extractionState.snippetLines)
+        }.mkString("\n")
+    }
+  }
+
+  private def cutIndentation(snippetLines: Seq[String]): String = {
+    val minIndent =
+      snippetLines.foldLeft(Integer.MAX_VALUE) {
+        // ignore import lines when determining indentation
+        case (in, ln) if !ln.startsWith("import") =>
+          val idx = ln.indexWhere(_ != ' ')
+          if (idx > -1)
+            Math.min(in, idx)
+          else in
+        case (in, _) => in
+      }
+    snippetLines.map(ln => dropIndent(minIndent, ln)).mkString("\n")
   }
 
   def extractLabelRange(file: File, label: String): Option[(Int, Int)] = {
-    val lineNumbers = extractState(file, label).lines.map(_._1)
-    if (lineNumbers.isEmpty)
-      None
-    else
-      Some((lineNumbers.min, lineNumbers.max))
+    val source = Source.fromFile(file)("UTF-8")
+    try {
+      val lines = source.getLines.toSeq
+      val lineNumbers = extractState(file, lines, label).lines.map(_._1)
+      if (lineNumbers.isEmpty)
+        None
+      else
+        Some((lineNumbers.min, lineNumbers.max))
+    } finally {
+      source.close()
+    }
   }
 
   type Line = (Int, String)
 
-  private def extractState(file: File, label: String): ExtractionState = {
+  private def extractState(file: File, lines: Seq[String], label: String): ExtractionState = {
     if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
       "Only [a-zA-Z0-9_-] are allowed.")
     // A label can be followed by an end of line or one or more spaces followed by an
@@ -54,41 +86,33 @@ object Snippet {
     // (anything not in the group [a-zA-Z0-9_])
     val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
-    val extractionState = extract(file, hasLabel, hasLabel, addFilteredLine)
+    val extractionState = extractFrom(lines, hasLabel, hasLabel, addFilteredLine)
     if (extractionState.snippetLines.isEmpty)
       throw new SnippetException(s"Label [$label] not found in [$file]")
     extractionState.block match {
-      case InBlock(_) => throw new SnippetException(s"Label [$label] block not closed in [$file]")
-      case _          =>
+      case InBlock => throw new SnippetException(s"Label [$label] block not closed in [$file]")
+      case _       =>
     }
     extractionState
   }
 
-  private def extract(file: File, label: String): String = {
-    val extractionState = extractState(file, label)
-    val snippetLines = extractionState.snippetLines
-    snippetLines.mkString("\n")
-  }
-
-  private def extract(file: File, blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
-    val lines = Source.fromFile(file)("UTF-8").getLines.toSeq
+  private def extractFrom(lines: Seq[String], blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
     lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) {
       case (es, (l, lineIndex)) =>
         es.block match {
-          case NoBlock if (blockStart(l)) =>
-            val indent = l.indexWhere(_ != ' ')
-            es.copy(block = InBlock(indent), lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
+          case NoBlock if blockStart(l) =>
+            es.copy(block = InBlock, lines = addLine(l, es.lines, lineIndex + 1))
           case NoBlock => es
-          case InBlock(indent) if (blockEnd(l)) =>
-            es.copy(block = NoBlock, lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
-          case InBlock(indent) =>
-            es.copy(lines = addLine(dropIndent(indent, l), es.lines, lineIndex + 1))
+          case InBlock if blockEnd(l) =>
+            es.copy(block = NoBlock, lines = addLine(l, es.lines, lineIndex + 1))
+          case InBlock =>
+            es.copy(lines = addLine(l, es.lines, lineIndex + 1))
         }
     }
   }
 
   // drop indent, but don't drop other characters than whitespace
-  def dropIndent(indent: Int, line: String): String = {
+  private def dropIndent(indent: Int, line: String): String = {
     @tailrec
     def loop(idx: Int): Int = {
       if (idx == indent || idx == line.length) idx
@@ -106,12 +130,17 @@ object Snippet {
 
   private sealed trait Block
   private case object NoBlock extends Block
-  private case class InBlock(indent: Int) extends Block
+  private case object InBlock extends Block
 
   private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
+
+  private def containsLabel(line: String): Option[String] =
+    anyLabelRegex.findFirstIn(line)
+
   private def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
-    anyLabelRegex.findFirstIn(line).map(_ => lines).getOrElse(lines :+ (lineNumber, line))
-  private def verifyLabel(label: String): Boolean = anyLabelRegex.findFirstIn(s"#$label").nonEmpty
+    containsLabel(line).map(_ => lines).getOrElse(lines :+ (lineNumber, line))
+
+  private def verifyLabel(label: String): Boolean = containsLabel(s"#$label").nonEmpty
 
   def language(file: File): String = {
     val name = file.getName
