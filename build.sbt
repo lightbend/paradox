@@ -76,7 +76,7 @@ lazy val tests = project
 lazy val plugin = project
   .in(file("plugin"))
   .dependsOn(core)
-  .enablePlugins(BintrayPublish)
+  .enablePlugins(SbtPlugin, BintrayPublish)
   .disablePlugins(Sonatype)
   .settings(
     name := "sbt-paradox",
