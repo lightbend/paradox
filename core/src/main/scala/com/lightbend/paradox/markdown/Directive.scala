@@ -365,7 +365,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       if (variables.contains(GitHubResolver.baseUrl) &&
         variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
         val p = resolvePath(page, Path.toUnixStyleRootPath(file.getAbsolutePath), labels.headOption).base.normalize.toString
-        new ExpLinkNode("", p, new TextNode("Full source at GitHub")).accept(visitor)
+        new ClassyLinkNode(p, "snippet-full-source github", new TextNode("Full source at GitHub")).accept(visitor)
       }
     } catch {
       case e: FileNotFoundException =>

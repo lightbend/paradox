@@ -119,7 +119,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |  println("Hello, World!")
         |}</code>
         |</pre>
-        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30">Full source at GitHub</a>""")
+        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" class="snippet-full-source github">Full source at GitHub</a>""")
   }
 
   it should "add link to source with placeholders" in {
@@ -136,7 +136,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |  println("Hello, World!")
         |}</code>
         |</pre>
-        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30">Full source at GitHub</a>""")
+        |<a href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" class="snippet-full-source github">Full source at GitHub</a>""")
   }
 
   it should "not link to source if config says so" in {
