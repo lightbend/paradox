@@ -10,6 +10,7 @@
  * @ref[`@ref`](linking.md#ref-link)
  * @ref[`@scaladoc`](linking.md#scaladoc)
  * @ref[`@@snip`](snippets.md)
+ * @ref[`@span`](css-friendliness.md#span)
  * @ref[`@@toc`](organizing-pages.md#toc-block)
  * @ref[`@var`](vars.md#var)
  * @ref[`@vars`](vars.md#vars)
