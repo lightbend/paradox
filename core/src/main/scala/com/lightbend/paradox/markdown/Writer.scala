@@ -105,7 +105,10 @@ object Writer {
     new DefaultLinkRenderer(context)
 
   def defaultVerbatims: Map[String, VerbatimSerializer] = {
-    Map(VerbatimSerializer.DEFAULT -> PrettifyVerbatimSerializer)
+    Map(
+      VerbatimSerializer.DEFAULT -> PrettifyVerbatimSerializer,
+      RawVerbatimSerializer.tag -> RawVerbatimSerializer
+    )
   }
 
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] = Seq(

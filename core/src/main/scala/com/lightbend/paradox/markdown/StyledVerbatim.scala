@@ -85,3 +85,14 @@ object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
     case _                 => printClass(printer, s"language-$nodeType")
   }
 }
+
+object RawVerbatimSerializer extends VerbatimSerializer {
+
+  val tag = "raw"
+
+  override def serialize(node: VerbatimNode, printer: Printer): Unit = {
+    printer.println()
+    printer.print(node.getText)
+    printer.printchkln()
+  }
+}

@@ -44,6 +44,7 @@ With an embedded warning
 @@@
 ```
 
+
 ### @span
 
 Wrapping content with `@span[...]`, e.g. like this:
@@ -56,4 +57,28 @@ will render as:
 
 ```html
 <p>This is a <span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="test.html">Linking</a></span> to show.</p>
+
+
+### Raw text in fenced blocks
+
+In case you need to go wild and want to add text as-is to the page, the `raw` fenced block is available. Whereas other fenced block are html-ified, this is left untouched.
+
+@@snip [snip](/tests/src/test/scala/com/lightbend/paradox/markdown/WrapDirectiveSpec.scala) { #raw }
+
+will render as:
+
+```html
+<blink>Hello?</blink>
+```
+
+In many cases that section should be wrapped in a `div` with an appropriate class
+
+@@snip [snip](/tests/src/test/scala/com/lightbend/paradox/markdown/WrapDirectiveSpec.scala) { #div-raw }
+
+will render as:
+
+```html
+<div class="divStyleClass">
+<blink>Hello?</blink>
+</div>
 ```
