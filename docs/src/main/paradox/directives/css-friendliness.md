@@ -43,3 +43,17 @@ With an embedded warning
 
 @@@
 ```
+
+### @span
+
+Wrapping content with `@span[...]`, e.g. like this:
+
+```markdown
+This is a @span[Scala variant containing ***markdown*** and @ref:[Linking](test.md)] { .group-scala } to show.
+```
+
+will render as:
+
+```html
+<p>This is a <span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="test.html">Linking</a></span> to show.</p>
+```

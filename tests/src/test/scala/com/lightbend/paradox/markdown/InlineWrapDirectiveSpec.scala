@@ -25,8 +25,8 @@ class InlineWrapDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "render the example from the docs" in {
-    markdown("@span[Scala variant containing ***markdown*** and @ref:[Linking](test.md)] { .group-scala }") shouldEqual html("""
-      |<p><span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="test.html">Linking</a></span></p>""")
+    markdown("This is a @span[Scala variant containing ***markdown*** and @ref:[Linking](test.md)] { .group-scala } to show.") shouldEqual html("""
+      |<p>This is a <span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="test.html">Linking</a></span> to show.</p>""")
   }
 
   it should "support a custom id and custom CSS classes at the same time" in {
