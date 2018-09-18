@@ -20,6 +20,7 @@ object Version {
   val foundation = "6.2.3"
   val jtidy      = "r938"
   val pegdown    = "1.6.0"
+  val parboiled  = "1.2.0"
   val prettify   = "4-Mar-2013"
   val sbtWeb     = "1.4.2"
   val scalatest  = "3.0.3"
@@ -29,7 +30,10 @@ object Version {
 object Library {
   val foundation = "org.webjars"       % "foundation" % Version.foundation
   val jtidy      = "net.sf.jtidy"      % "jtidy"      % Version.jtidy
-  val pegdown    = "org.pegdown"       % "pegdown"    % Version.pegdown
+  val pegdown    = Seq(
+                     "org.pegdown"     % "pegdown"        % Version.pegdown,
+                     "org.parboiled"   % "parboiled-java" % Version.parboiled // overwrite for JDK10 support
+                   )
   val prettify   = "org.webjars"       % "prettify"   % Version.prettify
   val sbtWeb     = "com.typesafe.sbt"  % "sbt-web"    % Version.sbtWeb
   val scalatest  = "org.scalatest"    %% "scalatest"  % Version.scalatest

@@ -42,13 +42,9 @@ object Frontin {
 
   def loadProperties(str: Option[String]): Map[String, String] = str match {
     case None => Map.empty[String, String]
-    case _ =>
+    case Some(s) =>
       val p = new java.util.Properties
-      for (s <- str) {
-        val q = new java.util.Properties
-        q.load(new StringReader(s))
-        p.putAll(q)
-      }
+      p.load(new StringReader(s))
       p.asScala.toMap
   }
 }
