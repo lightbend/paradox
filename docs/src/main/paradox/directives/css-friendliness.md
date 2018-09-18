@@ -57,7 +57,7 @@ will render as:
 
 ```html
 <p>This is a <span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="test.html">Linking</a></span> to show.</p>
-
+```
 
 ### Raw text in fenced blocks
 
