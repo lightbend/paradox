@@ -27,55 +27,113 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "The `wrap` directive" should "render wrapping `div`s" in {
-    markdown("""
-      |@@@ div
-      |Simple sentence here.
-      |@@@""") shouldEqual html("""
-      |<div>
-      |<p>Simple sentence here.</p>
-      |</div>""")
+    markdown(
+      """
+        |@@@ div
+        |Simple sentence here.
+        |@@@""") shouldEqual html(
+      """
+        |<div>
+        |<p>Simple sentence here.</p>
+        |</div>""")
   }
 
   it should "render the example from the docs" in {
-    markdown("""
-      |@@@ div { #foo .bar .baz }
-      |
-      |Inner **markdown** content.
-      |
-      |@@@""") shouldEqual html("""
-      |<div id="foo" class="bar baz">
-      |<p>Inner <strong>markdown</strong> content.</p>
-      |</div>""")
+    markdown(
+      """
+        |@@@ div { #foo .bar .baz }
+        |
+        |Inner **markdown** content.
+        |
+        |@@@""") shouldEqual html(
+      """
+        |<div id="foo" class="bar baz">
+        |<p>Inner <strong>markdown</strong> content.</p>
+        |</div>""")
   }
 
   it should "support a custom id and custom CSS classes at the same time" in {
-    markdown("""
-      |@@@ div { #yeah .red .blue }
-      |Simple sentence here.
-      |@@@""") shouldEqual html("""
-      |<div id="yeah" class="red blue">
-      |<p>Simple sentence here.</p>
-      |</div>""")
+    markdown(
+      """
+        |@@@ div { #yeah .red .blue }
+        |Simple sentence here.
+        |@@@""") shouldEqual html(
+      """
+        |<div id="yeah" class="red blue">
+        |<p>Simple sentence here.</p>
+        |</div>""")
   }
 
   it should "render nested blocks" in {
-    markdown("""
-      |@@@ div
-      |Simple sentence here.
-      |
-      |@@@@ warning
-      |
-      |warning inside a div
-      |
-      |@@@@
-      |
-      |@@@""") shouldEqual html("""
-      |<div>
-      |<p>Simple sentence here.</p>
-      |<div class="callout warning">
-      |<div class="callout-title">Warning</div>
-      |<p>warning inside a div</p>
-      |</div>
-      |</div>""")
+    markdown(
+      """
+        |@@@ div
+        |Simple sentence here.
+        |
+        |@@@@ warning
+        |
+        |warning inside a div
+        |
+        |@@@@
+        |
+        |@@@""") shouldEqual html(
+      """
+        |<div>
+        |<p>Simple sentence here.</p>
+        |<div class="callout warning">
+        |<div class="callout-title">Warning</div>
+        |<p>warning inside a div</p>
+        |</div>
+        |</div>""")
   }
+
+  it should "work with raw verbatim" in {
+    markdown(
+      """
+        |@@@div { .divStyleClass }
+        |```raw
+        |<blink>Hello?</blink>
+        |```
+        |@@@
+      """) shouldEqual html(
+      """<div class="divStyleClass">
+        |<blink>Hello?</blink>
+        |</div>
+      """)
+    // for use in docs
+    // format: off
+    """
+// #div-raw
+@@@div { .divStyleClass }
+```raw
+<blink>Hello?</blink>
+```
+@@@
+// #div-raw
+             """
+    // format: on
+  }
+
+  "Raw verbatim" should "work" in {
+    markdown(
+      """
+        |```raw
+        |<blink>Hello?</blink>
+        |```
+      """.stripMargin) shouldEqual html(
+      """<blink>Hello?</blink>
+        |""".stripMargin)
+
+    // for use in docs
+    // format: off
+    """
+// #raw
+```raw
+<blink>Hello?</blink>
+```
+// #raw
+             """
+    // format: on
+  }
+
 }
