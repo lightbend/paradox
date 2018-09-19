@@ -73,3 +73,10 @@ class AnotherClass
 
   //#multi-indented-example
 // format: ON
+
+//#link-example
+/**
+ * See https://docs.oracle.com/javase/8/docs/api/java/lang/Character.html#MAX_VALUE
+ */
+object LinkExample
+//#link-example

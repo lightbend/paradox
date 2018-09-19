@@ -93,6 +93,19 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |</pre>""")
   }
 
+  it should "keep links with #" in pendingUntilFixed {
+    markdown("""@@snip[example.scala](core/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #link-example }""") shouldEqual html(
+      """
+        |<pre class="prettyprint">
+        |<code class="language-scala">
+        |/**
+        |  * See https://docs.oracle.com/javase/8/docs/api/java/lang/Character.html#MAX_VALUE
+        |  */
+        |object LinkExample
+        |</code>
+        |</pre>""")
+  }
+
   it should "not truncate snippets" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }""") shouldEqual html("""
       |<pre class="prettyprint">
