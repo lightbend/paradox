@@ -186,7 +186,7 @@ object ParadoxPlugin extends AutoPlugin {
 
     watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
 
-    paradoxBrowse := openInBrowser((paradox in Compile).value / "index.html", streams.value.log),
+    paradoxBrowse := openInBrowser(paradox.value / "index.html", streams.value.log),
 
     paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
   )
