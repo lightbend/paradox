@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-addSbtPlugin("com.github.gseitz"     % "sbt-release"     % "1.0.9")
 addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.8.2")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.0.0")
 addSbtPlugin("org.foundweekends"     % "sbt-bintray"     % "0.5.1")
