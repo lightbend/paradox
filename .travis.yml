@@ -10,7 +10,7 @@ jobs:
       jdk: oraclejdk10
 
     - stage: publish
-      script: sbt ^publishSigned
+      script: sbt ";^ core/publishSigned ;^ testkit/publishSigned ;^ plugin/publishSigned ;^ themePlugin/publishSigned ; genericTheme/publishSigned"
       jdk: oraclejdk8
 
     - script: sbt bintrayRelease

@@ -123,10 +123,6 @@ lazy val genericTheme = (project in (file("themes") / "generic"))
       Library.foundation % "provided",
       Library.prettify % "provided"
     ),
-    skip in publish := { (sbtBinaryVersion in pluginCrossBuild).value match {
-      case "0.13" => true
-      case _ => false
-    }}
   )
 
 lazy val docs = (project in file("docs"))
