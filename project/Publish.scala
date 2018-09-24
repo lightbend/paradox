@@ -18,7 +18,6 @@ import sbt._
 import sbt.Keys._
 import bintray.{ BintrayKeys, BintrayPlugin }
 import com.typesafe.sbt.SbtPgp, SbtPgp.autoImport._
-import sbtrelease.ReleasePlugin.autoImport._
 
 /**
  * Publish to private bintray repository.
@@ -50,8 +49,7 @@ object SonatypePublish extends AutoPlugin {
       val nexus = "https://oss.sonatype.org/"
       if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
       else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value
+    }
   )
 }
 

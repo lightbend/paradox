@@ -1,8 +1,32 @@
 language: scala
-jdk:
-- oraclejdk8
-- oraclejdk10
-script: sbt verify
+
+jobs:
+  include:
+    - stage: test
+      script: sbt verify
+      jdk: oraclejdk8
+
+    - script: sbt verify
+      jdk: oraclejdk10
+
+    - stage: publish
+      script: sbt ";^ core/publishSigned ;^ testkit/publishSigned ;^ plugin/publishSigned ;^ themePlugin/publishSigned ; genericTheme/publishSigned"
+      jdk: oraclejdk8
+
+    - script: sbt bintrayRelease
+      jdk: oraclejdk8
+
+    - script: sbt sonatypeRelease
+      jdk: oraclejdk8
+
+stages:
+  # runs on master commits and PRs
+  - name: test
+    if: NOT tag =~ ^v
+
+  # runs on main repo version-tagged commits
+  - name: publish
+    if: repo = lightbend/paradox AND tag =~ ^v
 
 cache:
   directories:
@@ -16,3 +40,18 @@ before_cache:
 notifications:
   email:
     on_success: never
+
+env:
+  global:
+    # travis encrypt BINTRAY_USER=...
+    - secure: "ba3E55k1kFmAdTuchaiSqibRILlGLooGEqiXaJpuyQaR6lNI0XDtVvxASUOHh+6X5FxocobhHFiGeawgVylDpc/9pElZ/CsjuP0wsCUJe19tKUReDM+qgiiGXViFretq0NPXYTXvGi6R1jGYt0rTBqO7lc9Ng8Sa4idmx8Jno3MrI+6JrxnP3XaHPQG1QWEPol7bP3polKudVdlE+8mJ6WL1D8QB+beSGjGkQMcdm/UxZR3Xj3L0FBxC58HgKv0v15l/gbITjz1o51OveD/e9FwoC5Ruzv2cAtrmyc34dXLuGApApB4YAwfMnVir8i8EZHUY/cdTOKRnOtZsJKVoBs66mYGLLLXk7jAnCD708iHqwqc0N0MnvzLLuwvC0SlStGKKcuJJXd92VAIK/GiDQzO5MfGqyRShCrdsvOBJZ/K3XUOqoYhmvK0t3Xvevza9yya4ABg2MteOcYYyq0QQWV+4u8Nlw6NWRYD8GQooECiYiWxCczK/ViKbAnEq+Q52yDlltfo+Cav7fz9RWLXZOHAHF5okmn7kZxoFmL3MAWaITYJW4d32/8urvv/h3UIPAJoz73WFzOb+Mup8F9FME7ckRAesfROgs/H/iaHRsmPlDxc+JmMSvnKlMJrepaiXsTc/gthYdwT49fDf4SCqJBdPiKdzsm6MiYDhjyJose8="
+    # travis encrypt BINTRAY_PASS=...
+    - secure: "wEuWXN+BlsC4kfE6krFNhVZLbQ+fJJOsXDmM2dTl9xjLFJoEGBMCOwNy7kGcIah1c12O/BcGl7ayUUXRB17ssFH4BV03pKVudb7Jto/kLSchHTXLrfJWvYOj8kCiNxxqXqvh8t4p/nJyR23T3xMRzS8EYO4BS0aQf2F0A4+5l95Ty2rCZQbe9cyrMupo5K9cGHOEuUus6z+Lv4I8hABhAUqhraAZt/Cq7fRU0fk2wnYdXGm8/yXe2Zs3rd44f3gLR393Qhg8aN3fzjMqnbWzOLa/K4abrCOQKdGZL6ZPSejHsZFpS4O6M3BEnf28ikgBVyRfDUkxTTirzDBBViSMsr3za4qi6cw+RniqaC32bbX9EVjRht99+90LrnbJU3a5ROyb3AwGIeAfGPDCErnfOASobipukiFDXPoNQJl6okXRpOhbIMxbmM049uRYpmIJ0n2RbYXUyEV58vuPmqRlWi3ijNLwxO2dY2UNmUkXoET1FmyAherhWp0C48h0WjNWGJ+pSMyXe9X3WPH3ZhALmPdnMM7q/N+uzccmIQABpV3uo2HoUI8VbgDZKGMBt8oOf5YZdzDylbpO74VWTExwcT6P+DBgWc8Gd3CX1X+eeskzkhzWK4viEFOifST9Zwlsr+GvzpmttM4PxptHp2t8hsu0Anue8ItZLDCTo9jiqgI="
+    # travis encrypt SONA_USER=...
+    - secure: "aG/Xt58OkZwVl31h7BPfK4TlC1OF9ksPfsVCYR3A+0eK44VxO/JSxiB9mpTLQ5+VV5X4WOxxZkWAjEHK/hl2c8L+ANz3GZ9pRYbxsefQ4SSNKTGhBIL/EblEXZe8n+DhYbx4RahKyOe67aLXa+GR7HgXcJMhMCTWH8cjNp4gfwfnOKLabR7H3DsWrLayh4MZYq+D/Fl7GotdLbd9GryHgw3Ii5mM9IaIHS5xAE0+nnHxb6pm57qaCYPN+eIyNJrqiL/KVVFvoFrIiXSAZtckGLMslKGVQD+C25Ba6HI2CNk+OrLbs7C+J2qXSYcTc1oGZEN+US5k6ZkodF/FSwWJazBT8ooEj/ZcAmaPnc0g/5JzYzo6CAkCBnLp3a41YAdRyhK5Q4PgUDF6pO5lL8H8sL+saXtguGaIUn29E4NB/O0w7rsS42mcntXzregvc0euyQlL9d3NcHFtu2kJaAk8hCqTjsefhzl2dufnqeuefu2ladL9hwcqPUgTXZRnKDRU/K0hiQRgd3nney6+tVYI6lEs+SrD0tx2LBCNKLTCq/2xJzpZan7KbKgiIpLM3k6LU0o+3tgrzR5Y0j0s0n4NEjF1f7DmKaZsLiHH/flLL47gS9MWjPt/wWo7S7gAGqvRxkJ8i2s9s/8r1LWfh1J0OqpJXVRk11N+TdiMuvJZeQw="
+    # travis encrypt SONA_PASS=...
+    - secure: "u3g6aZWVcnEeAX+LYlFhhyBx9OiRbRKaWoV0W3pI9/KKe+A46FYZ0PnV//GjSakCshEerSA2+HdvmLsJhRerYXV9bIj8Oas1JW7wi+4zXELP02abb+rbAgma+vpsZ8qZNMZVWY0eY6IH1MfxTQ/4xrf+d0j5VtXg7qyaKJzkmgdAaPvqH/MoKtOL1mW6E8+jRc8pLXzYKgwjssHyQkPIbermRGb4XQaJPrpBOpidj3gYVC6RvNvdbP0EC+7WHah9hWIeMuaVDfSuWFH3NgveXB/fQHOJWMEN0z7h/6NGshAFdQyaEF0HWuCcOoAkmGy+JKakeT9ccNlEdozbq0ORquBGhCOqong0wD7i3hCld7YlbBi4bkWY/KMGNhkmyqnnWjl00HWX78Z+G5eyz1OY1A6oQOtqILuYcb9TfQGfOsNHDTk96jxfvxOKCUfS2yP1Yrbgn1z2cURTw2kYQSJyz1W40BUt0cwOF6uqWcOpwP2YIuFCvBZNTZ7A4Ls3mdsFth2Lvoo9mJ7SFtHAPKQS+618UIL5hu7d+MjBSpA05J7bx995pbNfCJ5F+ZKetn8/yxS2UftH/mwyt0ehJsdVJM5G5PRyXX7apEiz0260MuJBZxDsqecsWgccpJedtD4SkJor39sZYc1jXfJ+D9Q/72vSVDknFmuto42l91Fg7lU="
+    # travis encrypt SONATYPE_USERNAME=...
+    - secure: "pNP2d5y+T34yT983Qbvpr8ozRUDckkqYAa6evMtc1lpUpch76wW2z7Mq9C5IldTA72eISv6yELg0GotTLqqX2eMDwbpgIYkopWgzwMhWmo7nF3w/mHDlGo9U3STBv3bXy1d/7/V0m2zFA/t9cK2PetLdVX1S4/PGR447ZpG407iJKDKtNNTsZL8ncxyt5hk79rIeCT829Pv0rDnI3sxLUaw+i1jzFLckUAd1NfDp4IbH3/nUKKypupJQPtJ6p0JnnuXXkhimyigoTI8HXoj0WoOWCTG5KJ0GSEuD5/KRt9fb/raqYg/VjxHEyxmdqKoKFQ4ePp+87VmmTGK0FypStzqflqvqXyisLDpeU6gB56S1qcjecyp525Q8UB/P9SxrqtGejdV3DrTEUjVSC41AvD0PssjhgTR/fi26ZsL5kiO8E6t4IdBRpuDICdJ8mhhbAxK4tOVaQHxkQ65KpuWlKZ+0yRWb7fRdQPrT8UjdQHb2yJX1gZGAmhw+l9wTapSlM++tXu98pnrVAv/w9OP6HrLCklMT5eNLM9f5DJXZuxpF/a+c+5uXTRJNnEz6yfN5HJQ5g2DqOH+Y1P88X0lBTVTdDiAlh8Uj+LvOr4T6tJIWuH7HnSSh0J0QnemwGG3S23/D6Cd4jIypQn8/3m+Sg4k6wgVIX2DOTFnv8f8UaqU="
+    # travis encrypt SONATYPE_PASSWORD=...
+    - secure: "Y2AnH0/w9jOtRKTqhcCXDcMxvivIIJq0xgKCpKY03sz6+jE4Lw5ZEG1nXVoW3di7PuWbj5GY2KTp1Gk4SnWMfy1nGR9k3DV1Ns8q/W+8GrhhfMYd/Yi77AiN6YgJiObqKgEvTw/RBywZuhjB04n7UgrSu0fhSy8h+uLnCBeBP44oBMghAjqHiSOlRcTN8YkDg2YV+JK+pc0OegGo95qf5LzbfvbKIvQeTy4QWihcjeaxOg3XuxDWIO4kNS9w9+o3N55qa+qRhdhoks9KarPnWXDWWENfMgPCDzitHyf1RcxBYWcDkC4af0KJx2nbnrDJD3Ftc8bmZEwoK7DpLWsktFXJ7hdN/YLAI2cIIQi+uJq7OwQb5BTQoSHRiKgMYMbqYkeofHdyyhpzncudlODmnDJ9g7ZnBijvI7zMQTMxPmLq+ni4+hqD17stkORmU7DyYLLzRPn8ESMRg/zZ+LqqbL66xSc8iJPG6lbDL6at8IDmy9uy/bQpwK47VKDcFY+DTfJDp6MYGesQcd5j8qZFF/R2oCOwo9jhLDEqWa3xN+7lzl+p+Yz0vHMu0WGxhBMcDhkvFIXJ3gt2OQIZ/Rgsn6xLkcuI/LewuIoEFFZjjHKaHte7JJMNAtcLkdYbeJAf9+xYVJMyAnyeB6TeDEblH3Pqr2ZN2Uj3S2j9spwHmxc="

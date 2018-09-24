@@ -122,7 +122,7 @@ lazy val genericTheme = (project in (file("themes") / "generic"))
     libraryDependencies ++= Seq(
       Library.foundation % "provided",
       Library.prettify % "provided"
-    )
+    ),
   )
 
 lazy val docs = (project in file("docs"))
@@ -140,21 +140,3 @@ lazy val docs = (project in file("docs"))
 addCommandAlias("verify", ";^ test:compile ;^ compile:doc ;^ test ;^ scripted ;docs/paradox")
 
 sonatypeProfileName := "com.lightbend"
-releaseProcess := {
-  import sbtrelease.ReleaseStateTransformations._
-  Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    runClean,
-    releaseStepCommandAndRemaining("verify"),
-    setReleaseVersion,
-    commitReleaseVersion,
-    tagRelease,
-    releaseStepCommandAndRemaining("^ publishSigned"),
-    releaseStepCommand("bintrayRelease"),
-    releaseStepCommand("sonatypeRelease"),
-    setNextVersion,
-    commitNextVersion,
-    pushChanges
-  )
-}
