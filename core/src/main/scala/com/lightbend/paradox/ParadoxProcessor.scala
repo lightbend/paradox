@@ -150,23 +150,19 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Github links, rendered to just a HTML for the link.
    */
-  case class GithubLink(location: Option[Location[Page]], page: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link {
+  case class GithubLink(location: Option[Location[Page]], page: Page, writer: Writer, context: Writer.Context) extends PageTemplate.Link with GitHubResolver {
     lazy val getHref: String = location.map(href).orNull
     lazy val getHtml: String = getHref // TODO: temporary, should provide a link directly
     lazy val getTitle: String = location.map(title).orNull
     lazy val isActive: Boolean = false
 
-    val TreeUrl = """(.*github.com/[^/]+/[^/]+)/tree/[^/]+""".r
+    override def variables = context.properties
 
     private def href(location: Location[Page]): String = {
       try {
-        val baseUrl = PropertyUrl(GitHubResolver.baseUrl, context.properties.get).collect {
-          case TreeUrl(url) => url
-          case url          => url
-        }
         val sourceFilePath = location.tree.label.file.toString
         val rootPath = new File(".").getCanonicalFile.toString
-        (baseUrl / "tree/master" / Path.relativeLocalPath(rootPath, sourceFilePath)).toString
+        (treeUrl / Path.relativeLocalPath(rootPath, sourceFilePath)).toString
       } catch {
         case e: Url.Error => null
       }
