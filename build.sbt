@@ -17,30 +17,31 @@
 import scala.collection.JavaConverters._
 import java.lang.management.ManagementFactory
 
+inThisBuild(List(
+  organization := "com.lightbend.paradox",
+  licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
+  scalaVersion := "2.12.6",
+  crossScalaVersions := Seq("2.10.7", "2.12.6"),
+  organizationName := "lightbend",
+  organizationHomepage := Some(url("https://lightbend.com/")),
+  homepage := Some(url("https://github.com/lightbend/paradox")),
+  scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
+  developers := List(
+    Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
+    Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
+  ),
+  description := "Paradox is a markdown documentation tool for software projects."
+))
+
 lazy val paradox = project
   .in(file("."))
   .aggregate(core, testkit, tests, plugin, themePlugin, themes, docs)
-  .enablePlugins(NoPublish)
-  .settings(inThisBuild(List(
-    organization := "com.lightbend.paradox",
-    licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
-    scalaVersion := "2.12.6",
-    crossScalaVersions := Seq("2.10.7", "2.12.6"),
-    organizationName := "lightbend",
-    organizationHomepage := Some(url("https://lightbend.com/")),
-    homepage := Some(url("https://github.com/lightbend/paradox")),
-    scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
-    developers := List(
-      Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
-      Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
-    ),
-    description := "Paradox is a markdown documentation tool for software projects."
-  )))
+  .settings(
+    publish / skip := true
+  )
 
 lazy val core = project
   .in(file("core"))
-  .disablePlugins(BintrayPlugin)
-  .enablePlugins(SonatypePublish)
   .settings(
     name := "paradox",
     libraryDependencies ++= Library.pegdown,
@@ -53,8 +54,6 @@ lazy val core = project
 lazy val testkit = project
   .in(file("testkit"))
   .dependsOn(core)
-  .disablePlugins(BintrayPlugin)
-  .enablePlugins(SonatypePublish)
   .settings(
     name := "testkit",
     libraryDependencies ++= Seq(
@@ -65,19 +64,18 @@ lazy val testkit = project
 lazy val tests = project
   .in(file("tests"))
   .dependsOn(core, testkit)
-  .enablePlugins(NoPublish)
   .settings(
     name := "tests",
     libraryDependencies ++= Seq(
       Library.scalatest % "test"
-    )
+    ),
+    publish / skip := true
   )
 
 lazy val plugin = project
   .in(file("plugin"))
   .dependsOn(core)
-  .enablePlugins(SbtPlugin, BintrayPublish)
-  .disablePlugins(Sonatype)
+  .enablePlugins(SbtPlugin)
   .settings(
     name := "sbt-paradox",
     sbtPlugin := true,
@@ -102,8 +100,6 @@ lazy val plugin = project
   )
 
 lazy val themePlugin = (project in file("theme-plugin"))
-  .enablePlugins(BintrayPublish)
-  .disablePlugins(Sonatype)
   .settings(
     name := "sbt-paradox-theme",
     sbtPlugin := true,
@@ -112,11 +108,12 @@ lazy val themePlugin = (project in file("theme-plugin"))
 
 lazy val themes = (project in file("themes"))
   .aggregate(genericTheme)
-  .enablePlugins(NoPublish)
+  .settings(
+    publish / skip := true
+  )
 
 lazy val genericTheme = (project in (file("themes") / "generic"))
-  .disablePlugins(BintrayPlugin)
-  .enablePlugins(ParadoxThemePlugin, SonatypePublish)
+  .enablePlugins(ParadoxThemePlugin)
   .settings(
     name := "paradox-theme-generic",
     libraryDependencies ++= Seq(
@@ -126,7 +123,7 @@ lazy val genericTheme = (project in (file("themes") / "generic"))
   )
 
 lazy val docs = (project in file("docs"))
-  .enablePlugins(NoPublish, ParadoxPlugin)
+  .enablePlugins(ParadoxPlugin)
   .settings(
     name := "paradox docs",
     paradoxTheme := Some(builtinParadoxTheme("generic")),
@@ -134,9 +131,8 @@ lazy val docs = (project in file("docs"))
       "empty" -> "",
       "version" -> version.value
     ),
-    paradoxGroups := Map("Language" -> Seq("Scala", "Java"))
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
+    publish / skip := true
   )
 
 addCommandAlias("verify", ";^ test:compile ;^ compile:doc ;^ test ;^ scripted ;docs/paradox")
-
-sonatypeProfileName := "com.lightbend"
