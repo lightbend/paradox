@@ -44,6 +44,14 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
     }
     printer.print(">")
 
+    node match {
+      case vgn: VerbatimGroupNode =>
+        vgn.getSourceUrl.ifPresent(sourceUrl => {
+          printer.print(s"""<a class="icon go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source"></a>""")
+        })
+      case _ =>
+    }
+
     printer.print("<code")
     if (!StringUtils.isEmpty(node.getType)) {
       printCodeAttributes(printer, node.getType)
