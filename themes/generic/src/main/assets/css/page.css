@@ -157,7 +157,7 @@ a.go-to-source::before {
   float: right;
 }
 
-.icon {
+a.anchor .anchor-link, .icon {
   font-size: 18px;
   font-family: "icons" !important;
   font-style: normal !important;

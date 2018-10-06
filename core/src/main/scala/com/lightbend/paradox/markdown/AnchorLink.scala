@@ -28,7 +28,7 @@ import scala.collection.JavaConverters._
 class AnchorLinkSerializer extends ToHtmlSerializerPlugin {
   def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
     case anchor: AnchorLinkSuperNode =>
-      printer.print(s"""<a href="#${anchor.name}" name="${anchor.name}" class="anchor"><span class="anchor-link icon"></span></a>""")
+      printer.print(s"""<a href="#${anchor.name}" name="${anchor.name}" class="anchor"><span class="anchor-link"></span></a>""")
       anchor.getChildren.asScala.foreach(_.accept(visitor))
       true
     case _ => false
