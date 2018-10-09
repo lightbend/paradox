@@ -26,11 +26,11 @@ public class VerbatimGroupNode extends VerbatimNode {
     private final Optional<String> sourceUrl;
 
     public VerbatimGroupNode(String text) {
-        this(text, "", "", Collections.<String>emptyList(), Optional.empty());
+        this(text, "", "", Collections.<String>emptyList(), Optional.<String>empty());
     }
 
     public VerbatimGroupNode(String text, String type) {
-        this(text, type, "", Collections.<String>emptyList(), Optional.empty());
+        this(text, type, "", Collections.<String>emptyList(), Optional.<String>empty());
     }
 
     public VerbatimGroupNode(String text, String type, String group, List<String> classes, Optional<String> sourceUrl) {
