@@ -21,7 +21,7 @@ object Version {
   val jtidy      = "r938"
   val pegdown    = "1.6.0"
   val parboiled  = "1.2.0"
-  val prettify   = "4-Mar-2013"
+  val prettify   = "4-Mar-2013-1"
   val sbtWeb     = "1.4.2"
   val scalatest  = "3.0.3"
   val st4        = "4.0.8"
