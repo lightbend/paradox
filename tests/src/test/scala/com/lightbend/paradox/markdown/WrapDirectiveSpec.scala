@@ -32,7 +32,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |@@@ div
         |Simple sentence here.
         |@@@""") shouldEqual html(
-      """
+        """
         |<div>
         |<p>Simple sentence here.</p>
         |</div>""")
@@ -46,7 +46,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |Inner **markdown** content.
         |
         |@@@""") shouldEqual html(
-      """
+        """
         |<div id="foo" class="bar baz">
         |<p>Inner <strong>markdown</strong> content.</p>
         |</div>""")
@@ -58,7 +58,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |@@@ div { #yeah .red .blue }
         |Simple sentence here.
         |@@@""") shouldEqual html(
-      """
+        """
         |<div id="yeah" class="red blue">
         |<p>Simple sentence here.</p>
         |</div>""")
@@ -77,7 +77,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |@@@@
         |
         |@@@""") shouldEqual html(
-      """
+        """
         |<div>
         |<p>Simple sentence here.</p>
         |<div class="callout warning">
@@ -96,7 +96,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |```
         |@@@
       """) shouldEqual html(
-      """<div class="divStyleClass">
+        """<div class="divStyleClass">
         |<blink>Hello?</blink>
         |</div>
       """)
@@ -121,7 +121,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |<blink>Hello?</blink>
         |```
       """.stripMargin) shouldEqual html(
-      """<blink>Hello?</blink>
+        """<blink>Hello?</blink>
         |""".stripMargin)
 
     // for use in docs

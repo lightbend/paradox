@@ -18,6 +18,7 @@ package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.Location
 import java.io.{ File, FileNotFoundException }
+import java.util.Optional;
 
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
@@ -361,12 +362,10 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       val (text, snippetLang) = Snippet(file, labels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
-      new VerbatimGroupNode(text, lang, group, node.attributes.classes).accept(visitor)
-      if (variables.contains(GitHubResolver.baseUrl) &&
-        variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
-        val p = resolvePath(page, Path.toUnixStyleRootPath(file.getAbsolutePath), labels.headOption).base.normalize.toString
-        new ClassyLinkNode(p, "snippet-full-source github", new TextNode("Full source at GitHub")).accept(visitor)
-      }
+      val sourceUrl = if (variables.contains(GitHubResolver.baseUrl) && variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
+        Optional.of(resolvePath(page, Path.toUnixStyleRootPath(file.getAbsolutePath), labels.headOption).base.normalize.toString)
+      } else Optional.empty[String]()
+      new VerbatimGroupNode(text, lang, group, node.attributes.classes, sourceUrl).accept(visitor)
     } catch {
       case e: FileNotFoundException =>
         throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")

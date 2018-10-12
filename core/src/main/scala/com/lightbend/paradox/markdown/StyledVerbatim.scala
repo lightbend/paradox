@@ -16,11 +16,12 @@
 
 package com.lightbend.paradox.markdown
 
+import java.util.function.Consumer
+
 import scala.collection.mutable.Buffer
 import scala.collection.JavaConverters._
-
 import org.parboiled.common.StringUtils
-import org.pegdown.ast.{ VerbatimNode, VerbatimGroupNode }
+import org.pegdown.ast.{ VerbatimGroupNode, VerbatimNode }
 import org.pegdown.{ Printer, VerbatimSerializer }
 
 /**
@@ -43,6 +44,15 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
       }
     }
     printer.print(">")
+
+    node match {
+      case vgn: VerbatimGroupNode =>
+        vgn.getSourceUrl.ifPresent(new Consumer[String] {
+          override def accept(sourceUrl: String): Unit =
+            printer.print(s"""<a class="icon go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source"></a>""")
+        })
+      case _ =>
+    }
 
     printer.print("<code")
     if (!StringUtils.isEmpty(node.getType)) {
