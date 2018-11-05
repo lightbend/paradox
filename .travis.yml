@@ -7,7 +7,7 @@ jobs:
       jdk: oraclejdk8
 
     - script: sbt verify
-      jdk: oraclejdk10
+      jdk: openjdk11
 
     - stage: publish
       script: sbt ci-release
