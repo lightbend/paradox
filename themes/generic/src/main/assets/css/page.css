@@ -150,7 +150,7 @@ a.anchor .anchor-link:before {
 }
 
 a.go-to-source::before {
-  content: "🗎";
+  content: "📄";
 }
 
 .prettyprint .icon {
