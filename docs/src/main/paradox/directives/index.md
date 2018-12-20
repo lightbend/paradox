@@ -4,6 +4,8 @@ Directives are Paradox' extension points for providing customized behavior over 
 which signifies a directive usage. Depending on the scope of the directive you will use a different kind of syntax. Use `@` (for inline),
 `@@` (leaf block), `@@@`(container block), `@@@@` or more for nested container blocks.
 
+More directives are available via @ref[extensions](../customization/extensions.md).
+
 @@toc
 
 @@@ index
