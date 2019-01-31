@@ -18,8 +18,9 @@ package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.Location
 import java.io.{ File, FileNotFoundException }
-import java.util.Optional;
+import java.util.Optional
 
+import com.lightbend.paradox.tree.Tree
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
@@ -693,4 +694,30 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
 
 object DependencyDirective {
   case class UndefinedVariable(name: String) extends RuntimeException(s"'$name' is not defined")
+}
+
+case class IncludeDirective(context: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
+
+  override def page: Page = context.location.tree.label
+
+  override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val labels = node.attributes.values("identifier").asScala
+    val source = resolvedSource(node, page)
+    val file = resolveFile("include", source, page, context.properties)
+    val (text, snippetLang) = Snippet(file, labels)
+    // I guess we could support multiple markup languages in future...
+    if (snippetLang != "md" && snippetLang != "markdown") {
+      throw IncludeDirective.IncludeFormatException(snippetLang)
+    }
+    val includeNode = context.reader.read(text)
+
+    // This location has no forest around it... which probably means that things like toc and navigation can't
+    // be rendered inside snippets, which I'm ok with.
+    val newLocation = Location(Tree.leaf(Page.included(file, source, page, includeNode)), Nil, Nil, Nil)
+    printer.print(context.writer.writeContent(includeNode, context.copy(location = newLocation)))
+  }
+}
+
+object IncludeDirective {
+  case class IncludeFormatException(format: String) extends RuntimeException(s"Don't know how to include '*.$format' content.")
 }

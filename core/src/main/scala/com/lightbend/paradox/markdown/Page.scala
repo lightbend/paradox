@@ -143,6 +143,15 @@ object Page {
     val DefaultOutMdIndicator = "out"
     val DefaultLayoutMdIndicator = "layout"
   }
+
+  /**
+   * Create an included page.
+   */
+  def included(file: File, includeFilePath: String, includedIn: Page, markdown: RootNode): Page = {
+    val rootSrcPage = Path.relativeRootPath(file, includeFilePath)
+    val h1 = Header(includedIn.path, new SpecialTextNode(includedIn.path), None)
+    Page(file, includedIn.path, rootSrcPage, h1.label, h1, Nil, markdown, h1.group, includedIn.properties)
+  }
 }
 
 /**

@@ -4,6 +4,7 @@
  * @ref[`@@@div`](css-friendliness.md#div)
  * @ref[`@extref`](linking.md#extref-directive)
  * @ref[`@github`](linking.md#github-directive)
+ * @ref[`@@include`](includes.md)
  * @ref[`@@@index`](organizing-pages.md#index-container)
  * @ref[`@javadoc`](linking.md#javadoc)
  * @ref[`@@@note`](callouts.md#note-callout)

@@ -83,6 +83,8 @@ abstract class MarkdownTestkit {
     Writer.Context(
       location,
       Page.allPaths(List(location.root.tree)).toSet,
+      markdownReader,
+      markdownWriter,
       groups = Map("Language" -> Seq("Scala", "Java"))
     )
   }
