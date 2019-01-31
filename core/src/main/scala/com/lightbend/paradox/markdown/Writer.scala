@@ -19,7 +19,8 @@ package com.lightbend.paradox.markdown
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.ast.{ ExpImageNode, Node, RefImageNode, RootNode }
-import org.pegdown.{ LinkRenderer, ToHtmlSerializer, VerbatimSerializer }
+import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer, VerbatimSerializer }
+
 import scala.collection.JavaConverters._
 
 /**
@@ -95,6 +96,8 @@ object Writer {
   case class Context(
       location:     Location[Page],
       paths:        Set[String],
+      reader:       Reader,
+      writer:       Writer,
       pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
       sourceSuffix: String                   = DefaultSourceSuffix,
       targetSuffix: String                   = DefaultTargetSuffix,
@@ -133,7 +136,8 @@ object Writer {
     context => WrapDirective("div"),
     context => InlineWrapDirective("span"),
     context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
-    context => DependencyDirective(context.properties)
+    context => DependencyDirective(context.properties),
+    context => IncludeDirective(context)
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {
