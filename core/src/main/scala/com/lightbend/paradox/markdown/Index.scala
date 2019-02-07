@@ -32,8 +32,8 @@ object Index {
 
   case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref])
 
-  def pages(parsed: Seq[(File, String, RootNode, Map[String, String])]): Forest[Page] = {
-    link(parsed.map((page _).tupled).toList)
+  def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] = {
+    link(parsed.map((page _).tupled).toList, properties)
   }
 
   /**
@@ -121,8 +121,17 @@ object Index {
   /**
    * Link together pages into trees using parsed indices.
    */
-  def link(pages: List[Page]): Forest[Page] = {
-    Tree.link(pages, links(pages))
+  def link(pages: List[Page], properties: Map[String, String]): Forest[Page] = {
+    // Substitute all variables in index page links first
+    val substituted = pages.map { page =>
+      page.copy(indices = page.indices.map {
+        case Tree.Node(label, children) =>
+          val newPath = Writer.substituteVarsInString(label.path, properties ++ page.properties)
+          Tree.Node(label.copy(path = newPath), children)
+        case other => other
+      })
+    }
+    Tree.link(substituted, links(substituted))
   }
 
   /**

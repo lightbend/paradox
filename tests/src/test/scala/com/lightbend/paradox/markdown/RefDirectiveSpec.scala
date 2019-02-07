@@ -18,6 +18,8 @@ package com.lightbend.paradox.markdown
 
 class RefDirectiveSpec extends MarkdownBaseSpec {
 
+  private implicit val context = writerContextWithProperties("page.variable" -> "page")
+
   def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] = markdownPages(
     pagePath -> s"""
       |@@@ index
@@ -93,4 +95,9 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
       markdown("@ref[Page][123]")
     } should have message "Undefined reference key [123] in [test.html]"
   }
+
+  it should "support variables in link paths" in {
+    testMarkdown("@ref[Page]($page.variable$.md)") shouldEqual testHtml("""<p><a href="page.html">Page</a></p>""")
+  }
+
 }

@@ -20,6 +20,8 @@ import com.lightbend.paradox.tree.Tree.Forest
 
 class IndexSpec extends MarkdownBaseSpec {
 
+  override val globalProperties = Map("platform" -> "openshift")
+
   "Index" should "create header tree" in {
     indexed(
       "a.md" -> """
@@ -131,6 +133,22 @@ class IndexSpec extends MarkdownBaseSpec {
         |      - f.html
         |      - g.html
         |  - h.html
+      """)
+  }
+
+  it should "substitute variables in links" in {
+    indexed(
+      "a.md" -> """
+        |# A
+        |@@@ index
+        |* [platform]($platform$.md)
+        |@@@
+      """,
+      "openshift.md" -> "# OpenShift"
+    ) shouldEqual index(
+        """
+        |- a.html
+        |  - openshift.html
       """)
   }
 

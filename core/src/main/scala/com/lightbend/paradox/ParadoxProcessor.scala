@@ -49,7 +49,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     errorListener:      STErrorListener): Seq[(File, String)] = {
     require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
 
-    val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix))
+    val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties)
     val paths = Page.allPaths(pages).toSet
     val globalPageMappings = rootPageMappings(pages)
 
@@ -174,8 +174,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   /**
    * Parse markdown files (with paths) into a forest of linked pages.
    */
-  def parsePages(mappings: Seq[(File, String)], convertPath: String => String): Forest[Page] = {
-    Page.forest(parseMarkdown(mappings), convertPath)
+  def parsePages(mappings: Seq[(File, String)], convertPath: String => String, properties: Map[String, String]): Forest[Page] = {
+    Page.forest(parseMarkdown(mappings), convertPath, properties)
   }
 
   /**

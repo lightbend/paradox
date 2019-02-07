@@ -76,8 +76,10 @@ abstract class MarkdownTestkit {
   }
 
   def writerContextWithProperties(properties: (String, String)*): Location[Page] => Writer.Context = { location =>
-    writerContext(location).copy(properties = properties.toMap)
+    writerContext(location).copy(properties = globalProperties ++ properties.toMap)
   }
+
+  val globalProperties: Map[String, String] = Map()
 
   def writerContext(location: Location[Page]): Writer.Context = {
     Writer.Context(
@@ -85,7 +87,8 @@ abstract class MarkdownTestkit {
       Page.allPaths(List(location.root.tree)).toSet,
       markdownReader,
       markdownWriter,
-      groups = Map("Language" -> Seq("Scala", "Java"))
+      groups = Map("Language" -> Seq("Scala", "Java")),
+      properties = globalProperties
     )
   }
 
@@ -95,7 +98,7 @@ abstract class MarkdownTestkit {
         val frontin = Frontin(prepare(text))
         (new File(path), path, markdownReader.read(frontin.body), frontin.header)
     }
-    Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix))
+    Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
   }
 
   def html(text: String): String = {
