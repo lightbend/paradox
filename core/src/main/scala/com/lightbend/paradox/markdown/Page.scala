@@ -80,8 +80,8 @@ object Page {
   /**
    * Convert parsed markdown pages into a linked forest of Page objects.
    */
-  def forest(parsed: Seq[(File, String, RootNode, Map[String, String])], convertPath: String => String): Forest[Page] = {
-    Index.pages(parsed) map (_ map convertPage(convertPath))
+  def forest(parsed: Seq[(File, String, RootNode, Map[String, String])], convertPath: String => String, properties: Map[String, String]): Forest[Page] = {
+    Index.pages(parsed, properties) map (_ map convertPage(convertPath))
   }
 
   /**

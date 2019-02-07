@@ -79,4 +79,15 @@ class VarDirectiveSpec extends MarkdownBaseSpec {
   it should "parse but ignore legacy directive source and attributes" in {
     markdown("The @var[version] (xxx) { .var a=1 } version.") shouldEqual html("<p>The 1.2.3 version.</p>")
   }
+
+  it should "work in explicit link URLs" in {
+    markdown("[Link](http://example.com/$version$/)") shouldEqual html("""<p><a href="http://example.com/1.2.3/">Link</a></p>""")
+    markdown("[Link](http://example.com/$scala.version$/)") shouldEqual html("""<p><a href="http://example.com/2.12.6/">Link</a></p>""")
+  }
+
+  it should "work in reference link URLs" in {
+    markdown("[Link][1]\n\n[1]: http://example.com/$version$/") shouldEqual html("""<p><a href="http://example.com/1.2.3/">Link</a></p>""")
+    markdown("[Link][1]\n\n[1]: http://example.com/$scala.version$/") shouldEqual html("""<p><a href="http://example.com/2.12.6/">Link</a></p>""")
+  }
+
 }

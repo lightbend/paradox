@@ -85,16 +85,17 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
  */
 trait SourceDirective { this: Directive =>
   def page: Page
+  def variables: Map[String, String]
 
   protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     def ref(key: String) =
       referenceMap.get(key.filterNot(_.isWhitespace).toLowerCase).map(_.getUrl).getOrElse(
         throw new RefDirective.LinkException(s"Undefined reference key [$key] in [${page.path}]"))
-    node.source match {
+    Writer.substituteVarsInString(node.source match {
       case x: DirectiveNode.Source.Direct => x.value
       case x: DirectiveNode.Source.Ref    => ref(x.value)
       case DirectiveNode.Source.Empty     => ref(node.label)
-    }
+    }, variables)
   }
 
   protected def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File =
@@ -131,7 +132,7 @@ trait SourceDirective { this: Directive =>
  * Refs are for links to internal pages. The file extension is replaced when rendering.
  * Links are validated to ensure they point to a known page.
  */
-case class RefDirective(page: Page, pathExists: String => Boolean, convertPath: String => String)
+case class RefDirective(page: Page, pathExists: String => Boolean, convertPath: String => String, variables: Map[String, String])
   extends InlineDirective("ref", "ref:") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
@@ -699,6 +700,7 @@ object DependencyDirective {
 case class IncludeDirective(context: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
 
   override def page: Page = context.location.tree.label
+  override def variables = context.properties
 
   override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val labels = node.attributes.values("identifier").asScala
