@@ -65,6 +65,8 @@ object Index {
         // if so maybe move that cast to DirectiveNode
         val newGroup = node.attributes.classes().asScala.find(_.startsWith("group-")).map(_.substring("group-".size))
         headerRefs(node.contentsNode.asInstanceOf[RootNode], newGroup)
+      case IncludeNode(included, _, _) =>
+        headerRefs(included, group)
       case _ => Nil
     }
   }

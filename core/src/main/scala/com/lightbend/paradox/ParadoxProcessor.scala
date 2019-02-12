@@ -20,11 +20,13 @@ import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, FileOutputStream, OutputStreamWriter }
+import java.util
 
-import org.pegdown.ast.{ ClassyLinkNode, ExpLinkNode, RootNode }
+import org.pegdown.ast._
 import org.stringtemplate.v4.STErrorListener
 
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 
 /**
  * Markdown site processor.
@@ -175,18 +177,56 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
    * Parse markdown files (with paths) into a forest of linked pages.
    */
   def parsePages(mappings: Seq[(File, String)], convertPath: String => String, properties: Map[String, String]): Forest[Page] = {
-    Page.forest(parseMarkdown(mappings), convertPath, properties)
+    Page.forest(parseMarkdown(mappings, properties), convertPath, properties)
   }
 
   /**
    * Parse markdown files into pegdown AST.
    */
-  def parseMarkdown(mappings: Seq[(File, String)]): Seq[(File, String, RootNode, Map[String, String])] = {
+  def parseMarkdown(mappings: Seq[(File, String)], properties: Map[String, String]): Seq[(File, String, RootNode, Map[String, String])] = {
     mappings map {
       case (file, path) =>
         val frontin = Frontin(file)
-        (file, normalizePath(path), reader.read(frontin.body), frontin.header)
+        val root = parseAndProcessMarkdown(file, frontin.body, properties ++ frontin.header)
+        (file, normalizePath(path), root, frontin.header)
     }
+  }
+
+  def parseAndProcessMarkdown(file: File, markdown: String, properties: Map[String, String]): RootNode = {
+    val root = reader.read(markdown)
+    processIncludes(file, root, properties)
+  }
+
+  private def processIncludes(file: File, root: RootNode, properties: Map[String, String]): RootNode = {
+    val newRoot = new RootNode
+    // This is a mutable list, and is expected to be mutated by anything that wishes to add children
+    val newChildren = newRoot.getChildren
+
+    root.getChildren.asScala.foreach {
+      case include: DirectiveNode if include.name == "include" =>
+        val labels = include.attributes.values("identifier").asScala
+        val source = include.source match {
+          case direct: DirectiveNode.Source.Direct => direct.value
+          case other                               => throw IncludeDirective.IncludeSourceException(other)
+        }
+        val includeFile = SourceDirective.resolveFile("include", source, file, properties)
+        val frontin = Frontin(includeFile)
+        val filterLabels = include.attributes.booleanValue("filterLabels", false)
+        val (text, snippetLang) = Snippet(includeFile, labels, filterLabels)
+        // I guess we could support multiple markup languages in future...
+        if (snippetLang != "md" && snippetLang != "markdown") {
+          throw IncludeDirective.IncludeFormatException(snippetLang)
+        }
+        val includedRoot = parseAndProcessMarkdown(includeFile, text, properties ++ frontin.header)
+        newChildren.add(IncludeNode(includedRoot, includeFile, source))
+
+      case other => newChildren.add(other)
+    }
+
+    newRoot.setReferences(root.getReferences)
+    newRoot.setAbbreviations(root.getAbbreviations)
+
+    newRoot
   }
 
   /**

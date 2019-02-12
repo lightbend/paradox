@@ -50,4 +50,29 @@ class IncludeDirectiveSpec extends MarkdownBaseSpec {
       |<p>This file should be included by IncludeDirectiveSpec</p>""")
   }
 
+  it should "include nested code snippets" in {
+    markdown("""@@include(tests/src/test/resources/include-code-snip.md)""") shouldEqual html("""
+      |<pre class="prettyprint">
+      |<code class="language-conf">
+      |a = b</code>
+      |</pre>""")
+  }
+
+  it should "include headers from nested snippets in the toc" in {
+    markdown(
+      """
+        |@@toc { depth=2 }
+        |
+        |# Hello
+        |
+        |@@include(tests/src/test/resources/headers.md)
+        |""") should include(html("""
+           |<div class="toc">
+           |  <ul>
+           |    <li><a href="test.html#heading-1" class="header">Heading 1</a></li>
+           |    <li><a href="test.html#heading-2" class="header">Heading 2</a></li>
+           |  </ul>
+           |</div>"""))
+  }
+
 }

@@ -20,7 +20,6 @@ import com.lightbend.paradox.tree.Tree.Location
 import java.io.{ File, FileNotFoundException }
 import java.util.Optional
 
-import com.lightbend.paradox.tree.Tree
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
@@ -99,18 +98,7 @@ trait SourceDirective { this: Directive =>
   }
 
   protected def resolveFile(propPrefix: String, source: String, page: Page, variables: Map[String, String]): File =
-    source match {
-      case s if s startsWith "$" =>
-        val baseKey = s.drop(1).takeWhile(_ != '$')
-        val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
-        val effectiveBase = if (base.isAbsolute) base else new File(page.file.getParentFile, base.toString)
-        new File(effectiveBase, s.drop(baseKey.length + 2))
-      case s if s startsWith "/" =>
-        val base = new File(PropertyUrl(SnipDirective.buildBaseDir, variables.get).base.trim)
-        new File(base, s)
-      case s =>
-        new File(page.file.getParentFile, s)
-    }
+    SourceDirective.resolveFile(propPrefix, source, page.file, variables)
 
   private lazy val referenceMap: Map[String, ReferenceNode] = {
     val tempRoot = new RootNode
@@ -122,6 +110,22 @@ trait SourceDirective { this: Directive =>
     }
     result
   }
+}
+
+object SourceDirective {
+  def resolveFile(propPrefix: String, source: String, pageFile: File, variables: Map[String, String]): File =
+    source match {
+      case s if s startsWith "$" =>
+        val baseKey = s.drop(1).takeWhile(_ != '$')
+        val base = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
+        val effectiveBase = if (base.isAbsolute) base else new File(pageFile.getParentFile, base.toString)
+        new File(effectiveBase, s.drop(baseKey.length + 2))
+      case s if s startsWith "/" =>
+        val base = new File(PropertyUrl(SnipDirective.buildBaseDir, variables.get).base.trim)
+        new File(base, s)
+      case s =>
+        new File(pageFile.getParentFile, s)
+    }
 }
 
 // Default directives
@@ -360,8 +364,9 @@ case class SnipDirective(page: Page, variables: Map[String, String])
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
+      val filterLabels = node.attributes.booleanValue("filterLabels", true)
       val file = resolveFile("snip", source, page, variables)
-      val (text, snippetLang) = Snippet(file, labels)
+      val (text, snippetLang) = Snippet(file, labels, filterLabels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       val sourceUrl = if (variables.contains(GitHubResolver.baseUrl) && variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
@@ -412,7 +417,8 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
-      val (code, _) = Snippet(file, labels)
+      val filterLabels = node.attributes.booleanValue("filterLabels", true)
+      val (code, _) = Snippet(file, labels, filterLabels)
 
       printer.println.print(s"""
         <div data-scalafiddle $params>
@@ -697,29 +703,14 @@ object DependencyDirective {
   case class UndefinedVariable(name: String) extends RuntimeException(s"'$name' is not defined")
 }
 
-case class IncludeDirective(context: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
-
-  override def page: Page = context.location.tree.label
-  override def variables = context.properties
+case class IncludeDirective(page: Page, variables: Map[String, String]) extends LeafBlockDirective("include") with SourceDirective {
 
   override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    val labels = node.attributes.values("identifier").asScala
-    val source = resolvedSource(node, page)
-    val file = resolveFile("include", source, page, context.properties)
-    val (text, snippetLang) = Snippet(file, labels)
-    // I guess we could support multiple markup languages in future...
-    if (snippetLang != "md" && snippetLang != "markdown") {
-      throw IncludeDirective.IncludeFormatException(snippetLang)
-    }
-    val includeNode = context.reader.read(text)
-
-    // This location has no forest around it... which probably means that things like toc and navigation can't
-    // be rendered inside snippets, which I'm ok with.
-    val newLocation = Location(Tree.leaf(Page.included(file, source, page, includeNode)), Nil, Nil, Nil)
-    printer.print(context.writer.writeContent(includeNode, context.copy(location = newLocation)))
+    throw new IllegalStateException("Include directive should have been handled in markdown preprocessing before render, but wasn't.")
   }
 }
 
 object IncludeDirective {
+  case class IncludeSourceException(source: DirectiveNode.Source) extends RuntimeException(s"Only explicit links are supported by the include directive, reference links are not: " + source)
   case class IncludeFormatException(format: String) extends RuntimeException(s"Don't know how to include '*.$format' content.")
 }

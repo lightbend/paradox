@@ -151,6 +151,6 @@ class SnippetIndentationTest extends FlatSpec with Matchers {
 
   def extractToString(inString: String, label: String, indentationPerSnippet: Boolean = true): String = {
     val in = inString.split("\n").toList
-    Snippet.extract(new File(""), in, Seq(label))
+    Snippet.extract(new File(""), in, Seq(label), true)
   }
 }

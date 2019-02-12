@@ -117,7 +117,8 @@ object Writer {
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] = Seq(
     context => new ClassyLinkSerializer,
     context => new AnchorLinkSerializer,
-    context => new DirectiveSerializer(directives.map(d => d(context)))
+    context => new DirectiveSerializer(directives.map(d => d(context))),
+    context => new IncludeNodeSerializer(context)
   )
 
   def defaultDirectives: Seq[Context => Directive] = Seq(
@@ -137,7 +138,7 @@ object Writer {
     context => InlineWrapDirective("span"),
     context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
     context => DependencyDirective(context.properties),
-    context => IncludeDirective(context)
+    context => IncludeDirective(context.location.tree.label, context.properties)
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {

@@ -18,13 +18,17 @@ package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, PrintWriter }
+
 import com.lightbend.paradox.template.PageTemplate
 import java.nio.file._
+
+import com.lightbend.paradox.ParadoxProcessor
 
 abstract class MarkdownTestkit {
 
   val markdownReader = new Reader
   val markdownWriter = new Writer
+  val paradoxProcessor = new ParadoxProcessor(markdownReader, markdownWriter)
 
   def markdown(text: String)(implicit context: Location[Page] => Writer.Context = writerContext): String = {
     markdownPages("test.md" -> text).getOrElse("test.html", "")
@@ -96,7 +100,8 @@ abstract class MarkdownTestkit {
     val parsed = mappings map {
       case (path, text) =>
         val frontin = Frontin(prepare(text))
-        (new File(path), path, markdownReader.read(frontin.body), frontin.header)
+        val file = new File(path)
+        (new File(path), path, paradoxProcessor.parseAndProcessMarkdown(file, frontin.body, globalProperties ++ frontin.header), frontin.header)
     }
     Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
   }
@@ -123,7 +128,7 @@ abstract class MarkdownTestkit {
     tidy.setShowWarnings(false)
     tidy.setQuiet(true)
     tidy.parse(reader, writer)
-    writer.toString.replace("\r\n", "\n").replace("\r", "\n")
+    writer.toString.replace("\r\n", "\n").replace("\r", "\n").trim
   }
 
   case class PartialPageContent(properties: Map[String, String], content: String) extends PageTemplate.Contents {
