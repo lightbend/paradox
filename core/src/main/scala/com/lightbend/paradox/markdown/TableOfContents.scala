@@ -35,8 +35,14 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
   /**
    * Create a TOC bullet list for a TOC at a certain point within the section hierarchy.
    */
-  def markdown(location: Location[Page], tocIndex: Int): Node = {
-    markdown(location.tree.label.base, Some(location), nested(location.tree, tocIndex))
+  @deprecated("0.5.1", "Use the includeIndexes variant to ensure it works with include files")
+  def markdown(location: Location[Page], tocIndex: Int): Node = markdown(location, tocIndex, Nil)
+
+  /**
+   * Create a TOC bullet list for a TOC at a certain point within the section hierarchy.
+   */
+  def markdown(location: Location[Page], tocIndex: Int, includeIndexes: List[Int]): Node = {
+    markdown(location.tree.label.base, Some(location), nested(location.tree, tocIndex, includeIndexes))
   }
 
   /**
@@ -65,9 +71,9 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
   /**
    * Create a new Page Tree for a TOC at a certain point within the section hierarchy.
    */
-  private def nested(tree: Tree[Page], tocIndex: Int): Tree[Page] = {
+  private def nested(tree: Tree[Page], tocIndex: Int, includeIndexes: List[Int]): Tree[Page] = {
     val page = tree.label
-    val (level, headers) = headersBelow(Location.forest(page.headers), tocIndex)
+    val (level, headers) = headersBelow(Location.forest(page.headers), tocIndex, includeIndexes)
     val subPages = if (level == 0) tree.children else Nil
     Tree(page.copy(headers = headers), subPages)
   }
@@ -76,11 +82,22 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
    * Find the headers below the buffer index for a toc directive.
    * Return the level of the next header and sub-headers to render.
    */
-  private def headersBelow(location: Option[Location[Header]], index: Int): (Int, Forest[Header]) = location match {
+  private def headersBelow(location: Option[Location[Header]], index: Int, includeIndexes: List[Int]): (Int, Forest[Header]) = location match {
     case Some(loc) =>
-      if (loc.tree.label.label.getStartIndex > index) (loc.depth, loc.tree :: loc.rights)
-      else headersBelow(loc.next, index)
+      if (isBelow(index, includeIndexes, loc.tree.label.label.getStartIndex, loc.tree.label.includeIndexes))
+        (loc.depth, loc.tree :: loc.rights)
+      else headersBelow(loc.next, index, includeIndexes)
     case None => (0, Nil)
+  }
+
+  private def isBelow(tocIndex: Int, tocIncludeIndexes: List[Int], headerIndex: Int, headerIncludeIndexes: List[Int]): Boolean = {
+    // If the current level of include indexes are equal, then we need to recursively check the next level.
+    // Otherwise, we compare the current level of include indexes if they exist, or the current indexes themselves.
+    (tocIncludeIndexes, headerIncludeIndexes) match {
+      case (i :: itail, h :: htail) if i == h => isBelow(tocIndex, itail, headerIndex, htail)
+      case _ =>
+        headerIncludeIndexes.headOption.getOrElse(headerIndex) > tocIncludeIndexes.headOption.getOrElse(tocIndex)
+    }
   }
 
   private def subList[A <: Linkable](base: String, active: Option[Location[Page]], tree: Tree[A], depth: Int, expandDepth: Option[Int]): Option[Node] = {

@@ -94,15 +94,17 @@ object Writer {
    * Write context which is passed through to directives.
    */
   case class Context(
-      location:     Location[Page],
-      paths:        Set[String],
-      reader:       Reader,
-      writer:       Writer,
-      pageMappings: String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-      sourceSuffix: String                   = DefaultSourceSuffix,
-      targetSuffix: String                   = DefaultTargetSuffix,
-      groups:       Map[String, Seq[String]] = Map.empty,
-      properties:   Map[String, String]      = Map.empty)
+      location:       Location[Page],
+      paths:          Set[String],
+      reader:         Reader,
+      writer:         Writer,
+      pageMappings:   String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+      sourceSuffix:   String                   = DefaultSourceSuffix,
+      targetSuffix:   String                   = DefaultTargetSuffix,
+      groups:         Map[String, Seq[String]] = Map.empty,
+      properties:     Map[String, String]      = Map.empty,
+      includeIndexes: List[Int]                = Nil
+  )
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)
@@ -129,7 +131,7 @@ object Writer {
     context => GitHubDirective(context.location.tree.label, context.properties),
     context => SnipDirective(context.location.tree.label, context.properties),
     context => FiddleDirective(context.location.tree.label, context.properties),
-    context => TocDirective(context.location),
+    context => TocDirective(context.location, context.includeIndexes),
     context => VarDirective(context.properties),
     context => VarsDirective(context.properties),
     context => CalloutDirective("note", "Note"),

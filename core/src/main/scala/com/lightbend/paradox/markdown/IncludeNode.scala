@@ -33,12 +33,14 @@ case class IncludeNode(included: RootNode, includedFrom: File, includedFromPath:
 
 class IncludeNodeSerializer(context: Context) extends ToHtmlSerializerPlugin {
   override def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
-    case IncludeNode(included, includedFrom, includedFromPath) =>
+    case include @ IncludeNode(included, includedFrom, includedFromPath) =>
       // This location has no forest around it... which probably means that things like toc and navigation can't
       // be rendered inside snippets, which I'm ok with.
       val newLocation = Location(Tree.leaf(Page.included(includedFrom, includedFromPath,
-        context.location.tree.label, included)), Nil, Nil, Nil)
-      printer.print(context.writer.writeContent(included, context.copy(location = newLocation)))
+        context.location.tree.label, included)), context.location.lefts, context.location.rights, context.location.parents)
+      printer.print(context.writer.writeContent(included, context.copy(
+        location = newLocation,
+        includeIndexes = context.includeIndexes :+ include.getStartIndex)))
       true
     case _ => false
   }

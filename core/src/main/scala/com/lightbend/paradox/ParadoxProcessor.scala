@@ -218,7 +218,10 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
           throw IncludeDirective.IncludeFormatException(snippetLang)
         }
         val includedRoot = parseAndProcessMarkdown(includeFile, text, properties ++ frontin.header)
-        newChildren.add(IncludeNode(includedRoot, includeFile, source))
+        val includeNode = IncludeNode(includedRoot, includeFile, source)
+        includeNode.setStartIndex(include.getStartIndex)
+        includeNode.setEndIndex(include.getEndIndex)
+        newChildren.add(includeNode)
 
       case other => newChildren.add(other)
     }
