@@ -364,7 +364,7 @@ case class SnipDirective(page: Page, variables: Map[String, String])
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
-      val filterLabels = node.attributes.booleanValue("filterLabels", true)
+      val filterLabels = node.attributes.booleanValue("filterLabels", variables.get("snip.filterLabels").forall(_ == "true"))
       val file = resolveFile("snip", source, page, variables)
       val (text, snippetLang) = Snippet(file, labels, filterLabels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
@@ -417,7 +417,7 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
-      val filterLabels = node.attributes.booleanValue("filterLabels", true)
+      val filterLabels = node.attributes.booleanValue("filterLabels", variables.get("fiddle.filterLabels").forall(_ == "true"))
       val (code, _) = Snippet(file, labels, filterLabels)
 
       printer.println.print(s"""
