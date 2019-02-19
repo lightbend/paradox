@@ -50,4 +50,59 @@ class IncludeDirectiveSpec extends MarkdownBaseSpec {
       |<p>This file should be included by IncludeDirectiveSpec</p>""")
   }
 
+  it should "include nested code snippets" in {
+    markdown("""@@include(tests/src/test/resources/include-code-snip.md)""") shouldEqual html("""
+      |<pre class="prettyprint">
+      |<code class="language-conf">
+      |a = b</code>
+      |</pre>""")
+  }
+
+  it should "include headers from nested snippets in the toc" in {
+    markdown(
+      """
+        |# Page heading
+        |
+        |This text appears here to push down the toc so to ensure that the headers below
+        |calculation works.
+        |
+        |@@toc { depth=1 }
+        |
+        |@@include(tests/src/test/resources/headers.md)
+        |
+        |## Heading 3
+        |
+        |""") should include(html("""
+           |<div class="toc">
+           |  <ul>
+           |    <li><a href="test.html#heading-1" class="header">Heading 1</a></li>
+           |    <li><a href="test.html#heading-2" class="header">Heading 2</a></li>
+           |    <li><a href="test.html#heading-3" class="header">Heading 3</a></li>
+           |  </ul>
+           |</div>"""))
+  }
+
+  it should "include headers from outer snippets in a nested toc" in {
+    markdown(
+      """
+        |# Page heading
+        |
+        |## Above toc
+        |
+        |@@include(tests/src/test/resources/toc.md)
+        |
+        |## Heading 1
+        |## Heading 2
+        |## Heading 3
+        |
+        |""") should include(html("""
+           |<div class="toc">
+           |  <ul>
+           |    <li><a href="test.html#heading-1" class="header">Heading 1</a></li>
+           |    <li><a href="test.html#heading-2" class="header">Heading 2</a></li>
+           |    <li><a href="test.html#heading-3" class="header">Heading 3</a></li>
+           |  </ul>
+           |</div>"""))
+  }
+
 }

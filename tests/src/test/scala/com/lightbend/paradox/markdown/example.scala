@@ -73,3 +73,10 @@ class AnotherClass
 
   //#multi-indented-example
 // format: ON
+
+
+//#example-with-label
+object Constants {
+  val someString = " #foo "
+}
+//#example-with-label

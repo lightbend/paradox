@@ -25,24 +25,26 @@ object Snippet {
 
   class SnippetException(message: String) extends RuntimeException(message)
 
-  def apply(file: File, labels: Seq[String]): (String, String) = {
+  def apply(file: File, labels: Seq[String], filterLabelLines: Boolean): (String, String) = {
     val source = Source.fromFile(file)("UTF-8")
     try {
       val lines = source.getLines.toSeq
-      (extract(file, lines, labels), language(file))
+      (extract(file, lines, labels, filterLabelLines), language(file))
     } finally {
       source.close()
     }
   }
 
-  def extract(file: File, lines: Seq[String], labels: Seq[String]): String = {
+  def extract(file: File, lines: Seq[String], labels: Seq[String], filterLabelLines: Boolean): String = {
     labels match {
       case Seq() =>
-        val extractionState = extractFrom(lines, _ => true, _ => false, addFilteredLine)
-        cutIndentation(extractionState.snippetLines)
+        val addLine = addFilteredLine(filterLabelLines)
+        cutIndentation(lines.zipWithIndex.foldLeft(Seq.empty[(Int, String)]) {
+          case (lines, (line, lineIndex)) => addLine(line, lines, lineIndex + 1)
+        }.map(_._2))
       case _ =>
         labels.map { label =>
-          val extractionState = extractState(file, lines, label)
+          val extractionState = extractState(file, lines, label, filterLabelLines)
           cutIndentation(extractionState.snippetLines)
         }.mkString("\n")
     }
@@ -62,11 +64,11 @@ object Snippet {
     snippetLines.map(ln => dropIndent(minIndent, ln)).mkString("\n")
   }
 
-  def extractLabelRange(file: File, label: String): Option[(Int, Int)] = {
+  def extractLabelRange(file: File, label: String, filterLabelLines: Boolean = true): Option[(Int, Int)] = {
     val source = Source.fromFile(file)("UTF-8")
     try {
       val lines = source.getLines.toSeq
-      val lineNumbers = extractState(file, lines, label).lines.map(_._1)
+      val lineNumbers = extractState(file, lines, label, filterLabelLines).lines.map(_._1)
       if (lineNumbers.isEmpty)
         None
       else
@@ -78,7 +80,7 @@ object Snippet {
 
   type Line = (Int, String)
 
-  private def extractState(file: File, lines: Seq[String], label: String): ExtractionState = {
+  private def extractState(file: File, lines: Seq[String], label: String, filterLabelLines: Boolean): ExtractionState = {
     if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
       "Only [a-zA-Z0-9_-] are allowed.")
     // A label can be followed by an end of line or one or more spaces followed by an
@@ -86,7 +88,7 @@ object Snippet {
     // (anything not in the group [a-zA-Z0-9_])
     val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
-    val extractionState = extractFrom(lines, hasLabel, hasLabel, addFilteredLine)
+    val extractionState = extractFrom(lines, hasLabel, hasLabel, addFilteredLine(filterLabelLines))
     if (extractionState.snippetLines.isEmpty)
       throw new SnippetException(s"Label [$label] not found in [$file]")
     extractionState.block match {
@@ -100,11 +102,9 @@ object Snippet {
     lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) {
       case (es, (l, lineIndex)) =>
         es.block match {
-          case NoBlock if blockStart(l) =>
-            es.copy(block = InBlock, lines = addLine(l, es.lines, lineIndex + 1))
-          case NoBlock => es
-          case InBlock if blockEnd(l) =>
-            es.copy(block = NoBlock, lines = addLine(l, es.lines, lineIndex + 1))
+          case NoBlock if blockStart(l) => es.withBlock(InBlock)
+          case NoBlock                  => es
+          case InBlock if blockEnd(l)   => es.withBlock(NoBlock)
           case InBlock =>
             es.copy(lines = addLine(l, es.lines, lineIndex + 1))
         }
@@ -126,6 +126,7 @@ object Snippet {
 
   private case class ExtractionState(block: Block, lines: Seq[Line]) {
     def snippetLines = lines.map(_._2)
+    def withBlock(block: Block) = copy(block = block)
   }
 
   private sealed trait Block
@@ -137,8 +138,14 @@ object Snippet {
   private def containsLabel(line: String): Option[String] =
     anyLabelRegex.findFirstIn(line)
 
-  private def addFilteredLine(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
+  private def addFilteredLine(filterLabels: Boolean): (String, Seq[Line], Int) => Seq[Line] =
+    if (filterLabels) addLineFilterLabels else addLineNonFiltered
+
+  private def addLineFilterLabels(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
     containsLabel(line).map(_ => lines).getOrElse(lines :+ (lineNumber, line))
+
+  private def addLineNonFiltered(line: String, lines: Seq[Line], lineNumber: Int): Seq[Line] =
+    lines :+ (lineNumber, line)
 
   private def verifyLabel(label: String): Boolean = containsLabel(s"#$label").nonEmpty
 

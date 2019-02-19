@@ -36,7 +36,7 @@ sealed abstract class Linkable {
 /**
  * Header in a page, with anchor path and markdown nodes.
  */
-case class Header(path: String, label: Node, group: Option[String]) extends Linkable
+case class Header(path: String, label: Node, group: Option[String], includeIndexes: List[Int]) extends Linkable
 
 /**
  * Markdown page with target path, parsed markdown, and headers.
@@ -94,10 +94,10 @@ object Page {
     val targetPath = properties.convertToTarget(convertPath)(page.path)
     val rootSrcPage = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
-      case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group), h.children ++ hs)
-      case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None), Nil)
+      case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group, h.label.includeIndexes), h.children ++ hs)
+      case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None, Nil), Nil)
     }
-    val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group)))
+    val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group, h.includeIndexes)))
     Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, h1.group, properties)
   }
 
@@ -149,8 +149,8 @@ object Page {
    */
   def included(file: File, includeFilePath: String, includedIn: Page, markdown: RootNode): Page = {
     val rootSrcPage = Path.relativeRootPath(file, includeFilePath)
-    val h1 = Header(includedIn.path, new SpecialTextNode(includedIn.path), None)
-    Page(file, includedIn.path, rootSrcPage, h1.label, h1, Nil, markdown, h1.group, includedIn.properties)
+    Page(file, includedIn.path, rootSrcPage, includedIn.h1.label, includedIn.h1, includedIn.headers, markdown,
+      includedIn.group, includedIn.properties)
   }
 }
 

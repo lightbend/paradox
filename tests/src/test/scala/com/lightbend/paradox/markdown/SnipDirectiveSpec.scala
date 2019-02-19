@@ -153,4 +153,25 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |}</code>
         |</pre>""")
   }
+
+  it should "filter labels by default" in {
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label }""") shouldEqual html(
+      """<pre class="prettyprint">
+        |<code class="language-scala">
+        |object Constants {
+        |}</code>
+        |</pre>"""
+    )
+  }
+
+  it should "allow including labels if specified" in {
+    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label filterLabels=false }""") shouldEqual html(
+      """<pre class="prettyprint">
+        |<code class="language-scala">
+        |object Constants {
+        |  val someString = " #foo "
+        |}</code>
+        |</pre>"""
+    )
+  }
 }
