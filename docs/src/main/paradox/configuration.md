@@ -62,3 +62,29 @@ To use this functionality, add `project.url` to Paradox properties
 ```scala
 paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/paradox/current/")
 ```
+
+## Canonical URL
+
+The built in theme (`generic`) will add a `<link rel="canonical" href=...` page header if `canonical.base_url` is defined. In most cases this will be the same URL as `project.url`.
+
+To use this functionality, add `canonical.base_url` to Paradox properties
+
+```scala
+paradoxProperties += ("canonical.base_url" -> "https://developer.lightbend.com/docs/paradox/current/")
+```
+
+## HTML description tag
+
+Most Paradox themes create the html tag `<meta name="description" content=` with text from the sbt `description` setting. Make sure to set in or overwrite it project-wide with
+
+```scala
+paradoxProperties += ("project.description" -> "A useful description text for search engines to contemplate")
+```
+
+You may set a page specific description by adding it to the @ref:[Front matter](variable-substitution.md) like this
+
+```markdown
+---
+project.description: This page is very useful for whatever you want to know.
+---
+```
