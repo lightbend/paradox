@@ -16,13 +16,13 @@ It has several features that help to structure and build documentation sites eas
    @ref[Themes](customization/theming.md) allow customizing the appearance of Paradox-generated documentation. Custom 
    directives and themes can be packaged and published as separate sbt plugin @ref[extensions](customization/extensions.md).
 
-### Source Code
+### Project info
 
-The GitHub repository can be found at [lightbend/paradox][repo].
- 
+@@project-info{ projectId="core" }
+
 ### License and credits
  
- - Copyright 2015-2018 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
+ - Copyright 2015-2019 Lightbend, Inc. Paradox is provided under the Apache 2.0 license.
  - **Paradox is NOT supported under the Lightbend subscription.**
  - The markdown engine is based on Mathias's [Pegdown][]. 
  
