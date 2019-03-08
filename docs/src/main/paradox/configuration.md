@@ -65,9 +65,9 @@ paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/par
 
 ## Canonical URL
 
-The built in theme (`generic`) will add a `<link rel="canonical" href=...` page header if `canonical.base_url` is defined. In most cases this will be the same URL as `project.url`.
+The built-in theme (`generic`) will add a `<link rel="canonical" href=...` page header using the sbt `homepage` setting. Make sure `homepage` contains something useful.
 
-To use this functionality, add `canonical.base_url` to Paradox properties
+To set a different URL, add `canonical.base_url` to Paradox properties
 
 ```scala
 paradoxProperties += ("canonical.base_url" -> "https://developer.lightbend.com/docs/paradox/current/")

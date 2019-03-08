@@ -131,7 +131,6 @@ lazy val docs = (project in file("docs"))
       "empty" -> "",
       "version" -> version.value,
       "project.url" -> "https://developer.lightbend.com/docs/paradox/current/",
-      "canonical.base_url" -> "https://developer.lightbend.com/docs/paradox/current/",
     ),
     paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
     publish / skip := true
