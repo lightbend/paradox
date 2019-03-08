@@ -24,7 +24,7 @@ inThisBuild(List(
   crossScalaVersions := Seq("2.10.7", "2.12.7"),
   organizationName := "lightbend",
   organizationHomepage := Some(url("https://lightbend.com/")),
-  homepage := Some(url("https://github.com/lightbend/paradox")),
+  homepage := Some(url("https://developer.lightbend.com/docs/paradox/current/")),
   scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
   developers := List(
     Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
