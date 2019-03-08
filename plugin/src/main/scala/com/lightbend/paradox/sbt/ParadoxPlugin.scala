@@ -90,7 +90,6 @@ object ParadoxPlugin extends AutoPlugin {
       "snip.root.base_dir" -> baseDirectory.value.toString,
       SnipDirective.buildBaseDir -> (baseDirectory in ThisBuild).value.toString,
       SnipDirective.showGithubLinks -> "true",
-      "canonical.base_dir" -> (homepage in ThisBuild).value.toString,
       "github.root.base_dir" -> (baseDirectory in ThisBuild).value.toString,
       "scala.version" -> scalaVersion.value,
       "scala.binary.version" -> scalaBinaryVersion.value),
