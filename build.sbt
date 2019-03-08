@@ -129,8 +129,7 @@ lazy val docs = (project in file("docs"))
     paradoxTheme := Some(builtinParadoxTheme("generic")),
     paradoxProperties in Compile ++= Map(
       "empty" -> "",
-      "version" -> version.value,
-      "project.url" -> "https://developer.lightbend.com/docs/paradox/current/",
+      "version" -> version.value
     ),
     paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
     publish / skip := true

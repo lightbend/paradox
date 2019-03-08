@@ -95,8 +95,11 @@ object ParadoxPlugin extends AutoPlugin {
       "scala.binary.version" -> scalaBinaryVersion.value),
     paradoxProperties ++= {
       (homepage in ThisBuild).value match {
-        case Some(url) => Map("canonical.base_dir" -> url.toString)
-        case None      => Map.empty
+        case Some(url) => Map(
+          "project.url" -> url.toString,
+          "canonical.base_dir" -> url.toString
+        )
+        case None => Map.empty
       }
     },
     paradoxProperties ++= dateProperties,

@@ -57,7 +57,9 @@ Paradox supports showing a warning when users browse documentation which is not 
 
 The built in theme (`generic`) contains Javascript to fetch the JSON file and compare the version with the version for which the documentation showing was generated. Whenever they differ, a warning text shows on every page offering a link to the released version's page.
 
-To use this functionality, add `project.url` to Paradox properties
+To use this functionality, make `project.url` point to a URL where the **current** version will be deployed. It defaults to the sbt `homepage` setting. Make sure `homepage` contains something useful.
+
+To set a URL different from `homepage`, add `project.url` to Paradox properties
 
 ```scala
 paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/paradox/current/")
@@ -67,7 +69,7 @@ paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/par
 
 The built-in theme (`generic`) will add a `<link rel="canonical" href=...` page header using the sbt `homepage` setting. Make sure `homepage` contains something useful.
 
-To set a different URL, add `canonical.base_url` to Paradox properties
+To set a URL different from `homepage`, add `canonical.base_url` to Paradox properties
 
 ```scala
 paradoxProperties += ("canonical.base_url" -> "https://developer.lightbend.com/docs/paradox/current/")
