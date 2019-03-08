@@ -93,6 +93,12 @@ object ParadoxPlugin extends AutoPlugin {
       "github.root.base_dir" -> (baseDirectory in ThisBuild).value.toString,
       "scala.version" -> scalaVersion.value,
       "scala.binary.version" -> scalaBinaryVersion.value),
+    paradoxProperties ++= {
+      (homepage in ThisBuild).value match {
+        case Some(url) => Map("canonical.base_dir" -> url.toString)
+        case None      => Map.empty
+      }
+    },
     paradoxProperties ++= dateProperties,
     paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value, isSnapshot.value, version.value),
 
