@@ -2,16 +2,23 @@ language: scala
 
 jobs:
   include:
+    - stage: check
+      script: sbt ^headerCheck
+      name: "Copyright header check"
+
     - stage: test
       script: sbt verify
       jdk: oraclejdk8
+      name: "Compile, test and build docs with JDK8"
 
     - script: sbt verify
       jdk: openjdk11
+      name: "Compile, test and build docs with JDK11"
 
     - stage: publish
       script: sbt ci-release
       jdk: oraclejdk8
+      name: "Cross publish artifacts"
 
 stages:
   # runs on master commits and PRs
