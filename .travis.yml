@@ -22,6 +22,10 @@ jobs:
 
 stages:
   # runs on master commits and PRs
+  - name: check
+    if: NOT tag =~ ^v
+
+  # runs on master commits and PRs
   - name: test
     if: NOT tag =~ ^v
 
