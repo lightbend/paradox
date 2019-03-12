@@ -46,7 +46,7 @@ renders as:
 
 The scala version is "$scala.version$".
  
-Alternatively, you can also use the @ref[`@var`](directives/vars.md#var) or [`@@@vars`](directives/vars.md#vars)
+Alternatively, you can also use the @ref[`@var`](directives/vars.md#var) or @ref[`@@@vars`](directives/vars.md#vars)
 directives to insert property values depending on the context.
 
 ## Predefined Properties
