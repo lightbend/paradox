@@ -30,7 +30,8 @@ inThisBuild(List(
     Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
     Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
   ),
-  description := "Paradox is a markdown documentation tool for software projects."
+  description := "Paradox is a markdown documentation tool for software projects.",
+  dynverSonatypeSnapshots := false // not publishing snapshots, so no SNAPSHOT at the end please
 ))
 
 lazy val paradox = project
