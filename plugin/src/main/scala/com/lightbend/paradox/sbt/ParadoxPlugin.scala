@@ -97,7 +97,7 @@ object ParadoxPlugin extends AutoPlugin {
       homepage.value match {
         case Some(url) => Map(
           "project.url" -> url.toString,
-          "canonical.base_dir" -> url.toString
+          "canonical.base_url" -> url.toString
         )
         case None => Map.empty
       }
