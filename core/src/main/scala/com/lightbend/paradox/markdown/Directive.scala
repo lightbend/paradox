@@ -413,7 +413,7 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       // 'selector' is excluded on purpose to not complicate logic and increase maintainability
       val validParams = Seq("prefix", "dependency", "scalaversion", "template", "theme", "minheight", "layout")
 
-      val params = validParams.map(k => Option(node.attributes.value(k)).map(x => s"data-$k=$x").getOrElse("")).mkString(" ")
+      val params = validParams.map(k => Option(node.attributes.value(k)).map(x => s"data-$k=\"$x\"").getOrElse("")).mkString(" ")
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
@@ -421,11 +421,10 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       val (code, _) = Snippet(file, labels, filterLabels)
 
       printer.println.print(s"""
-        <div data-scalafiddle $params>
+        <div data-scalafiddle="true" $params>
           <pre class="prettyprint"><code class="language-scala">$code</code></pre>
-          </pre>
         </div>
-        <script defer src="$integrationScriptUrl"></script>
+        <script defer="true" src="$integrationScriptUrl"></script>
         """
       )
     } catch {
