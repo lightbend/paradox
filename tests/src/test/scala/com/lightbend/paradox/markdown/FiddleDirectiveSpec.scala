@@ -22,7 +22,7 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
 
   "Fiddle directive" should "generate fiddle integration code" in {
     markdown("""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
-      |<div data-scalafiddle>
+      |<div data-scalafiddle="true">
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
@@ -30,7 +30,7 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
       |}</code>
       |</pre>
       |</div>
-      |<script defer src="https://embed.scalafiddle.io/integration.js">
+      |<script defer="true" src="https://embed.scalafiddle.io/integration.js">
       |</script>""")
   }
 
@@ -47,14 +47,14 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
 
     val markdownParams =
       params.map {
-        case (k, v) => s"""$k="$v" """
+        case (k, v) => s"""$k="$v""""
       }.mkString(" ")
 
     val htmlParams =
-      params.map { case (k, v) => if (v.startsWith("'")) s"""data-$k=$v """ else s"""data-$k="$v" """ }.mkString(" ")
+      params.map { case (k, v) => if (v.startsWith("'")) s"""data-$k="${v.substring(1, v.length - 1)}" """ else s"""data-$k="$v" """ }.mkString(" ")
 
     markdown(s"""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example $markdownParams}""") shouldEqual html(s"""
-      |<div data-scalafiddle $htmlParams>
+      |<div data-scalafiddle="true" $htmlParams>
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
@@ -62,14 +62,15 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
       |}</code>
       |</pre>
       |</div>
-      |<script defer src="https://embed.scalafiddle.io/integration.js">
+      |<script defer="true" src="https://embed.scalafiddle.io/integration.js">
       |</script>""")
   }
 
   it should "include multiple fiddles" in {
     markdown("""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }
-      |@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
-      |<div data-scalafiddle>
+      |@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html(
+      """
+      |<div data-scalafiddle="true">
       |<pre class="prettyprint">
       |<code class="language-scala">
       |object example extends App {
@@ -77,16 +78,16 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
       |}</code>
       |</pre>
       |</div>
-      |<script defer src="https://embed.scalafiddle.io/integration.js">
+      |<script defer="true" src="https://embed.scalafiddle.io/integration.js">
       |</script>
-      |<div data-scalafiddle>
+      |<div data-scalafiddle="true">
       |<pre class="prettyprint">
       |<code class="language-scala">
       |case object Dent
       |  case object DoubleDent</code>
       |</pre>
       |</div>
-      |<script defer src="https://embed.scalafiddle.io/integration.js">
+      |<script defer="true" src="https://embed.scalafiddle.io/integration.js">
       |</script>""")
   }
 

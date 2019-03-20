@@ -413,7 +413,12 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       // 'selector' is excluded on purpose to not complicate logic and increase maintainability
       val validParams = Seq("prefix", "dependency", "scalaversion", "template", "theme", "minheight", "layout")
 
-      val params = validParams.map(k => Option(node.attributes.value(k)).map(x => s"data-$k=\"$x\"").getOrElse("")).mkString(" ")
+      val params = validParams.map(k => Option(node.attributes.value(k)).map { x =>
+        if (x.startsWith("'") && x.endsWith("'")) // earlier explicit ' was required to quote attributes (now all are quoted with ")
+          s"""data-$k="${x.substring(1, x.length - 1)}" """
+        else
+          s"""data-$k="$x" """
+      }.getOrElse("")).mkString(" ")
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
