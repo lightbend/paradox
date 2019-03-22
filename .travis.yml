@@ -3,7 +3,7 @@ language: scala
 jobs:
   include:
     - stage: check
-      script: sbt ^headerCheck
+      script: sbt headerCheck
       name: "Copyright header check"
 
     - stage: test
