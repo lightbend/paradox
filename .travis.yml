@@ -1,5 +1,12 @@
 language: scala
 
+env:
+  matrix:
+    - TRAVIS_JDK=adopt@1.8.202-08
+
+before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
+install: jabba install "$TRAVIS_JDK" && jabba use $_ && java -Xmx32m -version
+
 jobs:
   include:
     - stage: check
@@ -8,16 +15,14 @@ jobs:
 
     - stage: test
       script: sbt verify
-      jdk: oraclejdk8
       name: "Compile, test and build docs with JDK8"
 
     - script: sbt verify
-      jdk: openjdk11
       name: "Compile, test and build docs with JDK11"
+      env: TRAVIS_JDK=adopt@1.11.0-2
 
     - stage: publish
       script: sbt ci-release
-      jdk: oraclejdk8
       name: "Cross publish artifacts"
 
 stages:
