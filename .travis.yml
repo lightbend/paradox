@@ -10,7 +10,7 @@ install: jabba install "$TRAVIS_JDK" && jabba use $_ && java -Xmx32m -version
 jobs:
   include:
     - stage: check
-      script: sbt ^headerCheck
+      script: sbt headerCheck
       name: "Copyright header check"
 
     - stage: test
