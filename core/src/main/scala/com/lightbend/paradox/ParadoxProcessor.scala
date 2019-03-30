@@ -20,6 +20,7 @@ import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, FileOutputStream, OutputStreamWriter }
+import java.nio.charset.StandardCharsets
 import java.util
 
 import org.pegdown.ast._
@@ -79,7 +80,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {
     val metadataFilename = "paradox.json"
     val target = new File(outputDirectory, metadataFilename)
-    val osWriter = new OutputStreamWriter(new FileOutputStream(target))
+    val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
     osWriter.write(
       s"""{
          |  "name" : "${properties("project.name")}",
