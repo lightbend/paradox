@@ -17,9 +17,12 @@
 package com.lightbend.paradox.template
 
 import java.io.{ File, OutputStreamWriter, FileOutputStream }
+import java.nio.charset.StandardCharsets
 import java.util.{ Map => JMap }
+
 import org.stringtemplate.v4.misc.STMessage
 import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST, NoIndentWriter }
+
 import collection.concurrent.TrieMap
 
 /**
@@ -40,7 +43,7 @@ class PageTemplate(directory: File, val defaultName: String = "page", startDelim
         t.add("page", contents)
       case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
-    val osWriter = new OutputStreamWriter(new FileOutputStream(target))
+    val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
     val noIndentWriter = new NoIndentWriter(osWriter)
     template.write(noIndentWriter) // does not take into account the errorListener any more...
     osWriter.close
