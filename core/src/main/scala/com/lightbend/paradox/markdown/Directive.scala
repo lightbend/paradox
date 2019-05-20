@@ -156,6 +156,10 @@ object RefDirective {
    */
   class LinkException(message: String) extends RuntimeException(message)
 
+  def isRefDirective(node: DirectiveNode): Boolean = {
+    node.format == DirectiveNode.Format.Inline && (node.name == "ref" || node.name == "ref:")
+  }
+
 }
 
 /**
