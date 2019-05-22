@@ -17,6 +17,8 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.Location
+import org.parboiled.common.StringUtils
+import org.pegdown.FastEncoder.encode
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.ast._
 import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer, VerbatimSerializer }
@@ -161,7 +163,23 @@ object Writer {
       super.render(node, interpolatedUrl(url) getOrElse url, title, alt)
 
     override def render(node: ExpLinkNode, text: String): LinkRenderer.Rendering = {
-      super.render(new ExpLinkNode(node.title, substituteVarsInString(node.url, context.properties), node.getChildren.get(0)), text)
+      val title = node.title
+      val url = substituteVarsInString(node.url, context.properties)
+      node match {
+        case n: ExpLinkNodeExtended =>
+          val rendering: LinkRenderer.Rendering = new LinkRenderer.Rendering(url, text)
+          val r2 =
+            if (StringUtils.isEmpty(title)) rendering
+            else rendering.withAttribute("title", encode(title))
+          if (n.attributes.value("open", "same") == "new") {
+            r2
+              .withAttribute("target", "_blank")
+              .withAttribute("rel", "noopener noreferrer")
+          } else r2
+
+        case _ =>
+          super.render(new ExpLinkNode(title, url, node.getChildren.get(0)), text)
+      }
     }
 
     override def render(node: RefLinkNode, url: String, title: String, text: String): LinkRenderer.Rendering = {

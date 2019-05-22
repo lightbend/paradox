@@ -166,7 +166,7 @@ case class LinkDirective(page: Page, pathExists: String => Boolean, convertPath:
   extends InlineDirective("link", "link:") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
-    new ExpLinkNode(node.label, resolvedSource(node, page), node.contentsNode).accept(visitor)
+    new ExpLinkNodeExtended(node.label, resolvedSource(node, page), node.contentsNode, node.attributes).accept(visitor)
 
 }
 

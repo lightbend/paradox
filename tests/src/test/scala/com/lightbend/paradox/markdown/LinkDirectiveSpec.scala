@@ -45,9 +45,9 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
       testHtml("""<p>This <a href="external.pdf" title="Page">Page</a> is linked.</p>""")
   }
 
-  it should "parse but ignore directive attributes" in {
-    testMarkdown("This @link:[Page](page.pdf) { .ref a=1 } is linked.") shouldEqual
-      testHtml("""<p>This <a href="page.pdf" title="Page">Page</a> is linked.</p>""")
+  it should "use the `open` attributes" in {
+    testMarkdown("This @link:[Page](page.pdf) { open=new } is linked.") shouldEqual
+      testHtml("""<p>This <a href="page.pdf" title="Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>""")
   }
 
   it should "support referenced links with implicit key" in {
