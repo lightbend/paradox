@@ -7,6 +7,7 @@
  * @ref[`@@include`](includes.md)
  * @ref[`@@@index`](organizing-pages.md#index-container)
  * @ref[`@javadoc`](linking.md#javadoc)
+ * @ref[`@link`](linking.md#ref-link)
  * @ref[`@@@note`](callouts.md#note-callout)
  * @ref[`@ref`](linking.md#ref-link)
  * @ref[`@scaladoc`](linking.md#scaladoc)

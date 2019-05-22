@@ -156,6 +156,24 @@ object RefDirective {
    */
   class LinkException(message: String) extends RuntimeException(message)
 
+  def isRefDirective(node: DirectiveNode): Boolean = {
+    node.format == DirectiveNode.Format.Inline && (node.name == "ref" || node.name == "ref:")
+  }
+
+}
+
+case class LinkDirective(page: Page, pathExists: String => Boolean, convertPath: String => String, variables: Map[String, String])
+  extends InlineDirective("link", "link:") with SourceDirective {
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
+    new ExpLinkNodeExtended(node.label, resolvedSource(node, page), node.contentsNode, node.attributes).accept(visitor)
+
+}
+
+object LinkDirective {
+  def isLinkDirective(node: DirectiveNode): Boolean = {
+    node.format == DirectiveNode.Format.Inline && (node.name == "link" || node.name == "link:")
+  }
 }
 
 /**

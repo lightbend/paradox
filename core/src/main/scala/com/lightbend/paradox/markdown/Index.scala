@@ -19,7 +19,10 @@ package com.lightbend.paradox.markdown
 import com.lightbend.paradox.tree.Tree
 import com.lightbend.paradox.tree.Tree.Forest
 import java.io.File
+
+import org.pegdown.ast.DirectiveNode.Source
 import org.pegdown.ast._
+
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
@@ -120,6 +123,15 @@ object Index {
   private def linkRef(node: Node, level: Int): Option[Ref] = {
     node match {
       case link: ExpLinkNode => Some(Ref(level, link.url, link.getChildren.get(0), group = None, Nil))
+      case ref: DirectiveNode if RefDirective.isRefDirective(ref) =>
+        ref.source match {
+          case source: Source.Direct =>
+            Some(Ref(level, source.value, new TextNode(ref.label), group = None, Nil))
+          case source: Source.Ref =>
+            Some(Ref(level, source.value, new TextNode(ref.label), group = None, Nil))
+          case other =>
+            sys.error(s"unexpected Source type: ${ref.source}")
+        }
       case other => other.getChildren.asScala.toList match {
         // only check first children
         case first :: _ => linkRef(first, level)

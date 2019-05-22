@@ -1,6 +1,14 @@
 Linking
 -------
 
+#### External links
+
+External links can be created with the default markdown syntax `[text](url)`. Additionally Paradox introduces `@link:` which accepts the `open=new` attribute to make the link open in a new browser tab (it adds `target="_blank" rel="noopener noreferrer"` to the anchor tag).
+
+```
+See the @link:[Paradox GitHub repo](https://github.com/lightbend/paradox) { open=new } for more information.
+```
+
 #### @ref link
 
 Paradox extensions are designed so the resulting Markdown is Github friendly.

@@ -46,6 +46,66 @@ class IndexSpec extends MarkdownBaseSpec {
       """)
   }
 
+  it should "create toc" in {
+    indexed(
+      "a.md" -> """
+        |# A
+        |@@@ index
+        |* @ref:[Big B](b.md)
+        |@@@
+      """,
+      "b.md" -> """
+        |# B
+        |## B2
+      """) shouldEqual index(
+        """
+        |- a.html
+        |  - b.html
+        |    - #b2
+      """)
+  }
+
+  it should "create page tree with refs" in {
+    indexed(
+      "a.md" -> """
+                  |# A
+                  |@@@ index
+                  |* @ref:[b](b.md)
+                  |* @ref:[c](c.md)
+                  |@@@
+                  |## A2
+                  |### A3
+                """,
+      "b.md" -> """
+                  |# B
+                  |@@@ index
+                  |* @ref[d](d.md)
+                  |@@@
+                  |## B2
+                """,
+      "c.md" -> """
+                  |# C
+                  |## C2
+                """,
+      "d.md" -> """
+                  |# D
+                  |## D2
+                  |### D3
+                """) shouldEqual index(
+        """
+        |- a.html
+        |  - #a2
+        |    - #a3
+        |  - b.html
+        |    - #b2
+        |    - d.html
+        |      - #d2
+        |        - #d3
+        |  - c.html
+        |    - #c2
+      """)
+  }
+
   it should "create page tree" in {
     indexed(
       "a.md" -> """
