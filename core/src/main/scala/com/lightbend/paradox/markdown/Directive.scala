@@ -162,6 +162,20 @@ object RefDirective {
 
 }
 
+case class LinkDirective(page: Page, pathExists: String => Boolean, convertPath: String => String, variables: Map[String, String])
+  extends InlineDirective("link", "link:") with SourceDirective {
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
+    new ExpLinkNode(node.label, resolvedSource(node, page), node.contentsNode).accept(visitor)
+
+}
+
+object LinkDirective {
+  def isLinkDirective(node: DirectiveNode): Boolean = {
+    node.format == DirectiveNode.Format.Inline && (node.name == "link" || node.name == "link:")
+  }
+}
+
 /**
  * Link to external sites using URI templates.
  */

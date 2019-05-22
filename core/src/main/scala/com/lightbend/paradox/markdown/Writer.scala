@@ -125,6 +125,7 @@ object Writer {
 
   def defaultDirectives: Seq[Context => Directive] = Seq(
     context => RefDirective(context.location.tree.label, context.paths, context.pageMappings, context.properties),
+    context => LinkDirective(context.location.tree.label, context.paths, context.pageMappings, context.properties),
     context => ExtRefDirective(context.location.tree.label, context.properties),
     context => ScaladocDirective(context.location.tree.label, context.properties),
     context => JavadocDirective(context.location.tree.label, context.properties),

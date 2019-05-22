@@ -1,6 +1,14 @@
 Linking
 -------
 
+#### External links
+
+External links can be created with the default markdown syntax `[text](url)`. Additionally Paradox introduces `@link:` with the same features.
+
+```
+See the @link:[Paradox GitHub repo](https://github.com/lightbend/paradox) for more information.
+```
+
 #### @ref link
 
 Paradox extensions are designed so the resulting Markdown is Github friendly.
