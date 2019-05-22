@@ -53,8 +53,6 @@ class IndexSpec extends MarkdownBaseSpec {
         |@@@ index
         |* @ref:[Big B](b.md)
         |@@@
-        |
-        |@ref:[b](b.md)
       """,
       "b.md" -> """
         |# B
