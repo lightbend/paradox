@@ -114,7 +114,7 @@ object ParadoxPlugin extends AutoPlugin {
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
     sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
     mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
-    target in paradoxMarkdownToHtml := target.value / "paradox" / "html",
+    target in paradoxMarkdownToHtml := target.value / "paradox" / "html" / configTarget(configuration.value),
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
       (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme.name
@@ -130,7 +130,7 @@ object ParadoxPlugin extends AutoPlugin {
     // if there are duplicates, select the file from the local template to allow overrides/extensions in themes
     WebKeys.deduplicators in paradoxTheme += SbtWeb.selectFileFrom((sourceDirectory in paradoxTheme).value),
     mappings in paradoxTheme := SbtWeb.deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
-    target in paradoxTheme := target.value / "paradox" / "theme",
+    target in paradoxTheme := target.value / "paradox" / "theme" / configTarget(configuration.value),
     paradoxThemeDirectory := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox-theme"), (mappings in paradoxTheme).value, (target in paradoxTheme).value),
 
     paradoxTemplate := {
@@ -185,13 +185,7 @@ object ParadoxPlugin extends AutoPlugin {
       val themeFilter = (managedSourceDirectories in paradoxTheme).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
       (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
     },
-    target in paradox := {
-      val config = configuration.value
-      if (config.name != Compile.name)
-        target.value / "paradox" / "site" / config.name
-      else
-        target.value / "paradox" / "site" / "main"
-    },
+    target in paradox := target.value / "paradox" / "site" / configTarget(configuration.value),
 
     watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
 
@@ -199,6 +193,10 @@ object ParadoxPlugin extends AutoPlugin {
 
     paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
   )
+
+  private def configTarget(config: Configuration) =
+    if (config.name == Compile.name) "main"
+    else config.name
 
   def shortVersion(version: String): String = version.replace("-SNAPSHOT", "*")
 

@@ -29,12 +29,13 @@ If a file duplicate exist between the directories, the overlay file is dropped i
 
 ## Multi Configuration
 
-Paradox supports multiple sbt configurations. Each configuration is by default located to `src/configName` of the project,
-with the target directory defined as `target/paradox/site/configName`, `configName` corresponding to configuration.name of
-a particular configuration. There still remains the usual main project in `src/main` of course if you don't need multiple
-paradox project directories.
+By default, Paradox expects documentation source files in the `src/main/paradox` directory.
+For situations where different parts of the documentation are stored separately, Paradox supports custom sbt configuration scopes.
+Each custom configuration source files are by default located in the `src/<config-name>/paradox` directory.
+The target directory is defined as `target/paradox/site/<config-name>`.
+Here `<config-name>` corresponds to `configuration.name` of a particular configuration.
 
-To associate a configuration to paradox, use its settings, and change its default source and/or target directorie(s) if needed:
+To associate a configuration to paradox, manually add settings from `ParadoxPlugin.paradoxSettings`, and change its default source and/or target directories if needed:
 
 ```scala
 val SomeConfig = config("some-config")
@@ -49,7 +50,8 @@ lazy val root = (project in file(".")).
   )
 ```
 
-Now, either you run paradox on one configuration; "sbt someConfig:paradox" or you can run the main project with the usual way; "sbt paradox".
+Now, to run paradox for custom configuration execute `sbt someConfig:paradox`.
+It is still possible to run paradox for the main configuration the usual way `sbt paradox`.
 
 ## Version warning
 
