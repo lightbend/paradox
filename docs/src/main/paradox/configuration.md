@@ -32,7 +32,7 @@ If a file duplicate exist between the directories, the overlay file is dropped i
 By default, Paradox expects documentation source files in the `src/main/paradox` directory.
 For situations where different parts of the documentation are stored separately, Paradox supports custom sbt configuration scopes.
 Each custom configuration source files are by default located in the `src/<config-name>/paradox` directory.
-Target directory is defined as `target/paradox/site/<config-name>`.
+The target directory is defined as `target/paradox/site/<config-name>`.
 Here `<config-name>` corresponds to `configuration.name` of a particular configuration.
 
 To associate a configuration to paradox, manually add settings from `ParadoxPlugin.paradoxSettings`, and change its default source and/or target directories if needed:
