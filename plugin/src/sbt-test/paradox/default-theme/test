@@ -1,0 +1,5 @@
+> paradox
+
+$ must-mirror target/paradox/site/main/index.html  expected/index.html
+$ must-mirror target/paradox/site/main/sub/indexed.html  expected/sub/indexed.html
+$ must-mirror target/paradox/site/main/sub/unindexed.html  expected/sub/unindexed.html
