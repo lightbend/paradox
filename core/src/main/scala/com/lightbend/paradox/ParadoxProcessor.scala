@@ -28,8 +28,6 @@ import org.stringtemplate.v4.STErrorListener
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
-import org.stringtemplate.v4.misc.STMessage
-import org.stringtemplate.v4.misc.ErrorType
 
 /**
  * Markdown site processor.
