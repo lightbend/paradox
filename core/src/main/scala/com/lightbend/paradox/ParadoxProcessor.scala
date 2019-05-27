@@ -48,13 +48,14 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     navDepth:           Int,
     navExpandDepth:     Option[Int],
     navIncludeHeaders:  Boolean,
+    expectedRoots:      Int,
     pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
     require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
 
-    val pages = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties)
-    val paths = Page.allPaths(pages).toSet
-    val globalPageMappings = rootPageMappings(pages)
+    val roots = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties)
+    val paths = Page.allPaths(roots).toSet
+    val globalPageMappings = rootPageMappings(roots)
 
     val navToc = new TableOfContents(pages = true, headers = navIncludeHeaders, ordered = false, maxDepth = navDepth, maxExpandDepth = navExpandDepth)
     val pageToc = new TableOfContents(pages = false, headers = true, ordered = false, maxDepth = navDepth)
@@ -73,8 +74,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
+
+    if (expectedRoots != roots.size)
+      throw new IllegalStateException(s"Expected $expectedRoots ToC roots (based on paradoxExpectedNumberOfRoots) but found ${roots.size}: " +
+        roots.map(_.label.path).mkString("[", ", ", "]"))
+
     outputDirectory.mkdirs()
-    createMetadata(outputDirectory, properties) :: (pages flatMap { root => render(Some(root.location)) })
+    createMetadata(outputDirectory, properties) :: (roots flatMap { root => render(Some(root.location)) })
   }
 
   private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {

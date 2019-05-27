@@ -49,6 +49,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxNavigationExpandDepth := None,
     paradoxNavigationIncludeHeaders := false,
+    paradoxExpectedNumberOfRoots := 1,
     paradoxDirectives := Writer.defaultDirectives,
     paradoxProperties := Map.empty,
     paradoxTheme := Some(builtinParadoxTheme("generic")),
@@ -165,6 +166,7 @@ object ParadoxPlugin extends AutoPlugin {
           paradoxNavigationDepth.value,
           paradoxNavigationExpandDepth.value,
           paradoxNavigationIncludeHeaders.value,
+          paradoxExpectedNumberOfRoots.value,
           paradoxTemplate.value,
           new PageTemplate.ErrorLogger(s => strms.log.error(s))
         )
