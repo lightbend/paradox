@@ -102,15 +102,15 @@ object Page {
   }
 
   /**
-   * Collect all page paths.
+   * All pages, by path
    */
-  def allPaths(pages: Forest[Page]): List[String] = {
+  def allPages(pages: Forest[Page]): Map[String, Page] = {
     @tailrec
-    def collect(location: Option[Location[Page]], paths: List[String] = Nil): List[String] = location match {
-      case Some(loc) => collect(loc.next, loc.tree.label.path :: paths)
+    def collect(location: Option[Location[Page]], paths: List[(String, Page)] = Nil): List[(String, Page)] = location match {
+      case Some(loc) => collect(loc.next, (loc.tree.label.path, loc.tree.label) :: paths)
       case None      => paths
     }
-    pages flatMap { root => collect(Some(root.location)) }
+    (pages flatMap { root => collect(Some(root.location)) }).toMap
   }
 
   /**

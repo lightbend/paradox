@@ -88,7 +88,7 @@ abstract class MarkdownTestkit {
   def writerContext(location: Location[Page]): Writer.Context = {
     Writer.Context(
       location,
-      Page.allPaths(List(location.root.tree)).toSet,
+      Page.allPages(List(location.root.tree)),
       markdownReader,
       markdownWriter,
       groups = Map("Language" -> Seq("Scala", "Java")),
