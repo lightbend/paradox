@@ -56,6 +56,8 @@ abstract class Tree[A] {
     }
     showNodes(location, Nil).mkString("\n")
   }
+
+  def toSet[T]: Set[A] = children.flatMap(_.toSet).toSet + label
 }
 
 object Tree {
