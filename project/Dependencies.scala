@@ -20,7 +20,7 @@ object Version {
   val foundation = "6.2.4"
   val jtidy      = "r938"
   val pegdown    = "1.6.0"
-  val parboiled  = "1.3.0"
+  val parboiled  = "1.3.1"
   val prettify   = "4-Mar-2013-1"
   val sbtWeb     = "1.4.4"
   val scalatest  = "3.0.8"
