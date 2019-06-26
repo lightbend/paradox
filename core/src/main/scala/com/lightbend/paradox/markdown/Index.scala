@@ -41,7 +41,7 @@ object Index {
    */
   case class Ref(level: Int, path: String, markdown: Node, group: Option[String], includeIndexes: List[Int])
 
-  case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref])
+  case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref], anchors: List[Ref])
 
   def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] = {
     link(parsed.map((page _).tupled).toList, properties)
@@ -51,7 +51,7 @@ object Index {
    * Create a new Index.Page with parsed indices and headers.
    */
   def page(file: File, path: String, markdown: RootNode, properties: Map[String, String]): Page =
-    Page(file, path, markdown, properties, indices(markdown), headers(markdown))
+    Page(file, path, markdown, properties, indices(markdown), headers(markdown), anchors(markdown))
 
   /**
    * Create a tree of header refs from a parsed markdown page.
@@ -79,6 +79,22 @@ object Index {
       case node @ IncludeNode(included, _, _) =>
         headerRefs(included, group, includeIndexes :+ node.getStartIndex)
       case _ => Nil
+    }
+  }
+
+  def anchors(root: RootNode): List[Ref] = {
+    root.getChildren.asScala.toList.flatMap {
+      case node: HtmlBlockNode =>
+        if (node.getText.startsWith("<a id=\""))
+          List(Ref(0, "#" + node.getText.drop(7).takeWhile(_ != '"'), node, None, List.empty))
+        else
+          List.empty
+      case node: DirectiveNode if node.format == DirectiveNode.Format.ContainerBlock =>
+        anchors(node.contentsNode.asInstanceOf[RootNode])
+      case IncludeNode(included, _, _) =>
+        anchors(included)
+      case _ =>
+        List.empty
     }
   }
 

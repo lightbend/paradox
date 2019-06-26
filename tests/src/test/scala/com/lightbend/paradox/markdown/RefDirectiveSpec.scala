@@ -29,6 +29,7 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
     """,
     testPath -> text,
     "pagewithanchors.md" -> s"""
+      |<a id="custom-anchor"></a>
       |## header
       |
       |body
@@ -38,7 +39,8 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   def testHtml(text: String, pagePath: String = "page.html", testPath: String = "test.html"): Map[String, String] = {
     htmlPages(
       pagePath -> "",
-      "pagewithanchors.html" -> s"""<h2><a href="#header" name="header" class="anchor"><span class="anchor-link"></span></a>header</h2><p>body</p>""", testPath -> text)
+      "pagewithanchors.html" -> s"""<a id="custom-anchor"></a>
+<h2><a href="#header" name="header" class="anchor"><span class="anchor-link"></span></a>header</h2><p>body</p>""", testPath -> text)
   }
 
   "Ref directive" should "create links with html extension" in {
@@ -56,6 +58,10 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
 
   it should "handle anchored links correctly" in {
     testMarkdown("@ref:[Page](pagewithanchors.md#header)") shouldEqual testHtml("""<p><a href="pagewithanchors.html#header">Page</a></p>""")
+  }
+
+  it should "handle anchored links to custom anchors correctly" in {
+    testMarkdown("@ref:[Page](pagewithanchors.md#custom-anchor)") shouldEqual testHtml("""<p><a href="pagewithanchors.html#custom-anchor">Page</a></p>""")
   }
 
   it should "throw link exceptions for invalid anchor references" in {

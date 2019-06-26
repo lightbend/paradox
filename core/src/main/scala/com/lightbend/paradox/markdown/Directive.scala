@@ -147,7 +147,7 @@ case class RefDirective(page: Page, paths: Map[String, Page], convertPath: Strin
       case Some(target) =>
         if (path.contains("#")) {
           val anchor = path.substring(path.lastIndexOf('#'))
-          val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path)
+          val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path) ++ target.anchors.map(_.path)
           if (!headers.contains(anchor))
             throw new RefDirective.LinkException(s"Unknown anchor [$path] referenced from [${page.path}]")
         }
