@@ -97,7 +97,7 @@ object Writer {
    */
   case class Context(
       location:       Location[Page],
-      paths:          Set[String],
+      paths:          Map[String, Page],
       reader:         Reader,
       writer:         Writer,
       pageMappings:   String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
@@ -127,7 +127,7 @@ object Writer {
 
   def defaultDirectives: Seq[Context => Directive] = Seq(
     context => RefDirective(context.location.tree.label, context.paths, context.pageMappings, context.properties),
-    context => LinkDirective(context.location.tree.label, context.paths, context.pageMappings, context.properties),
+    context => LinkDirective(context.location.tree.label, context.paths.keySet.contains, context.pageMappings, context.properties),
     context => ExtRefDirective(context.location.tree.label, context.properties),
     context => ScaladocDirective(context.location.tree.label, context.properties),
     context => JavadocDirective(context.location.tree.label, context.properties),

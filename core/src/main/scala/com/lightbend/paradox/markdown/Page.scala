@@ -38,10 +38,12 @@ sealed abstract class Linkable {
  */
 case class Header(path: String, label: Node, group: Option[String], includeIndexes: List[Int]) extends Linkable
 
+case class Anchor(path: String)
+
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], markdown: RootNode, group: Option[String], properties: Page.Properties) extends Linkable {
+case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], anchors: List[Anchor], markdown: RootNode, group: Option[String], properties: Page.Properties) extends Linkable {
   /**
    * Path to the root of the site.
    */
@@ -97,20 +99,21 @@ object Page {
       case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group, h.label.includeIndexes), h.children ++ hs)
       case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None, Nil), Nil)
     }
+    val anchors = page.anchors.map(a => Anchor(a.path))
     val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group, h.includeIndexes)))
-    Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, page.markdown, h1.group, properties)
+    Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, anchors, page.markdown, h1.group, properties)
   }
 
   /**
-   * Collect all page paths.
+   * All pages, by path
    */
-  def allPaths(pages: Forest[Page]): List[String] = {
+  def allPages(pages: Forest[Page]): Map[String, Page] = {
     @tailrec
-    def collect(location: Option[Location[Page]], paths: List[String] = Nil): List[String] = location match {
-      case Some(loc) => collect(loc.next, loc.tree.label.path :: paths)
+    def collect(location: Option[Location[Page]], paths: List[(String, Page)] = Nil): List[(String, Page)] = location match {
+      case Some(loc) => collect(loc.next, (loc.tree.label.path, loc.tree.label) :: paths)
       case None      => paths
     }
-    pages flatMap { root => collect(Some(root.location)) }
+    (pages flatMap { root => collect(Some(root.location)) }).toMap
   }
 
   /**
@@ -149,7 +152,7 @@ object Page {
    */
   def included(file: File, includeFilePath: String, includedIn: Page, markdown: RootNode): Page = {
     val rootSrcPage = Path.relativeRootPath(file, includeFilePath)
-    Page(file, includedIn.path, rootSrcPage, includedIn.h1.label, includedIn.h1, includedIn.headers, markdown,
+    Page(file, includedIn.path, rootSrcPage, includedIn.h1.label, includedIn.h1, includedIn.headers, includedIn.anchors, markdown,
       includedIn.group, includedIn.properties)
   }
 }

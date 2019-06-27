@@ -28,6 +28,7 @@ import org.stringtemplate.v4.STErrorListener
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.collection.immutable.PagedSeq
 
 /**
  * Markdown site processor.
@@ -54,7 +55,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
 
     val roots = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties)
-    val paths = Page.allPaths(roots).toSet
+    val pages = Page.allPages(roots)
     val globalPageMappings = rootPageMappings(roots)
 
     val navToc = new TableOfContents(pages = true, headers = navIncludeHeaders, ordered = false, maxDepth = navDepth, maxExpandDepth = navExpandDepth)
@@ -66,7 +67,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val page = loc.tree.label
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
-        val writerContext = Writer.Context(loc, paths, reader, writer, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
+        val writerContext = Writer.Context(loc, pages, reader, writer, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, navToc, pageToc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs

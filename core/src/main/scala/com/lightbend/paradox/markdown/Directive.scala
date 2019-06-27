@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.Location
+import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, FileNotFoundException }
 import java.util.Optional
 
@@ -136,16 +136,25 @@ object SourceDirective {
  * Refs are for links to internal pages. The file extension is replaced when rendering.
  * Links are validated to ensure they point to a known page.
  */
-case class RefDirective(page: Page, pathExists: String => Boolean, convertPath: String => String, variables: Map[String, String])
+case class RefDirective(page: Page, paths: Map[String, Page], convertPath: String => String, variables: Map[String, String])
   extends InlineDirective("ref", "ref:") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     new ExpLinkNode("", check(convertPath(resolvedSource(node, page))), node.contentsNode).accept(visitor)
 
   private def check(path: String): String = {
-    if (!pathExists(Path.resolve(page.path, path)))
-      throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [${page.path}]")
-    path
+    paths.get(Path.resolve(page.path, path)) match {
+      case Some(target) =>
+        if (path.contains("#")) {
+          val anchor = path.substring(path.lastIndexOf('#'))
+          val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path) ++ target.anchors.map(_.path)
+          if (!headers.contains(anchor))
+            throw new RefDirective.LinkException(s"Unknown anchor [$path] referenced from [${page.path}]")
+        }
+        path
+      case None =>
+        throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [${page.path}]")
+    }
   }
 }
 
