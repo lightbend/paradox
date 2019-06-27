@@ -65,6 +65,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
+        checkDuplicateAnchors(page)
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
         val writerContext = Writer.Context(loc, pages, reader, writer, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
@@ -82,6 +83,17 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     outputDirectory.mkdirs()
     createMetadata(outputDirectory, properties) :: (roots flatMap { root => render(Some(root.location)) })
+  }
+
+  private def checkDuplicateAnchors(page: Page): Unit = {
+    val anchors = (page.headers.flatMap(_.toSet) :+ page.h1).map(_.path) ++ page.anchors.map(_.path)
+    anchors
+      .filter(_ != "#")
+      .groupBy(identity)
+      .collect { case (anchor, n) if n.size > 1 => anchor }
+      .foreach { anchor =>
+        throw new IllegalStateException(s"Duplicate anchor [$anchor] on [${page.path}]")
+      }
   }
 
   private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {
