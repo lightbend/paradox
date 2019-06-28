@@ -83,7 +83,7 @@ Text describing the @java[Java variant]@scala[Scala variant containing ***markdo
 ### Directives
 
 You can also use groups with directives such as @ref[`@@@div`](directives/css-friendliness.md#div)
-and @ref[`@@@note`](directives/callouts.md#note) as follows:
+and @ref[`@@@note`](directives/callouts.md#note-callout) as follows:
 
 ```
 @@@ div { .group-scala }
