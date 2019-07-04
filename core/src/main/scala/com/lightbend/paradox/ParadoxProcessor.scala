@@ -80,7 +80,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     if (expectedRoots != roots.size)
       throw new IllegalStateException(
         s"Found [${roots.size}] top-level pages (pages that do no have a parent in the Table of Contents), but expected [$expectedRoots].\n" +
-        S"If this is intentional, update the `paradoxExpectedNumberOfRoots` sbt setting to reflect the new expected number of roots.\n" +
+        s"If this is intentional, update the `paradoxExpectedNumberOfRoots` sbt setting to reflect the new expected number of roots.\n" +
         "Current ToC roots: " + roots.map(_.label.path).mkString("[", ", ", "]"))
 
     outputDirectory.mkdirs()
