@@ -10,6 +10,7 @@ lazy val docs = (project in file("docs")).
   enablePlugins(ParadoxPlugin).
   settings(
     paradoxTheme := None,
+    paradoxRoots := List("github.html"),
 
     scmInfoTree := Some(ScmInfo(url("https://github.com/lightbend/paradox/tree/v0.2.1"), "git@github.com:lightbend/paradox.git")),
     scmInfoProject := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),

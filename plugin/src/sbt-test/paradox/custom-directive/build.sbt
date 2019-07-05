@@ -5,5 +5,6 @@ lazy val docs = project
     name := "Paradox Directives Test",
     paradoxTheme := None,
     paradoxDirectives += CustomDirective,
-    paradoxProperties += "custom.content" -> "directive"
+    paradoxProperties += "custom.content" -> "directive",
+    paradoxRoots := List("test.html"),
   )

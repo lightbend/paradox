@@ -49,7 +49,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     navDepth:           Int,
     navExpandDepth:     Option[Int],
     navIncludeHeaders:  Boolean,
-    expectedRoots:      Int,
+    expectedRoots:      List[String],
     pageTemplate:       PageTemplate,
     errorListener:      STErrorListener): Seq[(File, String)] = {
     require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
@@ -77,11 +77,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       case None => rendered
     }
 
-    if (expectedRoots != roots.size)
+    if (expectedRoots.sorted != roots.map(_.label.path).sorted)
       throw new IllegalStateException(
-        s"Found [${roots.size}] top-level pages (pages that do no have a parent in the Table of Contents), but expected [$expectedRoots].\n" +
-        s"If this is intentional, update the `paradoxExpectedNumberOfRoots` sbt setting to reflect the new expected number of roots.\n" +
-        "Current ToC roots: " + roots.map(_.label.path).mkString("[", ", ", "]"))
+        s"Unexpected top-level pages (pages that do no have a parent in the Table of Contents).\n" +
+          s"If this is intentional, update the `paradoxRoots` sbt setting to reflect the new expected roots.\n" +
+          "Current ToC roots: " + roots.map(_.label.path).sorted.mkString("[", ", ", "]" + "\n") +
+          "Specified ToC roots: " + expectedRoots.sorted.mkString("[", ", ", "]" + "\n")
+      )
 
     outputDirectory.mkdirs()
     createMetadata(outputDirectory, properties) :: (roots flatMap { root => render(Some(root.location)) })

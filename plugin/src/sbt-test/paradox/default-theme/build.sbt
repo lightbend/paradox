@@ -4,5 +4,5 @@ lazy val docs = project
   .settings(
     name := "Paradox Default Theme Test",
     paradoxProperties += ("canonical.base_url" -> "https://example.com/doc/"),
-    paradoxExpectedNumberOfRoots := 2,
+    paradoxRoots := List("index.html", "sub/unindexed.html"),
   )

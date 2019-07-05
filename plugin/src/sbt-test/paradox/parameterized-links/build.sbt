@@ -15,7 +15,13 @@ paradoxProperties in Compile ++= Map(
   "javadoc.akka.base_url" -> s"http://doc.akka.io/japi/akka/$akkaVersion",
   "javadoc.akka.http.base_url" -> s"http://doc.akka.io/japi/akka-http/$akkaHttpVersion"
 )
-paradoxExpectedNumberOfRoots := 5
+paradoxRoots := List(
+  "extref.html",
+  "github.html",
+  "javadoc.html",
+  "javadoc-javalib.html",
+  "scaladoc.html",
+)
 
 apiURL := Some(url(s"https://example.org/api/${version.value}"))
 scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git"))
