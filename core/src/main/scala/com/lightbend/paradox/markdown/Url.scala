@@ -22,6 +22,9 @@ import java.net.{ URI, URISyntaxException }
  * Small wrapper around URI to help update individual components.
  */
 case class Url(base: URI) {
+  // prefer '/'
+  require(!base.getPath.endsWith("index.html"))
+
   def withEndingSlash = base.getPath match {
     case path if path.endsWith("/index.html") => this
     case path                                 => copy(path = path + "/")
@@ -30,7 +33,7 @@ case class Url(base: URI) {
   def withQuery(query: String): Url = copy(query = query)
   def withFragment(fragment: String): Url = copy(fragment = fragment)
   def copy(path: String = base.getPath, query: String = base.getQuery, fragment: String = base.getFragment) = {
-    val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path, query, fragment)
+    val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path.replaceAll("index.html", ""), query, fragment)
     Url(uri.normalize)
   }
   override def toString: String = base.toString
@@ -43,11 +46,11 @@ object Url {
   case class Error(reason: String) extends RuntimeException(reason)
 
   def apply(base: String): Url = {
-    parse(base, s"template resulted in an invalid URL [$base]")
+    parse(base.replaceAll("index.html$", ""), s"template resulted in an invalid URL [$base]")
   }
 
   def parse(base: String, msg: String): Url = {
-    try Url(new URI(base)) catch {
+    try Url(new URI(base.replaceAll("index.html", ""))) catch {
       case e: URISyntaxException =>
         throw Url.Error(msg)
     }
