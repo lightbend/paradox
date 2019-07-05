@@ -92,7 +92,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
       html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html">Codec$</a></p>""")
     markdown("@scaladoc[scala.io package](scala.io.index)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/index.html">scala.io package</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/">scala.io package</a></p>""")
   }
 
   it should "support Scala 2.11 links" in {
