@@ -298,16 +298,18 @@ case class JavadocDirective(page: Page, variables: Map[String, String])
 
 object GitHubResolver {
   val baseUrl = "github.base_url"
+  val githubDomain = "github.domain"
 }
 
 trait GitHubResolver {
 
   def variables: Map[String, String]
 
+  lazy val githubDomain = variables.get(GitHubResolver.githubDomain).getOrElse("github.com")
   val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
   val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
-  val TreeUrl = """(.*github.com/[^/]+/[^/]+/tree/[^/]+)""".r
-  val ProjectUrl = """(.*github.com/[^/]+/[^/]+).*""".r
+  lazy val TreeUrl = (s"(.*$githubDomain/[^/]+/[^/]+/tree/[^/]+)").r
+  lazy val ProjectUrl = (s"(.*$githubDomain/[^/]+/[^/]+).*").r
 
   val baseUrl = PropertyUrl(GitHubResolver.baseUrl, variables.get)
 
@@ -341,7 +343,7 @@ trait GitHubResolver {
 
   protected def resolveProject(project: String) = {
     Option(project) match {
-      case Some(path) => Url("https://github.com") / path
+      case Some(path) => Url(s"https://$githubDomain") / path
       case None       => projectUrl
     }
   }

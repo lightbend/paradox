@@ -32,6 +32,15 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="https://github.com/lightbend/paradox/issues/1">#1</a></p>""")
   }
 
+  it should "support github enterprise deployments" in {
+    implicit val context = writerContextWithProperties(
+      "github.base_url" -> "https://git.enterprise.net/lightbend/paradox/tree/v0.2.1",
+      "github.root.base_dir" -> ".",
+      "github.domain" -> "git.enterprise.net")
+    markdown("@github:[#1](#1)") shouldEqual
+      html("""<p><a href="https://git.enterprise.net/lightbend/paradox/issues/1">#1</a></p>""")
+  }
+
   it should "retain whitespace before or after" in {
     markdown("The @github:[#1](#1) issue") shouldEqual
       html("""<p>The <a href="https://github.com/lightbend/paradox/issues/1">#1</a> issue</p>""")
