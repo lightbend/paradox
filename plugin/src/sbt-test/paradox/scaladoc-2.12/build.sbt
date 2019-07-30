@@ -10,3 +10,4 @@ paradoxProperties in Compile ++= Map(
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/$akkaVersion",
   "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion"
 )
+paradoxRoots := List("scaladoc-2.12.html")

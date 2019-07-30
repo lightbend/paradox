@@ -4,5 +4,6 @@ lazy val root = (project in file("."))
 lazy val docs = (project in file("docs"))
   .enablePlugins(ParadoxPlugin)
   .settings(
-    paradoxTheme := None
+    paradoxTheme := None,
+    paradoxRoots := List("absolute.html"),
   )
