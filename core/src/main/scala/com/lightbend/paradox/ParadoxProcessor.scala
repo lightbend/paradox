@@ -51,7 +51,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     navIncludeHeaders:  Boolean,
     expectedRoots:      List[String],
     pageTemplate:       PageTemplate,
-    errorListener:      STErrorListener): Seq[(File, String)] = {
+    warn:               String => Unit): Seq[(File, String)] = {
     require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
 
     val roots = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties)
@@ -65,14 +65,14 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     def render(location: Option[Location[Page]], rendered: Seq[(File, String)] = Seq.empty): Seq[(File, String)] = location match {
       case Some(loc) =>
         val page = loc.tree.label
-        checkDuplicateAnchors(page)
+        checkDuplicateAnchors(page, warn)
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
         val writerContext = Writer.Context(loc, pages, reader, writer, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
         val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, navToc, pageToc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs
-        pageTemplate.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, pageTemplate.defaultName), pageContext, outputFile, errorListener)
+        pageTemplate.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, pageTemplate.defaultName), pageContext, outputFile)
         render(loc.next, rendered :+ (outputFile, page.path))
       case None => rendered
     }
@@ -89,14 +89,14 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     createMetadata(outputDirectory, properties) :: (roots flatMap { root => render(Some(root.location)) })
   }
 
-  private def checkDuplicateAnchors(page: Page): Unit = {
+  private def checkDuplicateAnchors(page: Page, warn: String => Unit): Unit = {
     val anchors = (page.headers.flatMap(_.toSet) :+ page.h1).map(_.path) ++ page.anchors.map(_.path)
     anchors
       .filter(_ != "#")
       .groupBy(identity)
       .collect { case (anchor, n) if n.size > 1 => anchor }
       .foreach { anchor =>
-        throw new IllegalStateException(s"Duplicate anchor [$anchor] on [${page.path}]")
+        warn(s"Duplicate anchor [$anchor] on [${page.path}]")
       }
   }
 

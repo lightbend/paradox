@@ -55,7 +55,7 @@ abstract class MarkdownTestkit {
         val outputFile = new File(page.path)
         val emptyPageContext = PartialPageContent(page.properties.get, html)
         val template = new PageTemplate(new File(templateDirectory.toString))
-        template.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, template.defaultName), emptyPageContext, outputFile, new PageTemplate.ErrorLogger(s => println("[error] " + s)))
+        template.write(page.properties(Page.Properties.DefaultLayoutMdIndicator, template.defaultName), emptyPageContext, outputFile)
         val fileContent = fileToContent(outputFile)
         outputFile.delete
         render(loc.next, rendered :+ (page.path, normalize(fileContent)))
