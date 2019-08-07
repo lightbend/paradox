@@ -34,7 +34,7 @@ class PageTemplate(directory: File, val defaultName: String = "page", startDelim
   /**
    * Write a templated page to the target file.
    */
-  def write(name: String, contents: PageTemplate.Contents, target: File, errorListener: STErrorListener): File = {
+  def write(name: String, contents: PageTemplate.Contents, target: File): File = {
     import scala.collection.JavaConverters._
 
     val template = Option(templates.getInstanceOf(name)) match {
@@ -45,7 +45,7 @@ class PageTemplate(directory: File, val defaultName: String = "page", startDelim
     }
     val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
     val noIndentWriter = new NoIndentWriter(osWriter)
-    template.write(noIndentWriter) // does not take into account the errorListener any more...
+    template.write(noIndentWriter)
     osWriter.close
     target
   }

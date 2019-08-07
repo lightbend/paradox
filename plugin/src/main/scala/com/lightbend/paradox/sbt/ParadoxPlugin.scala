@@ -169,7 +169,7 @@ object ParadoxPlugin extends AutoPlugin {
           paradoxNavigationIncludeHeaders.value,
           paradoxRoots.value,
           paradoxTemplate.value,
-          new PageTemplate.ErrorLogger(s => strms.log.error(s))
+          s => strms.log.warn(s)
         )
       }
     }).value,
