@@ -47,6 +47,28 @@ To add properties to your pages, there exists two ways for doing this:
 - To add properties to the entire document, common to all pages, you can add them in your build: `paradoxProperties += ("foo" -> "bar")`
 - To add properties at page level, use Properties front matter (next section)
 
+### Conditionals
+
+It is possible to conditionally include a section based on a boolean expression:
+
+```
+$if(page.next.html)$
+<div class="nav-next">
+<p><strong>Next:</strong> $page.next.html$</p>
+</div>
+$endif$
+```
+
+The `property_is` page property can be used to check whether a property has a
+certain value:
+
+```
+$if(page.property_is.("project.license").("Apache-2.0"))$
+<section class="copyright">
+<div>$page.properties.("project.name")$ is Open Source and available under the Apache 2 License.</div>
+$endif$
+```
+
 ### Properties front matter
 
 Paradox allows to specify some properties at page level using `---` delimiters at the top of the page.
