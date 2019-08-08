@@ -83,12 +83,14 @@ object ParadoxPlugin extends AutoPlugin {
     name in paradox := name.value,
     version in paradox := version.value,
     description in paradox := description.value,
+    licenses in paradox := licenses.value,
 
     paradoxProperties ++= Map(
       "project.name" -> (name in paradox).value,
       "project.version" -> (version in paradox).value,
       "project.version.short" -> shortVersion((version in paradox).value),
       "project.description" -> (description in paradox).value,
+      "project.license" -> (licenses in paradox).value.map(_._1).mkString(","),
       "snip.root.base_dir" -> baseDirectory.value.toString,
       SnipDirective.buildBaseDir -> (baseDirectory in ThisBuild).value.toString,
       SnipDirective.showGithubLinks -> "true",
