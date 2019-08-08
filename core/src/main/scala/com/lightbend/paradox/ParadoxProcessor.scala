@@ -140,7 +140,12 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val getToc = writer.writeToc(pageToc.headers(loc), context)
     lazy val getSource_url = githubLink(Some(loc)).getHtml
 
+    // So you can $page.properties.("project.name")$
     lazy val getProperties = context.properties.asJava
+    // So you can $if(page.property_is.("project.license").("Apache-2.0"))$
+    lazy val getProperty_is = context.properties.map {
+      case (key, value) => (key -> Map(value -> true).asJava)
+    }.asJava
 
     private def link(location: Option[Location[Page]]): PageTemplate.Link = PageLink(location, page, writer, context)
     private def githubLink(location: Option[Location[Page]]): PageTemplate.Link = GithubLink(location, page, writer, context)
