@@ -55,6 +55,7 @@ directives to insert property values depending on the context.
  - `project.version`: Project version
  - `project.version.short`: Project version with `-SNAPSHOT` replaced by `*`
  - `project.description`: Project description
+ - `project.license`: Project license
  - `scala.version`: Project Scala Version
  - `scala.binary.version`: Project Scala binary compatible version (e.g. "2.12")
  - `date`: Generation date in the form `MMM DD, YYYY`
