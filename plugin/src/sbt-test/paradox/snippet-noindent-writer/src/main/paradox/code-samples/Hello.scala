@@ -1,4 +1,3 @@
-// #hello_example
 object Hello extends App {
   def say(str: String): Unit = {
     println(str)
@@ -6,4 +5,3 @@ object Hello extends App {
   
   say("hello")
 }
-// #hello_example
