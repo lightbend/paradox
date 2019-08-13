@@ -54,14 +54,14 @@ Gradle
 #### Label filtering
 
 Any lines containing `#labels` within the included snippet are filtered out. This filtering can
-be switched off with `filterLabels`. It is not applied for snippets that include the whole file
-(without limiting the snippet by providing a label).
+be switched off with `filterLabels`. It is off by default for snippets that include the whole file
+(without limiting the snippet by providing a label) and can be set to `true` to overwrite that.
 
 ```markdown
 @@snip [example.log](example.log) { #example-log filterLabels=false }
 ```
 
-Or globally with the `include.filterLabels` property.
+The default value is set with the `include.filterLabels` property.
 
 ```
 paradoxProperties += "snip.filterLabels" -> "false"
