@@ -50,6 +50,33 @@ Maven
 Gradle
 :   @@snip [build.gradle](/docs/src/main/resources/build.gradle) { #setup_example }
 
+
+#### Label filtering
+
+Any lines containing `#labels` within the included snippet are filtered out. This filtering can
+be switched off with `filterLabels`. It is off by default for snippets that include the whole file
+(without limiting the snippet by providing a label) and can be set to `true` to overwrite that.
+
+```markdown
+@@snip [example.log](example.log) { #example-log filterLabels=false }
+```
+
+The default value is set with the `include.filterLabels` property.
+
+```
+paradoxProperties += "snip.filterLabels" -> "false"
+```
+
+This label filtering applies to @ref:[Markdown includes](includes.md) and @ref:[Fiddle includes](fiddles.md), as well.
+
+```
+paradoxProperties += "include.filterLabels" -> "false",
+paradoxProperties += "fiddle.filterLabels" -> "false"
+```
+
+
+#### Syntax highlighting
+
 By default, Paradox uses Prettify to highlight code and will try to detect the
 language of the snippet using the file extension. In cases where a snippet
 should not be highlighted set `type=text` in the directive's attribute section:

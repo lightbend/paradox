@@ -240,9 +240,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         }
         val includeFile = SourceDirective.resolveFile("include", source, file, properties)
         val frontin = Frontin(includeFile)
-        val filterLabels = include.attributes.booleanValue(
-          "filterLabels",
-          properties.get("include.filterLabels").exists(_ == "true"))
+        val filterLabels = Directive.filterLabels("include", include.attributes, labels, properties)
         val (text, snippetLang) = Snippet(includeFile, labels, filterLabels)
         // I guess we could support multiple markup languages in future...
         if (snippetLang != "md" && snippetLang != "markdown") {
