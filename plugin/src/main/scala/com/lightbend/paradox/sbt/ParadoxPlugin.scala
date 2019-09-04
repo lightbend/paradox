@@ -16,8 +16,9 @@
 
 package com.lightbend.paradox.sbt
 
-import sbt._
+import sbt.{ Def, _ }
 import sbt.Keys._
+import sbt.Defaults.generate
 import com.lightbend.paradox.ParadoxProcessor
 import com.lightbend.paradox.markdown.{ GitHubResolver, SnipDirective, Writer }
 import com.lightbend.paradox.template.PageTemplate
@@ -114,9 +115,11 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.value,
 
+    sourceGenerators in paradox := Nil,
+
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
-    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
+    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value ++ generate(sourceGenerators in paradox).value,
     mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html" / configTarget(configuration.value),
 
