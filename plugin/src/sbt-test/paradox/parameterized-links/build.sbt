@@ -11,6 +11,7 @@ paradoxProperties in Compile ++= Map(
   "extref.akka-docs.base_url" -> s"http://doc.akka.io/docs/akka/$akkaVersion/%s.html",
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/$akkaVersion",
   "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion",
+  "javadoc.link_style" -> "frames",
   "javadoc.base_url" -> s"https://api.example.com/java",
   "javadoc.akka.base_url" -> s"http://doc.akka.io/japi/akka/$akkaVersion",
   "javadoc.akka.http.base_url" -> s"http://doc.akka.io/japi/akka-http/$akkaHttpVersion"

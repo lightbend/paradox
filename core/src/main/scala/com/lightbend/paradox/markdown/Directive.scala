@@ -294,13 +294,26 @@ case class ScaladocDirective(page: Page, variables: Map[String, String])
 
 }
 
+object JavadocDirective {
+  // If Java 9+ we default to linking directly to the file, since it doesn't support frames, otherwise we default
+  // to linking to the frames version with the class in the query parameter. Also, the version of everything up to
+  // and including 8 starts with 1., so that's an easy way to tell if it's 9+ or not.
+  val framesLinkStyle = sys.props.get("java.specification.version").exists(_.startsWith("1."))
+}
+
 case class JavadocDirective(page: Page, variables: Map[String, String])
   extends ApiDocDirective("javadoc", page, variables) {
+
+  val framesLinkStyle = variables.get("javadoc.link_style").fold(JavadocDirective.framesLinkStyle)(_ == "frames")
 
   def resolveApiLink(baseUrl: Url, link: String): Url = {
     val url = Url(link).base
     val path = url.getPath.replace('.', '/') + ".html"
-    baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+    if (framesLinkStyle) {
+      baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+    } else {
+      (baseUrl / path) withFragment url.getFragment
+    }
   }
 
 }
