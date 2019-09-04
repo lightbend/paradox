@@ -16,12 +16,11 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.Location
-
 class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
     "javadoc.base_url" -> "http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/",
+    "javadoc.link_style" -> "frames",
     "javadoc.java.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
     "javadoc.akka.base_url" -> "http://doc.akka.io/japi/akka/2.4.10",
     "javadoc.akka.http.base_url" -> "http://doc.akka.io/japi/akka-http/10.0.0/index.html",
@@ -91,6 +90,12 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
         |  [Publisher]: org.reactivestreams.Publisher
       """.stripMargin) shouldEqual
       html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html">Publisher</a> spec</p>""")
+  }
+
+  it should "support creating non frame style links" in {
+    val ctx = context.andThen(c => c.copy(properties = c.properties.updated("javadoc.link_style", "direct")))
+    markdown("@javadoc[Publisher](org.reactivestreams.Publisher)")(ctx) shouldEqual
+      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html">Publisher</a></p>""")
   }
 
 }
