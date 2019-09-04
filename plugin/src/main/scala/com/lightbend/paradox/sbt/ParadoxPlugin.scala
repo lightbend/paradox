@@ -116,11 +116,15 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.value,
 
     sourceGenerators in paradox := Nil,
+    sourceManaged in paradox := target.value / "paradox_managed",
+    managedSourceDirectories in paradox := Seq((sourceManaged in paradox).value),
+    managedSources in paradox := generate(sourceGenerators in paradox).value,
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
-    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value ++ generate(sourceGenerators in paradox).value,
-    mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
+
+    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
+    mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value ++ Defaults.relativeMappings(managedSources in paradox, managedSourceDirectories in paradox).value,
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html" / configTarget(configuration.value),
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
