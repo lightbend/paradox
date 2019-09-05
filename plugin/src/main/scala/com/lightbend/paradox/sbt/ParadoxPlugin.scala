@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.sbt
 
-import sbt.{ Def, _ }
+import sbt._
 import sbt.Keys._
 import sbt.Defaults.generate
 import com.lightbend.paradox.ParadoxProcessor
