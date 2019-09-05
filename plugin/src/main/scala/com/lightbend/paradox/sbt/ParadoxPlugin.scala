@@ -113,18 +113,19 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxOverlayDirectories := Nil,
 
     sourceDirectory in paradox := sourceDirectory.value / "paradox",
-    sourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.value,
-
-    sourceGenerators in paradox := Nil,
+    unmanagedSourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.value,
     sourceManaged in paradox := target.value / "paradox_managed",
     managedSourceDirectories in paradox := Seq((sourceManaged in paradox).value),
-    managedSources in paradox := generate(sourceGenerators in paradox).value,
+    sourceDirectories in paradox := Classpaths.concatSettings(unmanagedSourceDirectories in paradox, managedSourceDirectories in paradox).value,
 
     includeFilter in paradoxMarkdownToHtml := "*.md",
     excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
 
-    sources in paradoxMarkdownToHtml := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
-    mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value ++ Defaults.relativeMappings(managedSources in paradox, managedSourceDirectories in paradox).value,
+    unmanagedSources in paradoxMarkdownToHtml := Defaults.collectFiles(unmanagedSourceDirectories in paradox, includeFilter in paradoxMarkdownToHtml, excludeFilter in paradoxMarkdownToHtml).value,
+    sourceGenerators in paradoxMarkdownToHtml := Nil,
+    managedSources in paradoxMarkdownToHtml := generate(sourceGenerators in paradoxMarkdownToHtml).value,
+    sources in paradoxMarkdownToHtml := Classpaths.concatDistinct(unmanagedSources in paradoxMarkdownToHtml, managedSources in paradoxMarkdownToHtml).value,
+    mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html" / configTarget(configuration.value),
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
