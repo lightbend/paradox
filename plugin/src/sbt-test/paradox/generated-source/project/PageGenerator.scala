@@ -3,7 +3,7 @@ import sbt.Keys._
 import sbt._
 
 object PageGenerator {
-  def generatePages: Def.Initialize[Task[Seq[java.io.File]]] = Def.task {
+  def generatePages: Def.Initialize[Task[Seq[File]]] = Def.task {
     val firstPage = (sourceManaged in (Compile, paradox)).value / "generated-page.md"
     IO.write(firstPage, "Generated Page 1")
 
