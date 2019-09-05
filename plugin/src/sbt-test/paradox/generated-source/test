@@ -1,0 +1,5 @@
+> paradox
+
+$ must-mirror target/paradox/site/main/index.html  expected/index.html
+$ must-mirror target/paradox/site/main/generated-page.html  expected/generated-page.html
+$ must-mirror target/paradox/site/main/generated/page.html  expected/generated/page.html
