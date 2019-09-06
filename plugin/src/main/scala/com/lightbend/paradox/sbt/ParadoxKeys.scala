@@ -45,4 +45,8 @@ trait ParadoxKeys {
   val paradoxVersion = settingKey[String]("Paradox plugin version.")
   val paradoxGroups = settingKey[Map[String, Seq[String]]]("Paradox groups.")
   val paradoxBrowse = taskKey[Unit]("Open the docs in the default browser")
+  val paradoxValidateInternalLinks = taskKey[Unit]("Validate internal, non ref paradox links.")
+  val paradoxValidateLinks = taskKey[Unit]("Validate all non ref paradox links.")
+  val paradoxValidationIgnorePaths = settingKey[List[String]]("Paths to ignore when validating links.")
+  val paradoxValidationSiteBaseUrl = settingKey[Option[URL]]("URL of the site to use when validating absolute path links.")
 }

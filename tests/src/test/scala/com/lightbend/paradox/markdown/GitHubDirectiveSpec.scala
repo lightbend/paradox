@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -76,9 +78,9 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for unconfigured GitHub URL" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@github[#1](#1)")(writerContext)
-    } should have message "Failed to resolve [#1] referenced from [test.html] because property [github.base_url] is not defined"
+    } should have message "Failed to resolve [#1] because property [github.base_url] is not defined"
   }
 
   it should "throw exceptions for invalid GitHub URLs" in {
@@ -86,21 +88,21 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       "github.base_url" -> "https://github.com/project",
       "github.root.base_dir" -> ".")
 
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@github[#1](#1)")(invalidContext)
-    } should have message "Failed to resolve [#1] referenced from [test.html] because [github.base_url] is not a project URL"
+    } should have message "Failed to resolve [#1] because [github.base_url] is not a project URL"
 
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@github[README.md](/README.md)")(invalidContext)
-    } should have message "Failed to resolve [/README.md] referenced from [test.html] because [github.base_url] is not a project or versioned tree URL"
+    } should have message "Failed to resolve [/README.md] because [github.base_url] is not a project or versioned tree URL"
   }
 
   it should "throw link exceptions for invalid GitHub URL" in {
     val brokenContext = writerContextWithProperties("github.base_url" -> "https://github.com/broken/project|")
 
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@github[#1](#1)")(brokenContext)
-    } should have message "Failed to resolve [#1] referenced from [test.html] because property [github.base_url] contains an invalid URL [https://github.com/broken/project|]"
+    } should have message "Failed to resolve [#1] because property [github.base_url] contains an invalid URL [https://github.com/broken/project|]"
   }
 
   it should "support referenced links" in {
@@ -125,9 +127,9 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for invalid GitHub tree path" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@github[path](/|)")
-    } should have message "Failed to resolve [/|] referenced from [test.html] because path is invalid"
+    } should have message "Failed to resolve [/|] because path is invalid"
   }
 
   it should "support line labels" in {
@@ -145,24 +147,24 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for non-existing GitHub tree path with label" in {
-    val ex = the[ExternalLinkDirective.LinkException] thrownBy {
+    val ex = the[ParadoxException] thrownBy {
       markdown("""
         |@github[oops](does/not/exist.scala) { #broken }
         |""")
     }
 
-    ex.getMessage.startsWith("Failed to resolve [does/not/exist.scala] referenced from [test.html] to a file") shouldBe true
+    ex.getMessage.startsWith("Failed to resolve [does/not/exist.scala] to a file") shouldBe true
   }
 
   it should "throw exceptions for non-existing GitHub tree path with invalid label" in {
-    val ex = the[ExternalLinkDirective.LinkException] thrownBy {
+    val ex = the[ParadoxException] thrownBy {
       markdown("""
         |@github[neither](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #does-not-exist }
         |""")
     }
 
     ex.getMessage.replace('\\', '/') shouldBe
-      "Failed to resolve [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala] referenced from [test.html]: Label [does-not-exist] not found in [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]"
+      "Failed to resolve [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]: Label [does-not-exist] not found in [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]"
   }
 
 }

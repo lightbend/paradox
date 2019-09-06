@@ -16,6 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.{ ErrorContext, ParadoxLogger }
 import com.lightbend.paradox.tree.Tree.Location
 import org.parboiled.common.StringUtils
 import org.pegdown.FastEncoder.encode
@@ -100,13 +101,17 @@ object Writer {
       paths:          Map[String, Page],
       reader:         Reader,
       writer:         Writer,
-      pageMappings:   String => String         = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+      error:          ErrorContext,
+      logger:         ParadoxLogger,
+      pageMappings:   String => Option[String] = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
       sourceSuffix:   String                   = DefaultSourceSuffix,
       targetSuffix:   String                   = DefaultTargetSuffix,
       groups:         Map[String, Seq[String]] = Map.empty,
       properties:     Map[String, String]      = Map.empty,
       includeIndexes: List[Int]                = Nil
-  )
+  ) {
+    def page = location.tree.label
+  }
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)
@@ -126,14 +131,14 @@ object Writer {
   )
 
   def defaultDirectives: Seq[Context => Directive] = Seq(
-    context => RefDirective(context.location.tree.label, context.paths, context.pageMappings, context.properties),
-    context => LinkDirective(context.location.tree.label, context.paths.keySet.contains, context.pageMappings, context.properties),
-    context => ExtRefDirective(context.location.tree.label, context.properties),
-    context => ScaladocDirective(context.location.tree.label, context.properties),
-    context => JavadocDirective(context.location.tree.label, context.properties),
-    context => GitHubDirective(context.location.tree.label, context.properties),
-    context => SnipDirective(context.location.tree.label, context.properties),
-    context => FiddleDirective(context.location.tree.label, context.properties),
+    RefDirective.apply,
+    LinkDirective.apply,
+    ExtRefDirective.apply,
+    ScaladocDirective.apply,
+    JavadocDirective.apply,
+    GitHubDirective.apply,
+    SnipDirective.apply,
+    FiddleDirective.apply,
     context => TocDirective(context.location, context.includeIndexes),
     context => VarDirective(context.properties),
     context => VarsDirective(context.properties),
@@ -142,8 +147,8 @@ object Writer {
     context => WrapDirective("div"),
     context => InlineWrapDirective("span"),
     context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
-    context => DependencyDirective(context.properties),
-    context => IncludeDirective(context.location.tree.label, context.properties)
+    DependencyDirective.apply,
+    IncludeDirective.apply
   )
 
   class DefaultLinkRenderer(context: Context) extends LinkRenderer {

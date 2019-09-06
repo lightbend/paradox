@@ -178,9 +178,9 @@ object Path {
   /**
    * Replace the file extension in a path.
    */
-  def replaceExtension(from: String, to: String)(link: String): String = {
+  def replaceExtension(from: String, to: String)(link: String): Option[String] = {
     val uri = new URI(link)
-    replaceSuffix(from, to)(uri.getPath) + Option(uri.getFragment).fold("")("#".+)
+    Some(replaceSuffix(from, to)(uri.getPath) + Option(uri.getFragment).fold("")("#".+))
   }
 
   /**
@@ -239,14 +239,13 @@ object Path {
   /**
    * Provide the final target file given a particular source file/link
    */
-  def generateTargetFile(localPath: String, globalPageMappings: Map[String, String]): String => String = {
+  def generateTargetFile(localPath: String, globalPageMappings: Map[String, String]): String => Option[String] = {
     val mappings = relativeMapping(localPath, globalPageMappings)
 
     { link =>
       val uri = new URI(localPath).resolve(new URI(link))
-      mappings.get(uri.getPath) match {
-        case Some(p) => p + Option(uri.getFragment).fold("")("#".+)
-        case None    => sys.error(s"No reference link corresponding to $link")
+      mappings.get(uri.getPath).map { p =>
+        p + Option(uri.getFragment).fold("")("#".+)
       }
     }
   }

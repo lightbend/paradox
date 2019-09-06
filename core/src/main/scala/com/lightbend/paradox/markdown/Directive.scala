@@ -20,6 +20,7 @@ import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, FileNotFoundException }
 import java.util.Optional
 
+import com.lightbend.paradox.markdown.Snippet.SnippetException
 import org.pegdown.ast._
 import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
@@ -92,13 +93,16 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
  * Directives with defined "source" semantics.
  */
 trait SourceDirective { this: Directive =>
-  def page: Page
-  def variables: Map[String, String]
+  def ctx: Writer.Context
+  final def page: Page = ctx.location.tree.label
+  final def variables: Map[String, String] = ctx.properties
 
   protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     def ref(key: String) =
-      referenceMap.get(key.filterNot(_.isWhitespace).toLowerCase).map(_.getUrl).getOrElse(
-        throw new RefDirective.LinkException(s"Undefined reference key [$key] in [${page.path}]"))
+      referenceMap.get(key.filterNot(_.isWhitespace).toLowerCase).map(_.getUrl).getOrElse {
+        ctx.error(s"Undefined reference key [$key]", node)
+        ""
+      }
     Writer.substituteVarsInString(node.source match {
       case x: DirectiveNode.Source.Direct => x.value
       case x: DirectiveNode.Source.Ref    => ref(x.value)
@@ -145,34 +149,34 @@ object SourceDirective {
  * Refs are for links to internal pages. The file extension is replaced when rendering.
  * Links are validated to ensure they point to a known page.
  */
-case class RefDirective(page: Page, paths: Map[String, Page], convertPath: String => String, variables: Map[String, String])
+case class RefDirective(ctx: Writer.Context)
   extends InlineDirective("ref", "ref:") with SourceDirective {
 
-  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
-    new ExpLinkNode("", check(convertPath(resolvedSource(node, page))), node.contentsNode).accept(visitor)
-
-  private def check(path: String): String = {
-    paths.get(Path.resolve(page.path, path)) match {
-      case Some(target) =>
-        if (path.contains("#")) {
-          val anchor = path.substring(path.lastIndexOf('#'))
-          val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path) ++ target.anchors.map(_.path)
-          if (!headers.contains(anchor))
-            throw new RefDirective.LinkException(s"Unknown anchor [$path] referenced from [${page.path}]")
-        }
-        path
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    val source = resolvedSource(node, page)
+    ctx.pageMappings(source).flatMap(path => check(node, path)) match {
+      case Some(path) =>
+        new ExpLinkNode("", path, node.contentsNode).accept(visitor)
       case None =>
-        throw new RefDirective.LinkException(s"Unknown page [$path] referenced from [${page.path}]")
+        ctx.error(s"Unknown page [$source]", node)
+    }
+  }
+
+  private def check(node: DirectiveNode, path: String): Option[String] = {
+    ctx.paths.get(Path.resolve(page.path, path)).map { target =>
+      if (path.contains("#")) {
+        val anchor = path.substring(path.lastIndexOf('#'))
+        val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path) ++ target.anchors.map(_.path)
+        if (!headers.contains(anchor)) {
+          ctx.error(s"Unknown anchor [$path]", node)
+        }
+      }
+      path
     }
   }
 }
 
 object RefDirective {
-
-  /**
-   * Exception thrown for unknown pages in reference links.
-   */
-  class LinkException(message: String) extends RuntimeException(message)
 
   def isRefDirective(node: DirectiveNode): Boolean = {
     node.format == DirectiveNode.Format.Inline && (node.name == "ref" || node.name == "ref:")
@@ -180,7 +184,7 @@ object RefDirective {
 
 }
 
-case class LinkDirective(page: Page, pathExists: String => Boolean, convertPath: String => String, variables: Map[String, String])
+case class LinkDirective(ctx: Writer.Context)
   extends InlineDirective("link", "link:") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
@@ -200,8 +204,6 @@ object LinkDirective {
 abstract class ExternalLinkDirective(names: String*)
   extends InlineDirective(names: _*) with SourceDirective {
 
-  import ExternalLinkDirective._
-
   def resolveLink(node: DirectiveNode, location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
@@ -213,23 +215,20 @@ abstract class ExternalLinkDirective(names: String*)
       val resolvedLink = resolveLink(node: DirectiveNode, link).base.normalize.toString
       if (resolvedLink startsWith (".../")) page.base + resolvedLink.drop(4) else resolvedLink
     } catch {
-      case Url.Error(reason) =>
-        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] because $reason")
+      case e @ Url.Error(reason) =>
+        ctx.logger.debug(e)
+        ctx.error(s"Failed to resolve [$link] because $reason", node)
+        ""
       case e: FileNotFoundException =>
-        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}] to a file: ${e.getMessage}")
+        ctx.logger.debug(e)
+        ctx.error(s"Failed to resolve [$link] to a file: ${e.getMessage}", node)
+        ""
       case e: Snippet.SnippetException =>
-        throw new LinkException(s"Failed to resolve [$link] referenced from [${page.path}]: ${e.getMessage}")
+        ctx.logger.debug(e)
+        ctx.error(s"Failed to resolve [$link]: ${e.getMessage}", node)
+        ""
     }
   }
-}
-
-object ExternalLinkDirective {
-
-  /**
-   * Exception thrown for unknown or invalid links.
-   */
-  class LinkException(reason: String) extends RuntimeException(reason)
-
 }
 
 /**
@@ -237,7 +236,7 @@ object ExternalLinkDirective {
  *
  * Link to external pages using URL templates.
  */
-case class ExtRefDirective(page: Page, variables: Map[String, String])
+case class ExtRefDirective(ctx: Writer.Context)
   extends ExternalLinkDirective("extref", "extref:") {
 
   def resolveLink(node: DirectiveNode, link: String): Url = {
@@ -261,7 +260,7 @@ case class ExtRefDirective(page: Page, variables: Map[String, String])
  *
  * Then `@scaladoc[Http](akka.http.scaladsl.Http)` will match the latter.
  */
-abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, String])
+abstract class ApiDocDirective(name: String)
   extends ExternalLinkDirective(name, name + ":") {
 
   def resolveApiLink(base: Url, link: String): Url
@@ -283,8 +282,8 @@ abstract class ApiDocDirective(name: String, page: Page, variables: Map[String, 
 
 }
 
-case class ScaladocDirective(page: Page, variables: Map[String, String])
-  extends ApiDocDirective("scaladoc", page, variables) {
+case class ScaladocDirective(ctx: Writer.Context)
+  extends ApiDocDirective("scaladoc") {
 
   def resolveApiLink(baseUrl: Url, link: String): Url = {
     val url = Url(link).base
@@ -301,8 +300,8 @@ object JavadocDirective {
   val framesLinkStyle = sys.props.get("java.specification.version").exists(_.startsWith("1."))
 }
 
-case class JavadocDirective(page: Page, variables: Map[String, String])
-  extends ApiDocDirective("javadoc", page, variables) {
+case class JavadocDirective(ctx: Writer.Context)
+  extends ApiDocDirective("javadoc") {
 
   val framesLinkStyle = variables.get("javadoc.link_style").fold(JavadocDirective.framesLinkStyle)(_ == "frames")
 
@@ -390,17 +389,16 @@ trait GitHubResolver {
  * Supports most of the references documented in:
  * https://help.github.com/articles/autolinked-references-and-urls/
  */
-case class GitHubDirective(page: Page, variables: Map[String, String])
+case class GitHubDirective(ctx: Writer.Context)
   extends ExternalLinkDirective("github", "github:") with GitHubResolver {
 
-  def resolveLink(node: DirectiveNode, link: String): Url = {
+  def resolveLink(node: DirectiveNode, link: String): Url = try {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
       case path                           => resolvePath(page, path, Option(node.attributes.identifier()))
     }
   }
-
 }
 
 /**
@@ -408,7 +406,7 @@ case class GitHubDirective(page: Page, variables: Map[String, String])
  *
  * Extracts snippets from source files into verbatim blocks.
  */
-case class SnipDirective(page: Page, variables: Map[String, String])
+case class SnipDirective(ctx: Writer.Context)
   extends LeafBlockDirective("snip") with SourceDirective with GitHubResolver {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
@@ -426,7 +424,11 @@ case class SnipDirective(page: Page, variables: Map[String, String])
       new VerbatimGroupNode(text, lang, group, node.attributes.classes, sourceUrl).accept(visitor)
     } catch {
       case e: FileNotFoundException =>
-        throw new SnipDirective.LinkException(s"Unknown snippet [${e.getMessage}] referenced from [${page.path}]")
+        ctx.logger.debug(e)
+        ctx.error("Could not find file for snippet", node)
+      case e: SnippetException =>
+        ctx.logger.debug(e)
+        ctx.error(e.getMessage, node)
     }
   }
 
@@ -437,11 +439,6 @@ object SnipDirective {
   val showGithubLinks = "snip.github_link"
   val buildBaseDir = "snip.build.base_dir"
 
-  /**
-   * Exception thrown for unknown snip links.
-   */
-  class LinkException(message: String) extends RuntimeException(message)
-
 }
 
 /**
@@ -449,7 +446,7 @@ object SnipDirective {
  *
  * Extracts fiddles from source files into fiddle blocks.
  */
-case class FiddleDirective(page: Page, variables: Map[String, String])
+case class FiddleDirective(ctx: Writer.Context)
   extends LeafBlockDirective("fiddle") with SourceDirective {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
@@ -485,7 +482,11 @@ case class FiddleDirective(page: Page, variables: Map[String, String])
       )
     } catch {
       case e: FileNotFoundException =>
-        throw new FiddleDirective.LinkException(s"Unknown fiddle [${e.getMessage}] referenced from [${page.path}]")
+        ctx.logger.debug(e)
+        ctx.error("Could not find file for fiddle", node)
+      case e: SnippetException =>
+        ctx.logger.debug(e)
+        ctx.error(e.getMessage, node)
     }
   }
 }
@@ -627,7 +628,8 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
 /**
  * Dependency directive.
  */
-case class DependencyDirective(variables: Map[String, String]) extends LeafBlockDirective("dependency") {
+case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
+  val variables = ctx.properties
   val ScalaVersion = variables.get("scala.version")
   val ScalaBinaryVersion = variables.get("scala.binary.version")
 
@@ -655,7 +657,10 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
       }
 
     def requiredCoordinate(name: String): String =
-      coordinate(name).getOrElse(throw DependencyDirective.UndefinedVariable(name))
+      coordinate(name).getOrElse {
+        ctx.error(s"'$name' is not defined", node)
+        ""
+      }
 
     def sbt(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
       val scopeString = scope.map {
@@ -754,18 +759,9 @@ case class DependencyDirective(variables: Map[String, String]) extends LeafBlock
   }
 }
 
-object DependencyDirective {
-  case class UndefinedVariable(name: String) extends RuntimeException(s"'$name' is not defined")
-}
-
-case class IncludeDirective(page: Page, variables: Map[String, String]) extends LeafBlockDirective("include") with SourceDirective {
+case class IncludeDirective(ctx: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
 
   override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     throw new IllegalStateException("Include directive should have been handled in markdown preprocessing before render, but wasn't.")
   }
-}
-
-object IncludeDirective {
-  case class IncludeSourceException(source: DirectiveNode.Source) extends RuntimeException(s"Only explicit links are supported by the include directive, reference links are not: " + source)
-  case class IncludeFormatException(format: String) extends RuntimeException(s"Don't know how to include '*.$format' content.")
 }

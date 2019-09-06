@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class LinkDirectiveSpec extends MarkdownBaseSpec {
 
   private implicit val context = writerContextWithProperties("page.variable" -> "https://page")
@@ -75,9 +77,9 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw link exceptions for invalid reference keys" in {
-    the[RefDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@ref[Page][123]")
-    } should have message "Undefined reference key [123] in [test.html]"
+    } should have message "Undefined reference key [123]"
   }
 
   it should "support variables in link paths" in {

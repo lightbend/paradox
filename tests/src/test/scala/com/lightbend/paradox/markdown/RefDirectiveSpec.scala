@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class RefDirectiveSpec extends MarkdownBaseSpec {
 
   private implicit val context = writerContextWithProperties("page.variable" -> "page")
@@ -65,9 +67,9 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw link exceptions for invalid anchor references" in {
-    the[RefDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       testMarkdown("@ref:[Page](page.md#unknownheader)")
-    } should have message "Unknown anchor [page.html#unknownheader] referenced from [test.html]"
+    } should have message "Unknown anchor [page.html#unknownheader]"
   }
 
   it should "retain whitespace before or after" in {
@@ -81,9 +83,9 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw link exceptions for invalid references" in {
-    the[RefDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@ref[Page](page.md)")
-    } should have message "Unknown page [page.html] referenced from [test.html]"
+    } should have message "Unknown page [page.md]"
   }
 
   it should "support referenced links with implicit key" in {
@@ -111,9 +113,9 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw link exceptions for invalid reference keys" in {
-    the[RefDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@ref[Page][123]")
-    } should have message "Undefined reference key [123] in [test.html]"
+    } should have message "Undefined reference key [123]"
   }
 
   it should "support variables in link paths" in {

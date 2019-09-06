@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -71,15 +73,15 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for unconfigured default base URL" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@scaladoc[Model](org.example.Model)")(writerContext)
-    } should have message "Failed to resolve [org.example.Model] referenced from [test.html] because property [scaladoc.base_url] is not defined"
+    } should have message "Failed to resolve [org.example.Model] because property [scaladoc.base_url] is not defined"
   }
 
   it should "throw link exceptions for invalid output URLs" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@scaladoc[URL](broken.URL)")
-    } should have message "Failed to resolve [broken.URL] referenced from [test.html] because property [scaladoc.broken.base_url] contains an invalid URL [https://c|]"
+    } should have message "Failed to resolve [broken.URL] because property [scaladoc.broken.base_url] contains an invalid URL [https://c|]"
   }
 
   it should "support Scala 2.12 links" in {
