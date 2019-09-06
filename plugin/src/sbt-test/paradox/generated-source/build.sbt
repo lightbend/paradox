@@ -3,7 +3,6 @@ lazy val docs = project
   .enablePlugins(ParadoxPlugin)
   .settings(
     name := "Paradox Source Generation Test",
-    paradoxProperties += ("canonical.base_url" -> "https://example.com/doc/"),
-    paradoxRoots := List("index.html"),
+    paradoxTheme := None,
     sourceGenerators in (Compile, paradoxMarkdownToHtml) += PageGenerator.generatePages.taskValue
   )
