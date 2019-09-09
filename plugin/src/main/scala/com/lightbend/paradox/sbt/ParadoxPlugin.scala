@@ -264,8 +264,15 @@ object ParadoxPlugin extends AutoPlugin {
 
   def openInBrowser(rootDocFile: File, log: Logger): Unit = {
     import java.awt.Desktop
-    if (Desktop.isDesktopSupported) Desktop.getDesktop.open(rootDocFile)
-    else log.info(s"Couldn't open default browser, but docs are at $rootDocFile")
+    def logCouldntOpen() = log.info(s"Couldn't open default browser, but docs are at $rootDocFile")
+    if (Desktop.isDesktopSupported && Desktop.getDesktop.isSupported(Desktop.Action.BROWSE)) Desktop.getDesktop.browse(rootDocFile.toURI)
+    // This should work for all XDG compliant desktop environments
+    else if (sys.env.contains("XDG_CURRENT_DESKTOP")) {
+      import sys.process._
+      if (Seq("xdg-open", rootDocFile.getAbsolutePath).! != 0) {
+        logCouldntOpen()
+      }
+    } else logCouldntOpen()
   }
 
 }
