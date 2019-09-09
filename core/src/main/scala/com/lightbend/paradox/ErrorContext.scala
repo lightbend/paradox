@@ -102,7 +102,7 @@ class ErrorCollector extends ErrorContext {
               log.error(s"$error at ${page.getAbsolutePath}")
 
           }
-    }
+      }
   }
 }
 

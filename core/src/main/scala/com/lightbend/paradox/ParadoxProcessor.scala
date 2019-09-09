@@ -28,6 +28,7 @@ import org.pegdown.ast._
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.io.Source
+import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
 /**
@@ -140,18 +141,15 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
 
     linkCapturer.allLinks.foreach {
       case CapturedLinkWithSources(CapturedAbsoluteLink(uri), sources) if validateAbsolute && !ignore(uri.toString) =>
-        validateExternalLink(uri, sources, errorCollector, logger)
+        validateExternalLink(uri, reportErrorOnSources(errorCollector, sources), logger)
       case CapturedLinkWithSources(CapturedRelativeLink(path, fragment), sources) if !ignore(path) =>
         fullSite.get(path) match {
           case Some(file) =>
             fragment.foreach { f =>
-              validateFragment(path, Source.fromFile(file, "UTF-8").mkString, f, sources, errorCollector)
+              validateFragment(path, Source.fromFile(file, "UTF-8").mkString, f, reportErrorOnSources(errorCollector, sources))
             }
           case None =>
-            sources.foreach {
-              case (file, node) => errorCollector(s"Could not find path [$path] in site", file, node)
-            }
-
+            reportErrorOnSources(errorCollector, sources)(s"Could not find path [$path] in site")
         }
       case _ =>
       // Ignore
@@ -161,31 +159,39 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(uri: URI, sources: List[(File, Node)], errorContext: ErrorContext, logger: ParadoxLogger) = {
+  private def validateExternalLink(uri: URI, reportError: String => Unit, logger: ParadoxLogger) = {
     logger.info(s"Validating external link: $uri")
     val conn = uri.toURL.openConnection().asInstanceOf[HttpURLConnection]
     conn.addRequestProperty("User-Agent", "Paradox Link Validator <https://github.com/lightbend/paradox>")
     try {
-      if (conn.getResponseCode != 200) {
-        sources.foreach {
-          case (file, node) => errorContext(s"Error validating external link, status code was ${conn.getResponseCode}", file, node)
-        }
+      if (conn.getResponseCode / 100 == 3) {
+        reportError(s"Received a ${conn.getResponseCode} redirect on external link, location redirected to is [${conn.getHeaderField("Location")}]")
+      } else if (conn.getResponseCode != 200) {
+        reportError(s"Error validating external link, status code was ${conn.getResponseCode}")
       } else {
         if (uri.getFragment != null) {
           val content = Source.fromInputStream(conn.getInputStream).mkString
-          validateFragment(uri.toString, content, uri.getFragment, sources, errorContext)
+          validateFragment(uri.toString, content, uri.getFragment, reportError)
         }
       }
+    } catch {
+      case NonFatal(e) =>
+        reportError(s"Exception occurred when validating external link: $e")
+        logger.debug(e)
     } finally {
       conn.disconnect()
     }
   }
 
-  private def validateFragment(path: String, content: String, fragment: String, sources: List[(File, Node)], errorContext: ErrorContext) = {
+  private def reportErrorOnSources(errorContext: ErrorContext, sources: List[(File, Node)])(msg: String): Unit = {
+    sources.foreach {
+      case (file, node) => errorContext(msg, file, node)
+    }
+  }
+
+  private def validateFragment(path: String, content: String, fragment: String, reportError: String => Unit) = {
     if (!content.contains("id=\"" + fragment + "\"")) {
-      sources.foreach {
-        case (file, node) => errorContext(s"Could not find anchor id [$fragment] in page [$path]", file, node)
-      }
+      reportError(s"Could not find anchor id [$fragment] in page [$path]")
     }
   }
 
