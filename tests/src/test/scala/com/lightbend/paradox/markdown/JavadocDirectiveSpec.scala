@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -66,21 +68,21 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for unconfigured default base URL" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@javadoc[Model](org.example.Model)")(writerContext)
-    } should have message "Failed to resolve [org.example.Model] referenced from [test.html] because property [javadoc.base_url] is not defined"
+    } should have message "Failed to resolve [org.example.Model] because property [javadoc.base_url] is not defined"
   }
 
   it should "throw link exceptions for invalid output URLs" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@javadoc[URL](broken.URL)")
-    } should have message "Failed to resolve [broken.URL] referenced from [test.html] because property [javadoc.broken.base_url] contains an invalid URL [https://c|]"
+    } should have message "Failed to resolve [broken.URL] because property [javadoc.broken.base_url] contains an invalid URL [https://c|]"
   }
 
   it should "throw link exceptions for invalid link URLs" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@javadoc[Oops](a.b|c)")
-    } should have message "Failed to resolve [a.b|c] referenced from [test.html] because template resulted in an invalid URL [a.b|c]"
+    } should have message "Failed to resolve [a.b|c] because template resulted in an invalid URL [a.b|c]"
   }
 
   it should "support referenced links" in {

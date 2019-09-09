@@ -54,19 +54,19 @@ class PathSpec extends FlatSpec with Matchers {
   }
 
   "Path.replaceExtension" should "replace .md with .html" in {
-    Path.replaceExtension(".md", ".html")("foo.md") shouldEqual "foo.html"
+    Path.replaceExtension(".md", ".html")("foo.md") shouldEqual Some("foo.html")
   }
 
   it should "support full paths" in {
-    Path.replaceExtension(".md", ".html")("a/b/foo.md") shouldEqual "a/b/foo.html"
+    Path.replaceExtension(".md", ".html")("a/b/foo.md") shouldEqual Some("a/b/foo.html")
   }
 
   it should "support relative paths" in {
-    Path.replaceExtension(".md", ".html")("../../a/b/foo.md") shouldEqual "../../a/b/foo.html"
+    Path.replaceExtension(".md", ".html")("../../a/b/foo.md") shouldEqual Some("../../a/b/foo.html")
   }
 
   it should "handle anchored paths" in {
-    Path.replaceExtension(".md", ".html")("../../a/b/foo.md#anchor") shouldEqual "../../a/b/foo.html#anchor"
+    Path.replaceExtension(".md", ".html")("../../a/b/foo.md#anchor") shouldEqual Some("../../a/b/foo.html#anchor")
   }
 
   "Path.leaf" should "return the name of the file at the end of the path" in {
@@ -103,17 +103,15 @@ class PathSpec extends FlatSpec with Matchers {
     val (mappings, sourcePath) = provideRelativeMapping
     val newMapping = Path.generateTargetFile(sourcePath, mappings)
 
-    newMapping("../../index.md") shouldEqual "../../index.html"
-    the[RuntimeException] thrownBy {
-      newMapping("A.md")
-    } should have message "No reference link corresponding to A.md"
-    newMapping("../a2/A2.md#someanchor") shouldEqual "../a2/A2.html#someanchor"
+    newMapping("../../index.md") shouldEqual Some("../../index.html")
+    newMapping("A.md") shouldEqual None
+    newMapping("../a2/A2.md#someanchor") shouldEqual Some("../a2/A2.html#someanchor")
   }
 
   it should "return the source file for fragment links" in {
     val (mappings, sourcePath) = provideRelativeMapping
     val newMapping = Path.generateTargetFile(sourcePath, mappings)
 
-    newMapping("#frag") shouldEqual "source.html#frag"
+    newMapping("#frag") shouldEqual Some("source.html#frag")
   }
 }

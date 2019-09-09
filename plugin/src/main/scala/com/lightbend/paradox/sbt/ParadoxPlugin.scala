@@ -19,7 +19,7 @@ package com.lightbend.paradox.sbt
 import sbt._
 import sbt.Keys._
 import sbt.Defaults.generate
-import com.lightbend.paradox.ParadoxProcessor
+import com.lightbend.paradox.{ ParadoxLogger, ParadoxProcessor }
 import com.lightbend.paradox.markdown.{ GitHubResolver, SnipDirective, Writer }
 import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
@@ -58,7 +58,9 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxDefaultTemplateName := "page",
     paradoxLeadingBreadcrumbs := Nil,
     paradoxGroups := Map.empty,
-    libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme)
+    libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme),
+    paradoxValidationIgnorePaths := List("http://localhost.*".r),
+    paradoxValidationSiteBasePath := None
   )
 
   def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++
@@ -162,7 +164,7 @@ object ParadoxPlugin extends AutoPlugin {
     }).value,
     mappings in paradoxTemplate := Defaults.relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate).value,
 
-    paradoxMarkdownToHtml := (Def.taskDyn {
+    paradoxMarkdownToHtml := Def.taskDyn {
       val strms = streams.value
       IO.delete((target in paradoxMarkdownToHtml).value)
       Def.task {
@@ -179,10 +181,15 @@ object ParadoxPlugin extends AutoPlugin {
           paradoxNavigationIncludeHeaders.value,
           paradoxRoots.value,
           paradoxTemplate.value,
-          s => strms.log.warn(s)
-        )
+          new SbtParadoxLogger(strms.log)
+        ) match {
+            case Left(error) =>
+              strms.log.error(error)
+              throw new ParadoxException
+            case Right(files) => files
+          }
       }
-    }).value,
+    }.value,
 
     includeFilter in paradox := AllPassFilter,
     excludeFilter in paradox := {
@@ -204,8 +211,45 @@ object ParadoxPlugin extends AutoPlugin {
 
     paradoxBrowse := openInBrowser(paradox.value / "index.html", streams.value.log),
 
-    paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value)
+    paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value),
+
+    mappings in paradoxValidateInternalLinks := {
+      val paradoxMappings = (mappings in paradox).value
+      paradoxValidationSiteBasePath.value match {
+        case None => paradoxMappings
+        case Some(basePath) =>
+          val basePathPrefix = if (basePath.endsWith("/")) basePath else basePath + "/"
+          paradoxMappings.map {
+            case (file, path) => file -> (basePathPrefix + path)
+          }
+      }
+    },
+    paradoxValidateInternalLinks := validateLinksTask(false).value,
+    paradoxValidateLinks := validateLinksTask(true).value
   )
+
+  private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
+    val strms = streams.value
+    val basePathPrefix = paradoxValidationSiteBasePath.value.fold("") {
+      case withSlash if withSlash.endsWith("/") => withSlash
+      case withoutSlash                         => withoutSlash + "/"
+    }
+    val errors = paradoxProcessor.value.validate(
+      (mappings in paradoxMarkdownToHtml).value.map {
+        case (file, path) => file -> (basePathPrefix + path)
+      },
+      (mappings in paradoxValidateInternalLinks).value,
+      paradoxGroups.value,
+      paradoxProperties.value,
+      paradoxValidationIgnorePaths.value,
+      validateAbsolute,
+      new SbtParadoxLogger(strms.log)
+    )
+    if (errors > 0) {
+      strms.log.error(s"Paradox validation found $errors errors")
+      throw new ParadoxException
+    }
+  }
 
   private def configTarget(config: Configuration) =
     if (config.name == Compile.name) "main"
@@ -275,4 +319,12 @@ object ParadoxPlugin extends AutoPlugin {
     } else logCouldntOpen()
   }
 
+  class ParadoxException extends RuntimeException with FeedbackProvidedException
+
+  class SbtParadoxLogger(logger: Logger) extends ParadoxLogger {
+    override def debug(msg: => String): Unit = logger.debug(msg)
+    override def info(msg: => String): Unit = logger.info(msg)
+    override def warn(msg: => String): Unit = logger.warn(msg)
+    override def error(msg: => String): Unit = logger.error(msg)
+  }
 }

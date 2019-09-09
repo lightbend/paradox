@@ -1,0 +1,48 @@
+# Note, scripted strips quotes that are next to spaces, so that's why all string literals are in parenthesis, even
+# when unnecessary.
+
+# Initially should fail because there's a link to a page which doesn't exist
+-> paradoxValidateInternalLinks
+
+# Add the path, but without the fragment, so validation still fails
+> set (Compile / paradox / mappings) += (file("withoutfragment.html") -> ("test.html"))
+-> paradoxValidateInternalLinks
+
+# Now add the path with the fragment, validation should succeed
+> reload
+> set (Compile / paradox / mappings) += (file("withfragment.html") -> ("test.html"))
+> paradoxValidateInternalLinks
+
+# Now set a base path of /, validation should fail due to /../outside.html not existing
+> set paradoxValidationSiteBasePath := Some("/")
+-> paradoxValidateInternalLinks
+
+# Now set the base path to /docs, validation should still fail due to /outside.html not existing
+> set paradoxValidationSiteBasePath := Some("/docs")
+-> paradoxValidateInternalLinks
+
+# Now add an /outside.html, but without a fragment, validation should fail
+> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withoutfragment.html") -> ("/outside.html"))
+-> paradoxValidateInternalLinks
+
+# Now add an /outside.html, with a fragment, validation should succeed
+> reload
+> set paradoxValidationSiteBasePath := Some("/docs")
+> set (Compile / paradox / mappings) += (file("withfragment.html") -> ("test.html"))
+> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/outside.html"))
+> paradoxValidateInternalLinks
+
+# Also try setting the internal link with an absolute path
+> reload
+> set paradoxValidationSiteBasePath := Some("/docs")
+> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/docs/test.html"))
+> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/outside.html"))
+> paradoxValidateInternalLinks
+
+# Finally, try validating external links, first check that it fails
+-> paradoxValidateLinks
+# Now ignore the link that fails
+> set paradoxValidationIgnorePaths += ("https://www.lightbend.com.*").r
+# The following test will fail if GitHub is down. That's fairly unlikely if we're running a CI build, since CI
+# depends on GitHub being up to run in the first place, and also being up to report the status of the build, etc.
+> paradoxValidateLinks

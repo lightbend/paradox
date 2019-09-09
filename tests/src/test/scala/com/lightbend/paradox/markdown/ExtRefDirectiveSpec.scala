@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ParadoxException
+
 class ExtRefDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
@@ -65,27 +67,27 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw link exceptions for unknown references" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@extref[NPM](npm:left-pad)")
-    } should have message "Failed to resolve [npm:left-pad] referenced from [test.html] because property [extref.npm.base_url] is not defined"
+    } should have message "Failed to resolve [npm:left-pad] because property [extref.npm.base_url] is not defined"
   }
 
   it should "throw link exceptions for URLs without scheme" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@extref[Link with](no.scheme)")
-    } should have message "Failed to resolve [no.scheme] referenced from [test.html] because URL has no scheme"
+    } should have message "Failed to resolve [no.scheme] because URL has no scheme"
   }
 
   it should "throw link exceptions for invalid input URLs" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@extref[URL](issue:|)")
-    } should have message "Failed to resolve [issue:|] referenced from [test.html] because template resulted in an invalid URL [https://github.com/lightbend/paradox/issues/|]"
+    } should have message "Failed to resolve [issue:|] because template resulted in an invalid URL [https://github.com/lightbend/paradox/issues/|]"
   }
 
   it should "throw link exceptions for invalid output URLs" in {
-    the[ExternalLinkDirective.LinkException] thrownBy {
+    the[ParadoxException] thrownBy {
       markdown("@extref[URL](broken:link)")
-    } should have message "Failed to resolve [broken:link] referenced from [test.html] because template resulted in an invalid URL [https://c|link]"
+    } should have message "Failed to resolve [broken:link] because template resulted in an invalid URL [https://c|link]"
   }
 
   it should "support referenced links" in {

@@ -22,7 +22,7 @@ import java.io.{ File, PrintWriter }
 import com.lightbend.paradox.template.PageTemplate
 import java.nio.file._
 
-import com.lightbend.paradox.ParadoxProcessor
+import com.lightbend.paradox.{ NullLogger, ParadoxProcessor, ThrowingErrorContext }
 
 abstract class MarkdownTestkit {
 
@@ -91,6 +91,8 @@ abstract class MarkdownTestkit {
       Page.allPages(List(location.root.tree)),
       markdownReader,
       markdownWriter,
+      new ThrowingErrorContext,
+      NullLogger,
       groups = Map("Language" -> Seq("Scala", "Java")),
       properties = globalProperties
     )
@@ -101,7 +103,7 @@ abstract class MarkdownTestkit {
       case (path, text) =>
         val frontin = Frontin(prepare(text))
         val file = new File(path)
-        (new File(path), path, paradoxProcessor.parseAndProcessMarkdown(file, frontin.body, globalProperties ++ frontin.header), frontin.header)
+        (new File(path), path, paradoxProcessor.parseAndProcessMarkdown(file, frontin.body, globalProperties ++ frontin.header, new ThrowingErrorContext), frontin.header)
     }
     Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
   }

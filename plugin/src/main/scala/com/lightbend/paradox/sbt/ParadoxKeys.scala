@@ -21,6 +21,8 @@ import com.lightbend.paradox.ParadoxProcessor
 import com.lightbend.paradox.markdown.{ Directive, Writer }
 import com.lightbend.paradox.template.PageTemplate
 
+import scala.util.matching.Regex
+
 trait ParadoxKeys {
   val paradox = taskKey[File]("Build the paradox site.")
   val paradoxMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
@@ -45,4 +47,8 @@ trait ParadoxKeys {
   val paradoxVersion = settingKey[String]("Paradox plugin version.")
   val paradoxGroups = settingKey[Map[String, Seq[String]]]("Paradox groups.")
   val paradoxBrowse = taskKey[Unit]("Open the docs in the default browser")
+  val paradoxValidateInternalLinks = taskKey[Unit]("Validate internal, non ref paradox links.")
+  val paradoxValidateLinks = taskKey[Unit]("Validate all non ref paradox links.")
+  val paradoxValidationIgnorePaths = settingKey[List[Regex]]("List of regular expressions to apply to paths to determine if they should be ignored.")
+  val paradoxValidationSiteBasePath = settingKey[Option[String]]("The base path that the documentation is deployed to, allows validating links on the docs site that are outside of the documentation root tree")
 }
