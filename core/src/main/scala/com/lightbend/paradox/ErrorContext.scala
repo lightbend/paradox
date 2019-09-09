@@ -69,36 +69,39 @@ class ErrorCollector extends ErrorContext {
       case ParadoxError(msg, None, _) => log.error(msg)
       case _                          =>
     }
-    val pageErrors = totalErrors.collect {
-      case ParadoxError(msg, Some(page), idx) => (msg, page, idx)
-    }
-    pageErrors.groupBy(_._2).toSeq.sortBy(_._1.getAbsolutePath).foreach {
-      case (page, errors) =>
-        // Load contents of the page
-        val lines = scala.io.Source.fromFile(page)("UTF-8").getLines().toList
-        errors.sortBy(_._3.getOrElse(0)).foreach {
-          case (error, _, Some(idx)) =>
-            val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
-              state match {
-                case (_, _, _, Some(_)) => state
-                case (total, l, c, None) =>
-                  if (total + line.length < idx) {
-                    (total + line.length + 1, l + 1, c, None)
-                  } else {
-                    (0, l + 1, idx - total + 1, Some(line))
-                  }
+    // Now handle page specific errors
+    totalErrors
+      .filter(_.page.isDefined)
+      .groupBy(_.page.get)
+      .toSeq
+      .sortBy(_._1.getAbsolutePath)
+      .foreach {
+        case (page, errors) =>
+          // Load contents of the page
+          val lines = scala.io.Source.fromFile(page)("UTF-8").getLines().toList
+          errors.sortBy(_.index.getOrElse(0)).foreach {
+            case ParadoxError(error, _, Some(idx)) =>
+              val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
+                state match {
+                  case (_, _, _, Some(_)) => state
+                  case (total, l, c, None) =>
+                    if (total + line.length < idx) {
+                      (total + line.length + 1, l + 1, c, None)
+                    } else {
+                      (0, l + 1, idx - total + 1, Some(line))
+                    }
+                }
               }
-            }
 
-            log.error(s"$error at ${page.getAbsolutePath}:$lineNo")
-            line.foreach { l =>
-              log.error(l)
-              log.error(l.take(colNo - 1).map { case '\t' => '\t'; case _ => ' ' } + "^")
-            }
-          case (error, _, _) =>
-            log.error(s"$error at ${page.getAbsolutePath}")
+              log.error(s"$error at ${page.getAbsolutePath}:$lineNo")
+              line.foreach { l =>
+                log.error(l)
+                log.error(l.take(colNo - 1).map { case '\t' => '\t'; case _ => ' ' } + "^")
+              }
+            case ParadoxError(error, _, _) =>
+              log.error(s"$error at ${page.getAbsolutePath}")
 
-        }
+          }
     }
   }
 }

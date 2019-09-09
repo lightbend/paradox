@@ -392,13 +392,14 @@ trait GitHubResolver {
 case class GitHubDirective(ctx: Writer.Context)
   extends ExternalLinkDirective("github", "github:") with GitHubResolver {
 
-  def resolveLink(node: DirectiveNode, link: String): Url = try {
+  def resolveLink(node: DirectiveNode, link: String): Url = {
     link match {
       case IssuesLink(project, issue)     => resolveProject(project) / "issues" / issue
       case CommitLink(_, project, commit) => resolveProject(project) / "commit" / commit
       case path                           => resolvePath(page, path, Option(node.attributes.identifier()))
     }
   }
+
 }
 
 /**
