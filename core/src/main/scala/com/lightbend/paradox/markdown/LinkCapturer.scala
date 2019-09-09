@@ -89,27 +89,30 @@ class LinkCapturer {
     }
   }
 
-  def allLinks(siteBaseUrl: Option[URI]): List[CapturedLinkWithSources] = {
+  def allLinks: List[CapturedLinkWithSources] = {
     links.collect {
 
       case (page, node, uri) if isPageInSite(page, uri) =>
         val path = node match {
+          // Javadoc links may use the frames style, and may reference index.html, if so, need to drop it.
           case d: DirectiveNode if d.name == "javadoc" && uri.getQuery != null =>
-            uri.getPath + uri.getQuery
+            if (uri.getPath.endsWith("/index.html")) {
+              uri.getPath.stripSuffix("index.html") + uri.getQuery
+            } else {
+              uri.getPath + uri.getQuery
+            }
           case _ => uri.getPath
         }
-        (CapturedRelativeLink(URI.create(page.path).resolve(path).getPath, Option(uri.getFragment)), page, node)
+        // Append index.html to any path that ends with /
+        val pathWithIndex = if (path.endsWith("/")) uri.getPath + "index.html"
+        else path
+
+        val relativePath = URI.create(page.path).resolve(pathWithIndex).getPath
+
+        (CapturedRelativeLink(relativePath, Option(uri.getFragment)), page, node)
 
       case (page, node, uri) if uri.getAuthority != null =>
-        val withScheme = if (uri.getScheme == null) {
-          val scheme = siteBaseUrl.flatMap(u => Option(u.getScheme)).getOrElse("https")
-          new URI(scheme, uri.getAuthority, uri.getPath, uri.getQuery, uri.getFragment)
-        } else uri
-        (CapturedAbsoluteLink(withScheme), page, node)
-
-      case (page, node, uri) if uri.getPath != null && uri.getPath.startsWith("/") && siteBaseUrl.isDefined =>
-        val bu = siteBaseUrl.get
-        (CapturedAbsoluteLink(new URI(bu.getScheme, bu.getAuthority, uri.getPath, uri.getQuery, uri.getFragment)), page, node)
+        (CapturedAbsoluteLink(uri), page, node)
 
     }.groupBy(_._1).map {
       case (link, links) =>
@@ -119,9 +122,16 @@ class LinkCapturer {
     }.toList
   }
 
-  def isPageInSite(page: Page, uri: URI): Boolean = {
-    if (uri.getAuthority == null && uri.getPath != null && !uri.getPath.startsWith("/")) {
-      !URI.create(page.path).resolve(uri).getPath.startsWith("../")
+  private def isPageInSite(page: Page, uri: URI): Boolean = {
+    if (uri.getAuthority == null && uri.getPath != null) {
+      // If the page has a host relative absolute path, as is the case when paradoxValidationSiteBasePath is configured,
+      // then we can always resolve it (potentially to an invalid path that will get reported as an error later), so
+      // return true regardless of what the URIs path is.
+      if (page.path.startsWith("/")) {
+        true
+      } else if (!uri.getPath.startsWith("/")) {
+        !URI.create(page.path).resolve(uri).getPath.startsWith("../")
+      } else false
     } else false
   }
 

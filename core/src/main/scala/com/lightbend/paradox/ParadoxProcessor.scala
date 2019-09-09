@@ -28,6 +28,7 @@ import org.pegdown.ast._
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.io.Source
+import scala.util.matching.Regex
 
 /**
  * Markdown site processor.
@@ -104,9 +105,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     allSiteFiles:     Seq[(File, String)],
     groups:           Map[String, Seq[String]],
     properties:       Map[String, String],
-    ignorePaths:      List[String],
+    ignorePaths:      List[Regex],
     validateAbsolute: Boolean,
-    siteBaseUrl:      Option[URI],
     logger:           ParadoxLogger): Int = {
 
     val errorCollector = new ErrorCollector
@@ -136,11 +136,11 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       validate(Some(root.location))
     }
 
-    def ignore(path: String) = ignorePaths.exists(path.startsWith)
+    def ignore(path: String) = ignorePaths.exists(_.pattern.matcher(path).matches())
 
-    linkCapturer.allLinks(siteBaseUrl).foreach {
+    linkCapturer.allLinks.foreach {
       case CapturedLinkWithSources(CapturedAbsoluteLink(uri), sources) if validateAbsolute && !ignore(uri.toString) =>
-        validateExternalLink(uri, sources, errorCollector)
+        validateExternalLink(uri, sources, errorCollector, logger)
       case CapturedLinkWithSources(CapturedRelativeLink(path, fragment), sources) if !ignore(path) =>
         fullSite.get(path) match {
           case Some(file) =>
@@ -161,8 +161,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(uri: URI, sources: List[(File, Node)], errorContext: ErrorContext) = {
-    println(s"Validating external link: $uri")
+  private def validateExternalLink(uri: URI, sources: List[(File, Node)], errorContext: ErrorContext, logger: ParadoxLogger) = {
+    logger.info(s"Validating external link: $uri")
     val conn = uri.toURL.openConnection().asInstanceOf[HttpURLConnection]
     conn.addRequestProperty("User-Agent", "Paradox Link Validator <https://github.com/lightbend/paradox>")
     try {

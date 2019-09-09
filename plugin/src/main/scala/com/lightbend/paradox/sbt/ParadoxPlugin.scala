@@ -59,8 +59,8 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxLeadingBreadcrumbs := Nil,
     paradoxGroups := Map.empty,
     libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme),
-    paradoxValidationIgnorePaths := List("http://localhost"),
-    paradoxValidationSiteBaseUrl := None
+    paradoxValidationIgnorePaths := List("http://localhost.*".r),
+    paradoxValidationSiteBasePath := None
   )
 
   def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++
@@ -213,20 +213,36 @@ object ParadoxPlugin extends AutoPlugin {
 
     paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value),
 
+    mappings in paradoxValidateInternalLinks := {
+      val paradoxMappings = (mappings in paradox).value
+      paradoxValidationSiteBasePath.value match {
+        case None => paradoxMappings
+        case Some(basePath) =>
+          val basePathPrefix = if (basePath.endsWith("/")) basePath else basePath + "/"
+          paradoxMappings.map {
+            case (file, path) => file -> (basePathPrefix + path)
+          }
+      }
+    },
     paradoxValidateInternalLinks := validateLinksTask(false).value,
     paradoxValidateLinks := validateLinksTask(true).value
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
     val strms = streams.value
+    val basePathPrefix = paradoxValidationSiteBasePath.value.fold("") {
+      case withSlash if withSlash.endsWith("/") => withSlash
+      case withoutSlash                         => withoutSlash + "/"
+    }
     val errors = paradoxProcessor.value.validate(
-      (mappings in paradoxMarkdownToHtml).value,
-      (mappings in paradox).value,
+      (mappings in paradoxMarkdownToHtml).value.map {
+        case (file, path) => file -> (basePathPrefix + path)
+      },
+      (mappings in paradoxValidateInternalLinks).value,
       paradoxGroups.value,
       paradoxProperties.value,
       paradoxValidationIgnorePaths.value,
       validateAbsolute,
-      paradoxValidationSiteBaseUrl.value.map(_.toURI),
       new SbtParadoxLogger(strms.log)
     )
     if (errors > 0) {

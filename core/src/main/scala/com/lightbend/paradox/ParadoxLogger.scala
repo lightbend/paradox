@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import java.io.{PrintWriter, StringWriter}
+import java.io.{ PrintWriter, StringWriter }
 
 import scala.collection.immutable.StringOps
 

@@ -15,6 +15,7 @@ It has several features that help to structure and build documentation sites eas
  * Various @ref[customization](customization/index.md) options allow tailoring Paradox' output to your needs.  For example, 
    @ref[Themes](customization/theming.md) allow customizing the appearance of Paradox-generated documentation. Custom 
    directives and themes can be packaged and published as separate sbt plugin @ref[extensions](customization/extensions.md).
+ * @ref[Validation](validation.md) allows further validation of documentation not available at compile time.
 
 ### Project info
 
