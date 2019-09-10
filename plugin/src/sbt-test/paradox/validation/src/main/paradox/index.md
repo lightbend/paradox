@@ -1,4 +1,5 @@
 [docs site path link](test.html#frag)
+[docs site path link name frag](test.html#namefrag)
 
 [outside docs path link](../outside.html#frag)
 

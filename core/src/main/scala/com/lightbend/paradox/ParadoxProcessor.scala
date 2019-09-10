@@ -190,7 +190,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
   }
 
   private def validateFragment(path: String, content: String, fragment: String, reportError: String => Unit) = {
-    if (!content.contains("id=\"" + fragment + "\"")) {
+    if (!(content.contains("id=\"" + fragment + "\"") || content.contains("name=\"" + fragment + "\""))) {
       reportError(s"Could not find anchor id [$fragment] in page [$path]")
     }
   }
