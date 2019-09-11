@@ -5,12 +5,11 @@
 -> paradoxValidateInternalLinks
 
 # Add the path, but without the fragment, so validation still fails
-> set (Compile / paradox / mappings) += (file("withoutfragment.html") -> ("test.html"))
+> set additionalInternalMappings := List(file("withoutfragment.html") -> ("test.html"))
 -> paradoxValidateInternalLinks
 
 # Now add the path with the fragment, validation should succeed
-> reload
-> set (Compile / paradox / mappings) += (file("withfragment.html") -> ("test.html"))
+> set additionalInternalMappings := List(file("withfragment.html") -> ("test.html"))
 > paradoxValidateInternalLinks
 
 # Now set a base path of /, validation should fail due to /../outside.html not existing
@@ -22,27 +21,32 @@
 -> paradoxValidateInternalLinks
 
 # Now add an /outside.html, but without a fragment, validation should fail
-> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withoutfragment.html") -> ("/outside.html"))
+> set additionalMappings := List(file("withoutfragment.html") -> ("/outside.html"))
 -> paradoxValidateInternalLinks
 
 # Now add an /outside.html, with a fragment, validation should succeed
-> reload
-> set paradoxValidationSiteBasePath := Some("/docs")
-> set (Compile / paradox / mappings) += (file("withfragment.html") -> ("test.html"))
-> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/outside.html"))
+> set additionalMappings := List(file("withfragment.html") -> ("/outside.html"))
 > paradoxValidateInternalLinks
 
 # Also try setting the internal link with an absolute path
-> reload
-> set paradoxValidationSiteBasePath := Some("/docs")
-> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/docs/test.html"))
-> set (Compile / paradoxValidateInternalLinks / mappings) += (file("withfragment.html") -> ("/outside.html"))
+> set additionalInternalMappings := Nil
+> set additionalMappings += (file("withfragment.html") -> ("/docs/test.html"))
 > paradoxValidateInternalLinks
 
 # Finally, try validating external links, first check that it fails
 -> paradoxValidateLinks
-# Now ignore the link that fails
-> set paradoxValidationIgnorePaths += ("https://www.lightbend.com.*").r
-# The following test will fail if GitHub is down. That's fairly unlikely if we're running a CI build, since CI
-# depends on GitHub being up to run in the first place, and also being up to report the status of the build, etc.
+
+# Now make sure it fails when just the 404ing link is ignored
+> set paradoxValidationIgnorePaths := List(".*thisrepodoesnotexist.*".r)
+-> paradoxValidateLinks
+
+# Now make sure it fails when just the 401ing link is ignored
+> set paradoxValidationIgnorePaths := List("https://lightbend.com".r)
+-> paradoxValidateLinks
+
+# Now ignore both failing links, and it should pass. Note though that passing depends on GitHub being up,
+# since there is a valid link that points to GitHub. If we're running in CI, GitHub being up is an alright
+# assumption to make, given that GitHub triggered the build, and will have to be up to receive the status
+# report
+> set paradoxValidationIgnorePaths := List("https://lightbend.com".r, (".*thisrepodoesnotexist.*").r)
 > paradoxValidateLinks
