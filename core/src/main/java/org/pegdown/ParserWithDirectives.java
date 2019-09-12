@@ -18,6 +18,7 @@ package org.pegdown;
 
 import org.parboiled.Context;
 import org.parboiled.Rule;
+import org.parboiled.annotations.Cached;
 import org.parboiled.support.StringBuilderVar;
 import org.parboiled.support.Var;
 import org.pegdown.ast.*;
@@ -251,7 +252,11 @@ public class ParserWithDirectives extends Parser {
     }
 
     public Rule DirectDirectiveSource() {
-        return Sequence(Sp(), Enclosed('(', ANY, ')'), push(new DirectiveNode.Source.Direct(popAsString())));
+        return Sequence(
+                Sp(),
+                Enclosed('(', DirectiveLitChar(), ')'),
+                push(new DirectiveNode.Source.Direct(popAsString().replaceAll("\\\\(.)", "$1")))
+        );
     }
 
     public Rule RefDirectiveSource() {

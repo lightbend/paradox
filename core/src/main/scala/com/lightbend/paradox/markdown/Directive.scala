@@ -263,19 +263,20 @@ case class ExtRefDirective(ctx: Writer.Context)
 abstract class ApiDocDirective(name: String)
   extends ExternalLinkDirective(name, name + ":") {
 
-  def resolveApiLink(base: Url, link: String): Url
+  def resolveApiLink(base: Url, link: String, matchedPackage: String): Url
 
   val defaultBaseUrl = PropertyUrl(name + ".base_url", variables.get)
   val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
   val baseUrls = variables.collect {
-    case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+    case (property @ ApiDocProperty(pkg), url) => (pkg, (pkg, PropertyUrl(property, variables.get)))
   }
 
   def resolveLink(node: DirectiveNode, link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
-    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
-    val resolvedLink = resolveApiLink(baseUrl, link)
+    val (pkg, propertyUrl) = packages.reverse.collectFirst(baseUrls).getOrElse(("", defaultBaseUrl))
+    val baseUrl = propertyUrl.resolve()
+    val resolvedLink = resolveApiLink(baseUrl, link, pkg)
     val resolvedPath = resolvedLink.base.getPath
     if (resolvedPath startsWith ".../") resolvedLink.copy(path = page.base + resolvedPath.drop(4)) else resolvedLink
   }
@@ -285,36 +286,85 @@ abstract class ApiDocDirective(name: String)
 case class ScaladocDirective(ctx: Writer.Context)
   extends ApiDocDirective("scaladoc") {
 
-  def resolveApiLink(baseUrl: Url, link: String): Url = {
+  def resolveApiLink(baseUrl: Url, link: String, matchedPackage: String): Url = {
     val url = Url(link).base
     val path = url.getPath.replace('.', '/') + ".html"
     (baseUrl / path) withFragment (url.getFragment)
   }
-
 }
 
 object JavadocDirective {
-  // If Java 9+ we default to linking directly to the file, since it doesn't support frames, otherwise we default
-  // to linking to the frames version with the class in the query parameter. Also, the version of everything up to
-  // and including 8 starts with 1., so that's an easy way to tell if it's 9+ or not.
-  val framesLinkStyle = sys.props.get("java.specification.version").exists(_.startsWith("1."))
+  val jdkMajorVersion = sys.props.get("java.specification.version") match {
+    case Some(version) =>
+      parseJdkVersion(version, 8, msg => println(s"${classOf[JavadocDirective]} - $msg from system property java.specification.version, defaulting to 1.8"))
+    case None =>
+      println(s"${classOf[JavadocDirective]} - No java.specification.version, defaulting to 1.8")
+      8
+  }
+
+  def parseJdkVersion(str: String, detectedVersion: Int, reportError: String => Unit): Int = str match {
+    case "detect"                           => detectedVersion
+    case pre9 if pre9.matches("1.\\d")      => pre9.drop(2).toInt
+    case version if version.matches("\\d+") => version.toInt
+    case unparseable =>
+      reportError(s"Unparsable java version, should be 1.0-1.8, or 9+: [$unparseable]")
+      detectedVersion
+  }
 }
 
 case class JavadocDirective(ctx: Writer.Context)
   extends ApiDocDirective("javadoc") {
 
-  val framesLinkStyle = variables.get("javadoc.link_style").fold(JavadocDirective.framesLinkStyle)(_ == "frames")
+  val framesLinkStyle = variables.get("javadoc.link_style").fold(JavadocDirective.jdkMajorVersion < 11)(_ == "frames")
 
-  def resolveApiLink(baseUrl: Url, link: String): Url = {
+  val defaultJavadocVersion = variables.get("javadoc.javadoc_version").map(v => JavadocDirective.parseJdkVersion(v, JavadocDirective.jdkMajorVersion, ctx.error(_)))
+  val JavadocVersionProperty = raw"""javadoc\.(.*)\.javadoc_version""".r
+  val javadocVersions = variables.collect {
+    case (JavadocVersionProperty(pkg), version) => (pkg, JavadocDirective.parseJdkVersion(version, JavadocDirective.jdkMajorVersion, ctx.error(_)))
+  }
+
+  def resolveApiLink(baseUrl: Url, link: String, matchedPackage: String): Url = {
     val url = Url(link).base
     val path = url.getPath.replace('.', '/') + ".html"
+    val javadocVersion = javadocVersions.get(matchedPackage).orElse(defaultJavadocVersion)
+    val f = url.getFragment
+    val fragment = if (f != null) {
+      javadocVersion match {
+        case Some(jdk10plus) if jdk10plus >= 10 =>
+          if (f.contains("-")) convertToJdk10Fragment(f)
+          else f
+        case Some(_) =>
+          if (f.contains("(")) {
+            f.replaceAll("[(),]", "-")
+          } else f
+        case None => url.getFragment
+      }
+    } else null
+
     if (framesLinkStyle) {
-      baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+      baseUrl.withEndingSlash.withQuery(path).withFragment(fragment)
     } else {
-      (baseUrl / path) withFragment url.getFragment
+      (baseUrl / path) withFragment fragment
     }
   }
 
+  private def convertToJdk10Fragment(fragment: String) = {
+    // Need to replace the first '-' with '(', the last '-' with ')', and every '-' in between with ','
+    val sb = new StringBuilder(fragment.length)
+    var replacement = '('
+    for (i <- 0 until fragment.length) {
+      val c = fragment.charAt(i)
+      if (c == '-') {
+        if (i == fragment.length - 1) {
+          sb.append(')')
+        } else {
+          sb.append(replacement)
+          replacement = ','
+        }
+      } else sb.append(c)
+    }
+    sb.toString()
+  }
 }
 
 object GitHubResolver {

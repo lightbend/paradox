@@ -104,8 +104,20 @@ the apidocs, and linking to the non frames version. This can be controlled using
 property, setting it to `frames` for frames style linking, where rendered links link to the frames
 version of the javadocs, passing the class in the query parameter, and `direct` for linking direct
 to the classes page. The link style defaults to `direct` if the `java.specification.version` system
-property indicates Java 9+, since the JDK 9 Javadoc tool does not generate framed api docs. Otherwise,
-for Java 1.8 and earlier, it defaults to `frames`.
+property indicates Java 11+, since by in JDK 11, the Javadoc tool does not generate framed api docs. 
+Otherwise, for Java 10 and earlier, it defaults to `frames`.
+
+From JDK 10 onwards, anchors for Javadoc method references do not have `(`, `)` and `,` characters
+replaced with `-`. To facilitate in migrating, Paradox supports automatically converting between
+escaped and unescaped anchor styles. Simply set the javadoc version for the package, using 
+`javadoc.<package-prefix>.javadoc_version`. For example, given this setting:
+
+ - `javadoc.java.javadoc_version=11`
+ 
+This will cause an anchor like `java.util.Map#put-K-V-` to be rendered as `java/util/Map.html#put(K,V)`.
+
+Additionally, the value of `detect` is accepted, which will detect the version from `java.specification.version`.
+This can be useful when doing link validation with javadocs built by the same build.
 
 By default, `javadoc.java.base_url` is configured to the Javadoc
 associated with the `java.specification.version` system property.

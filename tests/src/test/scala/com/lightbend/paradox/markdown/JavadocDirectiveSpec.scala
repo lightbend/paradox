@@ -27,7 +27,11 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
     "javadoc.akka.base_url" -> "http://doc.akka.io/japi/akka/2.4.10",
     "javadoc.akka.http.base_url" -> "http://doc.akka.io/japi/akka-http/10.0.0/index.html",
     "javadoc.root.relative.base_url" -> ".../javadoc/api/",
-    "javadoc.broken.base_url" -> "https://c|"
+    "javadoc.broken.base_url" -> "https://c|",
+    "javadoc.jdk11.base_url" -> "jdk11api/",
+    "javadoc.jdk11.javadoc_version" -> "11",
+    "javadoc.jdk8.base_url" -> "jdk8api/",
+    "javadoc.jdk8.javadoc_version" -> "1.8"
   )
 
   "javadoc directive" should "create links using configured URL templates" in {
@@ -92,6 +96,26 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
         |  [Publisher]: org.reactivestreams.Publisher
       """.stripMargin) shouldEqual
       html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html">Publisher</a> spec</p>""")
+  }
+
+  it should "convert jdk10+ javadoc anchor link styles to jdk8 if explicitly requested" in {
+    markdown("@javadoc[Model](jdk8.Model#method\\(java.lang.Object,int\\))") shouldEqual
+      html("""<p><a href="jdk8api/?jdk8/Model.html#method-java.lang.Object-int-">Model</a></p>""")
+  }
+
+  it should "leave jdk8 javadoc anchor link styles alone if jdk8 is explicitly requested" in {
+    markdown("@javadoc[Model](jdk8.Model#method-java.lang.Object-int-)") shouldEqual
+      html("""<p><a href="jdk8api/?jdk8/Model.html#method-java.lang.Object-int-">Model</a></p>""")
+  }
+
+  it should "convert jdk8 javadoc anchor link styles if jdk10+ is explicitly requested" in {
+    markdown("@javadoc[Model](jdk11.Model#method-java.lang.Object-int-)") shouldEqual
+      html("""<p><a href="jdk11api/?jdk11/Model.html#method(java.lang.Object,int)">Model</a></p>""")
+  }
+
+  it should "leave jdk10+ javadoc anchor link styles alone if jdk10+ is explicitly requested" in {
+    markdown("@javadoc[Model](jdk11.Model#method\\(java.lang.Object,int\\))") shouldEqual
+      html("""<p><a href="jdk11api/?jdk11/Model.html#method(java.lang.Object,int)">Model</a></p>""")
   }
 
   it should "support creating non frame style links" in {
