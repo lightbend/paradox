@@ -80,6 +80,8 @@ lazy val plugin = project
     name := "sbt-paradox",
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
+    pluginCrossBuild / sbtVersion := "1.0.0", // support all sbt 1.x
+    scriptedSbt := sbtVersion.value, // run scripted tests against build sbt by default
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= ManagementFactory.getRuntimeMXBean.getInputArguments.asScala.filter(
       a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)
