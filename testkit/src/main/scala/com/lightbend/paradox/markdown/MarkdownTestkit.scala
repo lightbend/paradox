@@ -148,8 +148,8 @@ abstract class MarkdownTestkit {
     lazy val hasSubheaders = false
     lazy val getToc = ""
     lazy val getSource_url = ""
-
     lazy val getProperties = properties.asJava
+    lazy val getPath: String = ""
   }
 
   case class EmptyLink() extends PageTemplate.Link {

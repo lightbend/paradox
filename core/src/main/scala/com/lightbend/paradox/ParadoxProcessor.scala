@@ -34,7 +34,7 @@ import scala.util.matching.Regex
 /**
  * Markdown site processor.
  */
-class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer) {
+class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer, singlePageWriter: Writer = SinglePageSupport.writer) {
 
   /**
    * Process all mappings to build the site.
@@ -216,6 +216,75 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     }
   }
 
+  def processSinglePage(
+    mappings:        Seq[(File, String)],
+    outputDirectory: File,
+    sourceSuffix:    String,
+    targetSuffix:    String,
+    groups:          Map[String, Seq[String]],
+    properties:      Map[String, String],
+    navDepth:        Int,
+    navExpandDepth:  Option[Int],
+    expectedRoots:   List[String],
+    pageTemplate:    PageTemplate,
+    print:           Boolean,
+    logger:          ParadoxLogger): Either[String, Seq[(File, String)]] = {
+
+    require(!groups.values.flatten.map(_.toLowerCase).groupBy(identity).values.exists(_.size > 1), "Group names may not overlap")
+
+    val errorCollector = new ErrorCollector
+
+    val roots = parsePages(mappings, Path.replaceSuffix(sourceSuffix, targetSuffix), properties, errorCollector)
+    val pages = Page.allPages(roots)
+    val globalPageMappings = rootPageMappings(roots)
+
+    val navToc = new SinglePageSupport.SinglePageTableOfContents(maxDepth = navDepth, maxExpandDepth = navExpandDepth)
+
+    @tailrec
+    def render(location: Option[Location[Page]], rendered: Seq[PageContents] = Seq.empty): Seq[PageContents] = location match {
+      case Some(loc) =>
+        val page = loc.tree.label
+        checkDuplicateAnchors(page, logger)
+        val pageProperties = properties ++ page.properties.get
+        val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
+        val writerContext = Writer.Context(loc, pages, reader, singlePageWriter, new PagedErrorContext(errorCollector, page), logger, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
+        val pageContents = PageContents(Nil, groups, loc, singlePageWriter, writerContext, navToc, new TableOfContents())
+        render(loc.next, rendered :+ pageContents)
+      case None => rendered
+    }
+
+    if (expectedRoots.sorted != roots.map(_.label.path).sorted)
+      errorCollector(
+        s"Unexpected top-level pages (pages that do no have a parent in the Table of Contents).\n" +
+          s"If this is intentional, update the `paradoxRoots` sbt setting to reflect the new expected roots.\n" +
+          "Current ToC roots: " + roots.map(_.label.path).sorted.mkString("[", ", ", "]" + "\n") +
+          "Specified ToC roots: " + expectedRoots.sorted.mkString("[", ", ", "]" + "\n"
+          ))
+
+    outputDirectory.mkdirs()
+    val results = roots.flatMap { root =>
+      val pages = render(Some(root.location))
+      val page = root.location.tree.label
+      val outputFile = new File(outputDirectory, page.path)
+      outputFile.getParentFile.mkdirs
+      val pagesToRender = pages.tail
+      val pageName = if (print) pageTemplate.defaultPrintName else pageTemplate.defaultSingleName
+      val cover = if (print) {
+        val printCover = new File(outputDirectory, "print-cover.html")
+        Some(pageTemplate.writePrintCover("print-cover", pages.head, printCover) -> "print-cover.html")
+      } else None
+
+      val single = pageTemplate.writeSingle(page.properties(Page.Properties.DefaultSingleLayoutMdIndicator, pageName), pages.head, pagesToRender, outputFile) -> page.path
+
+      cover.toSeq :+ single
+    }
+
+    if (errorCollector.hasErrors) {
+      errorCollector.logErrors(logger)
+      Left(s"Paradox failed with ${errorCollector.errorCount} errors")
+    } else Right(results)
+  }
+
   private def checkDuplicateAnchors(page: Page, logger: ParadoxLogger): Unit = {
     val anchors = (page.headers.flatMap(_.toSet) :+ page.h1).map(_.path) ++ page.anchors.map(_.path)
     anchors
@@ -269,6 +338,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     lazy val hasSubheaders = page.headers.nonEmpty
     lazy val getToc = writer.writeToc(pageToc.headers(loc), context)
     lazy val getSource_url = githubLink(Some(loc)).getHtml
+    def getPath = page.path
 
     // So you can $page.properties.("project.name")$
     lazy val getProperties = context.properties.asJava

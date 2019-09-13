@@ -25,6 +25,8 @@ import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.{ SbtWeb, Compat => WCompat }
 
+import scala.sys.process.ProcessLogger
+
 object ParadoxPlugin extends AutoPlugin {
   object autoImport extends ParadoxKeys {
     def builtinParadoxTheme(name: String): ModuleID =
@@ -129,7 +131,11 @@ object ParadoxPlugin extends AutoPlugin {
     managedSources in paradoxMarkdownToHtml := generate(sourceGenerators in paradoxMarkdownToHtml).value,
     sources in paradoxMarkdownToHtml := Classpaths.concatDistinct(unmanagedSources in paradoxMarkdownToHtml, managedSources in paradoxMarkdownToHtml).value,
     mappings in paradoxMarkdownToHtml := Defaults.relativeMappings(sources in paradoxMarkdownToHtml, sourceDirectories in paradox).value,
+    mappings in paradoxSingleMarkdownToHtml := (mappings in paradoxMarkdownToHtml).value,
+    mappings in paradoxPdfMarkdownToHtml := (mappings in paradoxMarkdownToHtml).value,
     target in paradoxMarkdownToHtml := target.value / "paradox" / "html" / configTarget(configuration.value),
+    target in paradoxSingleMarkdownToHtml := target.value / "paradox" / "single-html" / configTarget(configuration.value),
+    target in paradoxPdfMarkdownToHtml := target.value / "paradox" / "pdf-html" / configTarget(configuration.value),
 
     managedSourceDirectories in paradoxTheme := paradoxTheme.value.toSeq.map { theme =>
       (WebKeys.webJarsDirectory in Assets).value / (WebKeys.webModulesLib in Assets).value / theme.name
@@ -193,27 +199,68 @@ object ParadoxPlugin extends AutoPlugin {
       }
     }.value,
 
+    paradoxSingleMarkdownToHtml := Def.taskDyn {
+      val strms = streams.value
+      IO.delete((target in paradoxSingleMarkdownToHtml).value)
+      Def.task {
+        paradoxProcessor.value.processSinglePage(
+          (mappings in paradoxSingleMarkdownToHtml).value,
+          (target in paradoxSingleMarkdownToHtml).value,
+          (paradoxSourceSuffix in paradoxSingle).value,
+          (paradoxTargetSuffix in paradoxSingle).value,
+          (paradoxGroups in paradoxSingle).value,
+          (paradoxProperties in paradoxSingle).value,
+          (paradoxNavigationDepth in paradoxSingle).value,
+          (paradoxNavigationExpandDepth in paradoxSingle).value,
+          (paradoxRoots in paradoxSingle).value,
+          (paradoxTemplate in paradoxSingle).value,
+          false,
+          new SbtParadoxLogger(strms.log)
+        ) match {
+            case Left(error) =>
+              strms.log.error(error)
+              throw new ParadoxException
+            case Right(files) => files
+          }
+      }
+    }.value,
+
+    paradoxPdfMarkdownToHtml := Def.taskDyn {
+      val strms = streams.value
+      IO.delete((target in paradoxPdfMarkdownToHtml).value)
+      Def.task {
+        paradoxProcessor.value.processSinglePage(
+          (mappings in paradoxPdfMarkdownToHtml).value,
+          (target in paradoxPdfMarkdownToHtml).value,
+          (paradoxSourceSuffix in paradoxPdf).value,
+          (paradoxTargetSuffix in paradoxPdf).value,
+          (paradoxGroups in paradoxPdf).value,
+          (paradoxProperties in paradoxPdf).value,
+          (paradoxNavigationDepth in paradoxPdf).value,
+          (paradoxNavigationExpandDepth in paradoxPdf).value,
+          (paradoxRoots in paradoxPdf).value,
+          (paradoxTemplate in paradoxPdf).value,
+          true,
+          new SbtParadoxLogger(strms.log)
+        ) match {
+            case Left(error) =>
+              strms.log.error(error)
+              throw new ParadoxException
+            case Right(files) => files
+          }
+      }
+    }.value,
+
     includeFilter in paradox := AllPassFilter,
     excludeFilter in paradox := {
       // exclude markdown sources and the _template directory sources
       (includeFilter in paradoxMarkdownToHtml).value || InDirectoryFilter((sourceDirectory in paradoxTheme).value)
     },
     sources in paradox := Defaults.collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox).value,
-    mappings in paradox := Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox).value,
-    mappings in paradox ++= (mappings in paradoxTemplate).value,
-    mappings in paradox ++= paradoxMarkdownToHtml.value,
-    mappings in paradox ++= {
-      // include webjar assets, but not the assets from the theme
-      val themeFilter = (managedSourceDirectories in paradoxTheme).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
-      (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
-    },
-    target in paradox := target.value / "paradox" / "site" / configTarget(configuration.value),
 
     watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
 
     paradoxBrowse := openInBrowser(paradox.value / "index.html", streams.value.log),
-
-    paradox := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox"), (mappings in paradox).value, (target in paradox).value),
 
     mappings in paradoxValidateInternalLinks := {
       val paradoxMappings = (mappings in paradox).value
@@ -227,7 +274,80 @@ object ParadoxPlugin extends AutoPlugin {
       }
     },
     paradoxValidateInternalLinks := validateLinksTask(false).value,
-    paradoxValidateLinks := validateLinksTask(true).value
+    paradoxValidateLinks := validateLinksTask(true).value,
+
+    paradoxPdfTocTemplate := Some("print-toc.xslt"),
+    paradoxPdfDockerImage := "jamesroper/wkhtmltopdf:0.12.6-dev",
+    paradoxPdfArgs := Seq(
+      "--dump-outline", "/opt/paradox/pdf/" + configTarget(configuration.value) + "/toc.xml",
+      "--footer-right", "[page]",
+      "--footer-left", (name in paradoxPdf).value,
+      "--footer-font-size", "8",
+      "--footer-spacing", "5"
+    ),
+    paradoxPdf := {
+      val _ = paradoxPdfSite.value
+      val outputFileName = (moduleName in paradoxPdf).value + ".pdf"
+      val ct = configTarget(configuration.value)
+      val outputDir = target.value / "paradox" / "pdf" / ct
+      outputDir.mkdirs()
+
+      val command = Seq("docker", "run", "--rm",
+        "-v", (target.value / "paradox").getAbsolutePath + ":/opt/paradox",
+        // This can be accessed by the above mount, but mounting it here allows the print-toc.xslt file to reference
+        // the theme files for the current configuration
+        "-v", (target.value / "paradox" / "theme" / ct).getAbsolutePath + ":/opt/paradoxtheme",
+        paradoxPdfDockerImage.value
+      ) ++
+        paradoxPdfArgs.value ++
+        Seq("cover", s"file:///opt/paradox/site-pdf/$ct/print-cover.html") ++
+        paradoxPdfTocTemplate.value.fold(Seq.empty[String])(t => Seq("toc", "--xsl-style-sheet", s"/opt/paradox/theme/$ct/$t")) ++
+        Seq(
+          s"file:///opt/paradox/site-pdf/$ct/index.html", "--javascript-delay", "5000",
+          s"/opt/paradox/pdf/$ct/$outputFileName"
+        )
+
+      import sys.process._
+
+      val log = streams.value.log
+      log.info("Running " + command.mkString(" "))
+
+      command.!(new WkHtmlToPdfLogger(log)) match {
+        case 0 =>
+          val outputFile = outputDir / outputFileName
+          log.info(s"PDF successfully generated to ${outputFile.getAbsolutePath}")
+          outputFile
+        case other => throw new AlreadyHandledException(new RuntimeException("wkhtmltopdf had non zero return code: " + other))
+      }
+    }
+
+  ) ++ defineSiteMappings(paradox, paradox, paradoxMarkdownToHtml, "site") ++
+    defineSiteMappings(paradoxSingle, paradoxSingle, paradoxSingleMarkdownToHtml, "site-single") ++
+    defineSiteMappings(paradoxPdf, paradoxPdfSite, paradoxPdfMarkdownToHtml, "site-pdf")
+
+  private class WkHtmlToPdfLogger(log: Logger) extends ProcessLogger {
+    override def out(s: => String): Unit = s match {
+      case error if s.matches("^\\w+: .*") => log.error(error)
+      case progress if s.startsWith("[")   => // ignore
+      case info                            => log.info(info)
+    }
+
+    override def err(s: => String): Unit = out(s)
+
+    override def buffer[T](f: => T): T = f
+  }
+
+  private def defineSiteMappings(scopeTask: TaskKey[_], siteTask: TaskKey[File], markdownToHtmlTask: TaskKey[Seq[(File, String)]], siteDir: String) = Seq(
+    mappings in scopeTask := Defaults.relativeMappings(sources in paradox, sourceDirectories in paradox).value,
+    mappings in scopeTask ++= (mappings in paradoxTemplate).value,
+    mappings in scopeTask ++= markdownToHtmlTask.value,
+    mappings in scopeTask ++= {
+      // include webjar assets, but not the assets from the theme
+      val themeFilter = (managedSourceDirectories in paradoxTheme).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
+      (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
+    },
+    target in scopeTask := target.value / "paradox" / siteDir / configTarget(configuration.value),
+    siteTask := SbtWeb.syncMappings(WCompat.cacheStore(streams.value, "paradox-" + siteDir), (mappings in scopeTask).value, (target in scopeTask).value)
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
