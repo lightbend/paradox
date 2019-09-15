@@ -20,14 +20,14 @@ import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import java.io.{ File, FileOutputStream, OutputStreamWriter }
-import java.net.{ HttpURLConnection, URI }
 import java.nio.charset.StandardCharsets
 
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.pegdown.ast._
 
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
-import scala.io.Source
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
@@ -137,49 +137,65 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
       validate(Some(root.location))
     }
 
-    def ignore(path: String) = ignorePaths.exists(_.pattern.matcher(path).matches())
-
-    linkCapturer.allLinks.foreach {
-      case CapturedLinkWithSources(CapturedAbsoluteLink(uri), sources) if validateAbsolute && !ignore(uri.toString) =>
-        validateExternalLink(uri, reportErrorOnSources(errorCollector, sources), logger)
-      case CapturedLinkWithSources(CapturedRelativeLink(path, fragment), sources) if !ignore(path) =>
-        fullSite.get(path) match {
-          case Some(file) =>
-            fragment.foreach { f =>
-              validateFragment(path, Source.fromFile(file, "UTF-8").mkString, f, reportErrorOnSources(errorCollector, sources))
-            }
-          case None =>
-            reportErrorOnSources(errorCollector, sources)(s"Could not find path [$path] in site")
-        }
-      case _ =>
-      // Ignore
-    }
+    linkCapturer.allLinks
+      .filterNot(l => ignorePaths.exists(_.pattern.matcher(l.link.toString).matches()))
+      .foreach {
+        case c @ CapturedLink(uri, fragments) if c.isInternal =>
+          fullSite.get(uri.getPath) match {
+            case Some(file) =>
+              if (c.hasFragments) {
+                validateFragments(uri.getPath, Jsoup.parse(file, "UTF-8"), fragments, errorCollector)
+              }
+            case None =>
+              reportErrorOnSources(errorCollector, c.allSources)(s"Could not find path [${uri.getPath}] in site")
+          }
+        case absolute if validateAbsolute =>
+          validateExternalLink(absolute, errorCollector, logger)
+        case _ =>
+        // Ignore
+      }
 
     errorCollector.logErrors(logger)
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(uri: URI, reportError: String => Unit, logger: ParadoxLogger) = {
-    logger.info(s"Validating external link: $uri")
-    val conn = uri.toURL.openConnection().asInstanceOf[HttpURLConnection]
-    conn.addRequestProperty("User-Agent", "Paradox Link Validator <https://github.com/lightbend/paradox>")
+  private def validateExternalLink(capturedLink: CapturedLink, errorContext: ErrorContext, logger: ParadoxLogger) = {
+    logger.info(s"Validating external link: ${capturedLink.link}")
+
+    def reportError = reportErrorOnSources(errorContext, capturedLink.allSources)(_)
+    val url = capturedLink.link.toString
+
     try {
-      if (conn.getResponseCode / 100 == 3) {
-        reportError(s"Received a ${conn.getResponseCode} redirect on external link, location redirected to is [${conn.getHeaderField("Location")}]")
-      } else if (conn.getResponseCode != 200) {
-        reportError(s"Error validating external link, status code was ${conn.getResponseCode}")
+      val response = Jsoup.connect(url)
+        .userAgent("Paradox Link Validator <https://github.com/lightbend/paradox>")
+        .followRedirects(false)
+        .ignoreHttpErrors(true)
+        .ignoreContentType(true)
+        .execute()
+
+      // jsoup doesn't offer any simple way to clean up, the only way to close is to get the body stream and close it,
+      // but if you've already read the response body, that will throw an exception, and there's no way to check if
+      // you've already tried to read the response body, so we can't do that in a finally block, we have to do it
+      // explicitly every time we don't want to consume the stream.
+      def close() = response.bodyStream().close()
+
+      if (response.statusCode() / 100 == 3) {
+        close()
+        reportError(s"Received a ${response.statusCode()} ${response.statusMessage()} on external link, location redirected to is [${response.header("Location")}]")
+      } else if (response.statusCode() != 200) {
+        close()
+        reportError(s"Error validating external link, status was ${response.statusCode()} ${response.statusMessage()}")
       } else {
-        if (uri.getFragment != null) {
-          val content = Source.fromInputStream(conn.getInputStream).mkString
-          validateFragment(uri.toString, content, uri.getFragment, reportError)
+        if (capturedLink.hasFragments) {
+          validateFragments(url, response.parse(), capturedLink.fragments, errorContext)
+        } else {
+          close()
         }
       }
     } catch {
       case NonFatal(e) =>
         reportError(s"Exception occurred when validating external link: $e")
         logger.debug(e)
-    } finally {
-      conn.disconnect()
     }
   }
 
@@ -189,9 +205,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     }
   }
 
-  private def validateFragment(path: String, content: String, fragment: String, reportError: String => Unit) = {
-    if (!content.contains("id=\"" + fragment + "\"")) {
-      reportError(s"Could not find anchor id [$fragment] in page [$path]")
+  private def validateFragments(path: String, content: Document, fragments: List[CapturedLinkFragment], errorContext: ErrorContext): Unit = {
+    fragments.foreach {
+      case CapturedLinkFragment(Some(fragment), sources) =>
+        if (content.getElementById(fragment) == null && content.select(s"a[name=$fragment]").isEmpty) {
+          reportErrorOnSources(errorContext, sources)(s"Could not find anchor [$fragment] in page [$path]")
+        }
+      case _ =>
     }
   }
 

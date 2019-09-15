@@ -32,22 +32,25 @@ class LinkCapturerSpec extends MarkdownBaseSpec {
   }
 
   private def linksFor(pagePath: String, markdown: String) =
-    capturerFor(pagePath, markdown).allLinks.map(_.link)
+    for {
+      link <- capturerFor(pagePath, markdown).allLinks
+      fragment <- link.fragments
+    } yield (link.link.toString, fragment.fragment)
 
   "The LinkCapturer" should "classify relative links in same directory as relative" in {
-    linksFor("foo/test.md", "[link](bar.html)") should ===(List(CapturedRelativeLink("foo/bar.html", None)))
+    linksFor("foo/test.md", "[link](bar.html)") should ===(List(("foo/bar.html", None)))
   }
 
   it should "classify relative links in a child directory as relative" in {
-    linksFor("foo/test.md", "[link](child/bar.html)") should ===(List(CapturedRelativeLink("foo/child/bar.html", None)))
+    linksFor("foo/test.md", "[link](child/bar.html)") should ===(List(("foo/child/bar.html", None)))
   }
 
   it should "classify relative links in a parent directory as relative" in {
-    linksFor("foo/test.md", "[link](../bar.html)") should ===(List(CapturedRelativeLink("bar.html", None)))
+    linksFor("foo/test.md", "[link](../bar.html)") should ===(List(("bar.html", None)))
   }
 
   it should "classify relative links in a child of a parent directory as relative" in {
-    linksFor("foo/test.md", "[link](../child/bar.html)") should ===(List(CapturedRelativeLink("child/bar.html", None)))
+    linksFor("foo/test.md", "[link](../child/bar.html)") should ===(List(("child/bar.html", None)))
   }
 
   it should "ignore relative links outside of the docs directory when no base path is specified" in {
@@ -59,31 +62,31 @@ class LinkCapturerSpec extends MarkdownBaseSpec {
   }
 
   it should "treat absolute path links as relative when a base path is specified" in {
-    linksFor("/docs/foo/test.md", "[link](/bar.html)") should ===(List(CapturedRelativeLink("/bar.html", None)))
+    linksFor("/docs/foo/test.md", "[link](/bar.html)") should ===(List(("/bar.html", None)))
   }
 
   it should "accept relative links outside of the docs directory when a base path is specified" in {
-    linksFor("/docs/foo/test.md", "[link](../../bar.html)") should ===(List(CapturedRelativeLink("/bar.html", None)))
+    linksFor("/docs/foo/test.md", "[link](../../bar.html)") should ===(List(("/bar.html", None)))
   }
 
   it should "accept relative links in a child directory outside of the docs directory when a base path is specified" in {
-    linksFor("/docs/foo/test.md", "[link](../../apidocs/bar.html)") should ===(List(CapturedRelativeLink("/apidocs/bar.html", None)))
+    linksFor("/docs/foo/test.md", "[link](../../apidocs/bar.html)") should ===(List(("/apidocs/bar.html", None)))
   }
 
   it should "include the base path in links found in the docs tree when a base path is specified" in {
-    linksFor("/docs/foo/test.md", "[link](bar.html)") should ===(List(CapturedRelativeLink("/docs/foo/bar.html", None)))
+    linksFor("/docs/foo/test.md", "[link](bar.html)") should ===(List(("/docs/foo/bar.html", None)))
   }
 
   it should "not ignore invalid relative links (so they can be reported as missing later)" in {
-    linksFor("/docs/foo/test.md", "[link](../../../bar.html)") should ===(List(CapturedRelativeLink("/../bar.html", None)))
+    linksFor("/docs/foo/test.md", "[link](../../../bar.html)") should ===(List(("/../bar.html", None)))
   }
 
   it should "capture fragments" in {
-    linksFor("foo/test.md", "[link](bar.html#frag)") should ===(List(CapturedRelativeLink("foo/bar.html", Some("frag"))))
+    linksFor("foo/test.md", "[link](bar.html#frag)") should ===(List(("foo/bar.html", Some("frag"))))
   }
 
   it should "treat links with a hostname as absolute" in {
-    linksFor("foo/test.md", "https://lightbend.com") should ===(List(CapturedAbsoluteLink(URI.create("https://lightbend.com"))))
+    linksFor("foo/test.md", "https://lightbend.com") should ===(List(("https://lightbend.com", None)))
   }
 
   it should "ignore ref links (because they are validated by the compiler)" in {
@@ -91,6 +94,6 @@ class LinkCapturerSpec extends MarkdownBaseSpec {
   }
 
   it should "append index.html to directory links" in {
-    linksFor("foo/test.md", "[link](bar/)") should ===(List(CapturedRelativeLink("foo/bar/index.html", None)))
+    linksFor("foo/test.md", "[link](bar/)") should ===(List(("foo/bar/index.html", None)))
   }
 }

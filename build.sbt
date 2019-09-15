@@ -46,7 +46,8 @@ lazy val core = project
     name := "paradox",
     libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
-      Library.st4
+      Library.st4,
+      Library.jsoup
     ),
     parallelExecution in Test := false
   )

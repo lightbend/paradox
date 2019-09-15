@@ -89,10 +89,10 @@ class LinkCapturer {
     }
   }
 
-  def allLinks: List[CapturedLinkWithSources] = {
+  def allLinks: List[CapturedLink] = {
+    // First, resolve the links, discarding links that we can't resolve.
     links.collect {
-
-      case (page, node, uri) if isPageInSite(page, uri) =>
+      case Link(page, node, uri, fragment) if isPageInSite(page, uri) =>
         val path = node match {
           // Javadoc links may use the frames style, and may reference index.html, if so, need to drop it.
           case d: DirectiveNode if d.name == "javadoc" && uri.getQuery != null =>
@@ -107,19 +107,22 @@ class LinkCapturer {
         val pathWithIndex = if (path.endsWith("/")) uri.getPath + "index.html"
         else path
 
-        val relativePath = URI.create(page.path).resolve(pathWithIndex).getPath
+        val resolvedUri = URI.create(page.path).resolve(pathWithIndex)
+        Link(page, node, resolvedUri, fragment)
 
-        (CapturedRelativeLink(relativePath, Option(uri.getFragment)), page, node)
-
-      case (page, node, uri) if uri.getAuthority != null =>
-        (CapturedAbsoluteLink(uri), page, node)
-
-    }.groupBy(_._1).map {
-      case (link, links) =>
-        CapturedLinkWithSources(link, links.map {
-          case (_, page, node) => (page.file, node)
-        })
-    }.toList
+      case link @ Link(_, _, uri, _) if uri.getAuthority != null => link
+    }.groupBy(_.uri)
+      .toList
+      .map {
+        case (uri, links) =>
+          val fragments = links.groupBy(_.fragment)
+            .toList
+            .map {
+              case (fragment, links) =>
+                CapturedLinkFragment(fragment, links.map(l => (l.page.file, l.node)))
+            }
+          CapturedLink(uri, fragments)
+      }
   }
 
   private def isPageInSite(page: Page, uri: URI): Boolean = {
@@ -136,18 +139,29 @@ class LinkCapturer {
   }
 
   private var nodeOverride: Option[Node] = None
-  private var links: List[(Page, Node, URI)] = Nil
+
+  private case class Link(page: Page, node: Node, uri: URI, fragment: Option[String])
+
+  private var links: List[Link] = Nil
 
   def capture(page: Page, node: Node, rendering: LinkRenderer.Rendering): LinkRenderer.Rendering = {
-    links = (page, nodeOverride.getOrElse(node), URI.create(rendering.href)) :: links
+    val fullUri = URI.create(rendering.href)
+    val (uri, fragment) = if (fullUri.getFragment == null) (fullUri, None)
+    else (new URI(fullUri.getScheme, fullUri.getAuthority, fullUri.getPath, fullUri.getQuery, null), Some(fullUri.getFragment))
+    links = Link(page, nodeOverride.getOrElse(node), uri, fragment) :: links
     rendering
   }
 }
 
-case class CapturedLinkWithSources(link: CapturedLink, sources: List[(File, Node)])
-sealed trait CapturedLink
-case class CapturedAbsoluteLink(link: URI) extends CapturedLink
-case class CapturedRelativeLink(path: String, fragment: Option[String]) extends CapturedLink
+case class CapturedLink(link: URI, fragments: List[CapturedLinkFragment]) {
+  def allSources = fragments.flatMap(_.sources)
+
+  def isInternal = link.getAuthority == null && link.getPath != null
+
+  def hasFragments = fragments.size > 1 || fragments.headOption.flatMap(_.fragment).nonEmpty
+}
+
+case class CapturedLinkFragment(fragment: Option[String], sources: List[(File, Node)])
 
 private class LinkCapturerRenderer(capturer: LinkCapturer, renderer: LinkRenderer, page: Page) extends LinkRenderer {
   private def capture(node: Node, rendering: LinkRenderer.Rendering) = capturer.capture(page, node, rendering)
