@@ -17,5 +17,6 @@ Paradox is a Markdown documentation tool for software projects.
 * [Groups](groups.md)
 * [Customization](customization/index.md)
 * [Validation](validation.md)
+* [Single Page HTML/PDF](single.md)
  
 @@@

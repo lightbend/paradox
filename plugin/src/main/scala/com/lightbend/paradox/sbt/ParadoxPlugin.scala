@@ -277,7 +277,11 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxValidateLinks := validateLinksTask(true).value,
 
     paradoxPdfTocTemplate := Some("print-toc.xslt"),
-    paradoxPdfDockerImage := "jamesroper/wkhtmltopdf:0.12.6-dev",
+    // 0.12.4 works but is very old and CSS support isn't that great. 0.12.5 completely broke toc support, see:
+    // https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3953
+    // 0.12.6 still hasn't been released, so we're forced to rely on this dev build published here:
+    // https://builds.wkhtmltopdf.org/0.12.6-dev/
+    paradoxPdfDockerImage := "jamesroper/wkhtmltopdf:0.12.6-0.20180618.3.dev.e6d6f54",
     paradoxPdfArgs := Seq(
       "--dump-outline", "/opt/paradox/pdf/" + configTarget(configuration.value) + "/toc.xml",
       "--footer-right", "[page]",
@@ -290,20 +294,23 @@ object ParadoxPlugin extends AutoPlugin {
       val outputFileName = (moduleName in paradoxPdf).value + ".pdf"
       val ct = configTarget(configuration.value)
       val outputDir = target.value / "paradox" / "pdf" / ct
+      val root = (paradoxRoots in paradoxPdf).value.head
       outputDir.mkdirs()
 
       val command = Seq("docker", "run", "--rm",
         "-v", (target.value / "paradox").getAbsolutePath + ":/opt/paradox",
-        // This can be accessed by the above mount, but mounting it here allows the print-toc.xslt file to reference
-        // the theme files for the current configuration
-        "-v", (target.value / "paradox" / "theme" / ct).getAbsolutePath + ":/opt/paradoxtheme",
+        // This can be accessed by the above mount, but needs to include the configuration name in it. The print-toc.xml
+        // can only use absolute file:/// links to resources, so to ensure it doesn't have to include main/test in its
+        // references to css files, we put this here so that it can reference any resources in the site using
+        // file:///opt/paradoxsite
+        "-v", (target.value / "paradox" / "site-pdf" / ct).getAbsolutePath + ":/opt/paradoxsite",
         paradoxPdfDockerImage.value
       ) ++
         paradoxPdfArgs.value ++
         Seq("cover", s"file:///opt/paradox/site-pdf/$ct/print-cover.html") ++
         paradoxPdfTocTemplate.value.fold(Seq.empty[String])(t => Seq("toc", "--xsl-style-sheet", s"/opt/paradox/theme/$ct/$t")) ++
         Seq(
-          s"file:///opt/paradox/site-pdf/$ct/index.html", "--javascript-delay", "5000",
+          s"file:///opt/paradox/site-pdf/$ct/$root", "--javascript-delay", "5000",
           s"/opt/paradox/pdf/$ct/$outputFileName"
         )
 

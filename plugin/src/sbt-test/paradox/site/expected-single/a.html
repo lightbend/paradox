@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>A · Paradox Test</title>
+<meta name="description" content="Paradox Test"/>
+</head>
+<body>
+<a href="">base</a>
+<a href="a.html" class="active">A</a>
+0.1-SNAPSHOT
+<ul>
+  <li><a href="#a/a.html">AA</a>
+  <ul>
+    <li><a href="#a/a.html~aa2">AA2</a></li>
+    <li><a href="#a/b.html">AB</a></li>
+    <li><a href="#a/c.html">AC</a></li>
+  </ul></li>
+  <li><a href="#b/a.html">BA</a>
+  <ul>
+    <li><a href="#b/a/a.html">BAA</a></li>
+    <li><a href="#b/b.html">BB</a></li>
+  </ul></li>
+  <li><a href="#c/a.html">CA</a></li>
+</ul>
+<h1><a href="#a.html~a" name="a.html~a" class="anchor"><span class="anchor-link"></span></a><span class="header-title">A</span></h1>
+
+<p>This is &ldquo;A&rdquo; site.</p>
+
+<p>Version is 0.1-SNAPSHOT.</p>
+
+<p>Next is the TOC.</p>
+
+<p>Followed by the index of a select number of pages.</p>
+
+<a name="a/a.html"></a><h2><a href="#a/a.html~aa" name="a/a.html~aa" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AA</span></h2>
+
+<p>This is the &ldquo;AA&rdquo; page.</p>
+
+<p>But perhaps you&rsquo;re looking for the &ldquo;BB&rdquo; page. Here&rsquo;s a link to that:</p>
+
+<p><a href="#b/b.html">bb</a></p>
+
+<p>See the index below for other pages in the &ldquo;A&rdquo; section:</p>
+
+<h3><a href="#a/a.html~aa2" name="a/a.html~aa2" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AA2</span></h3>
+
+<h4><a href="#a/a.html~aa3" name="a/a.html~aa3" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AA3</span></h4>
+<a name="a/b.html"></a><h3><a href="#a/b.html~ab" name="a/b.html~ab" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AB</span></h3>
+
+<p>This is the &ldquo;AB&rdquo; page.</p>
+
+<h4><a href="#a/b.html~ab2" name="a/b.html~ab2" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AB2</span></h4>
+
+<h4><a href="#a/b.html~ab3" name="a/b.html~ab3" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AB3</span></h4>
+
+<h5><a href="#a/b.html~ab4" name="a/b.html~ab4" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AB4</span></h5>
+<a name="a/c.html"></a><h3><a href="#a/c.html~ac" name="a/c.html~ac" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AC</span></h3>
+
+<p>This is the &ldquo;AC&rdquo; page.</p>
+
+<h4><a href="#a/c.html~ac2" name="a/c.html~ac2" class="anchor"><span class="anchor-link"></span></a><span class="header-title">AC2</span></h4>
+<a name="b/a.html"></a><h2><a href="#b/a.html~ba" name="b/a.html~ba" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BA</span></h2>
+
+<p>This is the &ldquo;BA&rdquo; page.</p>
+
+<p>See the index below for other pages in the &ldquo;B&rdquo; section:</p>
+<a name="b/a/a.html"></a><h3><a href="#b/a/a.html~baa" name="b/a/a.html~baa" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BAA</span></h3>
+
+<p>This is the &ldquo;BAA&rdquo; page.</p>
+
+<h4><a href="#b/a/a.html~baa2" name="b/a/a.html~baa2" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BAA2</span></h4>
+
+<ul>
+  <li><a href="#b/a.html">b/a</a></li>
+  <li><a href="#a/a.html">a/a</a></li>
+  <li><a href="#b/a/a.html~baa3">BAA3</a></li>
+</ul>
+<h4><a href="#b/a/a.html~baa3" name="b/a/a.html~baa3" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BAA3</span></h4>
+<a name="b/b.html"></a><h3><a href="#b/b.html~bb" name="b/b.html~bb" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BB</span></h3>
+
+<p>This is the &ldquo;BB&rdquo; page.</p>
+
+<h4><a href="#b/b.html~bb2" name="b/b.html~bb2" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BB2</span></h4>
+
+<pre class="prettyprint"><code class="language-scala">val bb2 = Seq(&quot;b&quot; * 2, 2).mkString
+</code></pre>
+<h5><a href="#b/b.html~bb3" name="b/b.html~bb3" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BB3</span></h5>
+
+<pre class="prettyprint"><code class="language-xml">&lt;bb3&gt;42&lt;/bb3&gt;
+</code></pre>
+<h4><a href="#b/b.html~bb4" name="b/b.html~bb4" class="anchor"><span class="anchor-link"></span></a><span class="header-title">BB4</span></h4>
+
+<pre><code>curl https://financialcryptography.com # uses cacert.org as a CA
+</code></pre><a name="c/a.html"></a><h3><a href="#c/a.html~ca" name="c/a.html~ca" class="anchor"><span class="anchor-link"></span></a><span class="header-title">CA</span></h3>
+
+<p>This is the &ldquo;CA&rdquo; page.</p>
+
+<p>It starts with a H2 header instead of an H1.</p>
+
+</body>
+</html>

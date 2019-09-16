@@ -11,10 +11,10 @@
       <head>
         <title>Table of Contents</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxtheme/lib/foundation/dist/foundation.min.css"/>
-        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxtheme/css/page.css"/>
-        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxtheme/css/single.css"/>
-        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxtheme/css/print.css"/>
+        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxsite/lib/foundation/dist/foundation.min.css"/>
+        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxsite/css/page.css"/>
+        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxsite/css/single.css"/>
+        <link rel="stylesheet" type="text/css" href="file:///opt/paradoxsite/css/print.css"/>
       </head>
       <body>
         <h1>Table of Contents</h1>
