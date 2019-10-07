@@ -2,7 +2,7 @@ language: scala
 
 env:
   matrix:
-    - TRAVIS_JDK=adopt@1.8.202-08
+    - TRAVIS_JDK=adopt@1.8.0-222
 
 before_install: curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
 install: jabba install "$TRAVIS_JDK" && jabba use $_ && java -Xmx32m -version
@@ -19,7 +19,7 @@ jobs:
 
     - script: sbt verify
       name: "Compile, test and build docs with JDK11"
-      env: TRAVIS_JDK=adopt@1.11.0-2
+      env: TRAVIS_JDK=adopt@1.11.0-4
 
     - stage: publish
       script: sbt ci-release
