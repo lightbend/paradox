@@ -32,39 +32,39 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   "javadoc directive" should "create links using configured URL templates" in {
     markdown("@javadoc[Publisher](org.reactivestreams.Publisher)") shouldEqual
-      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher">Publisher</a></p>""")
+      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""")
   }
 
   it should "support 'javadoc:' as an alternative name" in {
     markdown("@javadoc:[Publisher](org.reactivestreams.Publisher)") shouldEqual
-      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher">Publisher</a></p>""")
+      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""")
   }
 
   it should "support root relative '...' base urls" in {
     markdown("@javadoc[Url](root.relative.Url)") shouldEqual
-      html("""<p><a href="javadoc/api/?root/relative/Url.html" title="root.relative.Url">Url</a></p>""")
+      html("""<p><a href="javadoc/api/?root/relative/Url.html" title="root.relative.Url"><code>Url</code></a></p>""")
   }
 
   it should "handle method links correctly" in {
     markdown("@javadoc[File.pathSeparator](java.io.File#pathSeparator)") shouldEqual
-      html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/?java/io/File.html#pathSeparator" title="java.io.File">File.pathSeparator</a></p>""")
+      html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/?java/io/File.html#pathSeparator" title="java.io.File"><code>File.pathSeparator</code></a></p>""")
   }
 
   it should "handle class links correctly" in {
     markdown("@javadoc[Http](akka.http.javadsl.Http)") shouldEqual
-      html("""<p><a href="http://doc.akka.io/japi/akka-http/10.0.0/index.html?akka/http/javadsl/Http.html" title="akka.http.javadsl.Http">Http</a></p>""")
+      html("""<p><a href="http://doc.akka.io/japi/akka-http/10.0.0/index.html?akka/http/javadsl/Http.html" title="akka.http.javadsl.Http"><code>Http</code></a></p>""")
     markdown("@javadoc[Actor](akka.actor.Actor)") shouldEqual
-      html("""<p><a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor">Actor</a></p>""")
+      html("""<p><a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a></p>""")
   }
 
   it should "retain whitespace before or after" in {
     markdown("The @javadoc:[Actor](akka.actor.Actor) class") shouldEqual
-      html("""<p>The <a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor">Actor</a> class</p>""")
+      html("""<p>The <a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a> class</p>""")
   }
 
   it should "parse but ignore directive attributes" in {
     markdown("The @javadoc:[Publisher](org.reactivestreams.Publisher) { .javadoc a=1 } spec") shouldEqual
-      html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher">Publisher</a> spec</p>""")
+      html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a> spec</p>""")
   }
 
   it should "throw exceptions for unconfigured default base URL" in {
@@ -91,13 +91,13 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
         |
         |  [Publisher]: org.reactivestreams.Publisher
       """.stripMargin) shouldEqual
-      html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher">Publisher</a> spec</p>""")
+      html("""<p>The <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a> spec</p>""")
   }
 
   it should "support creating non frame style links" in {
     val ctx = context.andThen(c => c.copy(properties = c.properties.updated("javadoc.link_style", "direct")))
     markdown("@javadoc[Publisher](org.reactivestreams.Publisher)")(ctx) shouldEqual
-      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher">Publisher</a></p>""")
+      html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""")
   }
 
 }

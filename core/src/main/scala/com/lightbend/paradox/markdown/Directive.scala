@@ -212,10 +212,12 @@ object LinkDirective {
 abstract class ExternalLinkDirective(names: String*)
   extends InlineDirective(names: _*) with SourceDirective {
 
-  def resolveLink(node: DirectiveNode, location: String): Url
+  protected def resolveLink(node: DirectiveNode, location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
-    new ExpLinkNode(title(node, page), resolvedSource(node, page), node.contentsNode).accept(visitor)
+    new ExpLinkNode(title(node, page), resolvedSource(node, page), linkContents(node)).accept(visitor)
+
+  protected def linkContents(node: DirectiveNode): Node = node.contentsNode
 
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
@@ -279,6 +281,8 @@ abstract class ApiDocDirective(name: String)
     case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
   }
 
+  override protected def linkContents(node: DirectiveNode): Node = new CodeNode(node.contents)
+
   override protected def title(node: DirectiveNode, page: Page): String = {
     val link = extractLink(node, page)
     try {
@@ -296,7 +300,7 @@ abstract class ApiDocDirective(name: String)
     }
   }
 
-  def resolveLink(node: DirectiveNode, link: String): Url = {
+  override protected def resolveLink(node: DirectiveNode, link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
