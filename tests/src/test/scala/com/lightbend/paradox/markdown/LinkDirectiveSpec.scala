@@ -52,6 +52,16 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
       testHtml("""<p>This <a href="page.pdf" title="Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>""")
   }
 
+  it should "use overwrite the title with the `title` attribute" in {
+    testMarkdown("""This @link:[Page](page.pdf) { title="Link to Page" } is linked.""") shouldEqual
+      testHtml("""<p>This <a href="page.pdf" title="Link to Page">Page</a> is linked.</p>""")
+  }
+
+  it should "use the `open` and title attributes" in {
+    testMarkdown("""This @link:[Page](page.pdf) { open=new title="Link to Page" } is linked.""") shouldEqual
+      testHtml("""<p>This <a href="page.pdf" title="Link to Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>""")
+  }
+
   it should "support referenced links with implicit key" in {
     testMarkdown(
       """This @link:[SBT] { .ref a=1 } is linked.

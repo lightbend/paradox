@@ -92,12 +92,20 @@ abstract class ContainerBlockDirective(val names: String*) extends Directive {
 /**
  * Directives with defined "source" semantics.
  */
-trait SourceDirective { this: Directive =>
+trait SourceDirective {
+  this: Directive =>
   def ctx: Writer.Context
+
   final def page: Page = ctx.location.tree.label
+
   final def variables: Map[String, String] = ctx.properties
 
-  protected def resolvedSource(node: DirectiveNode, page: Page): String = {
+  protected def title(node: DirectiveNode, page: Page): String = ""
+
+  protected def resolvedSource(node: DirectiveNode, page: Page): String =
+    extractLink(node, page)
+
+  protected def extractLink(node: DirectiveNode, page: Page): String = {
     def ref(key: String) =
       referenceMap.get(key.filterNot(_.isWhitespace).toLowerCase).map(_.getUrl).getOrElse {
         ctx.error(s"Undefined reference key [$key]", node)
@@ -207,7 +215,7 @@ abstract class ExternalLinkDirective(names: String*)
   def resolveLink(node: DirectiveNode, location: String): Url
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
-    new ExpLinkNode("", resolvedSource(node, page), node.contentsNode).accept(visitor)
+    new ExpLinkNode(title(node, page), resolvedSource(node, page), node.contentsNode).accept(visitor)
 
   override protected def resolvedSource(node: DirectiveNode, page: Page): String = {
     val link = super.resolvedSource(node, page)
@@ -269,6 +277,23 @@ abstract class ApiDocDirective(name: String)
   val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
   val baseUrls = variables.collect {
     case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+  }
+
+  override protected def title(node: DirectiveNode, page: Page): String = {
+    val link = extractLink(node, page)
+    try {
+      val url = Url(link)
+      val path = url.base.getPath
+      if (path.endsWith("$")) path.substring(0, path.length - 1)
+      else if (path.endsWith(".package")) path.substring(0, path.length - ".package".length)
+      else if (path.endsWith(".index")) path.substring(0, path.length - ".index".length)
+      else path
+    } catch {
+      case e @ Url.Error(reason) =>
+        ctx.logger.debug(e)
+        ctx.error(s"Failed to resolve [$link] because $reason", node)
+        ""
+    }
   }
 
   def resolveLink(node: DirectiveNode, link: String): Url = {
@@ -474,7 +499,8 @@ case class FiddleDirective(ctx: Writer.Context)
       val filterLabels = Directive.filterLabels("fiddle", node.attributes, labels, variables)
       val (code, _) = Snippet(file, labels, filterLabels)
 
-      printer.println.print(s"""
+      printer.println.print(
+        s"""
         <div data-scalafiddle="true" $params>
           <pre class="prettyprint"><code class="language-scala">$code</code></pre>
         </div>
