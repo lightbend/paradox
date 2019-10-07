@@ -31,45 +31,45 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   "Scaladoc directive" should "create links using configured URL templates" in {
     markdown("@scaladoc[Model](org.example.Model)") shouldEqual
-      html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a></p>""")
+      html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model">Model</a></p>""")
   }
 
   it should "support 'scaladoc:' as an alternative name" in {
     markdown("@scaladoc:[Model](org.example.Model)") shouldEqual
-      html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a></p>""")
+      html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model">Model</a></p>""")
   }
 
   it should "support root relative '...' base urls" in {
     markdown("@scaladoc:[Url](root.relative.Url)") shouldEqual
-      html("""<p><a href="scaladoc/api/root/relative/Url.html">Url</a></p>""")
+      html("""<p><a href="scaladoc/api/root/relative/Url.html" title="root.relative.Url">Url</a></p>""")
   }
 
   it should "handle method links correctly" in {
     markdown("@scaladoc[???](scala.Predef$#???:Nothing)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Predef$.html#???:Nothing">???</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Predef$.html#???:Nothing" title="scala.Predef">???</a></p>""")
 
     markdown(
       """@scaladoc:[Actor#preStart]
         |
         |  [Actor#preStart]: akka.actor.Actor#preStart():Unit""") shouldEqual
-      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/actor/Actor.html#preStart():Unit">Actor#preStart</a></p>""")
+      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/actor/Actor.html#preStart():Unit" title="akka.actor.Actor">Actor#preStart</a></p>""")
   }
 
   it should "handle object links correctly" in {
     markdown("@scaladoc[Http](akka.http.scaladsl.Http$)") shouldEqual
-      html("""<p><a href="http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html">Http</a></p>""")
+      html("""<p><a href="http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html" title="akka.http.scaladsl.Http">Http</a></p>""")
     markdown("@scaladoc[Actor](akka.actor.Actor)") shouldEqual
-      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/actor/Actor.html">Actor</a></p>""")
+      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/actor/Actor.html" title="akka.actor.Actor">Actor</a></p>""")
   }
 
   it should "retain whitespace before or after" in {
     markdown("The @scaladoc:[Model](org.example.Model) class") shouldEqual
-      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a> class</p>""")
+      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model">Model</a> class</p>""")
   }
 
   it should "parse but ignore directive attributes" in {
     markdown("The @scaladoc:[Model](org.example.Model) { .scaladoc a=1 } spec") shouldEqual
-      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a> spec</p>""")
+      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model">Model</a> spec</p>""")
   }
 
   it should "throw exceptions for unconfigured default base URL" in {
@@ -90,11 +90,11 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       "scaladoc.version" -> "2.12.0")
 
     markdown("@scaladoc[Int](scala.Int)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/Int.html">Int</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/Int.html" title="scala.Int">Int</a></p>""")
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html">Codec$</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/Codec$.html" title="scala.io.Codec">Codec$</a></p>""")
     markdown("@scaladoc[scala.io package](scala.io.index)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/index.html">scala.io package</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.12.0/scala/io/index.html" title="scala.io">scala.io package</a></p>""")
   }
 
   it should "support Scala 2.11 links" in {
@@ -103,11 +103,11 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       "scaladoc.version" -> "2.11.12")
 
     markdown("@scaladoc[Int](scala.Int)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Int.html">Int</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/Int.html" title="scala.Int">Int</a></p>""")
     markdown("@scaladoc[Codec$](scala.io.Codec$)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/Codec$.html">Codec$</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/Codec$.html" title="scala.io.Codec">Codec$</a></p>""")
     markdown("@scaladoc[scala.io package](scala.io.package)") shouldEqual
-      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/package.html">scala.io package</a></p>""")
+      html("""<p><a href="http://www.scala-lang.org/api/2.11.12/scala/io/package.html" title="scala.io">scala.io package</a></p>""")
   }
 
   it should "support referenced links" in {
@@ -116,6 +116,6 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
         |
         |  [1]: org.example.Model
       """) shouldEqual
-      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html">Model</a> spec</p>""")
+      html("""<p>The <a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model">Model</a> spec</p>""")
   }
 }

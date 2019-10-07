@@ -3,7 +3,7 @@ Linking
 
 #### External links
 
-External links can be created with the default markdown syntax `[text](url)`. Additionally Paradox introduces `@link:` which accepts the `open=new` attribute to make the link open in a new browser tab (it adds `target="_blank" rel="noopener noreferrer"` to the anchor tag).
+External links can be created with the default markdown syntax `[text](url)`. Additionally Paradox introduces `@link:` which accepts the `open=new` attribute to make the link open in a new browser tab (it adds `target="_blank" rel="noopener noreferrer"` to the anchor tag), and the `title` attribute to be used on the `a` tag.
 
 ```
 See the @link:[Paradox GitHub repo](https://github.com/lightbend/paradox) { open=new } for more information.
@@ -83,6 +83,12 @@ URL.
 
 The `@scaladoc` directive also supports site root relative base URLs using the `.../` syntax.
 
+@@@ Note
+
+The [sbt-paradox-apidoc](https://github.com/lightbend/sbt-paradox-apidoc) plugin creates `@scaladoc` and `@javadoc` API links by searching the class paths for the appropriate class to link to.
+
+@@@
+
 #### @javadoc directive
 
 Use the `@javadoc` directives to link to Javadoc sites based on the package
@@ -111,6 +117,12 @@ By default, `javadoc.java.base_url` is configured to the Javadoc
 associated with the `java.specification.version` system property.
 
 The `@javadoc` directive also supports site root relative base URLs using the `.../` syntax.
+
+@@@ Note
+
+The [sbt-paradox-apidoc](https://github.com/lightbend/sbt-paradox-apidoc) plugin creates `@scaladoc` and `@javadoc` API links by searching the class paths for the appropriate class to link to.
+
+@@@
 
 #### @github directive
 

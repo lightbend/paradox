@@ -174,7 +174,9 @@ object Writer {
         case n: ExpLinkNodeExtended =>
           val rendering: LinkRenderer.Rendering = new LinkRenderer.Rendering(url, text)
           val r2 =
-            if (StringUtils.isEmpty(title)) rendering
+            if (n.attributes.value("title") != null)
+              rendering.withAttribute("title", encode(n.attributes.value("title")))
+            else if (StringUtils.isEmpty(title)) rendering
             else rendering.withAttribute("title", encode(title))
           if (n.attributes.value("open", "same") == "new") {
             r2
