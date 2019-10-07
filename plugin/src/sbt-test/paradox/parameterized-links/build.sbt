@@ -33,5 +33,5 @@ TaskKey[Unit]("checkJavadocJavalibContent") := {
   assert(file.exists, s"${file.getAbsolutePath} did not exist")
   val content = IO.readLines(file).mkString
   assert(content.matches(
-    raw"""<p><a href="https://docs.oracle.com/javase/\d+/docs/api/\?java/io/File\.html#separator">File\.separator</a></p>"""))
+    raw"""<p><a href="https://docs.oracle.com/javase/\d+/docs/api/\?java/io/File\.html#separator" title="java.io.File">File\.separator</a></p>"""))
 }
