@@ -32,7 +32,7 @@ object Common extends AutoPlugin {
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
   override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.10",
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8"),
     resolvers += Resolver.typesafeIvyRepo("releases"),
