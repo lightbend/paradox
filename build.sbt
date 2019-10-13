@@ -20,7 +20,7 @@ import java.lang.management.ManagementFactory
 inThisBuild(List(
   organization := "com.lightbend.paradox",
   licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
-  scalaVersion := "2.12.8",
+  scalaVersion := "2.12.10",
   organizationName := "lightbend",
   organizationHomepage := Some(url("https://lightbend.com/")),
   homepage := Some(url("https://developer.lightbend.com/docs/paradox/current/")),
