@@ -24,3 +24,7 @@
  * [Project-info directive](https://github.com/lightbend/sbt-paradox-project-info): Shows a standardised project information section which is controlled from a configuration file.
 
    ![Screenshot](../img/alpakka-kafka-project-info.png)
+   
+ * [Diagrams directive](https://github.com/TeamWanari/sbt-paradox-diagrams): Draw diagrams from formal definitions. For more information check the [examples](https://teamwanari.github.io/sbt-paradox-diagrams/examples.html)!
+                                                                             
+   ![Screenshot](../img/diagrams-screenshot.png)
