@@ -15,8 +15,8 @@
  */
 
 addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.8.3")
-addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.2.0")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.6.6")
+addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.3.0")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.6.5")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-project-info" % "1.1.3")
 addSbtPlugin("com.geirsson"          % "sbt-ci-release"  % "1.3.2")
 
@@ -28,7 +28,7 @@ lazy val metaroot = (project in file(".")).
 lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
     sbtPlugin := true,
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.10",
     addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4"),
     unmanagedSourceDirectories in Compile :=
       mirrorScalaSource((baseDirectory in ThisBuild).value.getParentFile / "theme-plugin")
