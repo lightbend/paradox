@@ -100,4 +100,14 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""")
   }
 
+  it should "support choosing direct links for per package" in {
+    val ctx = context.andThen(c => c.copy(properties = c.properties.updated("javadoc.org.reactivestreams.link_style", "direct")))
+    markdown(
+      """Frames: @javadoc:[Actor](akka.actor.Actor)
+        |Direct: @javadoc[Publisher](org.reactivestreams.Publisher)""".stripMargin)(ctx) shouldEqual
+      html(
+        """<p>Frames: <a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a>
+          |Direct: <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""".stripMargin)
+  }
+
 }

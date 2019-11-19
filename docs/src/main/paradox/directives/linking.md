@@ -99,19 +99,21 @@ and use the default base URL as a fall-back if nothing else matches.
 
 For example, given:
 
- - `javadoc.akka.base_url=http://doc.akka.io/japi/akka/2.4.10`
- - `javadoc.akka.http.base_url=http://doc.akka.io/japi/akka-http/10.0.0`
+```
+javadoc.akka.base_url=http://doc.akka.io/japi/akka/2.4.10
+javadoc.akka.link_style=frames
+javadoc.akka.http.base_url=http://doc.akka.io/japi/akka-http/10.0.0
+javadoc.akka.http.link_style=frames
+```
 
 Then `@javadoc[Http](akka.http.javadsl.Http#shutdownAllConnectionPools--)` will resolve to
 <http://doc.akka.io/japi/akka-http/10.0.0/?akka/http/javadsl/Http.html#shutdownAllConnectionPools-->.
 
-The `@javadoc` directive offers two styles of linking, linking to the frames version of
-the apidocs, and linking to the non frames version. This can be controlled using the `javadoc.link_style`
-property, setting it to `frames` for frames style linking, where rendered links link to the frames
-version of the javadocs, passing the class in the query parameter, and `direct` for linking direct
-to the classes page. The link style defaults to `direct` if the `java.specification.version` system
-property indicates Java 9+, since the JDK 9 Javadoc tool does not generate framed api docs. Otherwise,
-for Java 1.8 and earlier, it defaults to `frames`.
+Since Java 9 the API documentation from Javadoc doesn't use frames anymore. Links to classes
+need to include the class as part of the URI. To choose the link style for the Javadoc-generated
+API to link to, set the `javadoc.<package>.link_style` to `direct`.
+
+The root default, `javadoc.base_url` is configured to be `frames` (Javadoc < 9 style).
 
 By default, `javadoc.java.base_url` is configured to the Javadoc
 associated with the `java.specification.version` system property.
