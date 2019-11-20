@@ -50,6 +50,11 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/?java/io/File.html#pathSeparator" title="java.io.File"><code>File.pathSeparator</code></a></p>""")
   }
 
+  it should "handle method links with parentheses correctly" in {
+    markdown("@javadoc[File.pathSeparator](java.io.File#method())") shouldEqual
+      html("""<p><a href="https://docs.oracle.com/javase/8/docs/api/?java/io/File.html#method()" title="java.io.File"><code>File.pathSeparator</code></a></p>""")
+  }
+
   it should "handle class links correctly" in {
     markdown("@javadoc[Http](akka.http.javadsl.Http)") shouldEqual
       html("""<p><a href="http://doc.akka.io/japi/akka-http/10.0.0/index.html?akka/http/javadsl/Http.html" title="akka.http.javadsl.Http"><code>Http</code></a></p>""")
