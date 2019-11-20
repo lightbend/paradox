@@ -18,6 +18,7 @@ package org.pegdown;
 
 import org.parboiled.Context;
 import org.parboiled.Rule;
+import org.parboiled.annotations.Cached;
 import org.parboiled.support.StringBuilderVar;
 import org.parboiled.support.Var;
 import org.pegdown.ast.*;
@@ -265,8 +266,22 @@ public class ParserWithDirectives extends Parser {
     public Rule Enclosed(char start, Rule matching, char end) {
         return Sequence(
             start,
-            Sequence(ZeroOrMore(TestNot(end), NotNewline(), matching), push(match())),
+            Sequence(ZeroOrMore(EnclosedSnippet(start, matching, end)), push(match())),
             end
+        );
+    }
+
+    @SuppressWarnings( {"InfiniteRecursion"})
+    @Cached
+    /* Counts start/end pairs so the enclosing chars can occur inside of an Enclosed block if matched */
+    public Rule EnclosedSnippet(char start, Rule matching, char end) {
+        return FirstOf(
+            Sequence(TestNot(start), TestNot(end), NotNewline(), matching),
+            Sequence(
+                start,
+                ZeroOrMore(EnclosedSnippet(start, matching, end)),
+                end
+            )
         );
     }
 
