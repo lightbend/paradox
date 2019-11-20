@@ -273,7 +273,7 @@ case class ExtRefDirective(ctx: Writer.Context)
 abstract class ApiDocDirective(name: String)
   extends ExternalLinkDirective(name, name + ":") {
 
-  def resolveApiLink(base: Url, link: String): Url
+  protected def resolveApiLink(link: String): Url
 
   val defaultBaseUrl = PropertyUrl(name + ".base_url", variables.get)
   val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
@@ -301,10 +301,7 @@ abstract class ApiDocDirective(name: String)
   }
 
   override protected def resolveLink(node: DirectiveNode, link: String): Url = {
-    val levels = link.split("[.]")
-    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
-    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
-    val resolvedLink = resolveApiLink(baseUrl, link)
+    val resolvedLink = resolveApiLink(link)
     val resolvedPath = resolvedLink.base.getPath
     if (resolvedPath startsWith ".../") resolvedLink.copy(path = page.base + resolvedPath.drop(4)) else resolvedLink
   }
@@ -314,7 +311,10 @@ abstract class ApiDocDirective(name: String)
 case class ScaladocDirective(ctx: Writer.Context)
   extends ApiDocDirective("scaladoc") {
 
-  def resolveApiLink(baseUrl: Url, link: String): Url = {
+  protected def resolveApiLink(link: String): Url = {
+    val levels = link.split("[.]")
+    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
     val url = Url(link).base
     val path = url.getPath.replace('.', '/') + ".html"
     (baseUrl / path) withFragment (url.getFragment)
@@ -323,27 +323,43 @@ case class ScaladocDirective(ctx: Writer.Context)
 }
 
 object JavadocDirective {
+
+  val LinkStyleFrames = "frames"
+  val LinkStyleDirect = "direct"
+
   // If Java 9+ we default to linking directly to the file, since it doesn't support frames, otherwise we default
   // to linking to the frames version with the class in the query parameter. Also, the version of everything up to
   // and including 8 starts with 1., so that's an easy way to tell if it's 9+ or not.
-  val framesLinkStyle = sys.props.get("java.specification.version").exists(_.startsWith("1."))
+  val jdkDependentLinkStyle = if (sys.props.get("java.specification.version").exists(_.startsWith("1."))) LinkStyleFrames else LinkStyleDirect
+
+  final val JavadocLinkStyleProperty = raw"""javadoc\.(.*).link_style""".r
 }
 
 case class JavadocDirective(ctx: Writer.Context)
   extends ApiDocDirective("javadoc") {
 
-  val framesLinkStyle = variables.get("javadoc.link_style").fold(JavadocDirective.framesLinkStyle)(_ == "frames")
+  import JavadocDirective._
 
-  def resolveApiLink(baseUrl: Url, link: String): Url = {
-    val url = Url(link).base
-    val path = url.getPath.replace('.', '/') + ".html"
-    if (framesLinkStyle) {
-      baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
-    } else {
-      (baseUrl / path) withFragment url.getFragment
-    }
+  val rootLinkStyle = variables.getOrElse("javadoc.link_style", LinkStyleFrames)
+  val javaLinkStyle = variables.getOrElse("javadoc.link_style", jdkDependentLinkStyle)
+
+  val packageLinkStyle: Map[String, String] = Map("java" -> javaLinkStyle) ++ variables.collect {
+    case (property @ JavadocLinkStyleProperty(pkg), url) => (pkg, variables(property))
   }
 
+  override protected def resolveApiLink(link: String): Url = {
+    val levels = link.split("[.]")
+    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val packagesDeepestFirst = packages.reverse
+    val baseUrl = packagesDeepestFirst.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
+    val linkStyle = packagesDeepestFirst.collectFirst(packageLinkStyle).getOrElse(rootLinkStyle)
+    val url = Url(link).base
+    val path = url.getPath.replace('.', '/') + ".html"
+    linkStyle match {
+      case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+      case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
+    }
+  }
 }
 
 object GitHubResolver {
