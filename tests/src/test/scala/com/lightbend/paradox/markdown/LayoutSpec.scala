@@ -16,7 +16,6 @@
 
 package com.lightbend.paradox.template
 
-import org.scalatest.{ FlatSpec, Matchers }
 import java.io.File
 import com.lightbend.paradox.markdown.{ MarkdownBaseSpec }
 

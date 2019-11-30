@@ -19,9 +19,10 @@ package com.lightbend.paradox.markdown
 import java.io.File
 
 import scala.collection.immutable.Seq
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SnippetIndentationTest extends FlatSpec with Matchers {
+class SnippetIndentationTest extends AnyFlatSpec with Matchers {
 
   "indentation" should "be flattened" in {
     val in =
