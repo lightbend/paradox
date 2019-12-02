@@ -16,9 +16,10 @@
 
 package com.lightbend.paradox.markdown
 
-import org.scalatest.{ FlatSpec, Matchers }
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class PagePropertiesSpec extends FlatSpec with Matchers {
+class PagePropertiesSpec extends AnyFlatSpec with Matchers {
   def convertPath = Path.replaceSuffix(".md", ".html")_
 
   val propOut = Map("out" -> "newIndex.html")

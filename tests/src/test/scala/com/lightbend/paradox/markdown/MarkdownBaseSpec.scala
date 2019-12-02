@@ -16,8 +16,9 @@
 
 package com.lightbend.paradox.markdown
 
-import org.scalatest.{ FlatSpecLike, Matchers }
+import org.scalatest.flatspec.AnyFlatSpecLike
+import org.scalatest.matchers.should.Matchers
 
-abstract class MarkdownBaseSpec extends MarkdownTestkit with Matchers with FlatSpecLike {
+abstract class MarkdownBaseSpec extends MarkdownTestkit with Matchers with AnyFlatSpecLike {
 
 }

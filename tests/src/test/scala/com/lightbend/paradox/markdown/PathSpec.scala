@@ -16,10 +16,11 @@
 
 package com.lightbend.paradox.markdown
 
-import org.scalatest.{ FlatSpec, Matchers }
 import java.io.File
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class PathSpec extends FlatSpec with Matchers {
+class PathSpec extends AnyFlatSpec with Matchers {
   def provideRelativeMapping: (Map[String, String], String) = {
     val mappings = Map(
       "index.md" -> "index.html",
