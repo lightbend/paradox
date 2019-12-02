@@ -30,6 +30,21 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
     htmlPages(testPath -> text)
   }
 
+  "Markdown link" should "create links" in {
+    testMarkdown("[External page](https://domain.com/page.html)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html">External page</a></p>""")
+  }
+
+  it should "check the link against `paradoxIllegalLinkPath`" in {
+    the[ParadoxException] thrownBy {
+      testMarkdown("[Link to Markdown](page2.md)")
+    } should have message "Illegal URL 'page2.md' with text 'Link to Markdown' (see `paradoxIllegalLinkPath` setting)"
+    the[ParadoxException] thrownBy {
+      testMarkdown("[Link to Markdown](../section/page2.md#with-anchor)")
+    } should have message "Illegal URL '../section/page2.md#with-anchor' with text 'Link to Markdown' (see `paradoxIllegalLinkPath` setting)"
+    testMarkdown("[External md page](https://domain.com/README.md)") shouldEqual testHtml("""<p><a href="https://domain.com/README.md">External md page</a></p>""")
+    testMarkdown("[External md page](http://domain.com/README.md)") shouldEqual testHtml("""<p><a href="http://domain.com/README.md">External md page</a></p>""")
+  }
+
   "Link directive" should "create links" in {
     testMarkdown("@link[External page](https://domain.com/page.html)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html" title="External page">External page</a></p>""")
   }

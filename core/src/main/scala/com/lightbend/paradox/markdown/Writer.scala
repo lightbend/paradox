@@ -25,6 +25,7 @@ import org.pegdown.ast._
 import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer, VerbatimSerializer }
 
 import scala.collection.JavaConverters._
+import scala.util.matching.Regex
 
 /**
  * A configured markdown to HTML serializer.
@@ -92,6 +93,10 @@ object Writer {
 
   val DefaultSourceSuffix = ".md"
   val DefaultTargetSuffix = ".html"
+  val DefaultIllegalLinkPath =
+    // #DefaultIllegalLinkPath
+    raw"""^(?!https?:).*\.md(#.*)?""".r
+  // #DefaultIllegalLinkPath
 
   /**
    * Write context which is passed through to directives.
@@ -106,10 +111,12 @@ object Writer {
       pageMappings:   String => Option[String] = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
       sourceSuffix:   String                   = DefaultSourceSuffix,
       targetSuffix:   String                   = DefaultTargetSuffix,
+      linkFailPath:   Regex                    = DefaultIllegalLinkPath,
       groups:         Map[String, Seq[String]] = Map.empty,
       properties:     Map[String, String]      = Map.empty,
       includeIndexes: List[Int]                = Nil
   ) {
+    val IllegalLinkPathPattern = linkFailPath.pattern
     def page = location.tree.label
   }
 
@@ -170,6 +177,8 @@ object Writer {
     override def render(node: ExpLinkNode, text: String): LinkRenderer.Rendering = {
       val title = node.title
       val url = substituteVarsInString(node.url, context.properties)
+      if (context.IllegalLinkPathPattern.matcher(url).matches)
+        context.error(s"Illegal URL '$url' with text '$text' (see `paradoxIllegalLinkPath` setting)", context.page, node)
       node match {
         case n: ExpLinkNodeExtended =>
           val rendering: LinkRenderer.Rendering = new LinkRenderer.Rendering(url, text)

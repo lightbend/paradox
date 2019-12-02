@@ -92,3 +92,15 @@ You may set a page specific description by adding it to the @ref:[Front matter](
 project.description: This page is very useful for whatever you want to know.
 ---
 ```
+
+## Illegal link pattern
+
+Paradox fails for regular markdown links which seem to link to a local markdown file (`.md`), as the `@ref` directive is often left out. This check is controlled by the regex in `paradoxIllegalLinkPath`.
+
+```scala
+paradoxIllegalLinkPath := raw".*\.md".r
+```
+
+The exact default pattern is
+
+@@snip [snip](/core/src/main/scala/com/lightbend/paradox/markdown/Writer.scala) { #DefaultIllegalLinkPath }
