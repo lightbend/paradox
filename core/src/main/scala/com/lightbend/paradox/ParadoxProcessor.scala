@@ -45,6 +45,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
     outputDirectory:    File,
     sourceSuffix:       String,
     targetSuffix:       String,
+    illegalLinkPath:    Regex,
     groups:             Map[String, Seq[String]],
     properties:         Map[String, String],
     navDepth:           Int,
@@ -72,7 +73,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         checkDuplicateAnchors(page, logger)
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
-        val writerContext = Writer.Context(loc, pages, reader, writer, new PagedErrorContext(errorCollector, page), logger, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
+        val writerContext = Writer.Context(loc, pages, reader, writer, new PagedErrorContext(errorCollector, page), logger, currentMapping, sourceSuffix, targetSuffix, illegalLinkPath, groups, pageProperties)
         val pageContext = PageContents(leadingBreadcrumbs, groups, loc, writer, writerContext, navToc, pageToc)
         val outputFile = new File(outputDirectory, page.path)
         outputFile.getParentFile.mkdirs
@@ -126,7 +127,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer)
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
         val writerContext = Writer.Context(loc, pages, reader, writer, new PagedErrorContext(errorCollector, page),
-          logger, currentMapping, "", "", groups, pageProperties)
+          logger, currentMapping, "", "", "".r, groups, pageProperties)
         val serializer = linkCapturer.serializer(writerContext)
         page.markdown.accept(serializer)
         validate(loc.next)

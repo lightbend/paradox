@@ -33,6 +33,7 @@ trait ParadoxKeys {
   val paradoxExpectedNumberOfRoots = settingKey[Int]("How many ToC roots to expect.")
   val paradoxRoots = settingKey[List[String]]("Which ToC roots (pages without parent) to expect.")
   val paradoxLeadingBreadcrumbs = settingKey[List[(String, String)]]("Any leading breadcrumbs (label -> url)")
+  val paradoxIllegalLinkPath = settingKey[Regex]("Path pattern to fail site creation (eg. to protect against missing `@ref` for links).")
   val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
   val paradoxDirectives = taskKey[Seq[Writer.Context => Directive]]("Enabled paradox directives.")
   val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")

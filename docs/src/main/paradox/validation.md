@@ -2,6 +2,12 @@
 
 Paradox will validate many directives at compile time, such as ref links and their fragments, and snippets. However, some validation can't be done (or is best not done) at compile time, such as validating external links, or non ref links to other paths in the documentation. Paradox provides two tasks to do this validation.
 
+@@@ note
+
+Paradox fails for regular markdown links which seem to link to a local markdown file (`.md`), as the `@ref` directive is often left out. This check is controlled by the regex in `paradoxIllegalLinkPath`.
+
+@@@
+
 ## Validating internal links
 
 The `paradoxValidateInternalLinks` task can validate internal links that are not validated at compile time. An internal link is any non `@ref` link that does not specify an authority part of its URI (ie, relative links).
