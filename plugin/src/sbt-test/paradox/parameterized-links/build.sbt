@@ -13,6 +13,7 @@ paradoxProperties in Compile ++= Map(
   "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion",
   "javadoc.link_style" -> "frames",
   "javadoc.base_url" -> s"https://api.example.com/java",
+  "javadoc.java.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
   "javadoc.akka.base_url" -> s"http://doc.akka.io/japi/akka/$akkaVersion",
   "javadoc.akka.http.base_url" -> s"http://doc.akka.io/japi/akka-http/$akkaHttpVersion"
 )
@@ -33,5 +34,5 @@ TaskKey[Unit]("checkJavadocJavalibContent") := {
   assert(file.exists, s"${file.getAbsolutePath} did not exist")
   val content = IO.readLines(file).mkString
   assert(content.matches(
-    raw"""<p><a href="https://docs.oracle.com/javase/\d+/docs/api/\?java/io/File\.html#separator" title="java.io.File"><code>File\.separator</code></a></p>"""))
+    raw"""<p><a href="https://docs.oracle.com/javase/8/docs/api/\?java/io/File\.html#separator" title="java.io.File"><code>File\.separator</code></a></p>"""))
 }
