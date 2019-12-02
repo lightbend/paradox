@@ -47,8 +47,7 @@ lazy val core = project
     libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
       Library.st4,
-      Library.jsoup,
-      Library.scalatest % "test"
+      Library.jsoup
     ),
     parallelExecution in Test := false
   )
