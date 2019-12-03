@@ -291,7 +291,8 @@ abstract class ApiDocDirective(name: String)
       if (path.endsWith("$")) path.substring(0, path.length - 1)
       else if (path.endsWith(".package")) path.substring(0, path.length - ".package".length)
       else if (path.endsWith(".index")) path.substring(0, path.length - ".index".length)
-      else path
+      // for inner-class notation with $$
+      else path.replaceAll("\\$\\$", ".")
     } catch {
       case e @ Url.Error(reason) =>
         ctx.logger.debug(e)
@@ -308,6 +309,11 @@ abstract class ApiDocDirective(name: String)
 
 }
 
+object ApiDocDirective {
+  /** This relies on the naming convention of packages being all-lowercase (which is rarely broken). */
+  def packageDotsToSlash(s: String) = s.replaceAll("(\\b[a-z]+)\\.", "$1/")
+}
+
 case class ScaladocDirective(ctx: Writer.Context)
   extends ApiDocDirective("scaladoc") {
 
@@ -315,9 +321,15 @@ case class ScaladocDirective(ctx: Writer.Context)
     val levels = link.split("[.]")
     val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
+    url(link, baseUrl)
+  }
+
+  private def classDotsToDolllarDollar(s: String) = s.replaceAll("(\\b[A-Z].+)\\.", "$1\\$\\$")
+
+  private def url(link: String, baseUrl: Url): Url = {
     val url = Url(link).base
-    val path = url.getPath.replace('.', '/') + ".html"
-    (baseUrl / path) withFragment (url.getFragment)
+    val path = classDotsToDolllarDollar(ApiDocDirective.packageDotsToSlash(url.getPath)) + ".html"
+    (baseUrl / path).withFragment(url.getFragment)
   }
 
 }
@@ -337,7 +349,7 @@ object JavadocDirective {
 
   private[markdown] def url(link: String, baseUrl: Url, linkStyle: LinkStyle): Url = {
     val url = Url(link).base
-    val path = url.getPath.replaceAll("(\\b[a-z]+)\\.", "$1/") + ".html"
+    val path = ApiDocDirective.packageDotsToSlash(url.getPath) + ".html"
     linkStyle match {
       case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
       case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
@@ -702,6 +714,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
     val startDelimiter = node.attributes.value("start-delimiter", "$")
     val stopDelimiter = node.attributes.value("stop-delimiter", "$")
+
     def coordinate(name: String): Option[String] =
       Option(node.attributes.value(name)).map { value =>
         variables.foldLeft(value) {
