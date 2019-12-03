@@ -25,6 +25,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
     "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.12/",
     "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
     "scaladoc.akka.http.base_url" -> "http://doc.akka.io/api/akka-http/10.0.0",
+    "scaladoc.akka.kafka.base_url" -> "https://doc.akka.io/api/alpakka-kafka/current",
     "scaladoc.root.relative.base_url" -> ".../scaladoc/api/",
     "scaladoc.broken.base_url" -> "https://c|"
   )
@@ -60,6 +61,16 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html" title="akka.http.scaladsl.Http"><code>Http</code></a></p>""")
     markdown("@scaladoc[Actor](akka.actor.Actor)") shouldEqual
       html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a></p>""")
+  }
+
+  it should "handle inner classes correctly" in {
+    markdown("@scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)") shouldEqual
+      html("""<p><a href="https://doc.akka.io/api/alpakka-kafka/current/akka/kafka/scaladsl/Consumer$$Control.html" title="akka.kafka.scaladsl.Consumer.Control"><code>Consumer.Control</code></a></p>""")
+  }
+
+  it should "handle inner classes in $$ notation" in {
+    markdown("@scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer$$Control)") shouldEqual
+      html("""<p><a href="https://doc.akka.io/api/alpakka-kafka/current/akka/kafka/scaladsl/Consumer$$Control.html" title="akka.kafka.scaladsl.Consumer.Control"><code>Consumer.Control</code></a></p>""")
   }
 
   it should "retain whitespace before or after" in {
