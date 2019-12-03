@@ -20,6 +20,8 @@ import com.lightbend.paradox.ParadoxException
 
 class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
+  import JavadocDirective._
+
   implicit val context = writerContextWithProperties(
     "javadoc.base_url" -> "http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/",
     "javadoc.link_style" -> "frames",
@@ -113,6 +115,22 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
       html(
         """<p>Frames: <a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a>
           |Direct: <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""".stripMargin)
+  }
+
+  it should "correctly link to an inner JRE class" in {
+    url(
+      "java.util.concurrent.Flow.Subscriber",
+      Url("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/"),
+      LinkStyleDirect
+    ) should be(Url("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html"))
+  }
+
+  it should "correctly link to an inner Akka class" in {
+    url(
+      "akka.actor.testkit.typed.Effect.MessageAdapter",
+      Url("https://doc.akka.io/japi/akka/current/"),
+      LinkStyleDirect
+    ) should be(Url("https://doc.akka.io/japi/akka/current/akka/actor/testkit/typed/Effect.MessageAdapter.html"))
   }
 
 }

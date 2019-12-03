@@ -324,6 +324,7 @@ case class ScaladocDirective(ctx: Writer.Context)
 
 object JavadocDirective {
 
+  type LinkStyle = String
   val LinkStyleFrames = "frames"
   val LinkStyleDirect = "direct"
 
@@ -333,6 +334,16 @@ object JavadocDirective {
   val jdkDependentLinkStyle = if (sys.props.get("java.specification.version").exists(_.startsWith("1."))) LinkStyleFrames else LinkStyleDirect
 
   final val JavadocLinkStyleProperty = raw"""javadoc\.(.*).link_style""".r
+
+  private[markdown] def url(link: String, baseUrl: Url, linkStyle: LinkStyle): Url = {
+    val url = Url(link).base
+    val path = url.getPath.replaceAll("(\\b[a-z]+)\\.", "$1/") + ".html"
+    linkStyle match {
+      case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+      case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
+    }
+  }
+
 }
 
 case class JavadocDirective(ctx: Writer.Context)
@@ -353,12 +364,8 @@ case class JavadocDirective(ctx: Writer.Context)
     val packagesDeepestFirst = packages.reverse
     val baseUrl = packagesDeepestFirst.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
     val linkStyle = packagesDeepestFirst.collectFirst(packageLinkStyle).getOrElse(rootLinkStyle)
-    val url = Url(link).base
-    val path = url.getPath.replace('.', '/') + ".html"
-    linkStyle match {
-      case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
-      case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
-    }
+    url(link, baseUrl, linkStyle)
+
   }
 }
 
