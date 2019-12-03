@@ -324,11 +324,11 @@ case class ScaladocDirective(ctx: Writer.Context)
     url(link, baseUrl)
   }
 
-  private def classDotsToDolllarDollar(s: String) = s.replaceAll("(\\b[A-Z].+)\\.", "$1\\$\\$")
+  private def classDotsToDollarDollar(s: String) = s.replaceAll("(\\b[A-Z].+)\\.", "$1\\$\\$")
 
   private def url(link: String, baseUrl: Url): Url = {
     val url = Url(link).base
-    val path = classDotsToDolllarDollar(ApiDocDirective.packageDotsToSlash(url.getPath)) + ".html"
+    val path = classDotsToDollarDollar(ApiDocDirective.packageDotsToSlash(url.getPath)) + ".html"
     (baseUrl / path).withFragment(url.getFragment)
   }
 
