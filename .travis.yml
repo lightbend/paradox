@@ -14,10 +14,10 @@ jobs:
       name: "Copyright header check"
 
     - stage: test
-      script: sbt verify
+      script: SOURCE_DATE_EPOCH=1547039022 sbt verify
       name: "Compile, test and build docs with JDK8"
 
-    - script: sbt verify
+    - script: SOURCE_DATE_EPOCH=1547039022 sbt verify
       name: "Compile, test and build docs with JDK11"
       env: TRAVIS_JDK=adopt@1.11.0-4
 
