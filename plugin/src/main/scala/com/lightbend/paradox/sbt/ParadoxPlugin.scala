@@ -261,7 +261,9 @@ object ParadoxPlugin extends AutoPlugin {
 
   def dateProperties: Map[String, String] = {
     import java.text.SimpleDateFormat
-    val now = new java.util.Date
+    val now = sys.env.get("SOURCE_DATE_EPOCH")
+      .map(sde => new java.util.Date(sde.toLong * 1000))
+      .getOrElse(new java.util.Date())
     val day = new SimpleDateFormat("dd").format(now)
     val month = new SimpleDateFormat("MMM").format(now)
     val year = new SimpleDateFormat("yyyy").format(now)
