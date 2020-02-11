@@ -24,8 +24,8 @@ object Version {
   val prettify   = "4-Mar-2013-1"
   val sbtWeb     = "1.4.4"
   val scalatest  = "3.1.0"
-  val st4        = "4.3"
-  val jsoup      = "1.12.1"
+  val st4        = "4.2"
+  val jsoup      = "1.12.2"
 }
 
 object Library {
