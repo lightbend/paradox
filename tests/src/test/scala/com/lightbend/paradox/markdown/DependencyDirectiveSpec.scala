@@ -254,12 +254,12 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-xml">
       |&lt;properties&gt;
-      |  &lt;AkkaHttpVersion&gt;10.1.0&lt;/AkkaHttpVersion&gt;
+      |  &lt;akka.http.version&gt;10.1.0&lt;/akka.http.version&gt;
       |&lt;/properties&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
       |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
-      |  &lt;version&gt;$${AkkaHttpVersion}&lt;/version&gt;
+      |  &lt;version&gt;$${akka.http.version}&lt;/version&gt;
       |&lt;/dependency&gt;</code></pre>
       |</dd>
       |<dt>gradle</dt>
@@ -308,18 +308,18 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-xml">
       |&lt;properties&gt;
-      |  &lt;AkkaVersion&gt;2.5.29&lt;/AkkaVersion&gt;
-      |  &lt;AkkaHttpVersion&gt;10.1.0&lt;/AkkaHttpVersion&gt;
+      |  &lt;akka.version&gt;2.5.29&lt;/akka.version&gt;
+      |  &lt;akka.http.version&gt;10.1.0&lt;/akka.http.version&gt;
       |&lt;/properties&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
       |  &lt;artifactId&gt;akka-stream_2.12&lt;/artifactId&gt;
-      |  &lt;version&gt;$${AkkaVersion}&lt;/version&gt;
+      |  &lt;version&gt;$${akka.version}&lt;/version&gt;
       |&lt;/dependency&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
       |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
-      |  &lt;version&gt;$${AkkaHttpVersion}&lt;/version&gt;
+      |  &lt;version&gt;$${akka.http.version}&lt;/version&gt;
       |&lt;/dependency&gt;</code></pre>
       |</dd>
       |<dt>gradle</dt>

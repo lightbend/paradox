@@ -770,7 +770,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
     def mvn(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
       val elements =
-        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> { if (symbols.contains(version)) s"$${$version}" else version }) ++
+        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> { if (symbols.contains(version)) s"$${${dotted(version)}}" else version }) ++
           classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
       elements.map {
         case (element, value) => s"  <$element>$value</$element>"
@@ -825,7 +825,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
         case "maven" | "Maven" | "mvn" =>
           val symbolProperties = if (symbols.isEmpty) "" else
             symbolPostfixes.map { sp =>
-              val symb = s"""${requiredCoordinate(VersionSymbol + sp)}"""
+              val symb = s"""${dotted(requiredCoordinate(VersionSymbol + sp))}"""
               s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;"""
             }.mkString("&lt;properties&gt;\n", "\n", "\n&lt;/properties&gt;\n")
           val artifacts = dependencyPostfixes.map { dp =>
@@ -848,6 +848,8 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
     }
     printer.print("""</dl>""")
   }
+
+  def dotted(symbol: String): String = symbol.replaceAll("(.)([A-Z])", "$1.$2").toLowerCase
 }
 
 case class IncludeDirective(ctx: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
