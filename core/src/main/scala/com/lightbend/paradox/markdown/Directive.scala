@@ -695,6 +695,9 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
  * Dependency directive.
  */
 case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
+  val VersionSymbol = "symbol"
+  val VersionValue = "value"
+
   val variables = ctx.properties
   val ScalaVersion = variables.get("scala.version")
   val ScalaBinaryVersion = variables.get("scala.binary.version")
@@ -708,6 +711,9 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
   def renderDependency(tools: String, node: DirectiveNode, printer: Printer): Unit = {
     val classes = Seq("dependency", node.attributes.classesString).filter(_.nonEmpty)
+
+    val symbolPostfixes = node.attributes.keys().asScala.toSeq
+      .filter(_.startsWith(VersionSymbol)).sorted.map(_.replace(VersionSymbol, ""))
 
     val dependencyPostfixes = node.attributes.keys().asScala.toSeq
       .filter(_.startsWith("group")).sorted.map(_.replace("group", ""))
@@ -729,6 +735,10 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
         ""
       }
 
+    val symbols = symbolPostfixes.map { sp =>
+      requiredCoordinate(VersionSymbol + sp)
+    }.toSet
+
     def sbt(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
       val scopeString = scope.map {
         case s @ ("runtime" | "compile" | "test") => " % " + s.capitalize
@@ -736,29 +746,31 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
       }
       val classifierString = classifier.map(" classifier " + '"' + _ + '"')
       val extra = (scopeString ++ classifierString).mkString
+      val versionOrSymbol = if (symbols.contains(version)) version else s""""$version""""
       (ScalaVersion, ScalaBinaryVersion) match {
         case (Some(scalaVersion), _) if artifact.endsWith("_" + scalaVersion) =>
           val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaVersion.length)
-          s""""$group" % "$strippedArtifact" % "$version"$extra cross CrossVersion.full"""
+          s""""$group" % "$strippedArtifact" % ${versionOrSymbol}$extra cross CrossVersion.full"""
 
         case (_, Some(scalaBinVersion)) if artifact.endsWith("_" + scalaBinVersion) =>
           val strippedArtifact = artifact.substring(0, artifact.length - 1 - scalaBinVersion.length)
-          s""""$group" %% "$strippedArtifact" % "$version"$extra"""
+          s""""$group" %% "$strippedArtifact" % ${versionOrSymbol}$extra"""
 
         case _ =>
-          s""""$group" % "$artifact" % "$version"$extra"""
+          s""""$group" % "$artifact" % $versionOrSymbol$extra"""
       }
     }
 
     def gradle(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
       val conf = scope.getOrElse("compile")
       val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
-      s"""$conf group: '$group', name: '$artifact', version: '$version'$extra""".stripMargin
+      val v = if (symbols.contains(version)) s"versions.$version" else s"'$version'"
+      s"""$conf group: '$group', name: '$artifact', version: $v$extra""".stripMargin
     }
 
     def mvn(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
       val elements =
-        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> version) ++
+        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> { if (symbols.contains(version)) s"$${$version}" else version }) ++
           classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
       elements.map {
         case (element, value) => s"  <$element>$value</$element>"
@@ -769,6 +781,9 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
     tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
       val (lang, code) = tool match {
         case "sbt" =>
+          val symbolVals = symbolPostfixes.map { sp =>
+            s"""val ${requiredCoordinate(VersionSymbol + sp)} = "${requiredCoordinate(VersionValue + sp)}"\n"""
+          }.mkString
           val artifacts = dependencyPostfixes.map { dp =>
             sbt(
               requiredCoordinate(s"group$dp"),
@@ -785,9 +800,13 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
               Seq("libraryDependencies ++= Seq(", artifacts.map(a => s"  $a").mkString(",\n"), ")").mkString("\n")
           }
 
-          ("scala", libraryDependencies)
+          ("scala", symbolVals + libraryDependencies)
 
         case "gradle" | "Gradle" =>
+          val symbolProperties = if (symbols.isEmpty) "" else
+            symbolPostfixes.map { sp =>
+              s"""  ${requiredCoordinate(VersionSymbol + sp)}: "${requiredCoordinate(VersionValue + sp)}""""
+            }.mkString("versions += [\n", ",\n", "\n]\n")
           val artifacts = dependencyPostfixes.map { dp =>
             gradle(
               requiredCoordinate(s"group$dp"),
@@ -801,9 +820,14 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
           val libraryDependencies =
             Seq("dependencies {", artifacts.map(a => s"  $a").mkString(",\n"), "}").mkString("\n")
 
-          ("gradle", libraryDependencies)
+          ("gradle", symbolProperties + libraryDependencies)
 
         case "maven" | "Maven" | "mvn" =>
+          val symbolProperties = if (symbols.isEmpty) "" else
+            symbolPostfixes.map { sp =>
+              val symb = s"""${requiredCoordinate(VersionSymbol + sp)}"""
+              s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;\n"""
+            }.mkString("&lt;properties&gt;\n", "\n", "&lt;/properties&gt;\n")
           val artifacts = dependencyPostfixes.map { dp =>
             mvn(
               requiredCoordinate(s"group$dp"),
@@ -814,7 +838,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
             )
           }
 
-          ("xml", artifacts.mkString("\n"))
+          ("xml", symbolProperties + artifacts.mkString("\n"))
       }
 
       printer.print(s"""<dt>$tool</dt>""")

@@ -231,4 +231,49 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |</dl>
       """)
   }
+
+  it should "render version values for sbt" in {
+    markdown("""
+               |@@dependency[sbt,Maven,gradle] {
+               |  symbol="AkkaHttpVersion"
+               |  value="10.1.0"
+               |  group="com.typesafe.akka"
+               |  artifact="akka-http_$scala.binary.version$"
+               |  version="AkkaHttpVersion"
+               |}""") shouldEqual html(s"""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |val AkkaHttpVersion = "10.1.0"
+      |libraryDependencies += "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion</code></pre>
+      |</dd>
+      |<dt>Maven</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-xml">
+      |&lt;properties&gt;
+      |  &lt;AkkaHttpVersion&gt;10.1.0&lt;/AkkaHttpVersion&gt;
+      |&lt;/properties&gt;
+      |&lt;dependency&gt;
+      |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+      |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
+      |  &lt;version&gt;$${AkkaHttpVersion}&lt;/version&gt;
+      |&lt;/dependency&gt;</code></pre>
+      |</dd>
+      |<dt>gradle</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-gradle">
+      |versions += [
+      |  AkkaHttpVersion: "10.1.0"
+      |]
+      |dependencies {
+      |  compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: versions.AkkaHttpVersion
+      |}</code>
+      |</pre>
+      |</dd>
+      |</dl>""")
+  }
 }
