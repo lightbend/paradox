@@ -826,8 +826,8 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
           val symbolProperties = if (symbols.isEmpty) "" else
             symbolPostfixes.map { sp =>
               val symb = s"""${requiredCoordinate(VersionSymbol + sp)}"""
-              s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;\n"""
-            }.mkString("&lt;properties&gt;\n", "\n", "&lt;/properties&gt;\n")
+              s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;"""
+            }.mkString("&lt;properties&gt;\n", "\n", "\n&lt;/properties&gt;\n")
           val artifacts = dependencyPostfixes.map { dp =>
             mvn(
               requiredCoordinate(s"group$dp"),
