@@ -221,6 +221,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     outputDirectory: File,
     sourceSuffix:    String,
     targetSuffix:    String,
+    illegalLinkPath: Regex,
     groups:          Map[String, Seq[String]],
     properties:      Map[String, String],
     navDepth:        Int,
@@ -247,7 +248,9 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
         checkDuplicateAnchors(page, logger)
         val pageProperties = properties ++ page.properties.get
         val currentMapping = Path.generateTargetFile(Path.relativeLocalPath(page.rootSrcPage, page.file.getPath), globalPageMappings)
-        val writerContext = Writer.Context(loc, pages, reader, singlePageWriter, new PagedErrorContext(errorCollector, page), logger, currentMapping, sourceSuffix, targetSuffix, groups, pageProperties)
+        val writerContext = Writer.Context(loc, pages, reader, singlePageWriter,
+          new PagedErrorContext(errorCollector, page), logger, currentMapping, sourceSuffix, targetSuffix, illegalLinkPath,
+          groups, pageProperties)
         val pageContents = PageContents(Nil, groups, loc, singlePageWriter, writerContext, navToc, new TableOfContents())
         render(loc.next, rendered :+ pageContents)
       case None => rendered
