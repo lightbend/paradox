@@ -139,3 +139,4 @@ lazy val docs = (project in file("docs"))
   )
 
 addCommandAlias("verify", ";test:compile ;compile:doc ;test ;scripted ;docs/paradox")
+addCommandAlias("verify-no-docker", ";test:compile ;compile:doc ;test ;scripted paradox/* ;docs/paradox")
