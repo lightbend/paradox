@@ -1,0 +1,14 @@
+body {
+  background: white;
+  font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+  color: black;
+}
+
+/* This is to check that this file is being included in the toc and that our print-toc.xslt is being used. */
+nav.print a {
+  color: darkgreen;
+}
+
+nav.print .toc-page-no {
+  float: right;
+}

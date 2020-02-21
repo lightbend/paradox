@@ -1,0 +1,8 @@
+> paradoxPdf
+# Comparing PDFs is inherently fragile, change one small thing (eg, version of wkhtmltopdf), and this will break.
+# That's ok though, the idea is that the output file produced should be manually inspected each time it changes,
+# and as long it looks ok, then it should be copied and put into the expected directory. To do this, uncomment the
+# pause command below, and run the scripted test. When it stops, it will tell you which tmp directory it's in,
+# then you can inspect and copy the pdf.
+# $ pause
+> comparePdfs target/paradox/pdf/main/paradox-test.pdf expected/paradox-test.pdf

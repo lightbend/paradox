@@ -145,6 +145,7 @@ object Page {
   object Properties {
     val DefaultOutMdIndicator = "out"
     val DefaultLayoutMdIndicator = "layout"
+    val DefaultSingleLayoutMdIndicator = "single-layout"
   }
 
   /**

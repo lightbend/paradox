@@ -146,7 +146,7 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
     }
   }
 
-  private def link[A <: Linkable](base: String, linkable: A, active: Option[Location[Page]]): Node = {
+  protected def link[A <: Linkable](base: String, linkable: A, active: Option[Location[Page]]): Node = {
     val (path, classAttributes) = linkable match {
       case page: Page =>
         val isActive = active.exists(_.tree.label.path == page.path)

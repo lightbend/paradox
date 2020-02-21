@@ -10,3 +10,16 @@ $ must-mirror target/paradox/site/main/b/b.html expected/b/b.html
 $ must-mirror target/paradox/site/main/c/a.html expected/c/a.html
 $ must-mirror target/paradox/site/main/css/page.css expected/css/page.css
 $ must-mirror target/paradox/site/main/images/a.png expected/images/a.png
+
+> paradoxSingle
+
+$ must-mirror target/paradox/site-single/main/a.html expected-single/a.html
+$ must-mirror target/paradox/site-single/main/css/page.css expected-single/css/page.css
+$ must-mirror target/paradox/site-single/main/images/a.png expected-single/images/a.png
+$ absent target/paradox/site-single/main/a/a.html
+$ absent target/paradox/site-single/main/a/b.html
+$ absent target/paradox/site-single/main/a/c.html
+$ absent target/paradox/site-single/main/b/a.html
+$ absent target/paradox/site-single/main/b/a/a.html
+$ absent target/paradox/site-single/main/b/b.html
+$ absent target/paradox/site-single/main/c/a.html

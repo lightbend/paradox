@@ -52,4 +52,12 @@ trait ParadoxKeys {
   val paradoxValidateLinks = taskKey[Unit]("Validate all non ref paradox links.")
   val paradoxValidationIgnorePaths = settingKey[List[Regex]]("List of regular expressions to apply to paths to determine if they should be ignored.")
   val paradoxValidationSiteBasePath = settingKey[Option[String]]("The base path that the documentation is deployed to, allows validating links on the docs site that are outside of the documentation root tree")
+  val paradoxSingle = taskKey[File]("Build the single page HTML Paradox site")
+  val paradoxSingleMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to single page HTML")
+  val paradoxPdf = taskKey[File]("Build the paradox PDF")
+  val paradoxPdfSite = taskKey[File]("Build the single page HTML Paradox site")
+  val paradoxPdfDockerImage = settingKey[String]("The wkhtmltopdf docker image to us")
+  val paradoxPdfArgs = settingKey[Seq[String]]("Arguments for wkhtmltopdf generation")
+  val paradoxPdfTocTemplate = settingKey[Option[String]]("XSL template to use for generating the table of contents, relative to the theme directory.")
+  val paradoxPdfMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to single page HTML")
 }

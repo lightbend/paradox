@@ -28,7 +28,7 @@ import collection.concurrent.TrieMap
 /**
  * Page template writer.
  */
-class PageTemplate(directory: File, val defaultName: String = "page", startDelimiter: Char = '$', stopDelimiter: Char = '$') {
+class PageTemplate(directory: File, val defaultName: String = "page", val defaultSingleName: String = "single", val defaultPrintName: String = "print", startDelimiter: Char = '$', stopDelimiter: Char = '$') {
   private val templates = new STRawGroupDir(directory.getAbsolutePath, startDelimiter, stopDelimiter)
 
   /**
@@ -36,20 +36,42 @@ class PageTemplate(directory: File, val defaultName: String = "page", startDelim
    */
   def write(name: String, contents: PageTemplate.Contents, target: File): File = {
     import scala.collection.JavaConverters._
+    write(name, target) { t =>
+      // TODO, only load page properties, not global ones
+      for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) { t.add(content._1, content._2) }
+      t.add("page", contents)
+    }
+  }
 
+  /**
+   * Write all the templated pages to the target file.
+   */
+  def writeSingle(name: String, firstPage: PageTemplate.Contents, contents: Seq[PageTemplate.Contents], target: File): File = {
+    import scala.collection.JavaConverters._
+    write(name, target) { t =>
+      t.add("page", firstPage)
+      t.add("pages", contents.asJava)
+    }
+  }
+
+  def writePrintCover(name: String, page: PageTemplate.Contents, target: File): File = {
+    write(name, target) { t =>
+      t.add("page", page)
+    }
+  }
+
+  private def write(name: String, target: File)(addVars: ST => ST): File = {
     val template = Option(templates.getInstanceOf(name)) match {
-      case Some(t) => // TODO, only load page properties, not global ones
-        for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) { t.add(content._1, content._2) }
-        t.add("page", contents)
+      case Some(t) =>
+        addVars(t)
       case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
     val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
     val noIndentWriter = new NoIndentWriter(osWriter)
     template.write(noIndentWriter)
-    osWriter.close
+    osWriter.close()
     target
   }
-
 }
 
 object PageTemplate {
@@ -69,6 +91,7 @@ object PageTemplate {
     def getToc: String
     def getSource_url: String
     def getProperties: JMap[String, String]
+    def getPath: String
   }
 
   /**
