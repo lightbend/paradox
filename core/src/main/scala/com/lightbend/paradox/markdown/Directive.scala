@@ -310,8 +310,8 @@ abstract class ApiDocDirective(name: String)
 }
 
 object ApiDocDirective {
-  /** This relies on the naming convention of packages being all-lowercase (which is rarely broken). */
-  def packageDotsToSlash(s: String) = s.replaceAll("(\\b[a-z]+)\\.", "$1/")
+  /** This relies on the naming convention of packages being all-ascii-lowercase (which is rarely broken), numbers and underscore. */
+  def packageDotsToSlash(s: String) = s.replaceAll("(\\b[a-z][a-z0-9_]*)\\.", "$1/")
 }
 
 case class ScaladocDirective(ctx: Writer.Context)

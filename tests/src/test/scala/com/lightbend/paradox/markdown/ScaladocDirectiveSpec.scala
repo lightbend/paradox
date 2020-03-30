@@ -35,6 +35,11 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
       html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model"><code>Model</code></a></p>""")
   }
 
+  it should "create accept digits in package names" in {
+    markdown("@scaladoc[ObjectMetadata](akka.s3.ObjectMetadata)") shouldEqual
+      html("""<p><a href="http://doc.akka.io/api/akka/2.4.10/akka/s3/ObjectMetadata.html" title="akka.s3.ObjectMetadata"><code>ObjectMetadata</code></a></p>""")
+  }
+
   it should "support 'scaladoc:' as an alternative name" in {
     markdown("@scaladoc:[Model](org.example.Model)") shouldEqual
       html("""<p><a href="http://example.org/api/0.1.2/org/example/Model.html" title="org.example.Model"><code>Model</code></a></p>""")
