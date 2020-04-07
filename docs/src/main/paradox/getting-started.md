@@ -23,7 +23,7 @@ lazy val root = (project in file(".")).
   )
 ```
 
-### Writing docmentation
+### Writing documentation
 
 Create your first documentation page in `src/main/paradox/index.md` which is the entry page of your documentation site.
 
