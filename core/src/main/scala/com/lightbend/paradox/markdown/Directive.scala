@@ -111,6 +111,7 @@ trait SourceDirective {
         ctx.error(s"Undefined reference key [$key]", node)
         ""
       }
+
     Writer.substituteVarsInString(node.source match {
       case x: DirectiveNode.Source.Direct => x.value
       case x: DirectiveNode.Source.Ref    => ref(x.value)
@@ -697,10 +698,11 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
 case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
   val VersionSymbol = "symbol"
   val VersionValue = "value"
+  val ScalaBinaryVersionVar = "scala.binary.version"
 
   val variables = ctx.properties
   val ScalaVersion = variables.get("scala.version")
-  val ScalaBinaryVersion = variables.get("scala.binary.version")
+  val ScalaBinaryVersion = variables.get(ScalaBinaryVersionVar)
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     node.contentsNode.getChildren.asScala.headOption match {
@@ -720,6 +722,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
     val startDelimiter = node.attributes.value("start-delimiter", "$")
     val stopDelimiter = node.attributes.value("stop-delimiter", "$")
+    val scalaBinaryVersionVarUse = startDelimiter + ScalaBinaryVersionVar + stopDelimiter
 
     def coordinate(name: String): Option[String] =
       Option(node.attributes.value(name)).map { value =>
@@ -733,6 +736,17 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
       coordinate(name).getOrElse {
         ctx.error(s"'$name' is not defined", node)
         ""
+      }
+
+    def requiredCoordinateRaw(name: String): String =
+      Option(node.attributes.value(name)).getOrElse {
+        ctx.error(s"'$name' is not defined", node)
+        ""
+      }
+
+    val showSymbolScalaBinary =
+      dependencyPostfixes.exists { dp =>
+        requiredCoordinateRaw(s"artifact$dp").endsWith(scalaBinaryVersionVarUse)
       }
 
     val symbols = symbolPostfixes.map { sp =>
@@ -761,16 +775,29 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
       }
     }
 
-    def gradle(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+    def gradle(group: String, artifact: String, rawArtifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+      val artifactName = ScalaBinaryVersion match {
+        case Some(v) if (rawArtifact.endsWith(scalaBinaryVersionVarUse)) =>
+          "\"" + artifact.substring(0, artifact.length - v.length) + "${versions.ScalaBinary}\""
+        case _ => s"'$artifact'"
+      }
       val conf = scope.getOrElse("compile")
       val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
       val v = if (symbols.contains(version)) s"versions.$version" else s"'$version'"
-      s"""$conf group: '$group', name: '$artifact', version: $v$extra""".stripMargin
+      s"""$conf group: '$group', name: $artifactName, version: $v$extra""".stripMargin
     }
 
-    def mvn(group: String, artifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+    def mvn(group: String, artifact: String, rawArtifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
+      val artifactName = ScalaBinaryVersion match {
+        case Some(v) if rawArtifact.endsWith(scalaBinaryVersionVarUse) =>
+          artifact.substring(0, artifact.length - v.length) + "${scala.binary.version}"
+        case _ => artifact
+      }
+
       val elements =
-        Seq("groupId" -> group, "artifactId" -> artifact, "version" -> { if (symbols.contains(version)) s"$${${dotted(version)}}" else version }) ++
+        Seq("groupId" -> group, "artifactId" -> artifactName, "version" -> {
+          if (symbols.contains(version)) s"$${${dotted(version)}}" else version
+        }) ++
           classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
       elements.map {
         case (element, value) => s"  <$element>$value</$element>"
@@ -803,14 +830,20 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
           ("scala", symbolVals + libraryDependencies)
 
         case "gradle" | "Gradle" =>
-          val symbolProperties = if (symbols.isEmpty) "" else
-            symbolPostfixes.map { sp =>
+          val scalaBinaryVersionProperties =
+            if (showSymbolScalaBinary) ScalaBinaryVersion.flatMap { v =>
+              Some(s"""  ScalaBinary: "$v"""")
+            }
+            else None
+          val symbolProperties = if (scalaBinaryVersionProperties.isEmpty && symbols.isEmpty) "" else
+            (symbolPostfixes.map { sp =>
               s"""  ${requiredCoordinate(VersionSymbol + sp)}: "${requiredCoordinate(VersionValue + sp)}""""
-            }.mkString("versions += [\n", ",\n", "\n]\n")
+            } ++ scalaBinaryVersionProperties).mkString("versions += [\n", ",\n", "\n]\n")
           val artifacts = dependencyPostfixes.map { dp =>
             gradle(
               requiredCoordinate(s"group$dp"),
               requiredCoordinate(s"artifact$dp"),
+              requiredCoordinateRaw(s"artifact$dp"),
               requiredCoordinate(s"version$dp"),
               coordinate(s"scope$dp"),
               coordinate(s"classifier$dp")
@@ -823,15 +856,22 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
           ("gradle", symbolProperties + libraryDependencies)
 
         case "maven" | "Maven" | "mvn" =>
-          val symbolProperties = if (symbols.isEmpty) "" else
-            symbolPostfixes.map { sp =>
+          val scalaBinaryVersionProperties =
+            if (showSymbolScalaBinary) ScalaBinaryVersion.flatMap { v =>
+              Some(s"""  &lt;scala.binary.version&gt;$v&lt;/scala.binary.version&gt;""")
+            }
+            else None
+          val symbolProperties = if (scalaBinaryVersionProperties.isEmpty && symbols.isEmpty) "" else
+            (symbolPostfixes.map { sp =>
               val symb = s"""${dotted(requiredCoordinate(VersionSymbol + sp))}"""
               s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;"""
-            }.mkString("&lt;properties&gt;\n", "\n", "\n&lt;/properties&gt;\n")
+            } ++ scalaBinaryVersionProperties)
+              .mkString("&lt;properties&gt;\n", "\n", "\n&lt;/properties&gt;\n")
           val artifacts = dependencyPostfixes.map { dp =>
             mvn(
               requiredCoordinate(s"group$dp"),
               requiredCoordinate(s"artifact$dp"),
+              requiredCoordinateRaw(s"artifact$dp"),
               requiredCoordinate(s"version$dp"),
               coordinate(s"scope$dp"),
               coordinate(s"classifier$dp")
