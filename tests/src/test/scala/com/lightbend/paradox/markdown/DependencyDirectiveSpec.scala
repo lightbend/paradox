@@ -36,7 +36,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |  group="com.typesafe.akka"
       |  artifact="akka-http_$scala.binary.version$"
       |  version="$project.version$"
-      |}""") shouldEqual html("""
+      |}""") shouldEqual html(s"""
       |<dl class="dependency">
       |<dt>sbt</dt>
       |<dd>
@@ -48,9 +48,12 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<dd>
       |<pre class="prettyprint">
       |<code class="language-xml">
+      |&lt;properties&gt;
+      |  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
+      |&lt;/properties&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
-      |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
+      |  &lt;artifactId&gt;akka-http_$${scala.binary.version}&lt;/artifactId&gt;
       |  &lt;version&gt;10.0.10&lt;/version&gt;
       |&lt;/dependency&gt;</code></pre>
       |</dd>
@@ -58,8 +61,11 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<dd>
       |<pre class="prettyprint">
       |<code class="language-gradle">
+      |versions += [
+      |  ScalaBinary: "2.12"
+      |]
       |dependencies {
-      |  compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: '10.0.10'
+      |  compile group: 'com.typesafe.akka', name: "akka-http_$${versions.ScalaBinary}", version: '10.0.10'
       |}</code>
       |</pre>
       |</dd>
@@ -190,7 +196,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |@@dependency [sbt,maven,gradle] {
       |  group=org.example  artifact=foo_2.12  version=0.1.0
       |  group2=org.example artifact2=bar_2.12 version2=0.2.0
-      |}""") shouldEqual html("""
+      |}""") shouldEqual html(s"""
       |<dl class="dependency">
       |<dt>sbt</dt>
       |<dd>
@@ -255,10 +261,11 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<code class="language-xml">
       |&lt;properties&gt;
       |  &lt;akka.http.version&gt;10.1.0&lt;/akka.http.version&gt;
+      |  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
       |&lt;/properties&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
-      |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
+      |  &lt;artifactId&gt;akka-http_$${scala.binary.version}&lt;/artifactId&gt;
       |  &lt;version&gt;$${akka.http.version}&lt;/version&gt;
       |&lt;/dependency&gt;</code></pre>
       |</dd>
@@ -267,10 +274,11 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<code class="language-gradle">
       |versions += [
-      |  AkkaHttpVersion: "10.1.0"
+      |  AkkaHttpVersion: "10.1.0",
+      |  ScalaBinary: "2.12"
       |]
       |dependencies {
-      |  compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: versions.AkkaHttpVersion
+      |  compile group: 'com.typesafe.akka', name: "akka-http_$${versions.ScalaBinary}", version: versions.AkkaHttpVersion
       |}</code>
       |</pre>
       |</dd>
@@ -310,15 +318,16 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |&lt;properties&gt;
       |  &lt;akka.version&gt;2.5.29&lt;/akka.version&gt;
       |  &lt;akka.http.version&gt;10.1.0&lt;/akka.http.version&gt;
+      |  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
       |&lt;/properties&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
-      |  &lt;artifactId&gt;akka-stream_2.12&lt;/artifactId&gt;
+      |  &lt;artifactId&gt;akka-stream_$${scala.binary.version}&lt;/artifactId&gt;
       |  &lt;version&gt;$${akka.version}&lt;/version&gt;
       |&lt;/dependency&gt;
       |&lt;dependency&gt;
       |  &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
-      |  &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
+      |  &lt;artifactId&gt;akka-http_$${scala.binary.version}&lt;/artifactId&gt;
       |  &lt;version&gt;$${akka.http.version}&lt;/version&gt;
       |&lt;/dependency&gt;</code></pre>
       |</dd>
@@ -328,11 +337,12 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |<code class="language-gradle">
       |versions += [
       |  AkkaVersion: "2.5.29",
-      |  AkkaHttpVersion: "10.1.0"
+      |  AkkaHttpVersion: "10.1.0",
+      |  ScalaBinary: "2.12"
       |]
       |dependencies {
-      |  compile group: 'com.typesafe.akka', name: 'akka-stream_2.12', version: versions.AkkaVersion,
-      |  compile group: 'com.typesafe.akka', name: 'akka-http_2.12', version: versions.AkkaHttpVersion
+      |  compile group: 'com.typesafe.akka', name: "akka-stream_$${versions.ScalaBinary}", version: versions.AkkaVersion,
+      |  compile group: 'com.typesafe.akka', name: "akka-http_$${versions.ScalaBinary}", version: versions.AkkaHttpVersion
       |}</code>
       |</pre>
       |</dd>
