@@ -83,11 +83,45 @@ URL.
 
 The `@scaladoc` directive also supports site root relative base URLs using the `.../` syntax.
 
+The directive will identify inner classes and resolve a reference like
+`@scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)` to
+<https://doc.akka.io/api/alpakka-kafka/current/akka/kafka/scaladsl/Consumer$$Control.html>. 
+This is working fine as long as all (sub)package names are starting with a lowercase
+character while class names start with an uppercase character -- which is most often
+the case.
+
+In a situation where a (sub)package name starts with an uppercase character the
+reference is resolved incorrectly. This can be fixed by configuring the properties
+`scaladoc.<package-prefix>.package_name_style` or the default 
+`scaladoc.package_name_style` and set it to `startWithAnycase`.
+The directive will match the link text with the longest common package prefix
+and use the default style as a fall-back if nothing else matches. Keep in mind
+that the `OuterClass.InnerClass` notation is no longer working then and has
+to be replaced by `OuterClass$$InnerClass`.
+
+For example, given:
+
+```sbt
+paradoxProperties in Compile ++= Map(
+  //...
+  "scaladoc.com.example.package_name_style" -> s"startWithAnycase"
+)
+```
+
+```markdown
+ @scaladoc[SomeClass](com.example.Some.Library.SomeClass)
+ @scaladoc[Outer.Inner](com.example.Some.Library.Outer$$Inner)
+ @scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)
+```
+
+Then all are being resolved to the correct URL.
+
 @@@ Note
 
 The [sbt-paradox-apidoc](https://github.com/lightbend/sbt-paradox-apidoc) plugin creates `@scaladoc` and `@javadoc` API links by searching the class paths for the appropriate class to link to.
 
 @@@
+
 
 #### @javadoc directive
 
@@ -119,6 +153,42 @@ By default, `javadoc.java.base_url` is configured to the Javadoc
 associated with the `java.specification.version` system property.
 
 The `@javadoc` directive also supports site root relative base URLs using the `.../` syntax.
+
+The directive will identify inner classes and resolve a reference like
+`@javadoc[Flow.Subscriber](java.util.concurrent.Flow.Subscriber)` to
+<https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html>. 
+This is working fine as long as all (sub)package names are starting with a lowercase
+character while class names start with an uppercase character -- which is most often
+the case.
+
+In a situation where a (sub)package name starts with an uppercase character the
+reference is resolved incorrectly. This can be fixed by configuring the properties
+`javadoc.<package-prefix>.package_name_style` or the default 
+`javadoc.package_name_style` and set it to `startWithAnycase`.
+The directive will match the link text with the longest common package prefix
+and use the default style as a fall-back if nothing else matches. Keep in mind
+that the `OuterClass.InnerClass` notation is no longer working then. In this case
+the class has to be referenced as `OuterClass$$InnerClass` which is being resolved
+back to the `.`-notation.
+
+For example, given:
+
+```sbt
+paradoxProperties in Compile ++= Map(
+  //...
+  "javadoc.com.example.package_name_style" -> s"startWithAnycase"
+)
+```
+
+```markdown
+ @javadoc[SomeClass](com.example.Some.Library.SomeClass)
+ @javadoc[Outer.Inner](com.example.Some.Library.Outer$$Inner)
+ @javadoc[outer.Inner](com.example.Some.Library.outer$$Inner)
+ @javadoc[Outer.inner](com.example.Some.Library.Outer$$inner)
+ @javadoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)
+```
+
+Then all are being resolved to the correct URL.
 
 @@@ Note
 

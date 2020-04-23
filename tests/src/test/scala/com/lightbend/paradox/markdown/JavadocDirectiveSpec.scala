@@ -20,8 +20,6 @@ import com.lightbend.paradox.ParadoxException
 
 class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
-  import JavadocDirective._
-
   implicit val context = writerContextWithProperties(
     "javadoc.base_url" -> "http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/",
     "javadoc.link_style" -> "frames",
@@ -29,12 +27,44 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
     "javadoc.akka.base_url" -> "http://doc.akka.io/japi/akka/2.4.10",
     "javadoc.akka.http.base_url" -> "http://doc.akka.io/japi/akka-http/10.0.0/index.html",
     "javadoc.root.relative.base_url" -> ".../javadoc/api/",
-    "javadoc.broken.base_url" -> "https://c|"
+    "javadoc.broken.base_url" -> "https://c|",
+    "javadoc.org.example.base_url" -> "http://example.org/api/0.1.2/"
   )
+
+  def renderedMd(url: String, title: String, name: String, prefix: String = "", suffix: String = "") =
+    html(Seq(prefix, """<p><a href="""", url, """" title="""", title, """"><code>""", name, """</code></a></p>""", suffix).mkString(""))
 
   "javadoc directive" should "create links using configured URL templates" in {
     markdown("@javadoc[Publisher](org.reactivestreams.Publisher)") shouldEqual
       html("""<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/?org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""")
+  }
+
+  it should "create accept digits in package names" in {
+    markdown("@javadoc[ObjectMetadata](akka.s3.ObjectMetadata)") shouldEqual
+      renderedMd("http://doc.akka.io/japi/akka/2.4.10/?akka/s3/ObjectMetadata.html", "akka.s3.ObjectMetadata", "ObjectMetadata")
+  }
+
+  it should "create accept also non ascii characters (java letters) in package names" in {
+    markdown("@javadoc[S0meTHing](org.example.some.stränµè.ıãß.S0meTHing)") shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/some/stränµè/ıãß/S0meTHing.html", "org.example.some.stränµè.ıãß.S0meTHing", "S0meTHing")
+  }
+
+  it should "create accept also non ascii characters (java letters) in class names" in {
+    markdown("@javadoc[Grüße](org.example.some.Grüße)") shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/some/Grüße.html", "org.example.some.Grüße", "Grüße")
+  }
+
+  it should "create accept uppercase in package names" in {
+    markdown("@javadoc[S0meTHing](org.example.soME.stränµè.ıãß.S0meTHing)") shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/soME/stränµè/ıãß/S0meTHing.html", "org.example.soME.stränµè.ıãß.S0meTHing", "S0meTHing")
+  }
+
+  it should "create accept subpackages starting with uppercase" in {
+    implicit val context = writerContextWithProperties(
+      "javadoc.package_name_style" -> "startWithAnycase",
+      "javadoc.org.example.base_url" -> "http://example.org/api/0.1.2/")
+    markdown("@javadoc[S0meTHing](org.example.soME.stränµè.ıãß.你好.S0meTHing)") shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/soME/stränµè/ıãß/你好/S0meTHing.html", "org.example.soME.stränµè.ıãß.你好.S0meTHing", "S0meTHing")
   }
 
   it should "support 'javadoc:' as an alternative name" in {
@@ -118,19 +148,42 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "correctly link to an inner JRE class" in {
-    url(
-      "java.util.concurrent.Flow.Subscriber",
-      Url("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/"),
-      LinkStyleDirect
-    ) should be(Url("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html"))
+    val ctx = context.andThen(c => c.copy(properties = c.properties
+      .updated("javadoc.java.link_style", "direct")
+      .updated("javadoc.java.base_url", "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/")
+    ))
+    markdown("@javadoc:[Flow.Subscriber](java.util.concurrent.Flow.Subscriber)")(ctx) shouldEqual
+      html("""<p><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="java.util.concurrent.Flow.Subscriber"><code>Flow.Subscriber</code></a></p>""")
   }
 
   it should "correctly link to an inner Akka class" in {
-    url(
-      "akka.actor.testkit.typed.Effect.MessageAdapter",
-      Url("https://doc.akka.io/japi/akka/current/"),
-      LinkStyleDirect
-    ) should be(Url("https://doc.akka.io/japi/akka/current/akka/actor/testkit/typed/Effect.MessageAdapter.html"))
+    val ctx = context.andThen(c => c.copy(properties = c.properties
+      .updated("javadoc.akka.link_style", "direct")
+      .updated("javadoc.akka.base_url", "https://doc.akka.io/japi/akka/current/")
+    ))
+    markdown("@javadoc:[Effect.MessageAdapter](akka.actor.testkit.typed.Effect.MessageAdapter)")(ctx) shouldEqual
+      html("""<p><a href="https://doc.akka.io/japi/akka/current/akka/actor/testkit/typed/Effect.MessageAdapter.html" title="akka.actor.testkit.typed.Effect.MessageAdapter"><code>Effect.MessageAdapter</code></a></p>""")
+  }
+
+  it should "correctly link to an inner class if a subpackage starts with an uppercase character" in {
+    val ctx = context.andThen(c => c.copy(properties = c.properties
+      .updated("javadoc.org.example.package_name_style", "startWithAnycase")
+    ))
+    markdown("@javadoc:[Outer.Inner](org.example.Lib.Outer$$Inner)")(ctx) shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/Lib/Outer.Inner.html", "org.example.Lib.Outer.Inner", "Outer.Inner")
+  }
+
+  it should "correctly link to an inner class if the outer class starts with a lowercase character" in {
+    markdown("@javadoc:[outer.Inner](org.example.lib.outer$$Inner)") shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/lib/outer.Inner.html", "org.example.lib.outer.Inner", "outer.Inner")
+  }
+
+  it should "correctly link to an inner class if the inner class starts with a lowercase character" in {
+    val ctx = context.andThen(c => c.copy(properties = c.properties
+      .updated("javadoc.org.example.package_name_style", "startWithAnycase")
+    ))
+    markdown("@javadoc:[Outer.inner](org.example.lib.Outer$$inner)")(ctx) shouldEqual
+      renderedMd("http://example.org/api/0.1.2/?org/example/lib/Outer.inner.html", "org.example.lib.Outer.inner", "Outer.inner")
   }
 
 }

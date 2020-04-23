@@ -312,25 +312,53 @@ abstract class ApiDocDirective(name: String)
 }
 
 object ApiDocDirective {
-  /** This relies on the naming convention of packages being all-ascii-lowercase (which is rarely broken), numbers and underscore. */
-  def packageDotsToSlash(s: String): String = s.replaceAll("(\\b[a-z][a-z0-9_]*)\\.", "$1/")
+  /**
+   * Converts package dot notation to a path, separated by '/'
+   * Allow all valid java characters and java numbers to be used, according to the java lang spec.
+   *
+   * @param s package or full qualified class name to be converted.
+   * @param packageNameStyle Setting `startWithLowercase`` will get it wrong when a package name
+   *                         starts with an uppercase letter or when an inner class starts with
+   *                         a lowercase character, while `startWithAnycase` will derive the wrong
+   *                         path whenever an inner class is encountered.
+   * @return Resulting path.
+   */
+  def packageDotsToSlash(s: String, packageNameStyle: String): String =
+    if (packageNameStyle == "startWithAnycase")
+      s.replaceAll("(\\b\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)\\.", "$1/")
+    else
+      s.replaceAll("(\\b\\p{javaLowerCase}\\p{javaJavaIdentifierPart}*)\\.", "$1/")
+}
+
+object ScaladocDirective {
+  final val ScaladocPackageNameStyleProperty = raw"""scaladoc\.(.*)\.package_name_style""".r
+
 }
 
 case class ScaladocDirective(ctx: Writer.Context)
   extends ApiDocDirective("scaladoc") {
 
+  import ScaladocDirective._
+
+  val defaultPackageNameStyle = variables.getOrElse("scaladoc.package_name_style", "startWithLowercase")
+  val packagePackageNameStyle: Map[String, String] = variables.collect {
+    case (property @ ScaladocPackageNameStyleProperty(pkg), url) => (pkg, variables(property))
+  }
+
   protected def resolveApiLink(link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.length).map(levels.take(_).mkString("."))
-    val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
-    url(link, baseUrl)
+    val packagesDeepestFirst = packages.reverse
+    val baseUrl = packagesDeepestFirst.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
+    val packageNameStyle = packagesDeepestFirst.collectFirst(packagePackageNameStyle).getOrElse(defaultPackageNameStyle)
+    url(link, baseUrl, packageNameStyle)
   }
 
   private def classDotsToDollarDollar(s: String) = s.replaceAll("(\\b[A-Z].+)\\.", "$1\\$\\$")
 
-  private def url(link: String, baseUrl: Url): Url = {
+  private def url(link: String, baseUrl: Url, packageNameStyle: String): Url = {
     val url = Url(link).base
-    val path = classDotsToDollarDollar(ApiDocDirective.packageDotsToSlash(url.getPath)) + ".html"
+    val path = classDotsToDollarDollar(ApiDocDirective.packageDotsToSlash(url.getPath, packageNameStyle)) + ".html"
     (baseUrl / path).withFragment(url.getFragment)
   }
 
@@ -348,15 +376,7 @@ object JavadocDirective {
   val jdkDependentLinkStyle: LinkStyle = if (sys.props.get("java.specification.version").exists(_.startsWith("1."))) LinkStyleFrames else LinkStyleDirect
 
   final val JavadocLinkStyleProperty: Regex = raw"""javadoc\.(.*).link_style""".r
-
-  private[markdown] def url(link: String, baseUrl: Url, linkStyle: LinkStyle): Url = {
-    val url = Url(link).base
-    val path = ApiDocDirective.packageDotsToSlash(url.getPath) + ".html"
-    linkStyle match {
-      case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
-      case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
-    }
-  }
+  final val JavadocPackageNameStyleProperty: Regex = raw"""javadoc\.(.*)\.package_name_style""".r
 
 }
 
@@ -372,14 +392,31 @@ case class JavadocDirective(ctx: Writer.Context)
     case (property @ JavadocLinkStyleProperty(pkg), _) => (pkg, variables(property))
   }
 
+  val defaultPackageNameStyle = variables.getOrElse("javadoc.package_name_style", "startWithLowercase")
+  val packagePackageNameStyle: Map[String, String] = variables.collect {
+    case (property @ JavadocPackageNameStyleProperty(pkg), url) => (pkg, variables(property))
+  }
+
   override protected def resolveApiLink(link: String): Url = {
     val levels = link.split("[.]")
     val packages = (1 to levels.init.length).map(levels.take(_).mkString("."))
     val packagesDeepestFirst = packages.reverse
     val baseUrl = packagesDeepestFirst.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
     val linkStyle = packagesDeepestFirst.collectFirst(packageLinkStyle).getOrElse(rootLinkStyle)
-    url(link, baseUrl, linkStyle)
+    val packageNameStyle = packagesDeepestFirst.collectFirst(packagePackageNameStyle).getOrElse(defaultPackageNameStyle)
+    url(link, baseUrl, linkStyle, packageNameStyle)
 
+  }
+
+  private def dollarDollarToClassDot(s: String) = s.replaceAll("\\$\\$", ".")
+
+  private[markdown] def url(link: String, baseUrl: Url, linkStyle: LinkStyle, packageNameStyle: String): Url = {
+    val url = Url(link).base
+    val path = dollarDollarToClassDot(ApiDocDirective.packageDotsToSlash(url.getPath, packageNameStyle)) + ".html"
+    linkStyle match {
+      case LinkStyleFrames => baseUrl.withEndingSlash.withQuery(path).withFragment(url.getFragment)
+      case LinkStyleDirect => (baseUrl / path).withFragment(url.getFragment)
+    }
   }
 }
 
