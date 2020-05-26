@@ -58,7 +58,7 @@ case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: 
       node.getChildren.asScala.flatMap {
         case t: TextNode => Seq(t.getText)
         case other       => textNodes(other)
-      }
+      }.toSeq
     }
     textNodes(label).mkString
   }

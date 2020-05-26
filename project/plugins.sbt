@@ -28,7 +28,7 @@ lazy val metaroot = (project in file(".")).
 lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
     sbtPlugin := true,
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.12.11",
     addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4"),
     unmanagedSourceDirectories in Compile :=
       mirrorScalaSource((baseDirectory in ThisBuild).value.getParentFile / "theme-plugin")

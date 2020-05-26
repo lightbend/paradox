@@ -445,8 +445,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
         }
         val includeFile = SourceDirective.resolveFile("include", source, file, properties)
         val frontin = Frontin(includeFile)
-        val filterLabels = Directive.filterLabels("include", include.attributes, labels, properties)
-        val (text, snippetLang) = Snippet(includeFile, labels, filterLabels)
+        val filterLabels = Directive.filterLabels("include", include.attributes, labels.toSeq, properties)
+        val (text, snippetLang) = Snippet(includeFile, labels.toSeq, filterLabels)
         // I guess we could support multiple markup languages in future...
         if (snippetLang != "md" && snippetLang != "markdown") {
           error(s"Don't know how to include '*.$snippetLang' content.", file, include)

@@ -479,9 +479,9 @@ case class SnipDirective(ctx: Writer.Context)
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
-      val filterLabels = Directive.filterLabels("snip", node.attributes, labels, variables)
+      val filterLabels = Directive.filterLabels("snip", node.attributes, labels.toSeq, variables)
       val file = resolveFile("snip", source, page, variables)
-      val (text, snippetLang) = Snippet(file, labels, filterLabels)
+      val (text, snippetLang) = Snippet(file, labels.toSeq, filterLabels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       val sourceUrl = if (variables.contains(GitHubResolver.baseUrl) && variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
@@ -536,8 +536,8 @@ case class FiddleDirective(ctx: Writer.Context)
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
-      val filterLabels = Directive.filterLabels("fiddle", node.attributes, labels, variables)
-      val (code, _) = Snippet(file, labels, filterLabels)
+      val filterLabels = Directive.filterLabels("fiddle", node.attributes, labels.toSeq, variables)
+      val (code, _) = Snippet(file, labels.toSeq, filterLabels)
 
       printer.println.print(
         s"""
