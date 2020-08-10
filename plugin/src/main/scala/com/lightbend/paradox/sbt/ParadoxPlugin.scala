@@ -16,6 +16,7 @@
 
 package com.lightbend.paradox.sbt
 
+import com.lightbend.paradox.markdown.Reader
 import sbt._
 import sbt.Keys._
 import sbt.Defaults.generate
@@ -25,6 +26,7 @@ import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{ Assets, WebKeys }
 import com.typesafe.sbt.web.{ SbtWeb, Compat => WCompat }
 
+import scala.concurrent.duration._
 import scala.sys.process.ProcessLogger
 
 object ParadoxPlugin extends AutoPlugin {
@@ -53,6 +55,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxNavigationDepth := 2,
     paradoxNavigationExpandDepth := None,
     paradoxNavigationIncludeHeaders := false,
+    paradoxParsingTimeout := 2.seconds,
     paradoxExpectedNumberOfRoots := 1,
     paradoxRoots := List("index.html"),
     paradoxDirectives := Writer.defaultDirectives,
@@ -76,7 +79,9 @@ object ParadoxPlugin extends AutoPlugin {
   def baseParadoxSettings: Seq[Setting[_]] = Seq(
     WebKeys.webJarsClassLoader in Assets := classLoader((dependencyClasspath in ParadoxTheme).value),
 
-    paradoxProcessor := new ParadoxProcessor(writer = new Writer(serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value))),
+    paradoxProcessor := new ParadoxProcessor(
+      reader = new Reader(maxParsingTime = paradoxParsingTimeout.value),
+      writer = new Writer(serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value))),
 
     sourceDirectory := {
       val config = configuration.value
