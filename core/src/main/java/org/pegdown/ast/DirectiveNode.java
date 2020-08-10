@@ -84,16 +84,21 @@ public class DirectiveNode extends AbstractNode {
             public final String value;
             public Direct(String value) { this.value = value; }
             public void format(StringBuilder sb) { sb.append('(').append(StringUtils.escape(value)).append(')'); }
+
+            @Override public String toString() { return "Source.Direct("+value+")"; }
         }
 
         public static final class Ref extends Source {
             public final String value;
             public Ref(String value) { this.value = value; }
             public void format(StringBuilder sb) { sb.append('[').append(value).append(']'); }
+
+            @Override public String toString() { return "Source.Ref("+value+")"; }
         }
 
         public static final Source Empty = new Source() {
             public void format(StringBuilder sb) { }
+            @Override public String toString() { return "Source.EMPTY"; }
         };
     }
 }
