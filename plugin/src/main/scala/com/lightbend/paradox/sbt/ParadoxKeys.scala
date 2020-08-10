@@ -21,6 +21,7 @@ import com.lightbend.paradox.ParadoxProcessor
 import com.lightbend.paradox.markdown.{ Directive, Writer }
 import com.lightbend.paradox.template.PageTemplate
 
+import scala.concurrent.duration.Duration
 import scala.util.matching.Regex
 
 trait ParadoxKeys {
@@ -37,6 +38,7 @@ trait ParadoxKeys {
   val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
   val paradoxDirectives = taskKey[Seq[Writer.Context => Directive]]("Enabled paradox directives.")
   val paradoxProcessor = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
+  val paradoxParsingTimeout = settingKey[Duration]("Per-page pegdown parsing timeout. Parsing will fail if it takes longer than this (safe-guard for parser non-termination).")
   val paradoxProperties = taskKey[Map[String, String]]("Property map passed to paradox.")
   val paradoxSourceSuffix = settingKey[String]("Source file suffix for markdown files [default = \".md\"].")
   val paradoxTargetSuffix = settingKey[String]("Target file suffix for HTML files [default = \".html\"].")
