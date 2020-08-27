@@ -86,7 +86,7 @@ object Snippet {
     // A label can be followed by an end of line or one or more spaces followed by an
     // optional single sequence of contiguous (no whitespace) non-word characters
     // (anything not in the group [a-zA-Z0-9_])
-    val labelPattern = ("""#\Q""" + label + """\E( +[^w \t]*)?$""").r
+    val labelPattern = ("""#\Q""" + label + """\E( +[^\w \t]*)?$""").r
     val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
     val extractionState = extractFrom(lines, hasLabel, hasLabel, addFilteredLine(filterLabelLines))
     if (extractionState.snippetLines.isEmpty)
@@ -133,7 +133,7 @@ object Snippet {
   private case object NoBlock extends Block
   private case object InBlock extends Block
 
-  private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^w \t]*)?$""".r
+  private val anyLabelRegex = """#[a-zA-Z_0-9\-]+( +[^\w \t]*)?$""".r
 
   private def containsLabel(line: String): Option[String] =
     anyLabelRegex.findFirstIn(line)
