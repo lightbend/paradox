@@ -5,9 +5,9 @@ object Snippets {
   }
   // #indented
 
-  //#symbols-at-eol        ¯\_(ツ)_/¯
+  //#symbols-at-eol        ¯\(ツ)/¯
   val symbols = Seq('symbols, Symbol("@"), 'EOL)
-  //#symbols-at-eol        ¯\_(ツ)_/¯
+  //#symbols-at-eol        ¯\(ツ)/¯
 
   //#space-after-marker
   val spacy = "Please do not remove ending spaces after these markers"
