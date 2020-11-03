@@ -27,8 +27,12 @@ object Frontin {
   def separates(str: String): Boolean =
     (str.trim == separator) && (str startsWith separator)
 
-  def apply(file: File): Frontin =
-    apply(scala.io.Source.fromFile(file)("UTF-8").getLines.mkString("\n"))
+  def apply(file: File): Frontin = {
+    val source = scala.io.Source.fromFile(file)("UTF-8")
+    val lines = source.getLines.mkString("\n")
+    source.close()
+    apply(lines)
+  }
 
   def apply(str: String): Frontin =
     str.linesWithSeparators.toList match {
