@@ -122,9 +122,8 @@ $(function() {
       .val(group);
 
     // Inline snippets:
-    for (var i = 0; i < catalog[supergroup].length; i++) {
-      var peer = catalog[supergroup][i];
-      if (peer == group) {
+    catalog[supergroup].forEach(peer => {
+      if (peer === group) {
         $("." + group).show();
       } else {
         $("." + peer).hide();
@@ -142,9 +141,7 @@ $(function() {
       });
     });
 
-    for (var i = 0; i < groupChangeListeners.length; i++) {
-      groupChangeListeners[i](group, supergroup, catalog);
-    }
+    groupChangeListeners.forEach(listener => listener(group, supergroup, catalog));
   }
 
   function switchToTab(dt) {
@@ -156,15 +153,12 @@ $(function() {
   }
 
   function groupOf(elem) {
-    var classAttribute = elem.next("dd").find("pre").attr("class");
+    const classAttribute = elem.next("dd").find("pre").attr("class");
     if (classAttribute) {
-      var currentClasses = classAttribute.split(' ');
-      var regex = new RegExp("^group-.*");
-      for(var i = 0; i < currentClasses.length; i++) {
-        if(regex.test(currentClasses[i])) {
-          return currentClasses[i];
-        }
-      }
+      const currentClasses = classAttribute.split(' ');
+      const regex = new RegExp("^group-.*");
+      const matchingClass = currentClasses.find(cc => regex.test(cc));
+      if (matchingClass) return matchingClass;
     }
 
     // No class found? Then use the tab title
