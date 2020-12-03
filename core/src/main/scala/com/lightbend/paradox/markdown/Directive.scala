@@ -696,6 +696,7 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
  * Dependency directive.
  */
 case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
+  val BomVersionSymbol = "bomVersionSymbol"
   val VersionSymbol = "symbol"
   val VersionValue = "value"
   val ScalaBinaryVersionVar = "scala.binary.version"
@@ -713,6 +714,9 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
   def renderDependency(tools: String, node: DirectiveNode, printer: Printer): Unit = {
     val classes = Seq("dependency", node.attributes.classesString).filter(_.nonEmpty)
+
+    val bomPostfixes = node.attributes.keys().asScala.toSeq
+      .filter(_.startsWith(BomVersionSymbol)).sorted.map(_.replace(BomVersionSymbol, ""))
 
     val symbolPostfixes = node.attributes.keys().asScala.toSeq
       .filter(_.startsWith(VersionSymbol)).sorted.map(_.replace(VersionSymbol, ""))
@@ -775,34 +779,56 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
       }
     }
 
-    def gradle(group: String, artifact: String, rawArtifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
-      val artifactName = ScalaBinaryVersion match {
+    /**
+     * Replace Scala bin version in artifact postfix with the property.
+     */
+    def artifactNameWithScalaBin(artifact: String, rawArtifact: String, property: String) = {
+      ScalaBinaryVersion match {
         case Some(v) if (rawArtifact.endsWith(scalaBinaryVersionVarUse)) =>
-          "\"" + artifact.substring(0, artifact.length - v.length) + "${versions.ScalaBinary}\""
-        case _ => s"'$artifact'"
-      }
-      val conf = scope.getOrElse("compile")
-      val extra = classifier.map(c => s", classifier: '$c'").getOrElse("")
-      val v = if (symbols.contains(version)) s"versions.$version" else s"'$version'"
-      s"""$conf group: '$group', name: $artifactName, version: $v$extra""".stripMargin
-    }
-
-    def mvn(group: String, artifact: String, rawArtifact: String, version: String, scope: Option[String], classifier: Option[String]): String = {
-      val artifactName = ScalaBinaryVersion match {
-        case Some(v) if rawArtifact.endsWith(scalaBinaryVersionVarUse) =>
-          artifact.substring(0, artifact.length - v.length) + "${scala.binary.version}"
+          artifact.substring(0, artifact.length - v.length) + property
         case _ => artifact
       }
+    }
+
+    def gradle(group: String, artifact: String, rawArtifact: String, version: Option[String], scope: Option[String], classifier: Option[String]): String = {
+      val artifactName = artifactNameWithScalaBin(artifact, rawArtifact, "${versions.ScalaBinary}")
+      val conf = scope.getOrElse("implementation")
+      val ver = version.map(v => if (symbols.contains(v)) s":$${versions.$v}" else s":$v").getOrElse("")
+      val extra = classifier.map(c => s":$c").getOrElse("")
+      s"""$conf "$group:$artifactName$ver$extra""""
+    }
+
+    def gradleBom(group: String, artifact: String, rawArtifact: String, version: String): String = {
+      val artifactName = artifactNameWithScalaBin(artifact, rawArtifact, "${versions.ScalaBinary}")
+      val ver = if (symbols.contains(version)) s"versions.$version" else version
+      s"""  implementation platform("$group:$artifactName:$ver")"""
+    }
+
+    def mvn(group: String, artifact: String, rawArtifact: String, version: Option[String], `type`: Option[String], scope: Option[String], classifier: Option[String], indent: String): String = {
+      val artifactName = artifactNameWithScalaBin(artifact, rawArtifact, "${scala.binary.version}")
 
       val elements =
-        Seq("groupId" -> group, "artifactId" -> artifactName, "version" -> {
-          if (symbols.contains(version)) s"$${${dotted(version)}}" else version
-        }) ++
-          classifier.map("classifier" -> _) ++ scope.map("scope" -> _)
+        Seq("groupId" -> group, "artifactId" -> artifactName) ++
+          version.map(v => "version" -> {
+            if (symbols.contains(v)) s"$${${dotted(v)}}" else v
+          }) ++ classifier.map("classifier" -> _) ++ `type`.map("type" -> _) ++ scope.map("scope" -> _)
       elements.map {
-        case (element, value) => s"  <$element>$value</$element>"
-      }.mkString("<dependency>\n", "\n", "\n</dependency>").replace("<", "&lt;").replace(">", "&gt;")
+        case (element, value) => s"$indent  &lt;$element&gt;$value&lt;/$element&gt;"
+      }.mkString(s"$indent&lt;dependency&gt;\n", "\n", s"\n$indent&lt;/dependency&gt\n")
     }
+
+    val boms = bomPostfixes.map { p =>
+      (
+        requiredCoordinate(s"bomGroup$p"),
+        requiredCoordinate(s"bomArtifact$p"),
+        requiredCoordinateRaw(s"bomArtifact$p"),
+        requiredCoordinate(s"bomVersionSymbol$p")
+      )
+    }
+    val bomSymbols = boms.map(_._4).toSet
+
+    val symbolVersions = symbolPostfixes
+      .map(sp => requiredCoordinate(VersionSymbol + sp) -> requiredCoordinate(VersionValue + sp))
 
     printer.print(s"""<dl class="${classes.mkString(" ")}">""")
     tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
@@ -831,54 +857,89 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
         case "gradle" | "Gradle" =>
           val scalaBinaryVersionProperties =
-            if (showSymbolScalaBinary) ScalaBinaryVersion.flatMap { v =>
-              Some(s"""  ScalaBinary: "$v"""")
-            }
+            if (showSymbolScalaBinary) ScalaBinaryVersion.map(v => s"""  ScalaBinary: "$v"""")
             else None
           val symbolProperties = if (scalaBinaryVersionProperties.isEmpty && symbols.isEmpty) "" else
-            (symbolPostfixes.map { sp =>
-              s"""  ${requiredCoordinate(VersionSymbol + sp)}: "${requiredCoordinate(VersionValue + sp)}""""
-            } ++ scalaBinaryVersionProperties).mkString("versions += [\n", ",\n", "\n]\n")
+            (symbolVersions
+              .filter(sp => !bomSymbols.contains(sp._1))
+              .map {
+                case (symbol, version) => s"""  $symbol: "$version""""
+              } ++ scalaBinaryVersionProperties).mkString("def versions = [\n", ",\n", "\n]\n")
+          val bomArtifacts =
+            if (boms.nonEmpty) {
+              boms.map {
+                case (group, artifact, artifactRaw, versionSymbol) =>
+                  gradleBom(
+                    group,
+                    artifact,
+                    artifactRaw,
+                    version = symbolVersions.find(_._1 == versionSymbol).map(_._2).getOrElse(sys.error(s"No version found for $versionSymbol")),
+                  )
+              }.mkString("", "\n", "\n\n")
+            } else ""
           val artifacts = dependencyPostfixes.map { dp =>
+            val versionCoordinate = requiredCoordinate(s"version$dp")
             gradle(
               requiredCoordinate(s"group$dp"),
               requiredCoordinate(s"artifact$dp"),
               requiredCoordinateRaw(s"artifact$dp"),
-              requiredCoordinate(s"version$dp"),
+              if (bomSymbols.contains(versionCoordinate)) None else Some(versionCoordinate),
               coordinate(s"scope$dp"),
               coordinate(s"classifier$dp")
             )
           }
 
           val libraryDependencies =
-            Seq("dependencies {", artifacts.map(a => s"  $a").mkString(",\n"), "}").mkString("\n")
+            Seq("dependencies {", bomArtifacts ++ artifacts.map(a => s"  $a").mkString("\n"), "}").mkString("\n")
 
           ("gradle", symbolProperties + libraryDependencies)
 
         case "maven" | "Maven" | "mvn" =>
           val scalaBinaryVersionProperties =
-            if (showSymbolScalaBinary) ScalaBinaryVersion.flatMap { v =>
-              Some(s"""  &lt;scala.binary.version&gt;$v&lt;/scala.binary.version&gt;""")
+            if (showSymbolScalaBinary) ScalaBinaryVersion.map { v =>
+              s"""  &lt;scala.binary.version&gt;$v&lt;/scala.binary.version&gt;"""
             }
             else None
           val symbolProperties = if (scalaBinaryVersionProperties.isEmpty && symbols.isEmpty) "" else
-            (symbolPostfixes.map { sp =>
-              val symb = s"""${dotted(requiredCoordinate(VersionSymbol + sp))}"""
-              s"""  &lt;$symb&gt;${requiredCoordinate(VersionValue + sp)}&lt;/$symb&gt;"""
-            } ++ scalaBinaryVersionProperties)
+            (symbolVersions
+              .filter(sp => !bomSymbols.contains(sp._1))
+              .map {
+                case (symbol, version) =>
+                  val symb = dotted(symbol)
+                  s"""  &lt;$symb&gt;$version&lt;/$symb&gt;"""
+              } ++ scalaBinaryVersionProperties)
               .mkString("&lt;properties&gt;\n", "\n", "\n&lt;/properties&gt;\n")
+          val bomArtifacts =
+            if (boms.nonEmpty) {
+              boms.map {
+                case (group, artifact, artifactRaw, versionSymbol) =>
+                  mvn(
+                    group,
+                    artifact,
+                    artifactRaw,
+                    version = symbolVersions.find(_._1 == versionSymbol).map(_._2),
+                    `type` = Some("pom"),
+                    scope = Some("import"),
+                    classifier = None,
+                    indent = "    "
+                  )
+              }.mkString("&lt;dependencyManagement&gt;\n  &lt;dependencies&gt;\n", "", "  &lt;/dependencies&gt;\n&lt;/dependencyManagement&gt;\n")
+            } else ""
           val artifacts = dependencyPostfixes.map { dp =>
+            val versionCoordinate = requiredCoordinate(s"version$dp")
             mvn(
               requiredCoordinate(s"group$dp"),
               requiredCoordinate(s"artifact$dp"),
               requiredCoordinateRaw(s"artifact$dp"),
-              requiredCoordinate(s"version$dp"),
+              if (bomSymbols.contains(versionCoordinate)) None else Some(versionCoordinate),
+              `type` = None,
               coordinate(s"scope$dp"),
-              coordinate(s"classifier$dp")
+              coordinate(s"classifier$dp"),
+              indent = "  "
             )
           }
 
-          ("xml", symbolProperties + artifacts.mkString("\n"))
+          ("xml", symbolProperties + bomArtifacts ++ artifacts.mkString("&lt;dependencies&gt\n", "", "&lt;/dependencies&gt;"))
       }
 
       printer.print(s"""<dt>$tool</dt>""")
