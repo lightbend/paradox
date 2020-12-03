@@ -364,7 +364,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
                |@@dependency[sbt,Maven,gradle] {
                |  bomGroup="com.typesafe.akka"
                |  bomArtifact="akka-http-bom_$scala.binary.version$"
-               |  bomVersionSymbol="AkkaHttpVersion"
+               |  bomVersionSymbols="AkkaHttpVersion"
                |  symbol="AkkaHttpVersion"
                |  value="10.1.0"
                |  group="com.typesafe.akka"
@@ -426,10 +426,10 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
                |@@dependency[Maven,gradle] {
                |  bomGroup="com.typesafe.akka"
                |  bomArtifact="akka-bom_$scala.binary.version$"
-               |  bomVersionSymbol="AkkaVersion"
+               |  bomVersionSymbols="AkkaVersion"
                |  bomGroup2="com.typesafe.akka"
                |  bomArtifact2="akka-http-bom_$scala.binary.version$"
-               |  bomVersionSymbol2="AkkaHttpVersion"
+               |  bomVersionSymbols2="AkkaHttpVersion"
                |  symbol1="AkkaVersion"
                |  value1="2.6.12"
                |  group1="com.typesafe.akka"
@@ -488,6 +488,92 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |dependencies {
       |  implementation platform("com.typesafe.akka:akka-bom_$${versions.ScalaBinary}:2.6.12")
       |  implementation platform("com.typesafe.akka:akka-http-bom_$${versions.ScalaBinary}:10.1.0")
+      |
+      |  implementation "com.typesafe.akka:akka-stream_$${versions.ScalaBinary}"
+      |  implementation "com.typesafe.akka:akka-http_$${versions.ScalaBinary}"
+      |}</code>
+      |</pre>
+      |</dd>
+      |</dl>""")
+  }
+
+  it should "Maven: allow for multiple symbolic versions in one bom" in {
+    markdown("""
+               |@@dependency[Maven] {
+               |  bomGroup="com.typesafe.akka"
+               |  bomArtifact="akka-bom_$scala.binary.version$"
+               |  bomVersionSymbols="AkkaVersion,AkkaHttpVersion"
+               |  symbol1="AkkaVersion"
+               |  value1="2.6.12"
+               |  group1="com.typesafe.akka"
+               |  symbol2="AkkaHttpVersion"
+               |  value2="10.1.0"
+               |  artifact1="akka-stream_$scala.binary.version$"
+               |  version1="AkkaVersion"
+               |  group2="com.typesafe.akka"
+               |  artifact2="akka-http_$scala.binary.version$"
+               |  version2="AkkaHttpVersion"
+               |}""") shouldEqual html(s"""
+      |<dl class="dependency">
+      |<dt>Maven</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-xml">
+      |&lt;properties&gt;
+      |  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
+      |&lt;/properties&gt;
+      |&lt;dependencyManagement&gt;
+      |  &lt;dependencies&gt;
+      |    &lt;dependency&gt;
+      |      &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+      |      &lt;artifactId&gt;akka-bom_$${scala.binary.version}&lt;/artifactId&gt;
+      |      &lt;version&gt;2.6.12&lt;/version&gt;
+      |      &lt;type&gt;pom&lt;/type&gt;
+      |      &lt;scope&gt;import&lt;/scope&gt;
+      |    &lt;/dependency&gt;
+      |  &lt;/dependencies&gt;
+      |&lt;/dependencyManagement&gt;
+      |&lt;dependencies&gt;
+      |  &lt;dependency&gt;
+      |    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+      |    &lt;artifactId&gt;akka-stream_$${scala.binary.version}&lt;/artifactId&gt;
+      |  &lt;/dependency&gt;
+      |  &lt;dependency&gt;
+      |    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+      |    &lt;artifactId&gt;akka-http_$${scala.binary.version}&lt;/artifactId&gt;
+      |  &lt;/dependency&gt;
+      |&lt;/dependencies&gt;</code></pre>
+      |</dd>
+      |</dl>""")
+  }
+
+  it should "Gradle: allow for multiple symbolic versions in one bom" in {
+    markdown("""
+               |@@dependency[gradle] {
+               |  bomGroup="com.typesafe.akka"
+               |  bomArtifact="akka-bom_$scala.binary.version$"
+               |  bomVersionSymbols="AkkaVersion,AkkaHttpVersion"
+               |  symbol1="AkkaVersion"
+               |  value1="2.6.12"
+               |  group1="com.typesafe.akka"
+               |  symbol2="AkkaHttpVersion"
+               |  value2="10.1.0"
+               |  artifact1="akka-stream_$scala.binary.version$"
+               |  version1="AkkaVersion"
+               |  group2="com.typesafe.akka"
+               |  artifact2="akka-http_$scala.binary.version$"
+               |  version2="AkkaHttpVersion"
+               |}""") shouldEqual html(s"""
+      |<dl class="dependency">
+      |<dt>gradle</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-gradle">
+      |def versions = [
+      |  ScalaBinary: "2.12"
+      |]
+      |dependencies {
+      |  implementation platform("com.typesafe.akka:akka-bom_$${versions.ScalaBinary}:2.6.12")
       |
       |  implementation "com.typesafe.akka:akka-stream_$${versions.ScalaBinary}"
       |  implementation "com.typesafe.akka:akka-http_$${versions.ScalaBinary}"

@@ -102,3 +102,53 @@ will be rendered as:
   artifact3="akka-http_$scala.binary.version$"
   version3="AkkaHttpVersion"
 }
+
+## Bill of Materials (BOM) for Maven and Gradle
+
+Similar to the symbolic version names above, [Maven BOMs](http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms) can point to a BOM which specifies versions for dependencies and frees the local build from setting library versions for those dependencies.
+
+By specifying a `bomGroup`, `bomArtifact` and `bomVersionSymbols` the Maven and Gradle notations will show the notation to import the BOM and leave out the versions for the libraries using the listed symbols. If the BOM covers multiple different versions, list all symbols separated by commas.
+
+Note that the notation works just fine for sbt.
+
+This example (with empty lines for readability)
+
+```
+@@dependency[Maven,Gradle,sbt] {
+  bomGroup=com.typesafe.akka
+  bomArtifact=akka-with-http-bom_$scala.binary.version$
+  bomVersionSymbols=AkkaVersion,AkkaHttpVersion
+
+  symbol1=AkkaVersion
+  value1="2.6.13"
+
+  symbol2="AkkaHttpVersion"
+  value2="10.2.2"
+
+  group1="com.typesafe.akka"
+  artifact1="akka-stream_$scala.binary.version$"
+  version1="AkkaVersion"
+
+  group2="com.typesafe.akka"
+  artifact2="akka-http_$scala.binary.version$"
+  version2="AkkaHttpVersion"
+}
+```
+
+will be rendered as:
+
+@@dependency[Maven,Gradle,sbt] {
+  bomGroup=com.typesafe.akka
+  bomArtifact=akka-with-http-bom_$scala.binary.version$
+  bomVersionSymbols=AkkaVersion,AkkaHttpVersion
+  symbol1=AkkaVersion
+  value1="2.6.13"
+  symbol2="AkkaHttpVersion"
+  value2="10.2.2"
+  group1="com.typesafe.akka"
+  artifact1="akka-stream_$scala.binary.version$"
+  version1="AkkaVersion"
+  group2="com.typesafe.akka"
+  artifact2="akka-http_$scala.binary.version$"
+  version2="AkkaHttpVersion"
+}

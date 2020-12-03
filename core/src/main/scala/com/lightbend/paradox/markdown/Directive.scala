@@ -696,7 +696,7 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
  * Dependency directive.
  */
 case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
-  val BomVersionSymbol = "bomVersionSymbol"
+  val BomVersionSymbols = "bomVersionSymbols"
   val VersionSymbol = "symbol"
   val VersionValue = "value"
   val ScalaBinaryVersionVar = "scala.binary.version"
@@ -716,7 +716,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
     val classes = Seq("dependency", node.attributes.classesString).filter(_.nonEmpty)
 
     val bomPostfixes = node.attributes.keys().asScala.toSeq
-      .filter(_.startsWith(BomVersionSymbol)).sorted.map(_.replace(BomVersionSymbol, ""))
+      .filter(_.startsWith(BomVersionSymbols)).sorted.map(_.replace(BomVersionSymbols, ""))
 
     val symbolPostfixes = node.attributes.keys().asScala.toSeq
       .filter(_.startsWith(VersionSymbol)).sorted.map(_.replace(VersionSymbol, ""))
@@ -822,10 +822,10 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
         requiredCoordinate(s"bomGroup$p"),
         requiredCoordinate(s"bomArtifact$p"),
         requiredCoordinateRaw(s"bomArtifact$p"),
-        requiredCoordinate(s"bomVersionSymbol$p")
+        requiredCoordinate(s"bomVersionSymbols$p").split(",").toSeq
       )
     }
-    val bomSymbols = boms.map(_._4).toSet
+    val bomSymbols = boms.flatMap(_._4.toSet).toSet
 
     val symbolVersions = symbolPostfixes
       .map(sp => requiredCoordinate(VersionSymbol + sp) -> requiredCoordinate(VersionValue + sp))
@@ -873,7 +873,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
                     group,
                     artifact,
                     artifactRaw,
-                    version = symbolVersions.find(_._1 == versionSymbol).map(_._2).getOrElse(sys.error(s"No version found for $versionSymbol")),
+                    version = symbolVersions.find(_._1 == versionSymbol.head).map(_._2).getOrElse(sys.error(s"No version found for ${versionSymbol.head}")),
                   )
               }.mkString("", "\n", "\n\n")
             } else ""
@@ -913,11 +913,13 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
             if (boms.nonEmpty) {
               boms.map {
                 case (group, artifact, artifactRaw, versionSymbol) =>
+                  val version = symbolVersions.find(_._1 == versionSymbol.head).map(_._2)
+                  if (version.isEmpty) sys.error(s"No version found for ${versionSymbol.head}")
                   mvn(
                     group,
                     artifact,
                     artifactRaw,
-                    version = symbolVersions.find(_._1 == versionSymbol).map(_._2),
+                    version,
                     `type` = Some("pom"),
                     scope = Some("import"),
                     classifier = None,
