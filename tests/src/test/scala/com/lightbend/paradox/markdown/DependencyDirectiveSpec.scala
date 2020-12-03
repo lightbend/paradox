@@ -133,6 +133,45 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
       |</dd>
       |</dl>""")
   }
+  it should "render test scope" in {
+    markdown("""
+               |@@dependency[sbt,Maven,Gradle] {
+               |  group="com.example"
+               |  artifact="domain"
+               |  version="0.1.0-RC2"
+               |  scope="test"
+               |}""") shouldEqual html("""
+      |<dl class="dependency">
+      |<dt>sbt</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-scala">
+      |libraryDependencies += "com.example" % "domain" % "0.1.0-RC2" % Test</code></pre>
+      |</dd>
+      |<dt>Maven</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-xml">
+      |&lt;dependencies&gt;
+      |  &lt;dependency&gt;
+      |    &lt;groupId&gt;com.example&lt;/groupId&gt;
+      |    &lt;artifactId&gt;domain&lt;/artifactId&gt;
+      |    &lt;version&gt;0.1.0-RC2&lt;/version&gt;
+      |    &lt;scope&gt;test&lt;/scope&gt;
+      |  &lt;/dependency&gt;
+      |&lt;/dependencies&gt;</code></pre>
+      |</dd>
+      |<dt>Gradle</dt>
+      |<dd>
+      |<pre class="prettyprint">
+      |<code class="language-gradle">
+      |dependencies {
+      |  testImplementation "com.example:domain:0.1.0-RC2"
+      |}</code>
+      |</pre>
+      |</dd>
+      |</dl>""")
+  }
 
   it should "only simplify sbt definition if the scalaBinaryVersion matches" in {
     markdown("""

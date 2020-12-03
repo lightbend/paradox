@@ -792,7 +792,11 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
     def gradle(group: String, artifact: String, rawArtifact: String, version: Option[String], scope: Option[String], classifier: Option[String]): String = {
       val artifactName = artifactNameWithScalaBin(artifact, rawArtifact, "${versions.ScalaBinary}")
-      val conf = scope.getOrElse("implementation")
+      val conf = scope match {
+        case None         => "implementation"
+        case Some("test") => "testImplementation"
+        case Some(other)  => other
+      }
       val ver = version.map(v => if (symbols.contains(v)) s":$${versions.$v}" else s":$v").getOrElse("")
       val extra = classifier.map(c => s":$c").getOrElse("")
       s"""$conf "$group:$artifactName$ver$extra""""
