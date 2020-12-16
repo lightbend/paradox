@@ -128,7 +128,7 @@ $(function() {
       } else {
         $("." + peer).hide();
       }
-    }
+    })
 
     // Tabbed snippets:
     $("dl.tabbed").each(function() {
