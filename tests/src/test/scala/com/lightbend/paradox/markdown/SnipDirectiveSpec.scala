@@ -31,8 +31,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   "The `snip` directive" should "render code snippets" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
       |<pre class="prettyprint">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-scala">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object example extends App {
       |  println("Hello, World!")
       |}</code>
@@ -51,8 +50,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<dt>Scala</dt>
       |<dd>
       |<pre class="prettyprint">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-scala">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object example extends App {
       |  println("Hello, World!")
       |}</code>
@@ -61,8 +59,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<dt>Java</dt>
       |<dd>
       |<pre class="prettyprint">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-java">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-java">
       |public class example2 {
       |    public static void main(String[] args) {
       |        System.out.println("Hello, World");
@@ -78,8 +75,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |@@snip[example2.java](tests/src/test/scala/com/lightbend/paradox/markdown/example2.java){ #example2 .red .blue }
       |""") shouldEqual html("""
       |<pre class="prettyprint red blue">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-java">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-java">
       |public class example2 {
       |    public static void main(String[] args) {
       |        System.out.println("Hello, World");
@@ -91,8 +87,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "trim indentation from snippets" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
       |<pre class="prettyprint">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-scala">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |case object Dent
       |  case object DoubleDent</code>
       |</pre>""")
@@ -101,8 +96,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "not truncate snippets" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }""") shouldEqual html("""
       |<pre class="prettyprint">
-      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-      |<code class="language-scala">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object AnotherIndentedExample {
       |  def rendered(): Unit = {
       |  }
@@ -120,9 +114,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
@@ -139,9 +131,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
     markdown("""@@snip[example.scala]($test$/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
@@ -157,8 +147,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
@@ -168,8 +157,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "include labels when including the whole file" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala)""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |/*
         | * Copyright &copy; 2015 - 2019 Lightbend, Inc. &lt;http://www.lightbend.com&gt;
         | *
@@ -259,8 +247,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "filter labels by default" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object Constants {
         |}</code>
         |</pre>"""
@@ -270,8 +257,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   it should "allow including labels if specified" in {
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label filterLabels=false }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>
-        |<code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object Constants {
         |  val someString = " #foo "
         |}</code>
