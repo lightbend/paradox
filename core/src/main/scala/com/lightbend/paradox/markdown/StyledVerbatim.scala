@@ -47,9 +47,10 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
     node match {
       case vgn: VerbatimGroupNode =>
+        printer.print("""<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>""")
         vgn.getSourceUrl.ifPresent(new Consumer[String] {
           override def accept(sourceUrl: String): Unit =
-            printer.print(s"""<a class="icon go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source"></a>""")
+            printer.print(s"""<a class="snippet-button go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source">source</a>""")
         })
       case _ =>
     }

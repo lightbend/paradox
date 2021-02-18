@@ -106,7 +106,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |</pre>""")
   }
 
-  it should "add link to source" in {
+  it should "add link to source and copy button" in {
     implicit val context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
@@ -114,7 +114,8 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
     markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<a class="icon go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source"></a><code class="language-scala">
+        |<button class="snippet-button copy-snippet" title="Copy snippet">copy</a>
+        |<a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source"></a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
@@ -131,7 +132,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
 
     markdown("""@@snip[example.scala]($test$/example.scala) { #example }""") shouldEqual html(
       """<pre class="prettyprint">
-        |<a class="icon go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source"></a><code class="language-scala">
+        |<a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source"></a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
         |}</code>
