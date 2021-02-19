@@ -53,7 +53,7 @@ class IncludeDirectiveSpec extends MarkdownBaseSpec {
   it should "include nested code snippets" in {
     markdown("""@@include(tests/src/test/resources/include-code-snip.md)""") shouldEqual html("""
       |<pre class="prettyprint">
-      |<code class="language-conf">
+      |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-conf">
       |a = b</code>
       |</pre>""")
   }
