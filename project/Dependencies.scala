@@ -23,7 +23,7 @@ object Version {
   val parboiled  = "1.3.1"
   val prettify   = "4-Mar-2013-1"
   val sbtWeb     = "1.4.4"
-  val scalatest  = "3.2.3"
+  val scalatest  = "3.2.4"
   val st4        = "4.3.1"
   val jsoup      = "1.13.1"
 }
