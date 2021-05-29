@@ -53,3 +53,11 @@ paradoxValidationIgnorePaths ++= Seq(
   "/docs/version/(?!latest).*"
 )
 ```
+
+## Retrying links check
+
+`paradoxValidateLinksRetryCount` setting allows retrying link check for the provided number of times in case link returns non success response code i.e., other than 200 status code. 
+
+```scala
+paradoxValidateLinksRetryCount := 3 // retries link check 3 times in case of non 200 response code
+```

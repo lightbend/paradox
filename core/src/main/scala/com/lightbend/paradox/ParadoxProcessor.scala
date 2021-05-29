@@ -19,10 +19,10 @@ package com.lightbend.paradox
 import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
+
 import java.io.{ File, FileOutputStream, OutputStreamWriter }
 import java.nio.charset.StandardCharsets
-
-import org.jsoup.Jsoup
+import org.jsoup.{ Connection, Jsoup }
 import org.jsoup.nodes.Document
 import org.pegdown.ast._
 
@@ -108,6 +108,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     groups:           Map[String, Seq[String]],
     properties:       Map[String, String],
     ignorePaths:      List[Regex],
+    retryCount:       Int,
     validateAbsolute: Boolean,
     logger:           ParadoxLogger): Int = {
 
@@ -151,7 +152,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
               reportErrorOnSources(errorCollector, c.allSources)(s"Could not find path [${uri.getPath}] in site")
           }
         case absolute if validateAbsolute =>
-          validateExternalLink(absolute, errorCollector, logger)
+          validateExternalLink(absolute, retryCount, errorCollector, logger)
         case _ =>
         // Ignore
       }
@@ -160,19 +161,28 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(capturedLink: CapturedLink, errorContext: ErrorContext, logger: ParadoxLogger) = {
+  private def validateExternalLink(capturedLink: CapturedLink, retryCount: Int, errorContext: ErrorContext, logger: ParadoxLogger) = {
     logger.info(s"Validating external link: ${capturedLink.link}")
 
     def reportError = reportErrorOnSources(errorContext, capturedLink.allSources)(_)
     val url = capturedLink.link.toString
 
     try {
-      val response = Jsoup.connect(url)
+      def tryConnect = Jsoup.connect(url)
         .userAgent("Paradox Link Validator <https://github.com/lightbend/paradox>")
         .followRedirects(false)
         .ignoreHttpErrors(true)
         .ignoreContentType(true)
         .execute()
+
+      @tailrec
+      def validateWithRetries(retryCount: Int): Connection.Response = {
+        val res = tryConnect
+        if (retryCount == 0 || res.statusCode() == 200) res
+        else validateWithRetries(retryCount - 1)
+      }
+
+      val response = validateWithRetries(retryCount)
 
       // jsoup doesn't offer any simple way to clean up, the only way to close is to get the body stream and close it,
       // but if you've already read the response body, that will throw an exception, and there's no way to check if

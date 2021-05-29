@@ -65,6 +65,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxLeadingBreadcrumbs := Nil,
     paradoxGroups := Map.empty,
     libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme),
+    paradoxValidateLinksRetryCount := 0,
     paradoxValidationIgnorePaths := List("http://localhost.*".r),
     paradoxValidationSiteBasePath := None
   )
@@ -378,6 +379,7 @@ object ParadoxPlugin extends AutoPlugin {
       paradoxGroups.value,
       paradoxProperties.value,
       paradoxValidationIgnorePaths.value,
+      paradoxValidateLinksRetryCount.value,
       validateAbsolute,
       new SbtParadoxLogger(strms.log)
     )
