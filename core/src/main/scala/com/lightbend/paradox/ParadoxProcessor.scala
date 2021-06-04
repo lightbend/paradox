@@ -26,6 +26,7 @@ import org.jsoup.{ Connection, Jsoup }
 import org.jsoup.nodes.Document
 import org.pegdown.ast._
 
+import java.net.SocketTimeoutException
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
@@ -168,21 +169,13 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     val url = capturedLink.link.toString
 
     try {
-      def tryConnect = Jsoup.connect(url)
+      val request = Jsoup.connect(url)
         .userAgent("Paradox Link Validator <https://github.com/lightbend/paradox>")
         .followRedirects(false)
         .ignoreHttpErrors(true)
         .ignoreContentType(true)
-        .execute()
 
-      @tailrec
-      def validateWithRetries(retryCount: Int): Connection.Response = {
-        val res = tryConnect
-        if (retryCount == 0 || res.statusCode() == 200) res
-        else validateWithRetries(retryCount - 1)
-      }
-
-      val response = validateWithRetries(retryCount)
+      val response = Validator.validateWithRetries(request, retryCount)
 
       // jsoup doesn't offer any simple way to clean up, the only way to close is to get the body stream and close it,
       // but if you've already read the response body, that will throw an exception, and there's no way to check if
@@ -501,5 +494,25 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     }
     pages.flatMap { root => mapping(Some(root.location)) }.toMap
   }
+
+}
+
+object Validator {
+
+  //500 Internal Server Error
+  //502 Bad Gateway
+  //503 Service Unavailable
+  //504 Gateway Timeout
+  private val retryableStatusCodes = List(500, 502, 503, 504)
+
+  def validateWithRetries(request: Connection, retryCount: Int): Connection.Response =
+    try {
+      val res = request.execute()
+      if (retryCount == 0 || res.statusCode() == 200 || !retryableStatusCodes.contains(res.statusCode())) res
+      else validateWithRetries(request, retryCount - 1)
+    }
+    catch {
+      case e: SocketTimeoutException => if(retryCount == 0) throw e else validateWithRetries(request, retryCount -1)
+    }
 
 }
