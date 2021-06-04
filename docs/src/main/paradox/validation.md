@@ -56,7 +56,7 @@ paradoxValidationIgnorePaths ++= Seq(
 
 ## Retrying links check
 
-`paradoxValidateLinksRetryCount` setting allows retrying link check for the provided number of times in case link returns non success response code i.e., other than 200 status code. 
+`paradoxValidateLinksRetryCount` setting allows retrying link check for the provided number of times in case linked server does not reply, or returns a possibly temporary failure response code (500, 502, 503 or 504).
 
 ```scala
 paradoxValidateLinksRetryCount := 3 // retries link check 3 times in case of non 200 response code

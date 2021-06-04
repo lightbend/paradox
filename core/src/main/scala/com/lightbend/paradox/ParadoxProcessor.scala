@@ -503,7 +503,7 @@ object Validator {
   //502 Bad Gateway
   //503 Service Unavailable
   //504 Gateway Timeout
-  private val retryableStatusCodes = List(500, 502, 503, 504)
+  private val retryableStatusCodes = Set(500, 502, 503, 504)
 
   def validateWithRetries(request: Connection, retryCount: Int): Connection.Response =
     try {
