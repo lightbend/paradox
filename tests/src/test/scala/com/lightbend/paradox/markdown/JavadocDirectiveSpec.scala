@@ -59,7 +59,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "handle class links correctly" in {
     markdown("@javadoc[Http](akka.http.javadsl.Http)") shouldEqual
-      html("""<p><a href="http://doc.akka.io/japi/akka-http/10.0.0/index.html?akka/http/javadsl/Http.html" title="akka.http.javadsl.Http"><code>Http</code></a></p>""")
+      html("""<p><a href="http://doc.akka.io/japi/akka-http/10.0.0/?akka/http/javadsl/Http.html" title="akka.http.javadsl.Http"><code>Http</code></a></p>""")
     markdown("@javadoc[Actor](akka.actor.Actor)") shouldEqual
       html("""<p><a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a></p>""")
   }
