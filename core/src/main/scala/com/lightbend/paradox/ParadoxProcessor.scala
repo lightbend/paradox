@@ -19,13 +19,14 @@ package com.lightbend.paradox
 import com.lightbend.paradox.template.PageTemplate
 import com.lightbend.paradox.markdown._
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
+
 import java.io.{ File, FileOutputStream, OutputStreamWriter }
 import java.nio.charset.StandardCharsets
-
-import org.jsoup.Jsoup
+import org.jsoup.{ Connection, Jsoup }
 import org.jsoup.nodes.Document
 import org.pegdown.ast._
 
+import java.net.SocketTimeoutException
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
@@ -108,6 +109,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     groups:           Map[String, Seq[String]],
     properties:       Map[String, String],
     ignorePaths:      List[Regex],
+    retryCount:       Int,
     validateAbsolute: Boolean,
     logger:           ParadoxLogger): Int = {
 
@@ -151,7 +153,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
               reportErrorOnSources(errorCollector, c.allSources)(s"Could not find path [${uri.getPath}] in site")
           }
         case absolute if validateAbsolute =>
-          validateExternalLink(absolute, errorCollector, logger)
+          validateExternalLink(absolute, retryCount, errorCollector, logger)
         case _ =>
         // Ignore
       }
@@ -160,19 +162,20 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(capturedLink: CapturedLink, errorContext: ErrorContext, logger: ParadoxLogger) = {
+  private def validateExternalLink(capturedLink: CapturedLink, retryCount: Int, errorContext: ErrorContext, logger: ParadoxLogger) = {
     logger.info(s"Validating external link: ${capturedLink.link}")
 
     def reportError = reportErrorOnSources(errorContext, capturedLink.allSources)(_)
     val url = capturedLink.link.toString
 
     try {
-      val response = Jsoup.connect(url)
+      val request = Jsoup.connect(url)
         .userAgent("Paradox Link Validator <https://github.com/lightbend/paradox>")
         .followRedirects(false)
         .ignoreHttpErrors(true)
         .ignoreContentType(true)
-        .execute()
+
+      val response = Validator.validateWithRetries(request, retryCount)
 
       // jsoup doesn't offer any simple way to clean up, the only way to close is to get the body stream and close it,
       // but if you've already read the response body, that will throw an exception, and there's no way to check if
@@ -491,5 +494,25 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     }
     pages.flatMap { root => mapping(Some(root.location)) }.toMap
   }
+
+}
+
+object Validator {
+
+  //500 Internal Server Error
+  //502 Bad Gateway
+  //503 Service Unavailable
+  //504 Gateway Timeout
+  private val retryableStatusCodes = Set(500, 502, 503, 504)
+
+  def validateWithRetries(request: Connection, retryCount: Int): Connection.Response =
+    try {
+      val res = request.execute()
+      if (retryCount == 0 || res.statusCode() == 200 || !retryableStatusCodes.contains(res.statusCode())) res
+      else validateWithRetries(request, retryCount - 1)
+    }
+    catch {
+      case e: SocketTimeoutException => if(retryCount == 0) throw e else validateWithRetries(request, retryCount -1)
+    }
 
 }

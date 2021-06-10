@@ -52,6 +52,7 @@ trait ParadoxKeys {
   val paradoxBrowse = taskKey[Unit]("Open the docs in the default browser")
   val paradoxValidateInternalLinks = taskKey[Unit]("Validate internal, non ref paradox links.")
   val paradoxValidateLinks = taskKey[Unit]("Validate all non ref paradox links.")
+  val paradoxValidateLinksRetryCount = taskKey[Int]("Number of retries for validate links task.")
   val paradoxValidationIgnorePaths = settingKey[List[Regex]]("List of regular expressions to apply to paths to determine if they should be ignored.")
   val paradoxValidationSiteBasePath = settingKey[Option[String]]("The base path that the documentation is deployed to, allows validating links on the docs site that are outside of the documentation root tree")
   val paradoxSingle = taskKey[File]("Build the single page HTML Paradox site")
