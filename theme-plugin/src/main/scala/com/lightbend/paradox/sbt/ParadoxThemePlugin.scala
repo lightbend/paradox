@@ -62,7 +62,7 @@ object ParadoxThemePlugin extends AutoPlugin {
         val prefix = SbtWeb.path(s"${WEBJARS_PATH_PREFIX}/${moduleName.value}/${version.value}/")
         val include = referencedWebjarAssets.value
         Def.task {
-          (mappings in WebKeys.webModules).value flatMap {
+          (WebKeys.webModules / mappings).value flatMap {
             case (file, path) if include(path) => Some(file -> (prefix + path))
             case _                             => None
           }

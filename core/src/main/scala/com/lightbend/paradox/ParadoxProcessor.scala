@@ -510,9 +510,8 @@ object Validator {
       val res = request.execute()
       if (retryCount == 0 || res.statusCode() == 200 || !retryableStatusCodes.contains(res.statusCode())) res
       else validateWithRetries(request, retryCount - 1)
-    }
-    catch {
-      case e: SocketTimeoutException => if(retryCount == 0) throw e else validateWithRetries(request, retryCount -1)
+    } catch {
+      case e: SocketTimeoutException => if (retryCount == 0) throw e else validateWithRetries(request, retryCount - 1)
     }
 
 }
