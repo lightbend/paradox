@@ -119,7 +119,7 @@ object ParadoxPlugin extends AutoPlugin {
       }
     },
     paradoxProperties ++= dateProperties,
-    paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value, isSnapshot.value, version.value),
+    paradoxProperties ++= linkProperties(scalaVersion.value, apiURL.value, scmInfo.value, isSnapshot.value, version.value, paradoxProperties.value.isDefinedAt(GitHubResolver.baseUrl)),
 
     paradoxOverlayDirectories := Nil,
 
@@ -411,7 +411,7 @@ object ParadoxPlugin extends AutoPlugin {
     )
   }
 
-  def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL], scmInfo: Option[ScmInfo], isSnapshot: Boolean, version: String): Map[String, String] = {
+  def linkProperties(scalaVersion: String, apiURL: Option[java.net.URL], scmInfo: Option[ScmInfo], isSnapshot: Boolean, version: String, gitHubResolverBaseUrlDefined: Boolean): Map[String, String] = {
     val JavaSpecVersion = """\d+\.(\d+)""".r
     Map(
       "javadoc.java.base_url" -> sys.props.get("java.specification.version").map {
@@ -424,16 +424,20 @@ object ParadoxPlugin extends AutoPlugin {
       "scaladoc.version" -> Some(scalaVersion),
       "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
       "scaladoc.base_url" -> apiURL,
-      GitHubResolver.baseUrl -> scmInfo
-        .map(_.browseUrl)
-        .filter(_.getHost == "github.com")
-        .map(_.toExternalForm)
-        .collect {
-          case url if !url.contains("/tree/") =>
-            val branch = if (isSnapshot) "master" else s"v$version"
-            s"$url/tree/$branch"
-          case url => url
-        }
+      GitHubResolver.baseUrl -> {
+        if (!gitHubResolverBaseUrlDefined) {
+          scmInfo
+            .map(_.browseUrl)
+            .filter(_.getHost == "github.com")
+            .map(_.toExternalForm)
+            .collect {
+              case url if !url.contains("/tree/") =>
+                val branch = if (isSnapshot) "master" else s"v$version"
+                s"$url/tree/$branch"
+              case url => url
+            }
+        } else None
+      }
     ).collect { case (prop, Some(value)) => (prop, value.toString) }
   }
 

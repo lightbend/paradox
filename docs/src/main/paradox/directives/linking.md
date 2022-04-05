@@ -137,7 +137,9 @@ a tree revision, for example:
 <https://github.com/lightbend/paradox/tree/v0.2.1>.
 
 If the sbt project's `scmInfo` setting is configured and the `browseUrl`
-points to a GitHub project, it is used as the GitHub base URL.
+points to a GitHub project, it is used as the GitHub base URL. Note that this
+behaviour only occurs if `github.base_url` is not set so you still have the
+option to define `github.base_url` if this is not desirable.
 
 Relative as well as absolute file and directory paths use the value of the
 `github.root.base_dir` property to resolve the absolute project path. The sbt
