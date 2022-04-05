@@ -15,7 +15,7 @@
  */
 
 addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.8.3")
-addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.6.0")
+addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.6.5")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.9.2")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-project-info" % "1.1.10")
 addSbtPlugin("com.geirsson"          % "sbt-ci-release"  % "1.5.7")
