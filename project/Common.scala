@@ -19,7 +19,6 @@ import sbt.Keys._
 import de.heikoseeberger.sbtheader.{ CommentStyle, FileType, License, HeaderPlugin, AutomateHeaderPlugin }
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
-import xerial.sbt.Sonatype.SonatypeKeys
 
 /**
  * Common sbt settings — automatically added to all projects.
@@ -49,8 +48,7 @@ object Common extends AutoPlugin {
       FileType.java -> CommentStyle.cStyleBlockComment,
       FileType.conf -> CommentStyle.hashLineComment
     ),
-    HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText)),
-    SonatypeKeys.sonatypeProfileName := "com.lightbend"
+    HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText))
   )
 
   val licenseText: String = {

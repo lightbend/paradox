@@ -28,9 +28,30 @@ inThisBuild(List(
     Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
     Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
   ),
-  description := "Paradox is a markdown documentation tool for software projects.",
-  dynverSonatypeSnapshots := false // not publishing snapshots, so no SNAPSHOT at the end please
+  description := "Paradox is a markdown documentation tool for software projects."
 ))
+
+// https://github.com/djspiewak/sbt-github-actions
+ThisBuild / githubWorkflowJavaVersions := List(
+  JavaSpec.temurin("8"),
+  JavaSpec.temurin("11")
+)
+ThisBuild / githubWorkflowTargetBranches := Seq("master")
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "CI_CLEAN" -> "clean",
+      "CI_RELEASE" -> ";^ core/publishSigned ;^ testkit/publishSigned ;^ plugin/publishSigned ;^ themePlugin/publishSigned ; genericTheme/publishSigned",
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
+    )
+  )
+)
 
 lazy val paradox = project
   .in(file("."))
