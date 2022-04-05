@@ -17,7 +17,7 @@
 addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.8.3")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.6.5")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.9.2")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-project-info" % "1.1.10")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-project-info" % "2.0.0")
 addSbtPlugin("com.github.sbt"          % "sbt-ci-release"  % "1.5.10")
 
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
