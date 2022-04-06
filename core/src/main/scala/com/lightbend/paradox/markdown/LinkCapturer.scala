@@ -154,11 +154,11 @@ class LinkCapturer {
 }
 
 case class CapturedLink(link: URI, fragments: List[CapturedLinkFragment]) {
-  def allSources = fragments.flatMap(_.sources)
+  def allSources: List[(File, Node)] = fragments.flatMap(_.sources)
 
-  def isInternal = link.getAuthority == null && link.getPath != null
+  def isInternal: Boolean = link.getAuthority == null && link.getPath != null
 
-  def hasFragments = fragments.size > 1 || fragments.headOption.flatMap(_.fragment).nonEmpty
+  def hasFragments: Boolean = fragments.size > 1 || fragments.headOption.flatMap(_.fragment).nonEmpty
 }
 
 case class CapturedLinkFragment(fragment: Option[String], sources: List[(File, Node)])

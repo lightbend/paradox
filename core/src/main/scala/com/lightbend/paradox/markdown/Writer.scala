@@ -22,8 +22,9 @@ import org.parboiled.common.StringUtils
 import org.pegdown.FastEncoder.encode
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.ast._
-import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer, VerbatimSerializer }
+import org.pegdown.{ LinkRenderer, ToHtmlSerializer, VerbatimSerializer }
 
+import java.util.regex.Pattern
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
 
@@ -91,9 +92,9 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
 object Writer {
 
-  val DefaultSourceSuffix = ".md"
-  val DefaultTargetSuffix = ".html"
-  val DefaultIllegalLinkPath =
+  val DefaultSourceSuffix: String = ".md"
+  val DefaultTargetSuffix: String = ".html"
+  val DefaultIllegalLinkPath: Regex =
     // #DefaultIllegalLinkPath
     raw"""^(?!https?:).*\.md(#.*)?""".r
   // #DefaultIllegalLinkPath
@@ -116,8 +117,8 @@ object Writer {
       properties:     Map[String, String]      = Map.empty,
       includeIndexes: List[Int]                = Nil
   ) {
-    val IllegalLinkPathPattern = linkFailPath.pattern
-    def page = location.tree.label
+    val IllegalLinkPathPattern: Pattern = linkFailPath.pattern
+    def page: Page = location.tree.label
   }
 
   def defaultLinks(context: Context): LinkRenderer =
@@ -131,8 +132,8 @@ object Writer {
   }
 
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] = Seq(
-    context => new ClassyLinkSerializer,
-    context => new AnchorLinkSerializer,
+    _ => new ClassyLinkSerializer,
+    _ => new AnchorLinkSerializer,
     context => new DirectiveSerializer(directives.map(d => d(context))),
     context => new IncludeNodeSerializer(context)
   )
@@ -149,11 +150,11 @@ object Writer {
     context => TocDirective(context.location, context.includeIndexes),
     context => VarDirective(context.properties),
     context => VarsDirective(context.properties),
-    context => CalloutDirective("note", "Note"),
-    context => CalloutDirective("warning", "Warning"),
-    context => WrapDirective("div"),
-    context => InlineWrapDirective("span"),
-    context => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
+    _ => CalloutDirective("note", "Note"),
+    _ => CalloutDirective("warning", "Warning"),
+    _ => WrapDirective("div"),
+    _ => InlineWrapDirective("span"),
+    (context: Context) => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
     DependencyDirective.apply,
     IncludeDirective.apply
   )

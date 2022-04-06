@@ -145,7 +145,7 @@ object Index {
             Some(Ref(level, source.value, new TextNode(ref.label), group = None, Nil))
           case source: Source.Ref =>
             Some(Ref(level, source.value, new TextNode(ref.label), group = None, Nil))
-          case other =>
+          case _ =>
             sys.error(s"unexpected Source type: ${ref.source}")
         }
       case other => other.getChildren.asScala.toList match {
@@ -187,9 +187,7 @@ object Index {
     val pageMap = (pages map { page => page.path -> page }).toMap
 
     def lookup(current: String, path: String) = {
-      pageMap.get(Path.resolve(current, path)).getOrElse {
-        throw new LinkException(s"Unknown page [$path] linked from [$current]")
-      }
+      pageMap.getOrElse(Path.resolve(current, path), throw new LinkException(s"Unknown page [$path] linked from [$current]"))
     }
 
     def add(path: String, page: Page, indices: Forest[Ref], nested: Boolean): Unit = {

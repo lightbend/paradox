@@ -17,7 +17,6 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
-import com.lightbend.paradox.template.PageTemplate
 import java.io.File
 import java.net.URI
 import java.nio.file.{ Path => NioPath, Paths => NioPaths }
@@ -58,7 +57,7 @@ case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: 
       node.getChildren.asScala.flatMap {
         case t: TextNode => Seq(t.getText)
         case other       => textNodes(other)
-      }.toSeq
+      }
     }
     textNodes(label).mkString
   }
@@ -137,15 +136,15 @@ object Page {
 
     // TODO: give the target suffix ".html" in a more general way
     private def replaceFile(prop: Option[String], targetSuffix: String = ".html")(path: String): Option[String] = prop match {
-      case Some(p) if (p.endsWith(targetSuffix)) => Some(path.dropRight(Path.leaf(path).length) + p)
-      case _                                     => None
+      case Some(p) if p.endsWith(targetSuffix) => Some(path.dropRight(Path.leaf(path).length) + p)
+      case _                                   => None
     }
   }
 
   object Properties {
-    val DefaultOutMdIndicator = "out"
-    val DefaultLayoutMdIndicator = "layout"
-    val DefaultSingleLayoutMdIndicator = "single-layout"
+    val DefaultOutMdIndicator: String = "out"
+    val DefaultLayoutMdIndicator: String = "layout"
+    val DefaultSingleLayoutMdIndicator: String = "single-layout"
   }
 
   /**
@@ -260,7 +259,7 @@ object Path {
     val rootPath = parentsPath(localPath)
     globalPageMappings map { mapping =>
       val rootMap = (parentsPath(mapping._1), parentsPath(mapping._2))
-      mapping._1 -> (refRelativePath(rootPath, rootMap._2, leaf(mapping._2)))
+      mapping._1 -> refRelativePath(rootPath, rootMap._2, leaf(mapping._2))
     }
   }
 
@@ -268,11 +267,12 @@ object Path {
    * Provide the modified path relative to the root path
    */
   def refRelativePath(root: List[String], path: List[String], leafFile: String): String = {
+    @tailrec
     def listPath(root: List[String], path: List[String]): List[String] = (root, path) match {
-      case (Nil, ps)                      => ps
-      case (rs, Nil)                      => rs map (_ => "..")
-      case (r :: rs, p :: ps) if (r == p) => listPath(rs, ps)
-      case _                              => root.map(_ => "..") ::: path
+      case (Nil, ps)                    => ps
+      case (rs, Nil)                    => rs map (_ => "..")
+      case (r :: rs, p :: ps) if r == p => listPath(rs, ps)
+      case _                            => root.map(_ => "..") ::: path
     }
     (listPath(root, path) ::: List(leafFile)).mkString("/")
   }

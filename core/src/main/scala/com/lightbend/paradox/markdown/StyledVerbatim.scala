@@ -18,7 +18,7 @@ package com.lightbend.paradox.markdown
 
 import java.util.function.Consumer
 
-import scala.collection.mutable.Buffer
+import scala.collection.mutable
 import scala.collection.JavaConverters._
 import org.parboiled.common.StringUtils
 import org.pegdown.ast.{ VerbatimGroupNode, VerbatimNode }
@@ -29,18 +29,18 @@ import org.pegdown.{ Printer, VerbatimSerializer }
  */
 abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
-  def printPreAttributes(printer: Printer, nodeGroup: String = "", classes: Buffer[String] = Buffer.empty[String]): Unit
+  def printPreAttributes(printer: Printer, nodeGroup: String = "", classes: mutable.Buffer[String] = mutable.Buffer.empty[String]): Unit
 
   def printCodeAttributes(printer: Printer, nodeType: String): Unit
 
-  def serialize(node: VerbatimNode, printer: Printer) = {
+  def serialize(node: VerbatimNode, printer: Printer): Unit = {
     printer.println()
 
     printer.print("<pre")
     if (!StringUtils.isEmpty(node.getType)) {
       node match {
         case vgn: VerbatimGroupNode => printPreAttributes(printer, vgn.getGroup, vgn.getClasses.asScala)
-        case vn: VerbatimNode       => printPreAttributes(printer)
+        case _: VerbatimNode        => printPreAttributes(printer)
       }
     }
     printer.print(">")
@@ -84,7 +84,7 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
  * Add prettify markup around verbatim blocks.
  */
 object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
-  override def printPreAttributes(printer: Printer, nodeGroup: String, classes: Buffer[String]): Unit = {
+  override def printPreAttributes(printer: Printer, nodeGroup: String, classes: mutable.Buffer[String]): Unit = {
     val allClasses = "prettyprint" +: (nodeGroup match {
       case "" => classes
       case g  => ("group-" + g) +: classes
@@ -100,7 +100,7 @@ object PrettifyVerbatimSerializer extends StyledVerbatimSerializer {
 
 object RawVerbatimSerializer extends VerbatimSerializer {
 
-  val tag = "raw"
+  val tag: String = "raw"
 
   override def serialize(node: VerbatimNode, printer: Printer): Unit = {
     printer.println()

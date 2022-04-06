@@ -66,10 +66,14 @@ class PageTemplate(directory: File, val defaultName: String = "page", val defaul
         addVars(t)
       case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
     }
-    val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
-    val noIndentWriter = new NoIndentWriter(osWriter)
-    template.write(noIndentWriter)
-    osWriter.close()
+    var osWriter: OutputStreamWriter = null
+    try {
+      osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
+      val noIndentWriter = new NoIndentWriter(osWriter)
+      template.write(noIndentWriter)
+    } finally {
+      osWriter.close()
+    }
     target
   }
 }
