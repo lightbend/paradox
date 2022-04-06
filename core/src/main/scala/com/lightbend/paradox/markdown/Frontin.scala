@@ -18,6 +18,7 @@ package com.lightbend.paradox.markdown
 
 import java.io.{ File, StringReader }
 import collection.JavaConverters._
+import scala.io.BufferedSource
 
 case class Frontin(header: Map[String, String], body: String)
 
@@ -28,9 +29,13 @@ object Frontin {
     (str.trim == separator) && (str startsWith separator)
 
   def apply(file: File): Frontin = {
-    val source = scala.io.Source.fromFile(file)("UTF-8")
-    val lines = source.getLines.mkString("\n")
-    source.close()
+    var source: BufferedSource = null
+    val lines = try {
+      source = scala.io.Source.fromFile(file)("UTF-8")
+      source.getLines.mkString("\n")
+    } finally {
+      source.close()
+    }
     apply(lines)
   }
 

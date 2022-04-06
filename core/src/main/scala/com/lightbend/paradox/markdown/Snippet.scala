@@ -125,8 +125,8 @@ object Snippet {
   }
 
   private case class ExtractionState(block: Block, lines: Seq[Line]) {
-    def snippetLines = lines.map(_._2)
-    def withBlock(block: Block) = copy(block = block)
+    def snippetLines: Seq[String] = lines.map(_._2)
+    def withBlock(block: Block): ExtractionState = copy(block = block)
   }
 
   private sealed trait Block

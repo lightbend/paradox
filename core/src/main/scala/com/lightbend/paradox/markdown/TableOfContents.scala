@@ -20,6 +20,8 @@ import com.lightbend.paradox.tree.Tree
 import com.lightbend.paradox.tree.Tree.{ Forest, Location }
 import org.pegdown.ast._
 
+import scala.annotation.tailrec
+
 /**
  * Create markdown list for table of contents on a page.
  */
@@ -82,6 +84,7 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
    * Find the headers below the buffer index for a toc directive.
    * Return the level of the next header and sub-headers to render.
    */
+  @tailrec
   private def headersBelow(location: Option[Location[Header]], index: Int, includeIndexes: List[Int]): (Int, Forest[Header]) = location match {
     case Some(loc) =>
       if (isBelow(index, includeIndexes, loc.tree.label.label.getStartIndex, loc.tree.label.includeIndexes))
@@ -90,6 +93,7 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
     case None => (0, Nil)
   }
 
+  @tailrec
   private def isBelow(tocIndex: Int, tocIncludeIndexes: List[Int], headerIndex: Int, headerIncludeIndexes: List[Int]): Boolean = {
     // If the current level of include indexes are equal, then we need to recursively check the next level.
     // Otherwise, we compare the current level of include indexes if they exist, or the current indexes themselves.
@@ -106,7 +110,7 @@ class TableOfContents(pages: Boolean = true, headers: Boolean = true, ordered: B
         val subHeaders = if (headers) items(base + page.path, active, page.headers, depth, expandDepth) else Nil
         val subPages = if (pages) items(base, active, tree.children, depth, expandDepth) else Nil
         optList(subHeaders ::: subPages)
-      case header: Header =>
+      case _: Header =>
         val subHeaders = if (headers) items(base, active, tree.children, depth, expandDepth) else Nil
         optList(subHeaders)
     }

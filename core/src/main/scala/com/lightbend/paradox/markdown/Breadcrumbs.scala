@@ -32,8 +32,8 @@ object Breadcrumbs {
    */
   def markdown(leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode =
     locations match {
-      case current :: parents => crumbs(current.tree.label.base, current.tree.label.path, leadingBreadcrumbs, locations.reverse)
-      case _                  => list(Nil)
+      case current :: _ => crumbs(current.tree.label.base, current.tree.label.path, leadingBreadcrumbs, locations.reverse)
+      case _            => list(Nil)
     }
 
   private def crumbs(base: String, active: String, leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode = {

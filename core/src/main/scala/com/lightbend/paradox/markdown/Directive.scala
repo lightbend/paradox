@@ -27,12 +27,13 @@ import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.{ Printer, ToHtmlSerializer }
 
 import scala.collection.JavaConverters._
+import scala.util.matching.Regex
 
 /**
  * Serialize directives, checking the name and format against registered directives.
  */
 class DirectiveSerializer(directives: Seq[Directive]) extends ToHtmlSerializerPlugin {
-  val directiveMap = directives.flatMap(d => d.names.map(n => (n, d))).toMap
+  val directiveMap: Map[String, Directive] = directives.flatMap(d => d.names.map(n => (n, d))).toMap
 
   def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
     case dnode: DirectiveNode =>
@@ -224,7 +225,7 @@ abstract class ExternalLinkDirective(names: String*)
     val link = super.resolvedSource(node, page)
     try {
       val resolvedLink = resolveLink(node: DirectiveNode, link).base.normalize.toString
-      if (resolvedLink startsWith (".../")) page.base + resolvedLink.drop(4) else resolvedLink
+      if (resolvedLink startsWith ".../") page.base + resolvedLink.drop(4) else resolvedLink
     } catch {
       case e @ Url.Error(reason) =>
         ctx.logger.debug(e)
@@ -276,10 +277,10 @@ abstract class ApiDocDirective(name: String)
 
   protected def resolveApiLink(link: String): Url
 
-  val defaultBaseUrl = PropertyUrl(name + ".base_url", variables.get)
-  val ApiDocProperty = raw"""$name\.(.*)\.base_url""".r
-  val baseUrls = variables.collect {
-    case (property @ ApiDocProperty(pkg), url) => (pkg, PropertyUrl(property, variables.get))
+  val defaultBaseUrl: PropertyUrl = PropertyUrl(name + ".base_url", variables.get)
+  val ApiDocProperty: Regex = raw"""$name\.(.*)\.base_url""".r
+  val baseUrls: Map[String, PropertyUrl] = variables.collect {
+    case (property @ ApiDocProperty(pkg), _) => (pkg, PropertyUrl(property, variables.get))
   }
 
   override protected def linkContents(node: DirectiveNode): Node = new CodeNode(node.contents)
@@ -312,7 +313,7 @@ abstract class ApiDocDirective(name: String)
 
 object ApiDocDirective {
   /** This relies on the naming convention of packages being all-ascii-lowercase (which is rarely broken), numbers and underscore. */
-  def packageDotsToSlash(s: String) = s.replaceAll("(\\b[a-z][a-z0-9_]*)\\.", "$1/")
+  def packageDotsToSlash(s: String): String = s.replaceAll("(\\b[a-z][a-z0-9_]*)\\.", "$1/")
 }
 
 case class ScaladocDirective(ctx: Writer.Context)
@@ -320,7 +321,7 @@ case class ScaladocDirective(ctx: Writer.Context)
 
   protected def resolveApiLink(link: String): Url = {
     val levels = link.split("[.]")
-    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val packages = (1 to levels.init.length).map(levels.take(_).mkString("."))
     val baseUrl = packages.reverse.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
     url(link, baseUrl)
   }
@@ -338,15 +339,15 @@ case class ScaladocDirective(ctx: Writer.Context)
 object JavadocDirective {
 
   type LinkStyle = String
-  val LinkStyleFrames = "frames"
-  val LinkStyleDirect = "direct"
+  val LinkStyleFrames: LinkStyle = "frames"
+  val LinkStyleDirect: LinkStyle = "direct"
 
   // If Java 9+ we default to linking directly to the file, since it doesn't support frames, otherwise we default
   // to linking to the frames version with the class in the query parameter. Also, the version of everything up to
   // and including 8 starts with 1., so that's an easy way to tell if it's 9+ or not.
-  val jdkDependentLinkStyle = if (sys.props.get("java.specification.version").exists(_.startsWith("1."))) LinkStyleFrames else LinkStyleDirect
+  val jdkDependentLinkStyle: LinkStyle = if (sys.props.get("java.specification.version").exists(_.startsWith("1."))) LinkStyleFrames else LinkStyleDirect
 
-  final val JavadocLinkStyleProperty = raw"""javadoc\.(.*).link_style""".r
+  final val JavadocLinkStyleProperty: Regex = raw"""javadoc\.(.*).link_style""".r
 
   private[markdown] def url(link: String, baseUrl: Url, linkStyle: LinkStyle): Url = {
     val url = Url(link).base
@@ -364,16 +365,16 @@ case class JavadocDirective(ctx: Writer.Context)
 
   import JavadocDirective._
 
-  val rootLinkStyle = variables.getOrElse("javadoc.link_style", LinkStyleFrames)
-  val javaLinkStyle = variables.getOrElse("javadoc.link_style", jdkDependentLinkStyle)
+  val rootLinkStyle: String = variables.getOrElse("javadoc.link_style", LinkStyleFrames)
+  val javaLinkStyle: String = variables.getOrElse("javadoc.link_style", jdkDependentLinkStyle)
 
   val packageLinkStyle: Map[String, String] = Map("java" -> javaLinkStyle) ++ variables.collect {
-    case (property @ JavadocLinkStyleProperty(pkg), url) => (pkg, variables(property))
+    case (property @ JavadocLinkStyleProperty(pkg), _) => (pkg, variables(property))
   }
 
   override protected def resolveApiLink(link: String): Url = {
     val levels = link.split("[.]")
-    val packages = (1 to levels.init.size).map(levels.take(_).mkString("."))
+    val packages = (1 to levels.init.length).map(levels.take(_).mkString("."))
     val packagesDeepestFirst = packages.reverse
     val baseUrl = packagesDeepestFirst.collectFirst(baseUrls).getOrElse(defaultBaseUrl).resolve()
     val linkStyle = packagesDeepestFirst.collectFirst(packageLinkStyle).getOrElse(rootLinkStyle)
@@ -383,21 +384,21 @@ case class JavadocDirective(ctx: Writer.Context)
 }
 
 object GitHubResolver {
-  val baseUrl = "github.base_url"
-  val githubDomain = "github.domain"
+  val baseUrl: String = "github.base_url"
+  val githubDomain: String = "github.domain"
 }
 
 trait GitHubResolver {
 
   def variables: Map[String, String]
 
-  lazy val githubDomain = variables.get(GitHubResolver.githubDomain).getOrElse("github.com")
-  val IssuesLink = """([^/]+/[^/]+)?#([0-9]+)""".r
-  val CommitLink = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
-  lazy val TreeUrl = (s"(.*$githubDomain/[^/]+/[^/]+/tree/[^/]+)").r
-  lazy val ProjectUrl = (s"(.*$githubDomain/[^/]+/[^/]+).*").r
+  lazy val githubDomain: String = variables.getOrElse(GitHubResolver.githubDomain, "github.com")
+  val IssuesLink: Regex = """([^/]+/[^/]+)?#([0-9]+)""".r
+  val CommitLink: Regex = """(([^/]+/[^/]+)?@)?(\p{XDigit}{5,40})""".r
+  lazy val TreeUrl: Regex = s"(.*$githubDomain/[^/]+/[^/]+/tree/[^/]+)".r
+  lazy val ProjectUrl: Regex = s"(.*$githubDomain/[^/]+/[^/]+).*".r
 
-  val baseUrl = PropertyUrl(GitHubResolver.baseUrl, variables.get)
+  val baseUrl: PropertyUrl = PropertyUrl(GitHubResolver.baseUrl, variables.get)
 
   protected def resolvePath(page: Page, source: String, labelOpt: Option[String]): Url = {
     val pathUrl = Url.parse(source, "path is invalid")
@@ -409,7 +410,7 @@ trait GitHubResolver {
     val file = path match {
       case p if p.startsWith(Path.toUnixStyleRootPath(root.getAbsolutePath)) => new File(p)
       case p if p.startsWith("/")                                            => new File(root, path.drop(1))
-      case p                                                                 => new File(page.file.getParentFile, path)
+      case _                                                                 => new File(page.file.getParentFile, path)
     }
     val labelFragment =
       for {
@@ -427,7 +428,7 @@ trait GitHubResolver {
     (treeUrl / treePath) withFragment fragment
   }
 
-  protected def resolveProject(project: String) = {
+  protected def resolveProject(project: String): Url = {
     Option(project) match {
       case Some(path) => Url(s"https://$githubDomain") / path
       case None       => projectUrl
@@ -479,9 +480,9 @@ case class SnipDirective(ctx: Writer.Context)
     try {
       val labels = node.attributes.values("identifier").asScala
       val source = resolvedSource(node, page)
-      val filterLabels = Directive.filterLabels("snip", node.attributes, labels.toSeq, variables)
+      val filterLabels = Directive.filterLabels("snip", node.attributes, labels, variables)
       val file = resolveFile("snip", source, page, variables)
-      val (text, snippetLang) = Snippet(file, labels.toSeq, filterLabels)
+      val (text, snippetLang) = Snippet(file, labels, filterLabels)
       val lang = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group = Option(node.attributes.value("group")).getOrElse("")
       val sourceUrl = if (variables.contains(GitHubResolver.baseUrl) && variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true") {
@@ -502,8 +503,8 @@ case class SnipDirective(ctx: Writer.Context)
 
 object SnipDirective {
 
-  val showGithubLinks = "snip.github_link"
-  val buildBaseDir = "snip.build.base_dir"
+  val showGithubLinks: String = "snip.github_link"
+  val buildBaseDir: String = "snip.build.base_dir"
 
 }
 
@@ -536,8 +537,8 @@ case class FiddleDirective(ctx: Writer.Context)
 
       val source = resolvedSource(node, page)
       val file = resolveFile("fiddle", source, page, variables)
-      val filterLabels = Directive.filterLabels("fiddle", node.attributes, labels.toSeq, variables)
-      val (code, _) = Snippet(file, labels.toSeq, filterLabels)
+      val filterLabels = Directive.filterLabels("fiddle", node.attributes, labels, variables)
+      val (code, _) = Snippet(file, labels, filterLabels)
 
       printer.println.print(
         s"""
@@ -594,7 +595,7 @@ case class TocDirective(location: Location[Page], includeIndexes: List[Int]) ext
  */
 case class VarDirective(variables: Map[String, String]) extends InlineDirective("var", "var:") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    new SpecialTextNode(variables.get(node.label).getOrElse(s"<${node.label}>")).accept(visitor)
+    new SpecialTextNode(variables.getOrElse(node.label, s"<${node.label}>")).accept(visitor)
   }
 }
 
@@ -696,14 +697,14 @@ case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(gro
  * Dependency directive.
  */
 case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("dependency") {
-  val BomVersionSymbols = "bomVersionSymbols"
-  val VersionSymbol = "symbol"
-  val VersionValue = "value"
-  val ScalaBinaryVersionVar = "scala.binary.version"
+  val BomVersionSymbols: String = "bomVersionSymbols"
+  val VersionSymbol: String = "symbol"
+  val VersionValue: String = "value"
+  val ScalaBinaryVersionVar: String = "scala.binary.version"
 
-  val variables = ctx.properties
-  val ScalaVersion = variables.get("scala.version")
-  val ScalaBinaryVersion = variables.get(ScalaBinaryVersionVar)
+  val variables: Map[String, String] = ctx.properties
+  val ScalaVersion: Option[String] = variables.get("scala.version")
+  val ScalaBinaryVersion: Option[String] = variables.get(ScalaBinaryVersionVar)
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     node.contentsNode.getChildren.asScala.headOption match {

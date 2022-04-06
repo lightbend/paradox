@@ -27,6 +27,7 @@ import org.jsoup.nodes.Document
 import org.pegdown.ast._
 
 import java.net.SocketTimeoutException
+import java.util
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.util.control.NonFatal
@@ -162,7 +163,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     errorCollector.errorCount
   }
 
-  private def validateExternalLink(capturedLink: CapturedLink, retryCount: Int, errorContext: ErrorContext, logger: ParadoxLogger) = {
+  private def validateExternalLink(capturedLink: CapturedLink, retryCount: Int, errorContext: ErrorContext, logger: ParadoxLogger): Unit = {
     logger.info(s"Validating external link: ${capturedLink.link}")
 
     def reportError = reportErrorOnSources(errorContext, capturedLink.allSources)(_)
@@ -181,7 +182,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
       // but if you've already read the response body, that will throw an exception, and there's no way to check if
       // you've already tried to read the response body, so we can't do that in a finally block, we have to do it
       // explicitly every time we don't want to consume the stream.
-      def close() = response.bodyStream().close()
+      def close(): Unit = response.bodyStream().close()
 
       if (response.statusCode() / 100 == 3) {
         close()
@@ -305,13 +306,17 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
   private def createMetadata(outputDirectory: File, properties: Map[String, String]): (File, String) = {
     val metadataFilename = "paradox.json"
     val target = new File(outputDirectory, metadataFilename)
-    val osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
-    osWriter.write(
-      s"""{
-         |  "name" : "${properties("project.name")}",
-         |  "version" : "${properties("project.version")}"
-         |}""".stripMargin)
-    osWriter.close()
+    var osWriter: OutputStreamWriter = null
+    try {
+      osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
+      osWriter.write(
+        s"""{
+           |  "name" : "${properties("project.name")}",
+           |  "version" : "${properties("project.version")}"
+           |}""".stripMargin)
+    } finally {
+      osWriter.close()
+    }
     (target, metadataFilename)
   }
 
@@ -323,8 +328,8 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
 
     private val page = loc.tree.label
 
-    val getTitle = page.title
-    val getContent =
+    val getTitle: String = page.title
+    val getContent: String =
       try writer.writeContent(page.markdown, context)
       catch {
         case e: Throwable =>
@@ -333,23 +338,23 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
           ""
       }
 
-    lazy val getBase = page.base
-    lazy val getHome = link(Some(loc.root))
-    lazy val getPrev = link(loc.prev)
-    lazy val getSelf = link(Some(loc))
-    lazy val getNext = link(loc.next)
-    lazy val getBreadcrumbs = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
-    lazy val getNavigation = writer.writeNavigation(navToc.root(loc), context)
-    lazy val getGroups = Groups.html(groups)
-    lazy val hasSubheaders = page.headers.nonEmpty
-    lazy val getToc = writer.writeToc(pageToc.headers(loc), context)
-    lazy val getSource_url = githubLink(Some(loc)).getHtml
-    def getPath = page.path
+    lazy val getBase: String = page.base
+    lazy val getHome: PageTemplate.Link = link(Some(loc.root))
+    lazy val getPrev: PageTemplate.Link = link(loc.prev)
+    lazy val getSelf: PageTemplate.Link = link(Some(loc))
+    lazy val getNext: PageTemplate.Link = link(loc.next)
+    lazy val getBreadcrumbs: String = writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
+    lazy val getNavigation: String = writer.writeNavigation(navToc.root(loc), context)
+    lazy val getGroups: String = Groups.html(groups)
+    lazy val hasSubheaders: Boolean = page.headers.nonEmpty
+    lazy val getToc: String = writer.writeToc(pageToc.headers(loc), context)
+    lazy val getSource_url: String = githubLink(Some(loc)).getHtml
+    def getPath: String = page.path
 
     // So you can $page.properties.("project.name")$
-    lazy val getProperties = context.properties.asJava
+    lazy val getProperties: util.Map[String, String] = context.properties.asJava
     // So you can $if(page.property_is.("project.license").("Apache-2.0"))$
-    lazy val getProperty_is = context.properties.map {
+    lazy val getProperty_is: util.Map[String, util.Map[String, Boolean]] = context.properties.map {
       case (key, value) => (key -> Map(value -> true).asJava)
     }.asJava
 
@@ -393,7 +398,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
     lazy val getTitle: String = location.map(title).orNull
     lazy val isActive: Boolean = false
 
-    override def variables = context.properties
+    override def variables: Map[String, String] = context.properties
 
     private def href(location: Location[Page]): String = {
       try {
@@ -401,7 +406,7 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
         val rootPath = new File(".").getCanonicalFile.toString
         (treeUrl / Path.relativeLocalPath(rootPath, sourceFilePath)).toString
       } catch {
-        case e: Url.Error => null
+        case _: Url.Error => null
       }
     }
 
@@ -442,14 +447,14 @@ class ParadoxProcessor(reader: Reader = new Reader, writer: Writer = new Writer,
         val labels = include.attributes.values("identifier").asScala
         val source = include.source match {
           case direct: DirectiveNode.Source.Direct => direct.value
-          case other =>
+          case _ =>
             error(s"Only explicit links are supported by the include directive, reference links are not", file, include)
             ""
         }
         val includeFile = SourceDirective.resolveFile("include", source, file, properties)
         val frontin = Frontin(includeFile)
-        val filterLabels = Directive.filterLabels("include", include.attributes, labels.toSeq, properties)
-        val (text, snippetLang) = Snippet(includeFile, labels.toSeq, filterLabels)
+        val filterLabels = Directive.filterLabels("include", include.attributes, labels, properties)
+        val (text, snippetLang) = Snippet(includeFile, labels, filterLabels)
         // I guess we could support multiple markup languages in future...
         if (snippetLang != "md" && snippetLang != "markdown") {
           error(s"Don't know how to include '*.$snippetLang' content.", file, include)

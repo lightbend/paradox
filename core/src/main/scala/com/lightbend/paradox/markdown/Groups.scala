@@ -17,7 +17,7 @@
 package com.lightbend.paradox.markdown
 
 object Groups {
-  def html(supergroups: Map[String, Seq[String]]) = {
+  def html(supergroups: Map[String, Seq[String]]): String = {
     supergroups.map {
       case (supergroup, groups) =>
         s"""<select class="supergroup" name="$supergroup">""" +

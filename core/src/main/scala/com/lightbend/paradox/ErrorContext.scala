@@ -17,11 +17,11 @@
 package com.lightbend.paradox
 
 import java.io.File
-
 import com.lightbend.paradox.markdown.Page
 import org.pegdown.ast.Node
 
 import scala.collection.mutable.ListBuffer
+import scala.io.BufferedSource
 
 trait ErrorContext {
   def apply(msg: String, index: Int): Unit
@@ -46,7 +46,7 @@ trait ErrorContext {
 class ErrorCollector extends ErrorContext {
   private val errors = new ListBuffer[ParadoxError]()
 
-  private def addError(msg: String, page: Option[File], index: Option[Int]) = {
+  private def addError(msg: String, page: Option[File], index: Option[Int]): Unit = {
     errors.append(ParadoxError(msg, page, index))
   }
 
@@ -62,7 +62,7 @@ class ErrorCollector extends ErrorContext {
 
   def errorCount: Int = errors.toList.distinct.size
 
-  def logErrors(log: ParadoxLogger) = {
+  def logErrors(log: ParadoxLogger): Unit = {
     val totalErrors = errors.toList.distinct
     // First log general errors
     totalErrors.foreach {
@@ -78,7 +78,13 @@ class ErrorCollector extends ErrorContext {
       .foreach {
         case (page, errors) =>
           // Load contents of the page
-          val lines = scala.io.Source.fromFile(page)("UTF-8").getLines().toList
+          var source: BufferedSource = null
+          val lines = try {
+            source = scala.io.Source.fromFile(page)("UTF-8")
+            source.getLines().toList
+          } finally {
+            source.close()
+          }
           errors.sortBy(_.index.getOrElse(0)).foreach {
             case ParadoxError(error, _, Some(idx)) =>
               val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
