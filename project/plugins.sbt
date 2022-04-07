@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-addSbtPlugin("org.scalariform"       % "sbt-scalariform" % "1.8.3")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"      % "5.6.5")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"     % "0.9.2")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "1.0.0")

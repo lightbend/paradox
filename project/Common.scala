@@ -17,8 +17,6 @@
 import sbt._
 import sbt.Keys._
 import de.heikoseeberger.sbtheader.{ CommentStyle, FileType, License, HeaderPlugin, AutomateHeaderPlugin }
-import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import scalariform.formatter.preferences._
 
 /**
  * Common sbt settings — automatically added to all projects.
@@ -35,13 +33,6 @@ object Common extends AutoPlugin {
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8"),
     resolvers += Resolver.typesafeIvyRepo("releases"),
-    // Scalariform settings
-    ScalariformKeys.preferences := ScalariformKeys.preferences.value
-      .setPreference(AlignSingleLineCaseStatements, true)
-      .setPreference(AlignSingleLineCaseStatements.MaxArrowIndent, 100)
-      .setPreference(DoubleIndentConstructorArguments, true)
-      .setPreference(DanglingCloseParenthesis, Preserve)
-      .setPreference(AlignParameters, true),
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
       FileType.scala -> CommentStyle.cStyleBlockComment,
