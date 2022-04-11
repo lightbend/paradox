@@ -27,46 +27,39 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "The `wrap` directive" should "render wrapping `div`s" in {
-    markdown(
-      """
+    markdown("""
         |@@@ div
         |Simple sentence here.
-        |@@@""") shouldEqual html(
-        """
+        |@@@""") shouldEqual html("""
         |<div>
         |<p>Simple sentence here.</p>
         |</div>""")
   }
 
   it should "render the example from the docs" in {
-    markdown(
-      """
+    markdown("""
         |@@@ div { #foo .bar .baz }
         |
         |Inner **markdown** content.
         |
-        |@@@""") shouldEqual html(
-        """
+        |@@@""") shouldEqual html("""
         |<div id="foo" class="bar baz">
         |<p>Inner <strong>markdown</strong> content.</p>
         |</div>""")
   }
 
   it should "support a custom id and custom CSS classes at the same time" in {
-    markdown(
-      """
+    markdown("""
         |@@@ div { #yeah .red .blue }
         |Simple sentence here.
-        |@@@""") shouldEqual html(
-        """
+        |@@@""") shouldEqual html("""
         |<div id="yeah" class="red blue">
         |<p>Simple sentence here.</p>
         |</div>""")
   }
 
   it should "render nested blocks" in {
-    markdown(
-      """
+    markdown("""
         |@@@ div
         |Simple sentence here.
         |
@@ -76,8 +69,7 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
         |
         |@@@@
         |
-        |@@@""") shouldEqual html(
-        """
+        |@@@""") shouldEqual html("""
         |<div>
         |<p>Simple sentence here.</p>
         |<div class="callout warning">
@@ -88,15 +80,13 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "work with raw verbatim" in {
-    markdown(
-      """
+    markdown("""
         |@@@div { .divStyleClass }
         |```raw
         |<blink>Hello?</blink>
         |```
         |@@@
-      """) shouldEqual html(
-        """<div class="divStyleClass">
+      """) shouldEqual html("""<div class="divStyleClass">
         |<blink>Hello?</blink>
         |</div>
       """)
@@ -115,14 +105,12 @@ class WrapDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "Raw verbatim" should "work" in {
-    markdown(
-      """
-        |```raw
-        |<blink>Hello?</blink>
-        |```
-      """.stripMargin) shouldEqual html(
-        """<blink>Hello?</blink>
-        |""".stripMargin)
+    markdown("""
+               |```raw
+               |<blink>Hello?</blink>
+               |```
+      """.stripMargin) shouldEqual html("""<blink>Hello?</blink>
+                                          |""".stripMargin)
 
     // for use in docs
     // format: off

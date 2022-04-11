@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox
 
-import java.io.{ PrintWriter, StringWriter }
+import java.io.{PrintWriter, StringWriter}
 
 import scala.collection.immutable.StringOps
 
@@ -35,14 +35,14 @@ trait ParadoxLogger {
 
 object NullLogger extends ParadoxLogger {
   override def debug(msg: => String): Unit = ()
-  override def info(msg: => String): Unit = ()
-  override def warn(msg: => String): Unit = ()
+  override def info(msg: => String): Unit  = ()
+  override def warn(msg: => String): Unit  = ()
   override def error(msg: => String): Unit = ()
 }
 
 object PrintlnLogger extends ParadoxLogger {
   override def debug(msg: => String): Unit = println(s"[debug] $msg")
-  override def info(msg: => String): Unit = println(s"[info] $msg")
-  override def warn(msg: => String): Unit = println(s"[warn] $msg")
+  override def info(msg: => String): Unit  = println(s"[info] $msg")
+  override def warn(msg: => String): Unit  = println(s"[warn] $msg")
   override def error(msg: => String): Unit = println(s"[error] $msg")
 }

@@ -23,8 +23,7 @@ class IndexSpec extends MarkdownBaseSpec {
   override val globalProperties = Map("platform" -> "openshift")
 
   "Index" should "create header tree" in {
-    indexed(
-      "a.md" -> """
+    indexed("a.md" -> """
         |# A
         |## B
         |### C
@@ -33,8 +32,7 @@ class IndexSpec extends MarkdownBaseSpec {
         |## F
         |### G
         |#### H
-      """) shouldEqual index(
-        """
+      """) shouldEqual index("""
         |- a.html
         |  - #b
         |    - #c
@@ -57,8 +55,8 @@ class IndexSpec extends MarkdownBaseSpec {
       "b.md" -> """
         |# B
         |## B2
-      """) shouldEqual index(
-        """
+      """
+    ) shouldEqual index("""
         |- a.html
         |  - b.html
         |    - #b2
@@ -91,8 +89,8 @@ class IndexSpec extends MarkdownBaseSpec {
                   |# D
                   |## D2
                   |### D3
-                """) shouldEqual index(
-        """
+                """
+    ) shouldEqual index("""
         |- a.html
         |  - #a2
         |    - #a3
@@ -132,8 +130,8 @@ class IndexSpec extends MarkdownBaseSpec {
         |# D
         |## D2
         |### D3
-      """) shouldEqual index(
-        """
+      """
+    ) shouldEqual index("""
         |- a.html
         |  - #a2
         |    - #a3
@@ -183,8 +181,8 @@ class IndexSpec extends MarkdownBaseSpec {
       """,
       "h.md" -> """
         |# H
-      """) shouldEqual index(
-        """
+      """
+    ) shouldEqual index("""
         |- a.html
         |  - b.html
         |    - c.html
@@ -205,22 +203,19 @@ class IndexSpec extends MarkdownBaseSpec {
         |@@@
       """,
       "openshift.md" -> "# OpenShift"
-    ) shouldEqual index(
-        """
+    ) shouldEqual index("""
         |- a.html
         |  - openshift.html
       """)
   }
 
-  def indexed(mappings: (String, String)*): String = {
+  def indexed(mappings: (String, String)*): String =
     show(pages(mappings: _*))
-  }
 
   def index(text: String): String = prepare(text)
 
-  def show[A <: Linkable](forest: Forest[A]): String = {
+  def show[A <: Linkable](forest: Forest[A]): String =
     forest.map(_.map(a => show(a))).map(_.show).mkString("\n")
-  }
 
   def show[A <: Linkable](linkable: A): String = linkable match {
     case page: Page     => page.path + "\n" + show(page.headers)

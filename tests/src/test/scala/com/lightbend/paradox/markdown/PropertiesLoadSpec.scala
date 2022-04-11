@@ -25,8 +25,7 @@ class PropertiesLoadSpec extends MarkdownBaseSpec {
       |out: newIndex.html
       |---
       """
-    ) shouldEqual htmlPages(
-        "newIndex.html" -> "")
+    ) shouldEqual htmlPages("newIndex.html" -> "")
   }
 
   it should "display the correct content even if the file name has changed" in {
@@ -37,8 +36,7 @@ class PropertiesLoadSpec extends MarkdownBaseSpec {
       |---
       |# Foo
       """
-    ) shouldEqual htmlPages(
-        "newIndex.html" -> """
+    ) shouldEqual htmlPages("newIndex.html" -> """
       |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
       """)
   }

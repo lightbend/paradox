@@ -27,37 +27,39 @@ import org.pegdown.ast._
 object Breadcrumbs {
 
   /**
-   * Convert a location path into a markdown list.
-   * Note: locations are ordered from current location up to root.
+   * Convert a location path into a markdown list. Note: locations are ordered from current location up to root.
    */
   def markdown(leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode =
     locations match {
-      case current :: _ => crumbs(current.tree.label.base, current.tree.label.path, leadingBreadcrumbs, locations.reverse)
-      case _            => list(Nil)
+      case current :: _ =>
+        crumbs(current.tree.label.base, current.tree.label.path, leadingBreadcrumbs, locations.reverse)
+      case _ => list(Nil)
     }
 
-  private def crumbs(base: String, active: String, leadingBreadcrumbs: List[(String, String)], locations: List[Location[Page]]): BulletListNode = {
+  private def crumbs(
+      base: String,
+      active: String,
+      leadingBreadcrumbs: List[(String, String)],
+      locations: List[Location[Page]]
+  ): BulletListNode = {
     val lead = leadingBreadcrumbs map { case (label, url) => item(url, "", labelNode(label), active) }
     list(lead ++ (locations map pageItem(base, active)))
   }
 
-  private def list(items: List[ListItemNode]): BulletListNode = {
+  private def list(items: List[ListItemNode]): BulletListNode =
     new BulletListNode(new SuperNode(items.map(n => n: Node).asJava))
-  }
 
   private def pageItem(base: String, active: String)(location: Location[Page]): ListItemNode = {
     val page = location.tree.label
     item(base + page.path, page.path, page.label, active)
   }
 
-  private def item(url: String, path: String, label: Node, active: String): ListItemNode = {
+  private def item(url: String, path: String, label: Node, active: String): ListItemNode =
     new ListItemNode(new SuperNode(link(url, path, label, active)))
-  }
 
-  private def link(url: String, path: String, label: Node, active: String): Node = {
+  private def link(url: String, path: String, label: Node, active: String): Node =
     if (path == active) label // no link for current location
     else new ExpLinkNode("", url, label)
-  }
 
   private def labelNode(label: String): Node = new SuperNode(new TextNode(label))
 

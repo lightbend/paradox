@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 import org.parboiled.Parboiled
 import org.pegdown.ast.RootNode
 import org.pegdown.plugins.PegDownPlugins
-import org.pegdown.{ Extensions, Parser, ParserWithDirectives }
+import org.pegdown.{Extensions, Parser, ParserWithDirectives}
 import scala.concurrent.duration._
 
 /**
@@ -28,16 +28,20 @@ import scala.concurrent.duration._
 class Reader(parser: Parser) {
 
   def this(
-    options:             Int                        = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */ ,
-    maxParsingTime:      Duration                   = 2.seconds,
-    parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
-    plugins:             PegDownPlugins             = PegDownPlugins.NONE) =
-    this(Parboiled.createParser[ParserWithDirectives, AnyRef](
-      classOf[ParserWithDirectives],
-      options: java.lang.Integer,
-      maxParsingTime.toMillis: java.lang.Long,
-      parseRunnerProvider,
-      plugins))
+      options: Int = Extensions.ALL ^ Extensions.HARDWRAPS /* disable hard wraps, see #31 */,
+      maxParsingTime: Duration = 2.seconds,
+      parseRunnerProvider: Parser.ParseRunnerProvider = Parser.DefaultParseRunnerProvider,
+      plugins: PegDownPlugins = PegDownPlugins.NONE
+  ) =
+    this(
+      Parboiled.createParser[ParserWithDirectives, AnyRef](
+        classOf[ParserWithDirectives],
+        options: java.lang.Integer,
+        maxParsingTime.toMillis: java.lang.Long,
+        parseRunnerProvider,
+        plugins
+      )
+    )
 
   /**
    * Parse markdown text into a pegdown AST.

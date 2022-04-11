@@ -22,7 +22,8 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
   implicit val context = writerContextWithProperties(
     "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
-    "github.root.base_dir" -> ".")
+    "github.root.base_dir" -> "."
+  )
 
   "GitHub directive" should "create links using configured base URL" in {
     markdown("@github[#1](#1)") shouldEqual
@@ -38,7 +39,8 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
     implicit val context = writerContextWithProperties(
       "github.base_url" -> "https://git.enterprise.net/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> ".",
-      "github.domain" -> "git.enterprise.net")
+      "github.domain" -> "git.enterprise.net"
+    )
     markdown("@github:[#1](#1)") shouldEqual
       html("""<p><a href="https://git.enterprise.net/lightbend/paradox/issues/1">#1</a></p>""")
   }
@@ -71,7 +73,8 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   it should "handle tree links with automatic versioning" in {
     val context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox",
-      "github.root.base_dir" -> ".")
+      "github.root.base_dir" -> "."
+    )
 
     markdown("@github[See build.sbt](/build.sbt)")(context) shouldEqual
       html("""<p><a href="https://github.com/lightbend/paradox/tree/master/build.sbt">See build.sbt</a></p>""")
@@ -84,9 +87,8 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for invalid GitHub URLs" in {
-    val invalidContext = writerContextWithProperties(
-      "github.base_url" -> "https://github.com/project",
-      "github.root.base_dir" -> ".")
+    val invalidContext =
+      writerContextWithProperties("github.base_url" -> "https://github.com/project", "github.root.base_dir" -> ".")
 
     the[ParadoxException] thrownBy {
       markdown("@github[#1](#1)")(invalidContext)
@@ -106,10 +108,9 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support referenced links" in {
-    markdown(
-      """@github[#1234][1]
-        |
-        |  [1]: akka/akka#1234
+    markdown("""@github[#1234][1]
+               |
+               |  [1]: akka/akka#1234
       """.stripMargin) shouldEqual
       html("""<p><a href="https://github.com/akka/akka/issues/1234">#1234</a></p>""")
   }

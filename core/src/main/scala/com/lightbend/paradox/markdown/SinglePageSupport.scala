@@ -20,8 +20,23 @@ import java.net.URI
 
 import com.lightbend.paradox.markdown.Writer.Context
 import com.lightbend.paradox.tree.Tree
-import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer }
-import org.pegdown.ast.{ AnchorLinkNode, AnchorLinkSuperNode, AutoLinkNode, DirectiveNode, ExpImageNode, ExpLinkNode, HeaderNode, MailLinkNode, Node, RefImageNode, RefLinkNode, TextNode, Visitor, WikiLinkNode }
+import org.pegdown.{LinkRenderer, Printer, ToHtmlSerializer}
+import org.pegdown.ast.{
+  AnchorLinkNode,
+  AnchorLinkSuperNode,
+  AutoLinkNode,
+  DirectiveNode,
+  ExpImageNode,
+  ExpLinkNode,
+  HeaderNode,
+  MailLinkNode,
+  Node,
+  RefImageNode,
+  RefLinkNode,
+  TextNode,
+  Visitor,
+  WikiLinkNode
+}
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 
 import scala.collection.JavaConverters._
@@ -31,22 +46,18 @@ object SinglePageSupport {
   def writer: Writer = new Writer(new SinglePageToHtmlSerializer(_))
 
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] =
-    Writer.defaultPlugins(directives).map { plugin =>
-      { context: Context =>
-        plugin(context) match {
-          case _: AnchorLinkSerializer => new SinglePageAnchorLinkSerializer(context)
-          case other                   => other
-        }
+    Writer.defaultPlugins(directives).map { plugin => context: Context =>
+      plugin(context) match {
+        case _: AnchorLinkSerializer => new SinglePageAnchorLinkSerializer(context)
+        case other                   => other
       }
     }
 
-  def defaultDirectives: Seq[Context => Directive] = Writer.defaultDirectives.map { directive =>
-    { context: Context =>
-      directive(context) match {
-        case ref: RefDirective => new SinglePageRefDirective(ref)
-        case toc: TocDirective => new SinglePageTocDirective(toc)
-        case other             => other
-      }
+  def defaultDirectives: Seq[Context => Directive] = Writer.defaultDirectives.map { directive => context: Context =>
+    directive(context) match {
+      case ref: RefDirective => new SinglePageRefDirective(ref)
+      case toc: TocDirective => new SinglePageTocDirective(toc)
+      case other             => other
     }
   }
 
@@ -73,10 +84,10 @@ object SinglePageSupport {
       }
     }
 
-    private def check(node: DirectiveNode, path: String): Option[String] = {
+    private def check(node: DirectiveNode, path: String): Option[String] =
       ctx.paths.get(Path.resolve(page.path, path)).map { target =>
         if (path.contains("#")) {
-          val anchor = path.substring(path.lastIndexOf('#'))
+          val anchor  = path.substring(path.lastIndexOf('#'))
           val headers = (target.headers.flatMap(_.toSet) :+ target.h1).map(_.path) ++ target.anchors.map(_.path)
           if (!headers.contains(anchor)) {
             ctx.error(s"Unknown anchor [$path]", node)
@@ -84,7 +95,6 @@ object SinglePageSupport {
         }
         path
       }
-    }
   }
 
   class SinglePageTocDirective(toc: TocDirective) extends Directive {
@@ -140,7 +150,9 @@ object SinglePageSupport {
     def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
       case anchor: AnchorLinkSuperNode =>
         val name = s"${ctx.page.path}~${anchor.name}"
-        printer.print(s"""<a href="#$name" name="$name" class="anchor"><span class="anchor-link"></span></a><span class="header-title">""")
+        printer.print(
+          s"""<a href="#$name" name="$name" class="anchor"><span class="anchor-link"></span></a><span class="header-title">"""
+        )
         anchor.getChildren.asScala.foreach(_.accept(visitor))
         printer.print("</span>")
         true
@@ -148,16 +160,17 @@ object SinglePageSupport {
     }
   }
 
-  class SinglePageToHtmlSerializer(ctx: Writer.Context) extends ToHtmlSerializer(
-    defaultLinks(ctx),
-    Writer.defaultVerbatims.asJava,
-    defaultPlugins(defaultDirectives).map(p => p(ctx)).asJava
-  ) {
+  class SinglePageToHtmlSerializer(ctx: Writer.Context)
+      extends ToHtmlSerializer(
+        defaultLinks(ctx),
+        Writer.defaultVerbatims.asJava,
+        defaultPlugins(defaultDirectives).map(p => p(ctx)).asJava
+      ) {
 
     override def visit(node: HeaderNode): Unit = {
       val offsetDepth = node.getLevel + ctx.location.depth
 
-      def visitHeaderChildren(node: HeaderNode): Unit = {
+      def visitHeaderChildren(node: HeaderNode): Unit =
         node.getChildren.asScala.toList match {
           case List(anchorLink: AnchorLinkNode, text: TextNode) =>
             linkRenderer.render(anchorLink)
@@ -167,10 +180,11 @@ object SinglePageSupport {
           case List(anchorLink: AnchorLinkSuperNode) =>
             anchorLink.accept(this)
           case other =>
-            ctx.logger.warn("Rendering header that isn't an anchor link followed by text, or anchor link supernode, it will not have its content wrapped in a header-title span, and so won't be numbered: " + other)
+            ctx.logger.warn(
+              "Rendering header that isn't an anchor link followed by text, or anchor link supernode, it will not have its content wrapped in a header-title span, and so won't be numbered: " + other
+            )
             visitChildren(node)
         }
-      }
       if (offsetDepth > 6) {
         printer.println().print("<div class=\"h").print(offsetDepth.toString).print("\">")
         visitHeaderChildren(node)
@@ -184,7 +198,8 @@ object SinglePageSupport {
 
   }
 
-  class SinglePageTableOfContents(maxDepth: Int = 6, maxExpandDepth: Option[Int] = None) extends TableOfContents(true, true, false, maxDepth, maxExpandDepth) {
+  class SinglePageTableOfContents(maxDepth: Int = 6, maxExpandDepth: Option[Int] = None)
+      extends TableOfContents(true, true, false, maxDepth, maxExpandDepth) {
     override protected def link[A <: Linkable](base: String, linkable: A, active: Option[Tree.Location[Page]]): Node = {
       val path = linkable match {
         case page: Page     => page.path

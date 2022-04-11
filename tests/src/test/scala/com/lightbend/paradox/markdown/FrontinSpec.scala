@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 import java.io._
 
 class FrontinSpec extends MarkdownBaseSpec {
-  val first = "first line"
+  val first  = "first line"
   val second = "second line"
 
   val f1 = new File("f1.md")
@@ -28,7 +28,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     """
     |%s
     |%s
-    """ format (first, second))
+    """ format (first, second)
+  )
 
   val f2 = new File("f2.md")
   writeInFile(
@@ -38,7 +39,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     |---
     |%s
     |%s
-    """ format (first, second))
+    """ format (first, second)
+  )
 
   val f3 = new File("f3.md")
   writeInFile(
@@ -49,7 +51,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     |---
     |%s
     |%s
-    """ format (first, second))
+    """ format (first, second)
+  )
 
   val f4 = new File("f4.md")
   writeInFile(
@@ -58,7 +61,8 @@ class FrontinSpec extends MarkdownBaseSpec {
     |---
     |out: index.html
     |---
-    """)
+    """
+  )
 
   "Frontin.apply()" should "return an empty header when no property are specified at the page level" in {
     Frontin(f1).header shouldEqual Map.empty[String, String]

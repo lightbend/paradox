@@ -17,7 +17,7 @@
 package com.lightbend.paradox.template
 
 import java.io.File
-import com.lightbend.paradox.markdown.{ MarkdownBaseSpec }
+import com.lightbend.paradox.markdown.MarkdownBaseSpec
 
 class LayoutSpec extends MarkdownBaseSpec {
   val defaultTemplate = """
@@ -34,13 +34,13 @@ class LayoutSpec extends MarkdownBaseSpec {
       |---
       """
     )(
-        "page.st" -> defaultTemplate,
-        "dumbTemplate.st" -> """
+      "page.st" -> defaultTemplate,
+      "dumbTemplate.st" -> """
       |<div>
       |content of the template
       |</div>
-      """) shouldEqual htmlPages(
-          "index.html" -> """
+      """
+    ) shouldEqual htmlPages("index.html" -> """
         |<div>
         |content of the template
         |</div>
@@ -51,8 +51,7 @@ class LayoutSpec extends MarkdownBaseSpec {
     layoutPages(
       "index.md" -> """
       """
-    )("page.st" -> defaultTemplate) shouldEqual htmlPages(
-        "index.html" -> """
+    )("page.st" -> defaultTemplate) shouldEqual htmlPages("index.html" -> """
         |<div>
         |page template
         |</div>
@@ -69,13 +68,13 @@ class LayoutSpec extends MarkdownBaseSpec {
       |some text
       """
     )(
-        "page.st" -> defaultTemplate,
-        "noPageRef.st" -> """
+      "page.st" -> defaultTemplate,
+      "noPageRef.st" -> """
       |<div>
       |No page ref
       |</div>
-      """) shouldEqual htmlPages(
-          "index.html" -> """
+      """
+    ) shouldEqual htmlPages("index.html" -> """
         |<div>
         |No page ref
         |</div>
@@ -92,14 +91,13 @@ class LayoutSpec extends MarkdownBaseSpec {
       |some page text
       """
     )(
-        "page.st" -> defaultTemplate,
-        "contentPage.st" -> """
+      "page.st" -> defaultTemplate,
+      "contentPage.st" -> """
       |<div>
       |$page.content$
       |</div>
       """
-      ) shouldEqual htmlPages(
-          "index.html" -> """
+    ) shouldEqual htmlPages("index.html" -> """
         |<div>
         |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
         |<p>some page text</p>
@@ -116,14 +114,14 @@ class LayoutSpec extends MarkdownBaseSpec {
       |---
       """
     )(
-        "page.st" -> defaultTemplate,
-        "propPage.st" -> """
+      "page.st" -> defaultTemplate,
+      "propPage.st" -> """
       |<div>
       |$layout$
       |$foo$
       |</div>
-      """) shouldEqual htmlPages(
-          "index.html" -> """
+      """
+    ) shouldEqual htmlPages("index.html" -> """
         |<div>
         |propPage
         |bar
@@ -133,15 +131,14 @@ class LayoutSpec extends MarkdownBaseSpec {
 
   it should "throw an exception if the specified template doesn't exist" in {
     the[RuntimeException] thrownBy {
-      layoutPages(
-        "index.md" -> """
+      layoutPages("index.md" -> """
       |---
       |layout: noTemplate
       |out: newIndex.html
       |---
       """)(
-          "page.st" -> defaultTemplate
-        )
+        "page.st" -> defaultTemplate
+      )
     } should have message "StringTemplate 'noTemplate' was not found for 'newIndex.html'. Create a template or set a theme that contains one."
   }
 }

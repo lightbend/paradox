@@ -59,8 +59,7 @@ class IncludeDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "include headers from nested snippets in the toc" in {
-    markdown(
-      """
+    markdown("""
         |# Page heading
         |
         |This text appears here to push down the toc so to ensure that the headers below
@@ -83,8 +82,7 @@ class IncludeDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "include headers from outer snippets in a nested toc" in {
-    markdown(
-      """
+    markdown("""
         |# Page heading
         |
         |## Above toc

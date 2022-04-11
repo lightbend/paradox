@@ -20,30 +20,32 @@ import com.lightbend.paradox.ParadoxException
 
 class RefDirectiveSpec extends MarkdownBaseSpec {
 
-  private implicit val context = writerContextWithProperties("page.variable" -> "page")
+  implicit private val context = writerContextWithProperties("page.variable" -> "page")
 
-  def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] = markdownPages(
-    pagePath -> s"""
+  def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] =
+    markdownPages(
+      pagePath -> s"""
       |@@@ index
       |* [test](${Path.basePath(pagePath)}${testPath})
       |* [withanchors](${Path.basePath(pagePath)}pagewithanchors.md)
       |@@@
     """,
-    testPath -> text,
-    "pagewithanchors.md" -> s"""
-      |<a id="custom-anchor"></a>
-      |## header
-      |
-      |body
-    """.stripMargin,
-  )
+      testPath -> text,
+      "pagewithanchors.md" -> s"""
+                                 |<a id="custom-anchor"></a>
+                                 |## header
+                                 |
+                                 |body
+    """.stripMargin
+    )
 
-  def testHtml(text: String, pagePath: String = "page.html", testPath: String = "test.html"): Map[String, String] = {
+  def testHtml(text: String, pagePath: String = "page.html", testPath: String = "test.html"): Map[String, String] =
     htmlPages(
       pagePath -> "",
       "pagewithanchors.html" -> s"""<a id="custom-anchor"></a>
-<h2><a href="#header" name="header" class="anchor"><span class="anchor-link"></span></a>header</h2><p>body</p>""", testPath -> text)
-  }
+<h2><a href="#header" name="header" class="anchor"><span class="anchor-link"></span></a>header</h2><p>body</p>""",
+      testPath -> text
+    )
 
   "Ref directive" should "create links with html extension" in {
     testMarkdown("@ref[Page](page.md)") shouldEqual testHtml("""<p><a href="page.html">Page</a></p>""")
@@ -59,11 +61,15 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "handle anchored links correctly" in {
-    testMarkdown("@ref:[Page](pagewithanchors.md#header)") shouldEqual testHtml("""<p><a href="pagewithanchors.html#header">Page</a></p>""")
+    testMarkdown("@ref:[Page](pagewithanchors.md#header)") shouldEqual testHtml(
+      """<p><a href="pagewithanchors.html#header">Page</a></p>"""
+    )
   }
 
   it should "handle anchored links to custom anchors correctly" in {
-    testMarkdown("@ref:[Page](pagewithanchors.md#custom-anchor)") shouldEqual testHtml("""<p><a href="pagewithanchors.html#custom-anchor">Page</a></p>""")
+    testMarkdown("@ref:[Page](pagewithanchors.md#custom-anchor)") shouldEqual testHtml(
+      """<p><a href="pagewithanchors.html#custom-anchor">Page</a></p>"""
+    )
   }
 
   it should "throw link exceptions for invalid anchor references" in {
@@ -89,26 +95,23 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support referenced links with implicit key" in {
-    testMarkdown(
-      """This @ref:[Page] { .ref a=1 } is linked.
-        |
-        |  [Page]: pagewithanchors.md#header
+    testMarkdown("""This @ref:[Page] { .ref a=1 } is linked.
+                   |
+                   |  [Page]: pagewithanchors.md#header
       """.stripMargin) shouldEqual testHtml("""<p>This <a href="pagewithanchors.html#header">Page</a> is linked.</p>""")
   }
 
   it should "support referenced links with empty key" in {
-    testMarkdown(
-      """This @ref:[Page][] { .ref a=1 } is linked.
-        |
-        |  [Page]: pagewithanchors.md#header
-      """.stripMargin) //shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
+    testMarkdown("""This @ref:[Page][] { .ref a=1 } is linked.
+                   |
+                   |  [Page]: pagewithanchors.md#header
+      """.stripMargin) // shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
   }
 
   it should "support referenced links with defined key" in {
-    testMarkdown(
-      """This @ref:[Page][123] { .ref a=1 } is linked.
-        |
-        |  [123]: pagewithanchors.md#header
+    testMarkdown("""This @ref:[Page][123] { .ref a=1 } is linked.
+                   |
+                   |  [123]: pagewithanchors.md#header
       """.stripMargin) shouldEqual testHtml("""<p>This <a href="pagewithanchors.html#header">Page</a> is linked.</p>""")
   }
 

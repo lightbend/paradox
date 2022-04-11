@@ -1,7 +1,7 @@
-val akkaVersion = "2.4.10"
+val akkaVersion     = "2.4.10"
 val akkaHttpVersion = "10.0.0"
 
-version := "0.1.0"
+version      := "0.1.0"
 scalaVersion := "2.11.12"
 
 enablePlugins(ParadoxPlugin)
@@ -22,10 +22,10 @@ paradoxRoots := List(
   "github.html",
   "javadoc.html",
   "javadoc-javalib.html",
-  "scaladoc.html",
+  "scaladoc.html"
 )
 
-apiURL := Some(url(s"https://example.org/api/${version.value}"))
+apiURL  := Some(url(s"https://example.org/api/${version.value}"))
 scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git"))
 
 TaskKey[Unit]("checkJavadocJavalibContent") := {
@@ -33,6 +33,9 @@ TaskKey[Unit]("checkJavadocJavalibContent") := {
 
   assert(file.exists, s"${file.getAbsolutePath} did not exist")
   val content = IO.readLines(file).mkString
-  assert(content.matches(
-    raw"""<p><a href="https://docs.oracle.com/javase/8/docs/api/\?java/io/File\.html#separator" title="java.io.File"><code>File\.separator</code></a></p>"""))
+  assert(
+    content.matches(
+      raw"""<p><a href="https://docs.oracle.com/javase/8/docs/api/\?java/io/File\.html#separator" title="java.io.File"><code>File\.separator</code></a></p>"""
+    )
+  )
 }

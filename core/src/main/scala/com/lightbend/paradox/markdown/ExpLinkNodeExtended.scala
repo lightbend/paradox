@@ -16,6 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import org.pegdown.ast.{ DirectiveAttributes, ExpLinkNode, Node }
+import org.pegdown.ast.{DirectiveAttributes, ExpLinkNode, Node}
 
-class ExpLinkNodeExtended(url: String, title: String, child: Node, val attributes: DirectiveAttributes) extends ExpLinkNode(url, title, child)
+class ExpLinkNodeExtended(url: String, title: String, child: Node, val attributes: DirectiveAttributes)
+    extends ExpLinkNode(url, title, child)

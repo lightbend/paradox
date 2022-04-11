@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import java.io.{ File, StringReader }
+import java.io.{File, StringReader}
 import collection.JavaConverters._
 import scala.io.BufferedSource
 
@@ -30,12 +30,12 @@ object Frontin {
 
   def apply(file: File): Frontin = {
     var source: BufferedSource = null
-    val lines = try {
-      source = scala.io.Source.fromFile(file)("UTF-8")
-      source.getLines.mkString("\n")
-    } finally {
-      source.close()
-    }
+    val lines =
+      try {
+        source = scala.io.Source.fromFile(file)("UTF-8")
+        source.getLines.mkString("\n")
+      } finally
+        source.close()
     apply(lines)
   }
 
@@ -43,7 +43,7 @@ object Frontin {
     str.linesWithSeparators.toList match {
       case Nil => Frontin(Map.empty[String, String], "")
       case x :: xs if separates(x) =>
-        xs span { !separates(_) } match {
+        xs span (!separates(_)) match {
           case (h, b) => Frontin(loadProperties(Some(h.mkString(""))), if (b.isEmpty) "" else b.tail.mkString(""))
         }
       case _ => Frontin(Map.empty[String, String], str)

@@ -29,17 +29,18 @@ class PathSpec extends AnyFlatSpec with Matchers {
       "a/a2/A2.md" -> "a/a2/A2.html",
       "a/b/source.md" -> "a/b/source.html",
       "a/b/sameFolder.md" -> "a/b/sameFolder.html",
-      "a/b/c/ABC.md" -> "a/b/c/ABC.html")
+      "a/b/c/ABC.md" -> "a/b/c/ABC.html"
+    )
     val sourcePath = "a/b/source.md"
     (mappings, sourcePath)
   }
 
   "Path.basePath" should "handle root pages" in {
-    Path.basePath("foo.html") shouldEqual ("")
+    Path.basePath("foo.html") shouldEqual ""
   }
 
   it should "have correct number of ups" in {
-    Path.basePath("a/b/foo.html") shouldEqual ("../../")
+    Path.basePath("a/b/foo.html") shouldEqual "../../"
   }
 
   "Path.resolve" should "resolve a sibling page" in {
@@ -97,12 +98,13 @@ class PathSpec extends AnyFlatSpec with Matchers {
       "a/a2/A2.md" -> "../a2/A2.html",
       "a/b/source.md" -> "source.html",
       "a/b/sameFolder.md" -> "sameFolder.html",
-      "a/b/c/ABC.md" -> "c/ABC.html")
+      "a/b/c/ABC.md" -> "c/ABC.html"
+    )
   }
 
   "Path.generateTargetFile" should "return the corresponding target file given the relative mapping for the current file" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    val newMapping = Path.generateTargetFile(sourcePath, mappings)
+    val newMapping             = Path.generateTargetFile(sourcePath, mappings)
 
     newMapping("../../index.md") shouldEqual Some("../../index.html")
     newMapping("A.md") shouldEqual None
@@ -111,7 +113,7 @@ class PathSpec extends AnyFlatSpec with Matchers {
 
   it should "return the source file for fragment links" in {
     val (mappings, sourcePath) = provideRelativeMapping
-    val newMapping = Path.generateTargetFile(sourcePath, mappings)
+    val newMapping             = Path.generateTargetFile(sourcePath, mappings)
 
     newMapping("#frag") shouldEqual Some("source.html#frag")
   }

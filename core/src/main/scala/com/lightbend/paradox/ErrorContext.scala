@@ -46,11 +46,12 @@ trait ErrorContext {
 class ErrorCollector extends ErrorContext {
   private val errors = new ListBuffer[ParadoxError]()
 
-  private def addError(msg: String, page: Option[File], index: Option[Int]): Unit = {
+  private def addError(msg: String, page: Option[File], index: Option[Int]): Unit =
     errors.append(ParadoxError(msg, page, index))
-  }
 
-  override def apply(msg: String, index: Int): Unit = throw new IllegalArgumentException("Cannot report an indexed error without a page context")
+  override def apply(msg: String, index: Int): Unit = throw new IllegalArgumentException(
+    "Cannot report an indexed error without a page context"
+  )
 
   override def apply(msg: String): Unit = addError(msg, None, None)
 
@@ -75,39 +76,38 @@ class ErrorCollector extends ErrorContext {
       .groupBy(_.page.get)
       .toSeq
       .sortBy(_._1.getAbsolutePath)
-      .foreach {
-        case (page, errors) =>
-          // Load contents of the page
-          var source: BufferedSource = null
-          val lines = try {
+      .foreach { case (page, errors) =>
+        // Load contents of the page
+        var source: BufferedSource = null
+        val lines =
+          try {
             source = scala.io.Source.fromFile(page)("UTF-8")
             source.getLines().toList
-          } finally {
+          } finally
             source.close()
-          }
-          errors.sortBy(_.index.getOrElse(0)).foreach {
-            case ParadoxError(error, _, Some(idx)) =>
-              val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
-                state match {
-                  case (_, _, _, Some(_)) => state
-                  case (total, l, c, None) =>
-                    if (total + line.length < idx) {
-                      (total + line.length + 1, l + 1, c, None)
-                    } else {
-                      (0, l + 1, idx - total + 1, Some(line))
-                    }
-                }
+        errors.sortBy(_.index.getOrElse(0)).foreach {
+          case ParadoxError(error, _, Some(idx)) =>
+            val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
+              state match {
+                case (_, _, _, Some(_)) => state
+                case (total, l, c, None) =>
+                  if (total + line.length < idx) {
+                    (total + line.length + 1, l + 1, c, None)
+                  } else {
+                    (0, l + 1, idx - total + 1, Some(line))
+                  }
               }
+            }
 
-              log.error(s"$error at ${page.getAbsolutePath}:$lineNo")
-              line.foreach { l =>
-                log.error(l)
-                log.error(l.take(colNo - 1).map { case '\t' => '\t'; case _ => ' ' } + "^")
-              }
-            case ParadoxError(error, _, _) =>
-              log.error(s"$error at ${page.getAbsolutePath}")
+            log.error(s"$error at ${page.getAbsolutePath}:$lineNo")
+            line.foreach { l =>
+              log.error(l)
+              log.error(l.take(colNo - 1).map { case '\t' => '\t'; case _ => ' ' } + "^")
+            }
+          case ParadoxError(error, _, _) =>
+            log.error(s"$error at ${page.getAbsolutePath}")
 
-          }
+        }
       }
   }
 }
@@ -127,7 +127,9 @@ class ThrowingErrorContext extends ErrorContext {
 
   override def apply(msg: String): Unit = throw ParadoxException(ParadoxError(msg, None, None))
 
-  override def apply(msg: String, file: File, index: Int): Unit = throw ParadoxException(ParadoxError(msg, Some(file), Some(index)))
+  override def apply(msg: String, file: File, index: Int): Unit = throw ParadoxException(
+    ParadoxError(msg, Some(file), Some(index))
+  )
 
   override def apply(msg: String, file: File): Unit = throw ParadoxException(ParadoxError(msg, Some(file), None))
 }

@@ -21,15 +21,19 @@ import java.util.function.Consumer
 import scala.collection.mutable
 import scala.collection.JavaConverters._
 import org.parboiled.common.StringUtils
-import org.pegdown.ast.{ VerbatimGroupNode, VerbatimNode }
-import org.pegdown.{ Printer, VerbatimSerializer }
+import org.pegdown.ast.{VerbatimGroupNode, VerbatimNode}
+import org.pegdown.{Printer, VerbatimSerializer}
 
 /**
  * Add markup around verbatim blocks.
  */
 abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
-  def printPreAttributes(printer: Printer, nodeGroup: String = "", classes: mutable.Buffer[String] = mutable.Buffer.empty[String]): Unit
+  def printPreAttributes(
+      printer: Printer,
+      nodeGroup: String = "",
+      classes: mutable.Buffer[String] = mutable.Buffer.empty[String]
+  ): Unit
 
   def printCodeAttributes(printer: Printer, nodeType: String): Unit
 
@@ -49,9 +53,10 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
       case vgn: VerbatimGroupNode =>
         printer.print("""<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button>""")
         vgn.getSourceUrl.ifPresent(new Consumer[String] {
-          override def accept(sourceUrl: String): Unit = {
-            printer.print(s"""<a class="snippet-button go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source">source</a>""")
-          }
+          override def accept(sourceUrl: String): Unit =
+            printer.print(
+              s"""<a class="snippet-button go-to-source" href="$sourceUrl" target="_blank" title="Go to snippet source">source</a>"""
+            )
         })
       case _ =>
     }
@@ -74,9 +79,8 @@ abstract class StyledVerbatimSerializer extends VerbatimSerializer {
 
   def printClass(printer: Printer, value: String): Unit = printAttribute(printer, "class", value)
 
-  def printAttribute(printer: Printer, name: String, value: String): Unit = {
+  def printAttribute(printer: Printer, name: String, value: String): Unit =
     printer.print(' ').print(name).print('=').print('"').print(value).print('"')
-  }
 
 }
 

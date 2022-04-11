@@ -1,7 +1,7 @@
-val akkaVersion = "2.4.13"
+val akkaVersion     = "2.4.13"
 val akkaHttpVersion = "10.0.0"
 
-version := "0.1.0"
+version      := "0.1.0"
 scalaVersion := "2.12.1"
 
 enablePlugins(ParadoxPlugin)

@@ -16,11 +16,11 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.{ Forest, Location }
+import com.lightbend.paradox.tree.Tree.{Forest, Location}
 import java.io.File
 import java.net.URI
-import java.nio.file.{ Path => NioPath, Paths => NioPaths }
-import org.pegdown.ast.{ Node, RootNode, SpecialTextNode, TextNode }
+import java.nio.file.{Path => NioPath, Paths => NioPaths}
+import org.pegdown.ast.{Node, RootNode, SpecialTextNode, TextNode}
 import scala.annotation.tailrec
 
 /**
@@ -42,7 +42,19 @@ case class Anchor(path: String)
 /**
  * Markdown page with target path, parsed markdown, and headers.
  */
-case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: Header, headers: Forest[Header], anchors: List[Anchor], markdown: RootNode, group: Option[String], properties: Page.Properties) extends Linkable {
+case class Page(
+    file: File,
+    path: String,
+    rootSrcPage: String,
+    label: Node,
+    h1: Header,
+    headers: Forest[Header],
+    anchors: List[Anchor],
+    markdown: RootNode,
+    group: Option[String],
+    properties: Page.Properties
+) extends Linkable {
+
   /**
    * Path to the root of the site.
    */
@@ -53,46 +65,46 @@ case class Page(file: File, path: String, rootSrcPage: String, label: Node, h1: 
    */
   val title: String = {
     import scala.collection.JavaConverters._
-    def textNodes(node: Node): Seq[String] = {
+    def textNodes(node: Node): Seq[String] =
       node.getChildren.asScala.flatMap {
         case t: TextNode => Seq(t.getText)
         case other       => textNodes(other)
       }
-    }
     textNodes(label).mkString
   }
 }
 
 object Page {
-  /**
-   * Create a single page from parsed markdown.
-   */
-  def apply(path: String, markdown: RootNode, properties: Map[String, String]): Page = {
-    apply(path, markdown, identity, properties)
-  }
 
   /**
    * Create a single page from parsed markdown.
    */
-  def apply(path: String, markdown: RootNode, convertPath: String => String, properties: Map[String, String]): Page = {
+  def apply(path: String, markdown: RootNode, properties: Map[String, String]): Page =
+    apply(path, markdown, identity, properties)
+
+  /**
+   * Create a single page from parsed markdown.
+   */
+  def apply(path: String, markdown: RootNode, convertPath: String => String, properties: Map[String, String]): Page =
     convertPage(convertPath)(Index.page(new File(path), path, markdown, properties))
-  }
 
   /**
    * Convert parsed markdown pages into a linked forest of Page objects.
    */
-  def forest(parsed: Seq[(File, String, RootNode, Map[String, String])], convertPath: String => String, properties: Map[String, String]): Forest[Page] = {
+  def forest(
+      parsed: Seq[(File, String, RootNode, Map[String, String])],
+      convertPath: String => String,
+      properties: Map[String, String]
+  ): Forest[Page] =
     Index.pages(parsed, properties) map (_ map convertPage(convertPath))
-  }
 
   /**
-   * Convert an Index.Page into the final Page and Headers.
-   * The first h1 header is used for the page header and title.
+   * Convert an Index.Page into the final Page and Headers. The first h1 header is used for the page header and title.
    */
   def convertPage(convertPath: String => String)(page: Index.Page): Page = {
     // TODO: get default label node from page index link?
-    val properties = Page.Properties(page.properties)
-    val targetPath = properties.convertToTarget(convertPath)(page.path)
+    val properties  = Page.Properties(page.properties)
+    val targetPath  = properties.convertToTarget(convertPath)(page.path)
     val rootSrcPage = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group, h.label.includeIndexes), h.children ++ hs)
@@ -108,10 +120,11 @@ object Page {
    */
   def allPages(pages: Forest[Page]): Map[String, Page] = {
     @tailrec
-    def collect(location: Option[Location[Page]], paths: List[(String, Page)] = Nil): List[(String, Page)] = location match {
-      case Some(loc) => collect(loc.next, (loc.tree.label.path, loc.tree.label) :: paths)
-      case None      => paths
-    }
+    def collect(location: Option[Location[Page]], paths: List[(String, Page)] = Nil): List[(String, Page)] =
+      location match {
+        case Some(loc) => collect(loc.next, (loc.tree.label.path, loc.tree.label) :: paths)
+        case None      => paths
+      }
     (pages flatMap { root => collect(Some(root.location)) }).toMap
   }
 
@@ -124,9 +137,8 @@ object Page {
     /**
      * Give the property associated to the key given in input
      */
-    def apply(property: String, default: String = ""): String = {
+    def apply(property: String, default: String = ""): String =
       props.getOrElse(property, default)
-    }
 
     /**
      * Convert the source file path to the target file path according to the "out" property or not
@@ -135,15 +147,16 @@ object Page {
       (path: String) => replaceFile(props.get(Properties.DefaultOutMdIndicator))(path) getOrElse convertPath(path)
 
     // TODO: give the target suffix ".html" in a more general way
-    private def replaceFile(prop: Option[String], targetSuffix: String = ".html")(path: String): Option[String] = prop match {
-      case Some(p) if p.endsWith(targetSuffix) => Some(path.dropRight(Path.leaf(path).length) + p)
-      case _                                   => None
-    }
+    private def replaceFile(prop: Option[String], targetSuffix: String = ".html")(path: String): Option[String] =
+      prop match {
+        case Some(p) if p.endsWith(targetSuffix) => Some(path.dropRight(Path.leaf(path).length) + p)
+        case _                                   => None
+      }
   }
 
   object Properties {
-    val DefaultOutMdIndicator: String = "out"
-    val DefaultLayoutMdIndicator: String = "layout"
+    val DefaultOutMdIndicator: String          = "out"
+    val DefaultLayoutMdIndicator: String       = "layout"
     val DefaultSingleLayoutMdIndicator: String = "single-layout"
   }
 
@@ -152,8 +165,18 @@ object Page {
    */
   def included(file: File, includeFilePath: String, includedIn: Page, markdown: RootNode): Page = {
     val rootSrcPage = Path.relativeRootPath(file, includeFilePath)
-    Page(file, includedIn.path, rootSrcPage, includedIn.h1.label, includedIn.h1, includedIn.headers, includedIn.anchors, markdown,
-      includedIn.group, includedIn.properties)
+    Page(
+      file,
+      includedIn.path,
+      rootSrcPage,
+      includedIn.h1.label,
+      includedIn.h1,
+      includedIn.headers,
+      includedIn.anchors,
+      markdown,
+      includedIn.group,
+      includedIn.properties
+    )
   }
 }
 
@@ -161,19 +184,18 @@ object Page {
  * Helper methods for paths.
  */
 object Path {
+
   /**
    * Form a relative path to the root, based on the number of directories in a path.
    */
-  def basePath(path: String): String = {
+  def basePath(path: String): String =
     "../" * path.count(_ == '/')
-  }
 
   /**
    * Resolve a relative path against a base path.
    */
-  def resolve(base: String, path: String): String = {
+  def resolve(base: String, path: String): String =
     new URI(base).resolve(path).getPath
-  }
 
   /**
    * Replace the file extension in a path.
@@ -186,26 +208,24 @@ object Path {
   /**
    * Replace the suffix of a path.
    */
-  def replaceSuffix(from: String, to: String)(path: String): String = {
+  def replaceSuffix(from: String, to: String)(path: String): String =
     if (path.endsWith(from)) path.dropRight(from.length) + to else path
-  }
 
   /**
    * Provide the leaf (file) from a path
    */
-  def leaf(path: String): String = {
+  def leaf(path: String): String =
     path.split('/').reverse.head
-  }
 
   /**
-   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
-   * Also converts backslashes to slashes.
+   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol. Also converts
+   * backslashes to slashes.
    */
   def toUnixStyleRootPath(pathString: String): String = toUnixStyleRootPath(NioPaths.get(pathString))
 
   /**
-   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol.
-   * Also converts backslashes to slashes.
+   * Normalize the path to Unix style root path. Removes drive letter and appends the "/" symbol. Also converts
+   * backslashes to slashes.
    */
   def toUnixStyleRootPath(path: NioPath): String = {
     val fullPathWithDriveLetter = path.toAbsolutePath

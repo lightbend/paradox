@@ -35,7 +35,7 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
         |### B
       """
     ) shouldEqual htmlPages(
-        "foo.html" -> """
+      "foo.html" -> """
           |<h1><a href="#foo" name="foo" class="anchor"><span class="anchor-link"></span></a>Foo</h1>
           |<div class="toc">
           |  <ul>
@@ -58,11 +58,12 @@ class TocDirectiveSpec extends MarkdownBaseSpec {
           |<h2><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h2>
           |<h3><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h3>
         """,
-        "bar.html" -> """
+      "bar.html" -> """
           |<h1><a href="#bar" name="bar" class="anchor"><span class="anchor-link"></span></a>Bar</h1>
           |<h2><a href="#a" name="a" class="anchor"><span class="anchor-link"></span></a>A</h2>
           |<h3><a href="#b" name="b" class="anchor"><span class="anchor-link"></span></a>B</h3>
-        """)
+        """
+    )
   }
 
   it should "support depth attribute" in {

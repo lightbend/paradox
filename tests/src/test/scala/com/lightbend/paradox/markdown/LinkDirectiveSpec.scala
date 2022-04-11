@@ -20,18 +20,20 @@ import com.lightbend.paradox.ParadoxException
 
 class LinkDirectiveSpec extends MarkdownBaseSpec {
 
-  private implicit val context = writerContextWithProperties("page.variable" -> "https://page")
+  implicit private val context = writerContextWithProperties("page.variable" -> "https://page")
 
-  def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] = markdownPages(
-    testPath -> text
-  )
+  def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] =
+    markdownPages(
+      testPath -> text
+    )
 
-  def testHtml(text: String, pagePath: String = "page.html", testPath: String = "test.html"): Map[String, String] = {
+  def testHtml(text: String, pagePath: String = "page.html", testPath: String = "test.html"): Map[String, String] =
     htmlPages(testPath -> text)
-  }
 
   "Markdown link" should "create links" in {
-    testMarkdown("[External page](https://domain.com/page.html)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html">External page</a></p>""")
+    testMarkdown("[External page](https://domain.com/page.html)") shouldEqual testHtml(
+      """<p><a href="https://domain.com/page.html">External page</a></p>"""
+    )
   }
 
   it should "check the link against `paradoxIllegalLinkPath`" in {
@@ -41,20 +43,30 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
     the[ParadoxException] thrownBy {
       testMarkdown("[Link to Markdown](../section/page2.md#with-anchor)")
     } should have message "Illegal URL '../section/page2.md#with-anchor' with text 'Link to Markdown' (see `paradoxIllegalLinkPath` setting)"
-    testMarkdown("[External md page](https://domain.com/README.md)") shouldEqual testHtml("""<p><a href="https://domain.com/README.md">External md page</a></p>""")
-    testMarkdown("[External md page](http://domain.com/README.md)") shouldEqual testHtml("""<p><a href="http://domain.com/README.md">External md page</a></p>""")
+    testMarkdown("[External md page](https://domain.com/README.md)") shouldEqual testHtml(
+      """<p><a href="https://domain.com/README.md">External md page</a></p>"""
+    )
+    testMarkdown("[External md page](http://domain.com/README.md)") shouldEqual testHtml(
+      """<p><a href="http://domain.com/README.md">External md page</a></p>"""
+    )
   }
 
   "Link directive" should "create links" in {
-    testMarkdown("@link[External page](https://domain.com/page.html)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html" title="External page">External page</a></p>""")
+    testMarkdown("@link[External page](https://domain.com/page.html)") shouldEqual testHtml(
+      """<p><a href="https://domain.com/page.html" title="External page">External page</a></p>"""
+    )
   }
 
   it should "support 'link:' as an alternative name" in {
-    testMarkdown("@link:[External page](https://domain.com/page.html)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html" title="External page">External page</a></p>""")
+    testMarkdown("@link:[External page](https://domain.com/page.html)") shouldEqual testHtml(
+      """<p><a href="https://domain.com/page.html" title="External page">External page</a></p>"""
+    )
   }
 
   it should "handle anchored links correctly" in {
-    testMarkdown("@link:[External page](https://domain.com/page.html#anchor)") shouldEqual testHtml("""<p><a href="https://domain.com/page.html#anchor" title="External page">External page</a></p>""")
+    testMarkdown("@link:[External page](https://domain.com/page.html#anchor)") shouldEqual testHtml(
+      """<p><a href="https://domain.com/page.html#anchor" title="External page">External page</a></p>"""
+    )
   }
 
   it should "retain whitespace before or after" in {
@@ -64,7 +76,9 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
 
   it should "use the `open` attributes" in {
     testMarkdown("This @link:[Page](page.pdf) { open=new } is linked.") shouldEqual
-      testHtml("""<p>This <a href="page.pdf" title="Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>""")
+      testHtml(
+        """<p>This <a href="page.pdf" title="Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>"""
+      )
   }
 
   it should "use overwrite the title with the `title` attribute" in {
@@ -74,31 +88,36 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
 
   it should "use the `open` and title attributes" in {
     testMarkdown("""This @link:[Page](page.pdf) { open=new title="Link to Page" } is linked.""") shouldEqual
-      testHtml("""<p>This <a href="page.pdf" title="Link to Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>""")
+      testHtml(
+        """<p>This <a href="page.pdf" title="Link to Page" target="_blank" rel="noopener noreferrer">Page</a> is linked.</p>"""
+      )
   }
 
   it should "support referenced links with implicit key" in {
-    testMarkdown(
-      """This @link:[SBT] { .ref a=1 } is linked.
-        |
-        |  [SBT]: https://scala-sbt.org
-      """.stripMargin) shouldEqual testHtml("""<p>This <a href="https://scala-sbt.org" title="SBT">SBT</a> is linked.</p>""")
+    testMarkdown("""This @link:[SBT] { .ref a=1 } is linked.
+                   |
+                   |  [SBT]: https://scala-sbt.org
+      """.stripMargin) shouldEqual testHtml(
+      """<p>This <a href="https://scala-sbt.org" title="SBT">SBT</a> is linked.</p>"""
+    )
   }
 
   it should "support referenced links with empty key" in {
-    testMarkdown(
-      """This @link:[SBT][] is linked.
-        |
-        |  [SBT]: https://scala-sbt.org
-      """.stripMargin) shouldEqual testHtml("""<p>This <a href="https://scala-sbt.org" title="SBT">SBT</a> is linked.</p>""")
+    testMarkdown("""This @link:[SBT][] is linked.
+                   |
+                   |  [SBT]: https://scala-sbt.org
+      """.stripMargin) shouldEqual testHtml(
+      """<p>This <a href="https://scala-sbt.org" title="SBT">SBT</a> is linked.</p>"""
+    )
   }
 
   it should "support referenced links with defined key" in {
-    testMarkdown(
-      """This @link:[Page][123] { .ref a=1 } is linked.
-        |
-        |  [123]: https://scala-sbt.org
-      """.stripMargin) shouldEqual testHtml("""<p>This <a href="https://scala-sbt.org" title="Page">Page</a> is linked.</p>""")
+    testMarkdown("""This @link:[Page][123] { .ref a=1 } is linked.
+                   |
+                   |  [123]: https://scala-sbt.org
+      """.stripMargin) shouldEqual testHtml(
+      """<p>This <a href="https://scala-sbt.org" title="Page">Page</a> is linked.</p>"""
+    )
   }
 
   it should "throw link exceptions for invalid reference keys" in {
@@ -108,7 +127,9 @@ class LinkDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support variables in link paths" in {
-    testMarkdown("@link[Page]($page.variable$.html)") shouldEqual testHtml("""<p><a href="https://page.html" title="Page">Page</a></p>""")
+    testMarkdown("@link[Page]($page.variable$.html)") shouldEqual testHtml(
+      """<p><a href="https://page.html" title="Page">Page</a></p>"""
+    )
   }
 
 }

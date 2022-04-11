@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-addSbtPlugin("org.scalameta"         % "sbt-scalafmt" % "2.4.6")
-addSbtPlugin("de.heikoseeberger"     % "sbt-header"   % "5.6.5")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"  % "0.9.2")
+addSbtPlugin("org.scalameta"         % "sbt-scalafmt"                       % "2.4.6")
+addSbtPlugin("de.heikoseeberger"     % "sbt-header"                         % "5.6.5")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.9.2")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "1.0.0")
-addSbtPlugin("com.codecommit"        % "sbt-github-actions" % "0.14.2")
+addSbtPlugin("com.codecommit"        % "sbt-github-actions"                 % "0.14.2")
 
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 
-lazy val metaroot = (project in file(".")).
-  dependsOn(metaThemePlugin)
+lazy val metaroot = (project in file(".")).dependsOn(metaThemePlugin)
 
 lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
-    sbtPlugin := true,
+    sbtPlugin    := true,
     scalaVersion := "2.12.15",
     addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4"),
     unmanagedSourceDirectories in Compile :=

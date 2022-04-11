@@ -16,13 +16,13 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.{ ErrorContext, ParadoxLogger }
+import com.lightbend.paradox.{ErrorContext, ParadoxLogger}
 import com.lightbend.paradox.tree.Tree.Location
 import org.parboiled.common.StringUtils
 import org.pegdown.FastEncoder.encode
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.ast._
-import org.pegdown.{ LinkRenderer, ToHtmlSerializer, VerbatimSerializer }
+import org.pegdown.{LinkRenderer, ToHtmlSerializer, VerbatimSerializer}
 
 import java.util.regex.Pattern
 import scala.collection.JavaConverters._
@@ -34,13 +34,17 @@ import scala.util.matching.Regex
 class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
   def this(
-    linkRenderer:        Writer.Context => LinkRenderer                = Writer.defaultLinks,
-    verbatimSerializers: Map[String, VerbatimSerializer]               = Writer.defaultVerbatims,
-    serializerPlugins:   Seq[Writer.Context => ToHtmlSerializerPlugin] = Writer.defaultPlugins(Writer.defaultDirectives)) =
-    this((context: Writer.Context) => new ToHtmlSerializer(
-      linkRenderer(context),
-      verbatimSerializers.asJava,
-      serializerPlugins.map(p => p(context)).asJava))
+      linkRenderer: Writer.Context => LinkRenderer = Writer.defaultLinks,
+      verbatimSerializers: Map[String, VerbatimSerializer] = Writer.defaultVerbatims,
+      serializerPlugins: Seq[Writer.Context => ToHtmlSerializerPlugin] = Writer.defaultPlugins(Writer.defaultDirectives)
+  ) =
+    this((context: Writer.Context) =>
+      new ToHtmlSerializer(
+        linkRenderer(context),
+        verbatimSerializers.asJava,
+        serializerPlugins.map(p => p(context)).asJava
+      )
+    )
 
   /**
    * Write main content.
@@ -75,9 +79,8 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
   /**
    * Write markdown to HTML, in the context of a page.
    */
-  def write(markdown: RootNode, context: Writer.Context): String = {
+  def write(markdown: RootNode, context: Writer.Context): String =
     serializer(context).toHtml(markdown)
-  }
 
   /**
    * Write a markdown fragment to HTML, in the context of a page.
@@ -103,33 +106,32 @@ object Writer {
    * Write context which is passed through to directives.
    */
   case class Context(
-      location:       Location[Page],
-      paths:          Map[String, Page],
-      reader:         Reader,
-      writer:         Writer,
-      error:          ErrorContext,
-      logger:         ParadoxLogger,
-      pageMappings:   String => Option[String] = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
-      sourceSuffix:   String                   = DefaultSourceSuffix,
-      targetSuffix:   String                   = DefaultTargetSuffix,
-      linkFailPath:   Regex                    = DefaultIllegalLinkPath,
-      groups:         Map[String, Seq[String]] = Map.empty,
-      properties:     Map[String, String]      = Map.empty,
-      includeIndexes: List[Int]                = Nil
+      location: Location[Page],
+      paths: Map[String, Page],
+      reader: Reader,
+      writer: Writer,
+      error: ErrorContext,
+      logger: ParadoxLogger,
+      pageMappings: String => Option[String] = Path.replaceExtension(DefaultSourceSuffix, DefaultTargetSuffix),
+      sourceSuffix: String = DefaultSourceSuffix,
+      targetSuffix: String = DefaultTargetSuffix,
+      linkFailPath: Regex = DefaultIllegalLinkPath,
+      groups: Map[String, Seq[String]] = Map.empty,
+      properties: Map[String, String] = Map.empty,
+      includeIndexes: List[Int] = Nil
   ) {
     val IllegalLinkPathPattern: Pattern = linkFailPath.pattern
-    def page: Page = location.tree.label
+    def page: Page                      = location.tree.label
   }
 
   def defaultLinks(context: Context): LinkRenderer =
     new DefaultLinkRenderer(context)
 
-  def defaultVerbatims: Map[String, VerbatimSerializer] = {
+  def defaultVerbatims: Map[String, VerbatimSerializer] =
     Map(
       VerbatimSerializer.DEFAULT -> PrettifyVerbatimSerializer,
       RawVerbatimSerializer.tag -> RawVerbatimSerializer
     )
-  }
 
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] = Seq(
     _ => new ClassyLinkSerializer,
@@ -177,9 +179,13 @@ object Writer {
 
     override def render(node: ExpLinkNode, text: String): LinkRenderer.Rendering = {
       val title = node.title
-      val url = substituteVarsInString(node.url, context.properties)
+      val url   = substituteVarsInString(node.url, context.properties)
       if (context.IllegalLinkPathPattern.matcher(url).matches)
-        context.error(s"Illegal URL '$url' with text '$text' (see `paradoxIllegalLinkPath` setting)", context.page, node)
+        context.error(
+          s"Illegal URL '$url' with text '$text' (see `paradoxIllegalLinkPath` setting)",
+          context.page,
+          node
+        )
       node match {
         case n: ExpLinkNodeExtended =>
           val rendering: LinkRenderer.Rendering = new LinkRenderer.Rendering(url, text)
@@ -199,19 +205,16 @@ object Writer {
       }
     }
 
-    override def render(node: RefLinkNode, url: String, title: String, text: String): LinkRenderer.Rendering = {
+    override def render(node: RefLinkNode, url: String, title: String, text: String): LinkRenderer.Rendering =
       super.render(node, substituteVarsInString(url, context.properties), title, text)
-    }
 
     private def interpolatedUrl(url: String): Option[String] =
       if (url startsWith ".../") Some(imgBase + url.drop(3)) else None
   }
 
-  def substituteVarsInString(text: String, variables: Map[String, String]): String = {
-    variables.foldLeft(text) {
-      case (str, (key, value)) =>
-        str.replace("$" + key + "$", value)
+  def substituteVarsInString(text: String, variables: Map[String, String]): String =
+    variables.foldLeft(text) { case (str, (key, value)) =>
+      str.replace("$" + key + "$", value)
     }
-  }
 
 }

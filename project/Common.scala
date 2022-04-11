@@ -16,14 +16,14 @@
 
 import sbt._
 import sbt.Keys._
-import de.heikoseeberger.sbtheader.{ CommentStyle, FileType, License, HeaderPlugin, AutomateHeaderPlugin }
+import de.heikoseeberger.sbtheader.{AutomateHeaderPlugin, CommentStyle, FileType, HeaderPlugin, License}
 
 /**
  * Common sbt settings — automatically added to all projects.
  */
 object Common extends AutoPlugin {
 
-  override def trigger  = allRequirements
+  override def trigger = allRequirements
 
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
@@ -42,7 +42,7 @@ object Common extends AutoPlugin {
     HeaderPlugin.autoImport.headerLicense := Some(License.Custom(licenseText))
   )
 
-  val licenseText: String = {
+  val licenseText: String =
     """|Copyright © 2015 - 2019 Lightbend, Inc. <http://www.lightbend.com>
 
        |Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,5 +56,4 @@ object Common extends AutoPlugin {
        |WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
        |See the License for the specific language governing permissions and
        |limitations under the License.""".stripMargin
-  }
 }

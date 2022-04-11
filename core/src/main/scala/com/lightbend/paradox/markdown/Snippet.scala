@@ -30,25 +30,29 @@ object Snippet {
     try {
       val lines = source.getLines.toSeq
       (extract(file, lines, labels, filterLabelLines), language(file))
-    } finally {
+    } finally
       source.close()
-    }
   }
 
-  def extract(file: File, lines: Seq[String], labels: Seq[String], filterLabelLines: Boolean): String = {
+  def extract(file: File, lines: Seq[String], labels: Seq[String], filterLabelLines: Boolean): String =
     labels match {
       case Seq() =>
         val addLine = addFilteredLine(filterLabelLines)
-        cutIndentation(lines.zipWithIndex.foldLeft(Seq.empty[(Int, String)]) {
-          case (lines, (line, lineIndex)) => addLine(line, lines, lineIndex + 1)
-        }.map(_._2))
+        cutIndentation(
+          lines.zipWithIndex
+            .foldLeft(Seq.empty[(Int, String)]) { case (lines, (line, lineIndex)) =>
+              addLine(line, lines, lineIndex + 1)
+            }
+            .map(_._2)
+        )
       case _ =>
-        labels.map { label =>
-          val extractionState = extractState(file, lines, label, filterLabelLines)
-          cutIndentation(extractionState.snippetLines)
-        }.mkString("\n")
+        labels
+          .map { label =>
+            val extractionState = extractState(file, lines, label, filterLabelLines)
+            cutIndentation(extractionState.snippetLines)
+          }
+          .mkString("\n")
     }
-  }
 
   private def cutIndentation(snippetLines: Seq[String]): String = {
     val minIndent =
@@ -67,27 +71,34 @@ object Snippet {
   def extractLabelRange(file: File, label: String, filterLabelLines: Boolean = true): Option[(Int, Int)] = {
     val source = Source.fromFile(file)("UTF-8")
     try {
-      val lines = source.getLines.toSeq
+      val lines       = source.getLines.toSeq
       val lineNumbers = extractState(file, lines, label, filterLabelLines).lines.map(_._1)
       if (lineNumbers.isEmpty)
         None
       else
         Some((lineNumbers.min, lineNumbers.max))
-    } finally {
+    } finally
       source.close()
-    }
   }
 
   type Line = (Int, String)
 
-  private def extractState(file: File, lines: Seq[String], label: String, filterLabelLines: Boolean): ExtractionState = {
-    if (!verifyLabel(label)) throw new SnippetException(s"Label [$label] for [$file] contains illegal characters. " +
-      "Only [a-zA-Z0-9_-] are allowed.")
+  private def extractState(
+      file: File,
+      lines: Seq[String],
+      label: String,
+      filterLabelLines: Boolean
+  ): ExtractionState = {
+    if (!verifyLabel(label))
+      throw new SnippetException(
+        s"Label [$label] for [$file] contains illegal characters. " +
+          "Only [a-zA-Z0-9_-] are allowed."
+      )
     // A label can be followed by an end of line or one or more spaces followed by an
     // optional single sequence of contiguous (no whitespace) non-word characters
     // (anything not in the group [a-zA-Z0-9_])
-    val labelPattern = ("""#\Q""" + label + """\E( +[^\w \t]*)?$""").r
-    val hasLabel = (s: String) => labelPattern.findFirstIn(s).nonEmpty
+    val labelPattern    = ("""#\Q""" + label + """\E( +[^\w \t]*)?$""").r
+    val hasLabel        = (s: String) => labelPattern.findFirstIn(s).nonEmpty
     val extractionState = extractFrom(lines, hasLabel, hasLabel, addFilteredLine(filterLabelLines))
     if (extractionState.snippetLines.isEmpty)
       throw new SnippetException(s"Label [$label] not found in [$file]")
@@ -98,38 +109,40 @@ object Snippet {
     extractionState
   }
 
-  private def extractFrom(lines: Seq[String], blockStart: (String) => Boolean, blockEnd: (String) => Boolean, addLine: (String, Seq[Line], Int) => Seq[Line]): ExtractionState = {
-    lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) {
-      case (es, (l, lineIndex)) =>
-        es.block match {
-          case NoBlock if blockStart(l) => es.withBlock(InBlock)
-          case NoBlock                  => es
-          case InBlock if blockEnd(l)   => es.withBlock(NoBlock)
-          case InBlock =>
-            es.copy(lines = addLine(l, es.lines, lineIndex + 1))
-        }
+  private def extractFrom(
+      lines: Seq[String],
+      blockStart: (String) => Boolean,
+      blockEnd: (String) => Boolean,
+      addLine: (String, Seq[Line], Int) => Seq[Line]
+  ): ExtractionState =
+    lines.zipWithIndex.foldLeft(ExtractionState(block = NoBlock, lines = Seq.empty)) { case (es, (l, lineIndex)) =>
+      es.block match {
+        case NoBlock if blockStart(l) => es.withBlock(InBlock)
+        case NoBlock                  => es
+        case InBlock if blockEnd(l)   => es.withBlock(NoBlock)
+        case InBlock =>
+          es.copy(lines = addLine(l, es.lines, lineIndex + 1))
+      }
     }
-  }
 
   // drop indent, but don't drop other characters than whitespace
   private def dropIndent(indent: Int, line: String): String = {
     @tailrec
-    def loop(idx: Int): Int = {
+    def loop(idx: Int): Int =
       if (idx == indent || idx == line.length) idx
       else if (line(idx) == ' ' || line(idx) == '\t') loop(idx + 1)
       else idx
-    }
 
     val charsToDrop = loop(0)
     line.substring(charsToDrop)
   }
 
   private case class ExtractionState(block: Block, lines: Seq[Line]) {
-    def snippetLines: Seq[String] = lines.map(_._2)
+    def snippetLines: Seq[String]                = lines.map(_._2)
     def withBlock(block: Block): ExtractionState = copy(block = block)
   }
 
-  private sealed trait Block
+  sealed private trait Block
   private case object NoBlock extends Block
   private case object InBlock extends Block
 
@@ -151,7 +164,7 @@ object Snippet {
 
   def language(file: File): String = {
     val name = file.getName
-    val dot = name.lastIndexOf('.')
+    val dot  = name.lastIndexOf('.')
     if (dot < 0) "" else name.substring(dot + 1)
   }
 

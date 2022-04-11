@@ -16,19 +16,26 @@
 
 package com.lightbend.paradox.template
 
-import java.io.{ File, OutputStreamWriter, FileOutputStream }
+import java.io.{File, FileOutputStream, OutputStreamWriter}
 import java.nio.charset.StandardCharsets
-import java.util.{ Map => JMap }
+import java.util.{Map => JMap}
 
 import org.stringtemplate.v4.misc.STMessage
-import org.stringtemplate.v4.{ STErrorListener, STRawGroupDir, ST, NoIndentWriter }
+import org.stringtemplate.v4.{NoIndentWriter, ST, STErrorListener, STRawGroupDir}
 
 import collection.concurrent.TrieMap
 
 /**
  * Page template writer.
  */
-class PageTemplate(directory: File, val defaultName: String = "page", val defaultSingleName: String = "single", val defaultPrintName: String = "print", startDelimiter: Char = '$', stopDelimiter: Char = '$') {
+class PageTemplate(
+    directory: File,
+    val defaultName: String = "page",
+    val defaultSingleName: String = "single",
+    val defaultPrintName: String = "print",
+    startDelimiter: Char = '$',
+    stopDelimiter: Char = '$'
+) {
   private val templates = new STRawGroupDir(directory.getAbsolutePath, startDelimiter, stopDelimiter)
 
   /**
@@ -38,7 +45,7 @@ class PageTemplate(directory: File, val defaultName: String = "page", val defaul
     import scala.collection.JavaConverters._
     write(name, target) { t =>
       // TODO, only load page properties, not global ones
-      for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) { t.add(content._1, content._2) }
+      for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) t.add(content._1, content._2)
       t.add("page", contents)
     }
   }
@@ -46,7 +53,12 @@ class PageTemplate(directory: File, val defaultName: String = "page", val defaul
   /**
    * Write all the templated pages to the target file.
    */
-  def writeSingle(name: String, firstPage: PageTemplate.Contents, contents: Seq[PageTemplate.Contents], target: File): File = {
+  def writeSingle(
+      name: String,
+      firstPage: PageTemplate.Contents,
+      contents: Seq[PageTemplate.Contents],
+      target: File
+  ): File = {
     import scala.collection.JavaConverters._
     write(name, target) { t =>
       t.add("page", firstPage)
@@ -54,31 +66,33 @@ class PageTemplate(directory: File, val defaultName: String = "page", val defaul
     }
   }
 
-  def writePrintCover(name: String, page: PageTemplate.Contents, target: File): File = {
+  def writePrintCover(name: String, page: PageTemplate.Contents, target: File): File =
     write(name, target) { t =>
       t.add("page", page)
     }
-  }
 
   private def write(name: String, target: File)(addVars: ST => ST): File = {
     val template = Option(templates.getInstanceOf(name)) match {
       case Some(t) =>
         addVars(t)
-      case None => sys.error(s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one.")
+      case None =>
+        sys.error(
+          s"StringTemplate '$name' was not found for '$target'. Create a template or set a theme that contains one."
+        )
     }
     var osWriter: OutputStreamWriter = null
     try {
       osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
       val noIndentWriter = new NoIndentWriter(osWriter)
       template.write(noIndentWriter)
-    } finally {
+    } finally
       osWriter.close()
-    }
     target
   }
 }
 
 object PageTemplate {
+
   /**
    * All page information to give to the template.
    */
@@ -113,8 +127,8 @@ object PageTemplate {
    */
   class ErrorLogger(error: String => Unit) extends STErrorListener {
     override def compileTimeError(stm: STMessage): Unit = error(stm.toString)
-    override def runTimeError(stm: STMessage): Unit = error(stm.toString)
-    override def IOError(stm: STMessage): Unit = error(stm.toString)
-    override def internalError(stm: STMessage): Unit = error(stm.toString)
+    override def runTimeError(stm: STMessage): Unit     = error(stm.toString)
+    override def IOError(stm: STMessage): Unit          = error(stm.toString)
+    override def internalError(stm: STMessage): Unit    = error(stm.toString)
   }
 }

@@ -24,12 +24,12 @@ import com.lightbend.paradox.markdown.Writer.Context
 import com.lightbend.paradox.tree.Tree
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.Printer
-import org.pegdown.ast.{ AbstractNode, Node, RootNode, Visitor }
+import org.pegdown.ast.{AbstractNode, Node, RootNode, Visitor}
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 
 case class IncludeNode(included: RootNode, includedFrom: File, includedFromPath: String) extends AbstractNode {
   override def accept(visitor: Visitor): Unit = visitor.visit(this)
-  override def getChildren: util.List[Node] = included.getChildren
+  override def getChildren: util.List[Node]   = included.getChildren
 }
 
 class IncludeNodeSerializer(context: Context) extends ToHtmlSerializerPlugin {
@@ -38,12 +38,18 @@ class IncludeNodeSerializer(context: Context) extends ToHtmlSerializerPlugin {
       // This location has no forest around it... which probably means that things like toc and navigation can't
       // be rendered inside snippets, which I'm ok with.
       val page = Page.included(includedFrom, includedFromPath, context.location.tree.label, included)
-      val newLocation = Location(Tree.leaf(page), context.location.lefts, context.location.rights, context.location.parents)
-      printer.print(context.writer.writeContent(included, context.copy(
-        location = newLocation,
-        includeIndexes = context.includeIndexes :+ include.getStartIndex,
-        error = new PagedErrorContext(context.error, page)
-      )))
+      val newLocation =
+        Location(Tree.leaf(page), context.location.lefts, context.location.rights, context.location.parents)
+      printer.print(
+        context.writer.writeContent(
+          included,
+          context.copy(
+            location = newLocation,
+            includeIndexes = context.includeIndexes :+ include.getStartIndex,
+            error = new PagedErrorContext(context.error, page)
+          )
+        )
+      )
       true
     case _ => false
   }

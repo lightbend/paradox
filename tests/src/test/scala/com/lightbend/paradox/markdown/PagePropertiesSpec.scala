@@ -20,14 +20,14 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class PagePropertiesSpec extends AnyFlatSpec with Matchers {
-  def convertPath = Path.replaceSuffix(".md", ".html")_
+  def convertPath = Path.replaceSuffix(".md", ".html") _
 
-  val propOut = Map("out" -> "newIndex.html")
-  val propNoOut = Map.empty[String, String]
+  val propOut        = Map("out" -> "newIndex.html")
+  val propNoOut      = Map.empty[String, String]
   val propOutInvalid = Map("out" -> "newIndex.foo")
 
-  val outProperties = new Page.Properties(propOut)
-  val noOutProperties = new Page.Properties(propNoOut)
+  val outProperties        = new Page.Properties(propOut)
+  val noOutProperties      = new Page.Properties(propNoOut)
   val outInvalidProperties = new Page.Properties(propOutInvalid)
 
   "Page.Properties.convertToTarget(convertPath)(\"index.md\")" should "create target file String according to 'out' field in properties" in {
