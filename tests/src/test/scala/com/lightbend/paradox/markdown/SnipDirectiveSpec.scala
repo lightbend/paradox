@@ -104,8 +104,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       |<pre class="prettyprint">
       |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object AnotherIndentedExample {
-      |  def rendered(): Unit = {
-      |  }
+      |  def rendered(): Unit = {}
       |}
       |class AnotherClass
       |</code>
@@ -190,9 +189,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |
         |//#github-path-link
         |object GithubPathLink {
-        |  //#github-neither-path-link
+        |  // #github-neither-path-link
         |  type Neither[A, B] = Nothing
-        |  //#github-neither-path-link
+        |  // #github-neither-path-link
         |}
         |//#github-path-link
         |
@@ -203,35 +202,31 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |//#example
         |
         |object IndentedExample {
-        |  //#indented-example
+        |  // #indented-example
         |  case object Dent
-        |  //#indented-example
+        |  // #indented-example
         |
         |  object EventMore {
-        |    //#indented-example
+        |    // #indented-example
         |    case object DoubleDent
-        |    //#indented-example
+        |    // #indented-example
         |  }
         |}
         |
         |//#multi-indented-example
         |//#some-other-anchor
         |object AnotherIndentedExample {
-        |  //#multi-indented-example
+        |  // #multi-indented-example
         |
-        |  def notRendered(): Unit = {
-        |  }
+        |  def notRendered(): Unit = {}
         |
-        |  //#multi-indented-example
-        |  def rendered(): Unit = {
-        |  }
-        |  //#some-other-anchor
-        |  //#multi-indented-example
+        |  // #multi-indented-example
+        |  def rendered(): Unit = {}
+        |  // #some-other-anchor
+        |  // #multi-indented-example
         |
-        |  def alsoNotRendered(): Unit = {
-        |
-        |  }
-        |  //#multi-indented-example
+        |  def alsoNotRendered(): Unit = {}
+        |  // #multi-indented-example
         |}
         |//#multi-indented-example
         |
@@ -245,7 +240,6 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |
         |  //#multi-indented-example
         |// format: ON
-        |
         |
         |//#example-with-label
         |object Constants {
