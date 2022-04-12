@@ -21,5 +21,5 @@ import sbt.internal.io.Source
 import java.io.File
 
 object Compat {
-  def sourcesFor(dirs: Seq[File]): Seq[Source] = dirs.map { d => new Source(d, AllPassFilter, NothingFilter) }
+  def sourcesFor(dirs: Seq[File]): Seq[Source] = dirs.map(d => new Source(d, AllPassFilter, NothingFilter))
 }

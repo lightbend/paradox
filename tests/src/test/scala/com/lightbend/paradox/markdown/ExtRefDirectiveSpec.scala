@@ -25,7 +25,8 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
     "extref.issue.base_url" -> "https://github.com/lightbend/paradox/issues/%s",
     "extref.docs.base_url" -> "https://docs.example.org/%s",
     "extref.root_relative.base_url" -> ".../root/relative/%s",
-    "extref.broken.base_url" -> "https://c|%s")
+    "extref.broken.base_url" -> "https://c|%s"
+  )
 
   "ExtRef directive" should "create links using configured URL templates" in {
     markdown("@extref[RFC 1234](rfc:1234)") shouldEqual
@@ -91,10 +92,11 @@ class ExtRefDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support referenced links" in {
-    markdown(
-      """@extref[RFC 1234] says it all!
-        |
-        |  [rfc 1234]: rfc:1234
-      """.stripMargin) shouldEqual html("""<p><a href="http://tools.ietf.org/html/rfc1234">RFC 1234</a> says it all!</p>""")
+    markdown("""@extref[RFC 1234] says it all!
+               |
+               |  [rfc 1234]: rfc:1234
+      """.stripMargin) shouldEqual html(
+      """<p><a href="http://tools.ietf.org/html/rfc1234">RFC 1234</a> says it all!</p>"""
+    )
   }
 }

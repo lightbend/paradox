@@ -20,36 +20,34 @@ import java.io.File
 import java.net.URI
 
 import org.pegdown.ast._
-import org.pegdown.{ LinkRenderer, Printer, ToHtmlSerializer }
+import org.pegdown.{LinkRenderer, Printer, ToHtmlSerializer}
 
 import scala.collection.JavaConverters._
 
 /**
  * This captures links for validation.
  *
- * To validate, we parse all the markdown files again (we do this because we want to capture the original source of
- * the links so we can report meaningful source files and line numbers etc). Then, when converting it to HTML, we use
- * a special link renderer that captures links. The HTML itself generated during that process is never written
- * anywhere, it's just discarded.
+ * To validate, we parse all the markdown files again (we do this because we want to capture the original source of the
+ * links so we can report meaningful source files and line numbers etc). Then, when converting it to HTML, we use a
+ * special link renderer that captures links. The HTML itself generated during that process is never written anywhere,
+ * it's just discarded.
  */
 class LinkCapturer {
 
   /**
-   * A number of paradox link nodes are synthetic - the paradox directives create them, consequently they don't have
-   * the correct source file location information. So, when we render paradox link directives, we wrap them
-   * in this, which overrides the node that the link capturer captures, so that we get the correct source file
-   * location information.
+   * A number of paradox link nodes are synthetic - the paradox directives create them, consequently they don't have the
+   * correct source file location information. So, when we render paradox link directives, we wrap them in this, which
+   * overrides the node that the link capturer captures, so that we get the correct source file location information.
    */
   private class NodeOverridingDirective(d: Directive) extends Directive {
     override def names: Seq[String] = d.names
 
     override def format: Set[DirectiveNode.Format] = d.format
 
-    override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
+    override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
       withNodeOverride(node) {
         d.render(node, visitor, printer)
       }
-    }
   }
 
   /**
@@ -75,57 +73,56 @@ class LinkCapturer {
     plugins.map(p => p(context)).asJava
   )
 
-  private def withNodeOverride[T](node: Node)(block: => T): T = {
+  private def withNodeOverride[T](node: Node)(block: => T): T =
     nodeOverride match {
       case Some(existing) =>
         throw new IllegalStateException(s"Can't nest overridden nodes, existing: $existing, new: $node")
       case None =>
         nodeOverride = Some(node)
-        try {
+        try
           block
-        } finally {
+        finally
           nodeOverride = None
-        }
     }
-  }
 
-  def allLinks: List[CapturedLink] = {
+  def allLinks: List[CapturedLink] =
     // First, resolve the links, discarding links that we can't resolve.
-    links.collect {
-      case Link(page, node, uri, fragment) if isPageInSite(page, uri) =>
-        val path = node match {
-          // Javadoc links may use the frames style, and may reference index.html, if so, need to drop it.
-          case d: DirectiveNode if d.name == "javadoc" && uri.getQuery != null =>
-            if (uri.getPath.endsWith("/index.html")) {
-              uri.getPath.stripSuffix("index.html") + uri.getQuery
-            } else {
-              uri.getPath + uri.getQuery
-            }
-          case _ => uri.getPath
-        }
-        // Append index.html to any path that ends with /
-        val pathWithIndex = if (path.endsWith("/")) uri.getPath + "index.html"
-        else path
+    links
+      .collect {
+        case Link(page, node, uri, fragment) if isPageInSite(page, uri) =>
+          val path = node match {
+            // Javadoc links may use the frames style, and may reference index.html, if so, need to drop it.
+            case d: DirectiveNode if d.name == "javadoc" && uri.getQuery != null =>
+              if (uri.getPath.endsWith("/index.html")) {
+                uri.getPath.stripSuffix("index.html") + uri.getQuery
+              } else {
+                uri.getPath + uri.getQuery
+              }
+            case _ => uri.getPath
+          }
+          // Append index.html to any path that ends with /
+          val pathWithIndex =
+            if (path.endsWith("/")) uri.getPath + "index.html"
+            else path
 
-        val resolvedUri = URI.create(page.path).resolve(pathWithIndex)
-        Link(page, node, resolvedUri, fragment)
+          val resolvedUri = URI.create(page.path).resolve(pathWithIndex)
+          Link(page, node, resolvedUri, fragment)
 
-      case link @ Link(_, _, uri, _) if uri.getAuthority != null => link
-    }.groupBy(_.uri)
-      .toList
-      .map {
-        case (uri, links) =>
-          val fragments = links.groupBy(_.fragment)
-            .toList
-            .map {
-              case (fragment, links) =>
-                CapturedLinkFragment(fragment, links.map(l => (l.page.file, l.node)))
-            }
-          CapturedLink(uri, fragments)
+        case link @ Link(_, _, uri, _) if uri.getAuthority != null => link
       }
-  }
+      .groupBy(_.uri)
+      .toList
+      .map { case (uri, links) =>
+        val fragments = links
+          .groupBy(_.fragment)
+          .toList
+          .map { case (fragment, links) =>
+            CapturedLinkFragment(fragment, links.map(l => (l.page.file, l.node)))
+          }
+        CapturedLink(uri, fragments)
+      }
 
-  private def isPageInSite(page: Page, uri: URI): Boolean = {
+  private def isPageInSite(page: Page, uri: URI): Boolean =
     if (uri.getAuthority == null && uri.getPath != null) {
       // If the page has a host relative absolute path, as is the case when paradoxValidationSiteBasePath is configured,
       // then we can always resolve it (potentially to an invalid path that will get reported as an error later), so
@@ -136,7 +133,6 @@ class LinkCapturer {
         !URI.create(page.path).resolve(uri).getPath.startsWith("../")
       } else false
     } else false
-  }
 
   private var nodeOverride: Option[Node] = None
 
@@ -146,8 +142,13 @@ class LinkCapturer {
 
   def capture(page: Page, node: Node, rendering: LinkRenderer.Rendering): LinkRenderer.Rendering = {
     val fullUri = URI.create(rendering.href)
-    val (uri, fragment) = if (fullUri.getFragment == null) (fullUri, None)
-    else (new URI(fullUri.getScheme, fullUri.getAuthority, fullUri.getPath, fullUri.getQuery, null), Some(fullUri.getFragment))
+    val (uri, fragment) =
+      if (fullUri.getFragment == null) (fullUri, None)
+      else
+        (
+          new URI(fullUri.getScheme, fullUri.getAuthority, fullUri.getPath, fullUri.getQuery, null),
+          Some(fullUri.getFragment)
+        )
     links = Link(page, nodeOverride.getOrElse(node), uri, fragment) :: links
     rendering
   }
@@ -168,15 +169,19 @@ private class LinkCapturerRenderer(capturer: LinkCapturer, renderer: LinkRendere
 
   override def render(node: AutoLinkNode): LinkRenderer.Rendering = capture(node, renderer.render(node))
 
-  override def render(node: ExpLinkNode, text: String): LinkRenderer.Rendering = capture(node, renderer.render(node, text))
+  override def render(node: ExpLinkNode, text: String): LinkRenderer.Rendering =
+    capture(node, renderer.render(node, text))
 
-  override def render(node: ExpImageNode, text: String): LinkRenderer.Rendering = capture(node, renderer.render(node, text))
+  override def render(node: ExpImageNode, text: String): LinkRenderer.Rendering =
+    capture(node, renderer.render(node, text))
 
   override def render(node: MailLinkNode): LinkRenderer.Rendering = capture(node, renderer.render(node))
 
-  override def render(node: RefLinkNode, url: String, title: String, text: String): LinkRenderer.Rendering = capture(node, renderer.render(node, url, title, text))
+  override def render(node: RefLinkNode, url: String, title: String, text: String): LinkRenderer.Rendering =
+    capture(node, renderer.render(node, url, title, text))
 
-  override def render(node: RefImageNode, url: String, title: String, alt: String): LinkRenderer.Rendering = capture(node, renderer.render(node, url, title, alt))
+  override def render(node: RefImageNode, url: String, title: String, alt: String): LinkRenderer.Rendering =
+    capture(node, renderer.render(node, url, title, alt))
 
   override def render(node: WikiLinkNode): LinkRenderer.Rendering = capture(node, renderer.render(node))
 }

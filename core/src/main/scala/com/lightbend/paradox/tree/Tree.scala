@@ -30,9 +30,8 @@ abstract class Tree[A] {
   /**
    * Map this tree into a new tree using f.
    */
-  def map[B](f: A => B): Tree[B] = {
+  def map[B](f: A => B): Tree[B] =
     Tree(f(label), children map (_ map f))
-  }
 
   /**
    * Create a new location focused on this tree.
@@ -116,9 +115,8 @@ object Tree {
     /**
      * This node and its siblings.
      */
-    def forest: Forest[A] = {
+    def forest: Forest[A] =
       lefts.reverse ::: tree :: rights
-    }
 
     /**
      * Move to the left sibling.
@@ -163,51 +161,47 @@ object Tree {
     /**
      * This node as a parent, before its parents.
      */
-    private def descend: List[Parent[A]] = {
+    private def descend: List[Parent[A]] =
       Parent(tree.label, lefts, rights) :: parents
-    }
 
     /**
      * Move to the next location in the hierarchy in depth-first order.
      */
-    def next: Option[Location[A]] = {
+    def next: Option[Location[A]] =
       leftmostChild orElse nextRight
-    }
 
     /**
      * Move to the right, otherwise the next possible right in a parent.
      */
     @tailrec
-    def nextRight: Option[Location[A]] = {
+    def nextRight: Option[Location[A]] =
       right match {
-        case None => parent match {
-          case Some(parent) => parent.nextRight
-          case None         => None
-        }
+        case None =>
+          parent match {
+            case Some(parent) => parent.nextRight
+            case None         => None
+          }
         case right => right
       }
-    }
 
     /**
      * Move to the previous location in the hierarchy in depth-first order.
      */
-    def prev: Option[Location[A]] = {
+    def prev: Option[Location[A]] =
       left match {
         case Some(left) => left.deepRight
         case None       => parent
       }
-    }
 
     /**
      * Move to the deepest rightmost node.
      */
     @tailrec
-    def deepRight: Option[Location[A]] = {
+    def deepRight: Option[Location[A]] =
       rightmostChild match {
         case Some(child) => child.deepRight
         case None        => Some(this)
       }
-    }
 
     /**
      * Path from here up to the root.
@@ -252,44 +246,38 @@ object Tree {
     /**
      * Replace the focused node.
      */
-    def set(tree: Tree[A]): Location[A] = {
+    def set(tree: Tree[A]): Location[A] =
       Location(tree, lefts, rights, parents)
-    }
 
     /**
      * Modify the focused node.
      */
-    def modify(f: Tree[A] => Tree[A]): Location[A] = {
+    def modify(f: Tree[A] => Tree[A]): Location[A] =
       set(f(tree))
-    }
 
     /**
      * Insert to the left and focus on the new node.
      */
-    def insertLeft(newTree: Tree[A]): Location[A] = {
+    def insertLeft(newTree: Tree[A]): Location[A] =
       Location(newTree, lefts, tree :: rights, parents)
-    }
 
     /**
      * Insert to the right and focus on the new node.
      */
-    def insertRight(newTree: Tree[A]): Location[A] = {
+    def insertRight(newTree: Tree[A]): Location[A] =
       Location(newTree, tree :: lefts, rights, parents)
-    }
 
     /**
      * Insert as the leftmost child and focus on the new node.
      */
-    def insertLeftmostChild(newTree: Tree[A]): Location[A] = {
+    def insertLeftmostChild(newTree: Tree[A]): Location[A] =
       Location(newTree, Nil, tree.children, descend)
-    }
 
     /**
      * Insert as the rightmost child and focus on the new node.
      */
-    def insertRightmostChild(newTree: Tree[A]): Location[A] = {
+    def insertRightmostChild(newTree: Tree[A]): Location[A] =
       Location(newTree, tree.children.reverse, Nil, descend)
-    }
 
     /**
      * Insert as the nth child and focus on the new node.
@@ -304,13 +292,15 @@ object Tree {
      */
     def delete: Option[Location[A]] = rights match {
       case r :: rs => Some(Location(r, lefts, rs, parents))
-      case _ => lefts match {
-        case l :: ls => Some(Location(l, ls, rights, parents))
-        case _ => parents match {
-          case p :: ps => Some(Location(Tree(p.label, Nil), p.lefts, p.rights, ps))
-          case Nil     => None
+      case _ =>
+        lefts match {
+          case l :: ls => Some(Location(l, ls, rights, parents))
+          case _ =>
+            parents match {
+              case p :: ps => Some(Location(Tree(p.label, Nil), p.lefts, p.rights, ps))
+              case Nil     => None
+            }
         }
-      }
     }
 
     // simplified toString
@@ -329,10 +319,10 @@ object Tree {
    */
   def link[A](nodes: List[A], links: A => List[A]): Forest[A] = {
     import scala.collection.mutable
-    val seen = mutable.HashSet.empty[A]
+    val seen      = mutable.HashSet.empty[A]
     val completed = mutable.HashSet.empty[A]
-    val roots = mutable.Map.empty[A, Tree[A]]
-    def visit(node: A): Unit = {
+    val roots     = mutable.Map.empty[A, Tree[A]]
+    def visit(node: A): Unit =
       if (!seen(node)) {
         seen(node) = true;
         val linked = links(node)
@@ -343,7 +333,6 @@ object Tree {
       } else if (!completed(node)) {
         throw new RuntimeException("Cycle found at: " + node)
       }
-    }
     nodes foreach visit
     roots.values.toList
   }
@@ -352,16 +341,16 @@ object Tree {
    * Form a linked forest from a listed hierarchy, given an ordering for levels.
    */
   @tailrec
-  def hierarchy[A](nodes: List[A], stack: Forest[A] = Nil)(implicit ord: Ordering[A]): Forest[A] = {
+  def hierarchy[A](nodes: List[A], stack: Forest[A] = Nil)(implicit ord: Ordering[A]): Forest[A] =
     stack match {
-      case first :: second :: rest if ord.gt(first.label, second.label) &&
-        (nodes.isEmpty || ord.lteq(nodes.head, first.label)) => // squash top of stack
+      case first :: second :: rest
+          if ord.gt(first.label, second.label) &&
+          (nodes.isEmpty || ord.lteq(nodes.head, first.label)) => // squash top of stack
         hierarchy(nodes, Tree(second.label, second.children ::: List(first)) :: rest)
       case result if nodes.isEmpty => // finished, return result
         result.reverse
       case deeper => // push node on to stack
         hierarchy(nodes.tail, Tree.leaf(nodes.head) :: deeper)
     }
-  }
 
 }

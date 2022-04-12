@@ -16,12 +16,13 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.{ Forest, Location }
+import com.lightbend.paradox.tree.Tree.{Forest, Location}
 
 class NavigationSpec extends MarkdownBaseSpec {
 
-  val site = Location.forest(pages(
-    "index.md" -> """
+  val site = Location.forest(
+    pages(
+      "index.md" -> """
       |@@@ index
       |* [1](1.md)
       |* [2](2.md)
@@ -36,50 +37,51 @@ class NavigationSpec extends MarkdownBaseSpec {
       |        + [ii](3/b/ii.md)
       |@@@
     """,
-    "1.md" -> """
+      "1.md" -> """
       |# 1
     """,
-    "2.md" -> """
+      "2.md" -> """
       |# 2
     """,
-    "2/a.md" -> """
+      "2/a.md" -> """
       |@@@ div { .group-scala }
       |# 2/a
       |@@@
     """,
-    "2/b.md" -> """
+      "2/b.md" -> """
       |# 2/b
     """,
-    "3.md" -> """
+      "3.md" -> """
       |# 3
     """,
-    "3/a.md" -> """
+      "3/a.md" -> """
       |# 3/a
     """,
-    "3/a/i.md" -> """
+      "3/a/i.md" -> """
       |# 3/a/i
     """,
-    "3/a/ii.md" -> """
+      "3/a/ii.md" -> """
       |# 3/a/ii
     """,
-    "3/b.md" -> """
+      "3/b.md" -> """
       |# 3/b
     """,
-    "3/b/i.md" -> """
+      "3/b/i.md" -> """
       |# 3/b/i
       |## A
       |### B
       |## C
       |### D
     """,
-    "3/b/ii.md" -> """
+      "3/b/ii.md" -> """
       |# 3/b/ii
       |## A
       |### B
       |## C
       |### D
     """
-  ))
+    )
+  )
 
   "TableOfContents" should "create full navigation including everything" in {
     navigation(
@@ -287,11 +289,12 @@ class NavigationSpec extends MarkdownBaseSpec {
     """)
   }
 
-  def navigation(toc: TableOfContents, location: Option[Location[Page]])(implicit context: Location[Page] => Writer.Context = writerContext): String = {
+  def navigation(toc: TableOfContents, location: Option[Location[Page]])(implicit
+      context: Location[Page] => Writer.Context = writerContext
+  ): String =
     location match {
       case Some(loc) => normalize(markdownWriter.writeToc(toc.root(loc), context(loc)))
       case None      => ""
     }
-  }
 
 }

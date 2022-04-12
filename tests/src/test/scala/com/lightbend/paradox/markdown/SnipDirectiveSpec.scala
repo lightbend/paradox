@@ -29,7 +29,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "The `snip` directive" should "render code snippets" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }"""
+    ) shouldEqual html("""
       |<pre class="prettyprint">
       |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object example extends App {
@@ -85,7 +87,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "trim indentation from snippets" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html("""
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }"""
+    ) shouldEqual html("""
       |<pre class="prettyprint">
       |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |case object Dent
@@ -94,12 +98,13 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "not truncate snippets" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }""") shouldEqual html("""
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #multi-indented-example }"""
+    ) shouldEqual html("""
       |<pre class="prettyprint">
       |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
       |object AnotherIndentedExample {
-      |  def rendered(): Unit = {
-      |  }
+      |  def rendered(): Unit = {}
       |}
       |class AnotherClass
       |</code>
@@ -110,10 +115,12 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
     implicit val context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
-      "snip.github_link" -> "true")
+      "snip.github_link" -> "true"
+    )
 
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
-      """<pre class="prettyprint">
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }"""
+    ) shouldEqual html("""<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
@@ -127,10 +134,10 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
       "snip.github_link" -> "true",
-      "snip.test.base_dir" -> "tests/src/test/scala/com/lightbend/paradox/markdown")
+      "snip.test.base_dir" -> "tests/src/test/scala/com/lightbend/paradox/markdown"
+    )
 
-    markdown("""@@snip[example.scala]($test$/example.scala) { #example }""") shouldEqual html(
-      """<pre class="prettyprint">
+    markdown("""@@snip[example.scala]($test$/example.scala) { #example }""") shouldEqual html("""<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/v0.2.1/tests/src/test/scala/com/lightbend/paradox/markdown/example.scala#L28-L30" target="_blank" title="Go to snippet source">source</a><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
@@ -143,10 +150,12 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
     implicit val context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
-      "snip.github_link" -> "false")
+      "snip.github_link" -> "false"
+    )
 
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html(
-      """<pre class="prettyprint">
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }"""
+    ) shouldEqual html("""<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object example extends App {
         |  println("Hello, World!")
@@ -155,7 +164,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "include labels when including the whole file" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala)""") shouldEqual html(
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala)"""
+    ) shouldEqual html(
       """<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |/*
@@ -178,9 +189,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |
         |//#github-path-link
         |object GithubPathLink {
-        |  //#github-neither-path-link
+        |  // #github-neither-path-link
         |  type Neither[A, B] = Nothing
-        |  //#github-neither-path-link
+        |  // #github-neither-path-link
         |}
         |//#github-path-link
         |
@@ -191,35 +202,31 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |//#example
         |
         |object IndentedExample {
-        |  //#indented-example
+        |  // #indented-example
         |  case object Dent
-        |  //#indented-example
+        |  // #indented-example
         |
         |  object EventMore {
-        |    //#indented-example
+        |    // #indented-example
         |    case object DoubleDent
-        |    //#indented-example
+        |    // #indented-example
         |  }
         |}
         |
         |//#multi-indented-example
         |//#some-other-anchor
         |object AnotherIndentedExample {
-        |  //#multi-indented-example
+        |  // #multi-indented-example
         |
-        |  def notRendered(): Unit = {
-        |  }
+        |  def notRendered(): Unit = {}
         |
-        |  //#multi-indented-example
-        |  def rendered(): Unit = {
-        |  }
-        |  //#some-other-anchor
-        |  //#multi-indented-example
+        |  // #multi-indented-example
+        |  def rendered(): Unit = {}
+        |  // #some-other-anchor
+        |  // #multi-indented-example
         |
-        |  def alsoNotRendered(): Unit = {
-        |
-        |  }
-        |  //#multi-indented-example
+        |  def alsoNotRendered(): Unit = {}
+        |  // #multi-indented-example
         |}
         |//#multi-indented-example
         |
@@ -234,7 +241,6 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
         |  //#multi-indented-example
         |// format: ON
         |
-        |
         |//#example-with-label
         |object Constants {
         |  val someString = " #foo "
@@ -245,7 +251,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "filter labels by default" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label }""") shouldEqual html(
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label }"""
+    ) shouldEqual html(
       """<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object Constants {
@@ -255,7 +263,9 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "allow including labels if specified" in {
-    markdown("""@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label filterLabels=false }""") shouldEqual html(
+    markdown(
+      """@@snip[example.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example-with-label filterLabels=false }"""
+    ) shouldEqual html(
       """<pre class="prettyprint">
         |<button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><code class="language-scala">
         |object Constants {

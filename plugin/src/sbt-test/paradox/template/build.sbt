@@ -4,5 +4,5 @@ lazy val templateTest = project
   .settings(
     // set the generic theme to test overriding page.st
     paradoxTheme := Some(builtinParadoxTheme("generic")),
-    paradoxRoots := List("page.html"),
+    paradoxRoots := List("page.html")
   )

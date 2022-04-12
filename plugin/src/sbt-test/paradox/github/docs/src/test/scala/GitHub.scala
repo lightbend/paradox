@@ -1,20 +1,20 @@
 //#multiple
 object GitHub {
-  //#single
+  // #single
   type IntPair = (Int, Int)
-  //#single
+  // #single
 
-  //#multiple
+  // #multiple
   val embedded = "should be ignored"
-  //#multiple
+  // #multiple
 
-  //#nested
+  // #nested
   sealed trait DateInterval
   case class Year(value: Int) extends DateInterval
   case class Quarter(year: Year, value: Int) extends DateInterval
   case class Month(year: Year, value: Int) extends DateInterval
   case class Week(year: Year, value: Int) extends DateInterval
   case class Day(year: Year, month: Month, value: Int) extends DateInterval
-  //#nested
+  // #nested
 }
 //#multiple

@@ -36,16 +36,24 @@ object Index {
    * @param path
    * @param markdown
    * @param group
-   * @param includeIndexes If this header came from an included file, this has the index of the include file,
-   *                       starting from the top level page include, down to the deepest nesting.
+   * @param includeIndexes
+   *   If this header came from an included file, this has the index of the include file, starting from the top level
+   *   page include, down to the deepest nesting.
    */
   case class Ref(level: Int, path: String, markdown: Node, group: Option[String], includeIndexes: List[Int])
 
-  case class Page(file: File, path: String, markdown: RootNode, properties: Map[String, String], indices: Forest[Ref], headers: Forest[Ref], anchors: List[Ref])
+  case class Page(
+      file: File,
+      path: String,
+      markdown: RootNode,
+      properties: Map[String, String],
+      indices: Forest[Ref],
+      headers: Forest[Ref],
+      anchors: List[Ref]
+  )
 
-  def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] = {
+  def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] =
     link(parsed.map((page _).tupled).toList, properties)
-  }
 
   /**
    * Create a new Index.Page with parsed indices and headers.
@@ -56,20 +64,21 @@ object Index {
   /**
    * Create a tree of header refs from a parsed markdown page.
    */
-  def headers(root: RootNode): Forest[Ref] = {
+  def headers(root: RootNode): Forest[Ref] =
     Tree.hierarchy(headerRefs(root, group = None, includeIndexes = Nil))(Ordering[Int].on[Ref](_.level))
-  }
 
   /**
    * Extract refs from markdown headers.
    */
-  private def headerRefs(root: RootNode, group: Option[String], includeIndexes: List[Int]): List[Ref] = {
+  private def headerRefs(root: RootNode, group: Option[String], includeIndexes: List[Int]): List[Ref] =
     root.getChildren.asScala.toList.flatMap {
       case header: HeaderNode =>
         header.getChildren.asScala.toList.flatMap {
-          case anchor: AnchorLinkSuperNode => List(Ref(header.getLevel, "#" + anchor.name, anchor.contents, group, includeIndexes))
-          case anchor: AnchorLinkNode      => List(Ref(header.getLevel, "#" + anchor.getName, new TextNode(anchor.getText), group, includeIndexes))
-          case _                           => Nil
+          case anchor: AnchorLinkSuperNode =>
+            List(Ref(header.getLevel, "#" + anchor.name, anchor.contents, group, includeIndexes))
+          case anchor: AnchorLinkNode =>
+            List(Ref(header.getLevel, "#" + anchor.getName, new TextNode(anchor.getText), group, includeIndexes))
+          case _ => Nil
         }
       case node: DirectiveNode if node.format == DirectiveNode.Format.ContainerBlock =>
         // TODO check whether my assumption that Container DirectiveNode's always contain RootNode's holds,
@@ -80,9 +89,8 @@ object Index {
         headerRefs(included, group, includeIndexes :+ node.getStartIndex)
       case _ => Nil
     }
-  }
 
-  def anchors(root: RootNode): List[Ref] = {
+  def anchors(root: RootNode): List[Ref] =
     root.getChildren.asScala.toList.flatMap {
       case node: HtmlBlockNode =>
         if (node.getText.startsWith("<a id=\""))
@@ -96,47 +104,42 @@ object Index {
       case _ =>
         List.empty
     }
-  }
 
   /**
    * Create a tree of page refs from index directives in a parsed markdown page.
    */
-  def indices(root: RootNode): Forest[Ref] = {
+  def indices(root: RootNode): Forest[Ref] =
     Tree.hierarchy(indexRefs(root))(Ordering[Int].on[Ref](_.level))
-  }
 
   /**
    * Extract refs from 'index' directives.
    */
-  private def indexRefs(root: RootNode): List[Ref] = {
+  private def indexRefs(root: RootNode): List[Ref] =
     root.getChildren.asScala.toList.flatMap {
       case node: DirectiveNode if isIndexDirective(node) => listedRefs(node)
       case _                                             => Nil
     }
-  }
 
   /**
    * Determine whither this is an index directive, by name and format.
    */
-  private def isIndexDirective(node: DirectiveNode): Boolean = {
+  private def isIndexDirective(node: DirectiveNode): Boolean =
     node.format == DirectiveNode.Format.ContainerBlock && node.name == "index"
-  }
 
   /**
    * Extract refs from list items. Increment level at each list item.
    */
-  private def listedRefs(node: Node, level: Int = 1): List[Ref] = {
+  private def listedRefs(node: Node, level: Int = 1): List[Ref] =
     node.getChildren.asScala.toList.flatMap {
       case li: ListItemNode => linkRef(li, level).toList ++ listedRefs(li, level + 1)
       case other            => listedRefs(other, level)
     }
-  }
 
   /**
    * Extract ref from nearest explicit link node.
    */
   @tailrec
-  private def linkRef(node: Node, level: Int): Option[Ref] = {
+  private def linkRef(node: Node, level: Int): Option[Ref] =
     node match {
       case link: ExpLinkNode => Some(Ref(level, link.url, link.getChildren.get(0), group = None, Nil))
       case ref: DirectiveNode if RefDirective.isRefDirective(ref) =>
@@ -148,13 +151,13 @@ object Index {
           case _ =>
             sys.error(s"unexpected Source type: ${ref.source}")
         }
-      case other => other.getChildren.asScala.toList match {
-        // only check first children
-        case first :: _ => linkRef(first, level)
-        case _          => None
-      }
+      case other =>
+        other.getChildren.asScala.toList match {
+          // only check first children
+          case first :: _ => linkRef(first, level)
+          case _          => None
+        }
     }
-  }
 
   /**
    * Link together pages into trees using parsed indices.
@@ -183,24 +186,25 @@ object Index {
   def links(pages: List[Page]): Map[Page, List[Page]] = {
     import scala.collection.mutable
 
-    val edges = mutable.Map.empty[Page, List[Page]].withDefaultValue(Nil)
+    val edges   = mutable.Map.empty[Page, List[Page]].withDefaultValue(Nil)
     val pageMap = (pages map { page => page.path -> page }).toMap
 
-    def lookup(current: String, path: String) = {
-      pageMap.getOrElse(Path.resolve(current, path), throw new LinkException(s"Unknown page [$path] linked from [$current]"))
-    }
+    def lookup(current: String, path: String) =
+      pageMap.getOrElse(
+        Path.resolve(current, path),
+        throw new LinkException(s"Unknown page [$path] linked from [$current]")
+      )
 
-    def add(path: String, page: Page, indices: Forest[Ref], nested: Boolean): Unit = {
+    def add(path: String, page: Page, indices: Forest[Ref], nested: Boolean): Unit =
       // if nested then prepending children, so process this level in reverse to retain order
       (if (nested) indices.reverse else indices) foreach { i =>
-        val child = lookup(path, i.label.path)
+        val child   = lookup(path, i.label.path)
         val current = edges(page)
         // nested links have priority (being further up the overall hierarchy)
         val added = if (nested) child :: current else current ::: List(child)
         edges += page -> added
         add(path, child, i.children, nested = true)
       }
-    }
 
     pages foreach { page => add(page.path, page, page.indices, nested = false) }
     edges.toMap.withDefaultValue(Nil)

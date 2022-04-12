@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import java.net.{ URI, URISyntaxException }
+import java.net.{URI, URISyntaxException}
 
 /**
  * Small wrapper around URI to help update individual components.
@@ -26,8 +26,8 @@ case class Url(base: URI) {
     case path if path.endsWith("/index.html") => this
     case path                                 => copy(path = path + "/")
   }
-  def /(path: String): Url = copy(path = base.getPath + "/" + path)
-  def withQuery(query: String): Url = copy(query = query)
+  def /(path: String): Url                = copy(path = base.getPath + "/" + path)
+  def withQuery(query: String): Url       = copy(query = query)
   def withFragment(fragment: String): Url = copy(fragment = fragment)
   def copy(path: String = base.getPath, query: String = base.getQuery, fragment: String = base.getFragment): Url = {
     val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path, query, fragment)
@@ -37,21 +37,21 @@ case class Url(base: URI) {
 }
 
 object Url {
+
   /**
    * Exception thrown for unknown or invalid URLs.
    */
   case class Error(reason: String) extends RuntimeException(reason)
 
-  def apply(base: String): Url = {
+  def apply(base: String): Url =
     parse(base, s"template resulted in an invalid URL [$base]")
-  }
 
-  def parse(base: String, msg: String): Url = {
-    try Url(new URI(base)) catch {
+  def parse(base: String, msg: String): Url =
+    try Url(new URI(base))
+    catch {
       case _: URISyntaxException =>
         throw Url.Error(msg)
     }
-  }
 }
 
 case class PropertyUrl(property: String, variables: String => Option[String]) {
@@ -60,13 +60,11 @@ case class PropertyUrl(property: String, variables: String => Option[String]) {
     case None          => throw Url.Error(s"property [$property] is not defined")
   }
 
-  def resolve(): Url = {
+  def resolve(): Url =
     Url.parse(base, s"property [$property] contains an invalid URL [$base]")
-  }
 
   def format(args: String*): Url = Url(base.format(args: _*))
 
-  def collect(f: PartialFunction[String, String]): Url = {
+  def collect(f: PartialFunction[String, String]): Url =
     PropertyUrl(property, variables(_).collect(f)).resolve()
-  }
 }

@@ -18,9 +18,9 @@ package com.lightbend.paradox.markdown
 
 //#github-path-link
 object GithubPathLink {
-  //#github-neither-path-link
+  // #github-neither-path-link
   type Neither[A, B] = Nothing
-  //#github-neither-path-link
+  // #github-neither-path-link
 }
 //#github-path-link
 
@@ -31,35 +31,31 @@ object example extends App {
 //#example
 
 object IndentedExample {
-  //#indented-example
+  // #indented-example
   case object Dent
-  //#indented-example
+  // #indented-example
 
   object EventMore {
-    //#indented-example
+    // #indented-example
     case object DoubleDent
-    //#indented-example
+    // #indented-example
   }
 }
 
 //#multi-indented-example
 //#some-other-anchor
 object AnotherIndentedExample {
-  //#multi-indented-example
+  // #multi-indented-example
 
-  def notRendered(): Unit = {
-  }
+  def notRendered(): Unit = {}
 
-  //#multi-indented-example
-  def rendered(): Unit = {
-  }
-  //#some-other-anchor
-  //#multi-indented-example
+  // #multi-indented-example
+  def rendered(): Unit = {}
+  // #some-other-anchor
+  // #multi-indented-example
 
-  def alsoNotRendered(): Unit = {
-
-  }
-  //#multi-indented-example
+  def alsoNotRendered(): Unit = {}
+  // #multi-indented-example
 }
 //#multi-indented-example
 
@@ -73,7 +69,6 @@ class AnotherClass
 
   //#multi-indented-example
 // format: ON
-
 
 //#example-with-label
 object Constants {

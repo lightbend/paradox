@@ -5,5 +5,5 @@ lazy val docs = (project in file("docs"))
   .enablePlugins(ParadoxPlugin)
   .settings(
     paradoxTheme := None,
-    paradoxRoots := List("absolute.html"),
+    paradoxRoots := List("absolute.html")
   )

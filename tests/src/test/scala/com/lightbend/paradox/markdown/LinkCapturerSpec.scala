@@ -23,10 +23,10 @@ import com.lightbend.paradox.tree.Tree.Location
 class LinkCapturerSpec extends MarkdownBaseSpec {
 
   private def capturerFor(pagePath: String, markdown: String): LinkCapturer = {
-    val location = Location.forest(pages((pagePath, markdown))).get
-    val context = writerContext(location)
+    val location     = Location.forest(pages((pagePath, markdown))).get
+    val context      = writerContext(location)
     val linkCapturer = new LinkCapturer
-    val serializer = linkCapturer.serializer(context)
+    val serializer   = linkCapturer.serializer(context)
     location.tree.label.markdown.accept(serializer)
     linkCapturer
   }

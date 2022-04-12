@@ -1,5 +1,5 @@
 object Snippets {
-  //#snippet
+  // #snippet
   val snippet = 0
-  //#snippet
+  // #snippet
 }

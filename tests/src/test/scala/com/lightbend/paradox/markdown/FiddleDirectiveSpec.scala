@@ -21,7 +21,9 @@ import com.lightbend.paradox.tree.Tree.Location
 class FiddleDirectiveSpec extends MarkdownBaseSpec {
 
   "Fiddle directive" should "generate fiddle integration code" in {
-    markdown("""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }""") shouldEqual html("""
+    markdown(
+      """@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }"""
+    ) shouldEqual html("""
       |<div data-scalafiddle="true">
       |<pre class="prettyprint">
       |<code class="language-scala">
@@ -46,14 +48,22 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
     )
 
     val markdownParams =
-      params.map {
-        case (k, v) => s"""$k="$v""""
-      }.mkString(" ")
+      params
+        .map { case (k, v) =>
+          s"""$k="$v""""
+        }
+        .mkString(" ")
 
     val htmlParams =
-      params.map { case (k, v) => if (v.startsWith("'")) s"""data-$k="${v.substring(1, v.length - 1)}" """ else s"""data-$k="$v" """ }.mkString(" ")
+      params
+        .map { case (k, v) =>
+          if (v.startsWith("'")) s"""data-$k="${v.substring(1, v.length - 1)}" """ else s"""data-$k="$v" """
+        }
+        .mkString(" ")
 
-    markdown(s"""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example $markdownParams}""") shouldEqual html(s"""
+    markdown(
+      s"""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example $markdownParams}"""
+    ) shouldEqual html(s"""
       |<div data-scalafiddle="true" $htmlParams>
       |<pre class="prettyprint">
       |<code class="language-scala">
@@ -67,9 +77,10 @@ class FiddleDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "include multiple fiddles" in {
-    markdown("""@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }
-      |@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }""") shouldEqual html(
-      """
+    markdown(
+      """@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #example }
+      |@@fiddle[FiddelDirectiveSpec.scala](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #indented-example }"""
+    ) shouldEqual html("""
       |<div data-scalafiddle="true">
       |<pre class="prettyprint">
       |<code class="language-scala">

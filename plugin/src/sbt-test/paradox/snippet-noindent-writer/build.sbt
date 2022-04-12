@@ -1,6 +1,6 @@
-lazy val root = (project in file(".")).
-  enablePlugins(ParadoxPlugin).
-  settings(
+lazy val root = (project in file("."))
+  .enablePlugins(ParadoxPlugin)
+  .settings(
     paradoxTheme := None,
-    name := "snippet-indent"
+    name         := "snippet-indent"
   )
