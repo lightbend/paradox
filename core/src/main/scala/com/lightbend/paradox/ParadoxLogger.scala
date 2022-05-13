@@ -23,7 +23,7 @@ import scala.collection.immutable.StringOps
 trait ParadoxLogger {
   def debug(t: Throwable): Unit = {
     // we provide our own implementation because sbt doesn't offer any exception logging at debug
-    val writer = new StringWriter()
+    val writer = new StringWriter
     t.printStackTrace(new PrintWriter(writer))
     new StringOps(writer.toString).lines.foreach(debug(_))
   }

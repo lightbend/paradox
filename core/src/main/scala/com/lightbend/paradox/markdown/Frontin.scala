@@ -26,7 +26,7 @@ object Frontin {
   val separator = "---"
 
   def separates(str: String): Boolean =
-    (str.trim == separator) && (str startsWith separator)
+    str.trim == separator && (str startsWith separator)
 
   def apply(file: File): Frontin = {
     var source: BufferedSource = null

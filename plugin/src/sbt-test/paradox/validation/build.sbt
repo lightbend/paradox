@@ -6,5 +6,5 @@ lazy val additionalMappings         = settingKey[List[(File, String)]]("Addition
 
 additionalInternalMappings := Nil
 additionalMappings         := Nil
-(Compile / paradox / mappings) ++= additionalInternalMappings.value
-(Compile / paradoxValidateInternalLinks / mappings) ++= additionalMappings.value
+Compile / paradox / mappings ++= additionalInternalMappings.value
+Compile / paradoxValidateInternalLinks / mappings ++= additionalMappings.value

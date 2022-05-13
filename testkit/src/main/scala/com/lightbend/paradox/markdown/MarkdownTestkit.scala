@@ -154,9 +154,9 @@ abstract class MarkdownTestkit {
     val getContent = content
 
     lazy val getBase         = ""
-    lazy val getHome         = new EmptyLink()
-    lazy val getPrev         = new EmptyLink()
-    lazy val getNext         = new EmptyLink()
+    lazy val getHome         = new EmptyLink
+    lazy val getPrev         = new EmptyLink
+    lazy val getNext         = new EmptyLink
     lazy val getBreadcrumbs  = ""
     lazy val getNavigation   = ""
     lazy val hasSubheaders   = false

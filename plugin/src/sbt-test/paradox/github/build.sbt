@@ -18,5 +18,5 @@ lazy val docs = (project in file("docs"))
       ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")
     ),
     taggedVersion      := "0.2.1",
-    githubBaseUrlEntry := ("github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1")
+    githubBaseUrlEntry := "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1"
   )

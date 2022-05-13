@@ -461,7 +461,7 @@ trait GitHubResolver {
     val fragment = labelFragment.getOrElse(pathUrl.base.getFragment)
     val treePath = Path.relativeLocalPath(root.getAbsolutePath, file.getAbsolutePath)
 
-    (treeUrl / treePath) withFragment fragment
+    treeUrl / treePath withFragment fragment
   }
 
   protected def resolveProject(project: String): Url =

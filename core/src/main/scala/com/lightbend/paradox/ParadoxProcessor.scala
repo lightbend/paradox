@@ -330,7 +330,7 @@ class ParadoxProcessor(
             pageProperties
           )
           val pageContents =
-            PageContents(Nil, groups, loc, singlePageWriter, writerContext, navToc, new TableOfContents())
+            PageContents(Nil, groups, loc, singlePageWriter, writerContext, navToc, new TableOfContents)
           render(loc.next, rendered :+ pageContents)
         case None => rendered
       }

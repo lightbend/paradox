@@ -48,12 +48,12 @@ comparePdfs := {
         log.error(s"Line $idx of $f1 is not equal to $f2")
         log.error(new String(line1.map(toPrintable)))
         log.error(new String(line2.map(toPrintable)))
-        throw new AlreadyHandledException(new RuntimeException())
+        throw new AlreadyHandledException(new RuntimeException)
       }
     }
   }
   if (f1Lines.length != f2Lines.length) {
     log.error(s"$f1 has ${f1Lines.length} lines but $f2 has ${f2Lines.length}")
-    throw new AlreadyHandledException(new RuntimeException())
+    throw new AlreadyHandledException(new RuntimeException)
   }
 }

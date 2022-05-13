@@ -158,7 +158,7 @@ class TableOfContents(
     val parent   = new SuperNode
     parent.getChildren.add(label)
     val autoExpandDepth = autoExpand(linkable, active, expandDepth)
-    if ((depth < maxDepth) || autoExpandDepth.isDefined)
+    if (depth < maxDepth || autoExpandDepth.isDefined)
       subList(base, active, tree, depth, autoExpandDepth).foreach(parent.getChildren.add)
     new ListItemNode(parent)
   }
@@ -172,7 +172,7 @@ class TableOfContents(
       expandDepth.filter(_ < max) orElse // currently expanding and still below max
         (if (active.exists(_.path.drop(1).exists(_.tree.label == linkable))) Some(max)
          else None) orElse // expand ancestors of the active page
-        (if ((max > 0) && active.exists(_.tree.label == linkable)) Some(0) else None) // expand from the active page
+        (if (max > 0 && active.exists(_.tree.label == linkable)) Some(0) else None) // expand from the active page
     }
 
   protected def link[A <: Linkable](base: String, linkable: A, active: Option[Location[Page]]): Node = {

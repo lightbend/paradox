@@ -44,7 +44,7 @@ trait ErrorContext {
 }
 
 class ErrorCollector extends ErrorContext {
-  private val errors = new ListBuffer[ParadoxError]()
+  private val errors = new ListBuffer[ParadoxError]
 
   private def addError(msg: String, page: Option[File], index: Option[Int]): Unit =
     errors.append(ParadoxError(msg, page, index))
