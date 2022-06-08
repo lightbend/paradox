@@ -35,7 +35,6 @@ inThisBuild(
 
 // https://github.com/djspiewak/sbt-github-actions
 ThisBuild / githubWorkflowJavaVersions := List(
-  JavaSpec.temurin("8"),
   JavaSpec.temurin("11"),
   JavaSpec.temurin("17")
 )
