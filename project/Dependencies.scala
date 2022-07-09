@@ -25,7 +25,7 @@ object Version {
   val sbtWeb     = "1.4.4"
   val scalatest  = "3.2.12"
   val st4        = "4.3.3"
-  val jsoup      = "1.15.1"
+  val jsoup      = "1.15.2"
 }
 
 object Library {
