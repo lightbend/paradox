@@ -461,6 +461,10 @@ class ParadoxProcessor(
     lazy val getAbsolute: PageLink =
       PageLink(location, location.map(_.root.tree.label).getOrElse(current), writer, context)
     lazy val isActive: Boolean = location.exists(active)
+    lazy val getRelative: String = location.map { l =>
+      val root = new File(".").getCanonicalFile.toString
+      Path.relativeLocalPath(root, l.tree.label.file.getPath)
+    }.orNull
 
     private def link(location: Location[Page]): String = {
       val node =
