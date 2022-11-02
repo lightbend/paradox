@@ -80,12 +80,12 @@ abstract class MarkdownTestkit {
 
   def createFileTemplates(dir: Path, templates: Seq[(String, String)]) = {
     val suffix = ".st"
-    (templates map {
+    templates map {
       case (path, content) if path.endsWith(suffix) =>
         val writer = new PrintWriter(new File(dir.toString + "/" + path))
         writer.write(prepare(content))
         writer.close()
-    })
+    }
   }
 
   def writerContextWithProperties(properties: (String, String)*): Location[Page] => Writer.Context = { location =>

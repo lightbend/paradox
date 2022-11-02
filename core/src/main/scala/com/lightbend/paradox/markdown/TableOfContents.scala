@@ -180,7 +180,7 @@ class TableOfContents(
       case page: Page =>
         val isActive = active.exists(_.tree.label.path == page.path)
         (
-          if (headers && isActive) (page.path + page.h1.path) else page.path,
+          if (headers && isActive) page.path + page.h1.path else page.path,
           (if (isActive) List("active") else Nil) :+ "page"
         )
       case header: Header => (header.path, List("header"))

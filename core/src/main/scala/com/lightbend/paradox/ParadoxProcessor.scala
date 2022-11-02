@@ -442,7 +442,7 @@ class ParadoxProcessor(
     lazy val getProperties: util.Map[String, String] = context.properties.asJava
     // So you can $if(page.property_is.("project.license").("Apache-2.0"))$
     lazy val getProperty_is: util.Map[String, util.Map[String, Boolean]] = context.properties.map { case (key, value) =>
-      (key -> Map(value -> true).asJava)
+      key -> Map(value -> true).asJava
     }.asJava
 
     private def link(location: Option[Location[Page]]): PageTemplate.Link = PageLink(location, page, writer, context)
