@@ -16,7 +16,7 @@
 
 addSbtPlugin("org.scalameta"         % "sbt-scalafmt"                       % "2.4.6")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"                         % "5.7.0")
-addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.10.2")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.10.3")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "1.0.0")
 addSbtPlugin("com.codecommit"        % "sbt-github-actions"                 % "0.14.2")
 addSbtPlugin("com.github.sbt"        % "sbt-ci-release"                     % "1.5.11")
