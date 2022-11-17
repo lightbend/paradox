@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-addSbtPlugin("org.scalameta"         % "sbt-scalafmt"                       % "2.4.6")
+addSbtPlugin("org.scalameta"         % "sbt-scalafmt"                       % "2.5.0")
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"                         % "5.9.0")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.10.3")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "1.0.0")
