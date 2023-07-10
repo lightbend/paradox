@@ -158,6 +158,7 @@ object Writer {
     _ => InlineWrapDirective("span"),
     (context: Context) => InlineGroupDirective(context.groups.values.flatten.map(_.toLowerCase).toSeq),
     DependencyDirective.apply,
+    RepositoryDirective.apply,
     IncludeDirective.apply
   )
 

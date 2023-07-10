@@ -13,6 +13,7 @@ More directives are available via @ref[extensions](../customization/extensions.m
  * [Index and Table Of Contents Directives](organizing-pages.md)
  * [Linking Directives](linking.md)
  * [dependencies](dependencies.md)
+ * [repositories](repositories.md)
  * [Snippet Directives](snippets.md)
  * [Include Directives](includes.md)
  * [Fiddle Directives](fiddles.md)

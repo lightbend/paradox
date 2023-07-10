@@ -1056,6 +1056,107 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
   def dotted(symbol: String): String = symbol.replaceAll("(.)([A-Z])", "$1.$2").toLowerCase
 }
 
+/**
+ * Repository directive.
+ */
+case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("repository") {
+  val variables: Map[String, String]     = ctx.properties
+
+  def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
+    node.contentsNode.getChildren.asScala.headOption match {
+      case Some(text: TextNode) => renderRepository(text.getText, node, printer)
+      case _                    => node.contentsNode.accept(visitor)
+    }
+
+  def renderRepository(tools: String, node: DirectiveNode, printer: Printer): Unit = {
+    val classes = Seq("repository", node.attributes.classesString).filter(_.nonEmpty)
+
+    val startDelimiter           = node.attributes.value("start-delimiter", "$")
+    val stopDelimiter            = node.attributes.value("stop-delimiter", "$")
+
+    val postfixes = node.attributes
+      .keys()
+      .asScala
+      .toSeq
+      .filter(_.startsWith("name"))
+      .sorted
+      .map(_.replace("name", ""))
+
+    def coordinate(name: String): Option[String] =
+      Option(node.attributes.value(name)).map { value =>
+        variables.foldLeft(value) { case (str, (key, value)) =>
+          str.replace(startDelimiter + key + stopDelimiter, value)
+        }
+      }
+
+    def requiredCoordinate(name: String): String =
+      coordinate(name).getOrElse {
+        ctx.error(s"'$name' is not defined", node)
+        ""
+      }
+
+    printer.print(s"""<dl class="${classes.mkString(" ")}">""")
+    tools.split("[,]").map(_.trim).filter(_.nonEmpty).foreach { tool =>
+      val (lang, code) = tool match {
+        case "sbt" =>
+          val repos = postfixes.map { p =>
+            val name = requiredCoordinate(s"name$p")
+            val url = requiredCoordinate(s"url$p")
+            s""""$name".at("$url")"""
+          }
+
+          val repoStrings = repos match {
+            case Seq(r) => s"repositories += $r\n"
+            case rs =>
+              Seq("repositories ++= Seq(\n", rs.map(a => s"  $a").mkString(",\n"), "\n)\n").mkString
+          }
+
+          ("scala", repoStrings)
+
+        case "gradle" | "Gradle" =>
+          val repos = postfixes.map { p =>
+            val url = requiredCoordinate(s"url$p")
+            s"""    maven {
+               |        url "$url"
+               |    }\n""".stripMargin
+          }
+
+          (
+            "gradle",
+            "repositories {\n    mavenCentral()\n" +
+              repos.mkString +
+              "}\n"
+          )
+
+        case "maven" | "Maven" | "mvn" =>
+          val artifacts = postfixes.map { dp =>
+            val id = requiredCoordinate(s"id$dp")
+            val name = requiredCoordinate(s"name$dp")
+            val url = requiredCoordinate(s"url$dp")
+            s"""    &lt;repository&gt;
+               |      &lt;id&gt;$id&lt;/id&gt;
+               |      &lt;name>$name&lt;/name&gt;
+               |      &lt;url>$url&lt;/url&gt;
+               |    &lt;/repository&gt;\n""".stripMargin
+          }
+
+          (
+            "xml",
+            "&lt;project&gt\n  ...\n  &lt;repositories&gt;\n" +
+              artifacts.mkString +
+            "  &lt;/repositories&gt\n&lt;/project&gt;\n"
+          )
+      }
+      printer.print(s"""<dt>$tool</dt>""")
+      printer.print(s"""<dd>""")
+      printer.print(s"""<pre class="prettyprint"><code class="language-$lang">$code</code></pre>""")
+      printer.print(s"""</dd>""")
+    }
+    printer.print("""</dl>""")
+  }
+
+}
+
 case class IncludeDirective(ctx: Writer.Context) extends LeafBlockDirective("include") with SourceDirective {
 
   override def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
