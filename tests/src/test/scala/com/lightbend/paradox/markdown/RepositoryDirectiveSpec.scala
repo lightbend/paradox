@@ -78,8 +78,7 @@ class RepositoryDirectiveSpec extends MarkdownBaseSpec {
   }
 
   "Repository directive" should "render two repos" in {
-    markdown(
-      """
+    markdown("""
         |@@repository[sbt,Maven,gradle] {
         |  id1="id1"
         |  name1="Company repository"
@@ -87,8 +86,7 @@ class RepositoryDirectiveSpec extends MarkdownBaseSpec {
         |  id2="id-2"
         |  name2="Company repository 2"
         |  url2="http://uberjars.acme.com"
-        |}""") shouldEqual html(
-      s"""
+        |}""") shouldEqual html(s"""
          |<dl class="repository">
          |<dt>sbt</dt>
          |<dd>

@@ -1060,7 +1060,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
  * Repository directive.
  */
 case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("repository") {
-  val variables: Map[String, String]     = ctx.properties
+  val variables: Map[String, String] = ctx.properties
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     node.contentsNode.getChildren.asScala.headOption match {
@@ -1071,8 +1071,8 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
   def renderRepository(tools: String, node: DirectiveNode, printer: Printer): Unit = {
     val classes = Seq("repository", node.attributes.classesString).filter(_.nonEmpty)
 
-    val startDelimiter           = node.attributes.value("start-delimiter", "$")
-    val stopDelimiter            = node.attributes.value("stop-delimiter", "$")
+    val startDelimiter = node.attributes.value("start-delimiter", "$")
+    val stopDelimiter  = node.attributes.value("stop-delimiter", "$")
 
     val postfixes = node.attributes
       .keys()
@@ -1101,7 +1101,7 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
         case "sbt" =>
           val repos = postfixes.map { p =>
             val name = requiredCoordinate(s"name$p")
-            val url = requiredCoordinate(s"url$p")
+            val url  = requiredCoordinate(s"url$p")
             s""""$name".at("$url")"""
           }
 
@@ -1130,9 +1130,9 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
         case "maven" | "Maven" | "mvn" =>
           val artifacts = postfixes.map { dp =>
-            val id = requiredCoordinate(s"id$dp")
+            val id   = requiredCoordinate(s"id$dp")
             val name = requiredCoordinate(s"name$dp")
-            val url = requiredCoordinate(s"url$dp")
+            val url  = requiredCoordinate(s"url$dp")
             s"""    &lt;repository&gt;
                |      &lt;id&gt;$id&lt;/id&gt;
                |      &lt;name>$name&lt;/name&gt;
@@ -1144,7 +1144,7 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
             "xml",
             "&lt;project&gt\n  ...\n  &lt;repositories&gt;\n" +
               artifacts.mkString +
-            "  &lt;/repositories&gt\n&lt;/project&gt;\n"
+              "  &lt;/repositories&gt\n&lt;/project&gt;\n"
           )
       }
       printer.print(s"""<dt>$tool</dt>""")
