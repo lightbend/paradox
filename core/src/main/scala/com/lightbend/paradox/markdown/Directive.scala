@@ -1106,9 +1106,9 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
           }
 
           val repoStrings = repos match {
-            case Seq(r) => s"repositories += $r\n"
+            case Seq(r) => s"resolvers += $r\n"
             case rs =>
-              Seq("repositories ++= Seq(\n", rs.map(a => s"  $a").mkString(",\n"), "\n)\n").mkString
+              Seq("resolvers ++= Seq(\n", rs.map(a => s"  $a").mkString(",\n"), "\n)\n").mkString
           }
 
           ("scala", repoStrings)
