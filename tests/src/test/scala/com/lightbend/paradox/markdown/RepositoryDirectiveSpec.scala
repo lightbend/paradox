@@ -42,7 +42,7 @@ class RepositoryDirectiveSpec extends MarkdownBaseSpec {
       |<dd>
       |<pre class="prettyprint">
       |<code class="language-scala">
-      |repositories += "Company repository".at("http://jars.acme.com")
+      |resolvers += "Company repository".at("http://jars.acme.com")
       |</code>
       |</pre>
       |</dd>
@@ -92,7 +92,7 @@ class RepositoryDirectiveSpec extends MarkdownBaseSpec {
          |<dd>
          |<pre class="prettyprint">
          |<code class="language-scala">
-         |repositories ++= Seq(
+         |resolvers ++= Seq(
          |  "Company repository".at("http://jars.acme.com"),
          |  "Company repository 2".at("http://uberjars.acme.com")
          |)
