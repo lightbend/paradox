@@ -66,7 +66,7 @@ lazy val core = project
   .in(file("core"))
   .settings(
     name               := "paradox",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.11"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.12"),
     libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
       Library.st4,
