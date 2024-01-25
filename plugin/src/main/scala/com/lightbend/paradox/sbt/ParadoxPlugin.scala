@@ -24,7 +24,7 @@ import com.lightbend.paradox.{ParadoxLogger, ParadoxProcessor}
 import com.lightbend.paradox.markdown.{GitHubResolver, SnipDirective, Writer}
 import com.lightbend.paradox.template.PageTemplate
 import com.typesafe.sbt.web.Import.{Assets, WebKeys}
-import com.typesafe.sbt.web.{Compat => WCompat, SbtWeb}
+import com.typesafe.sbt.web.SbtWeb
 
 import scala.concurrent.duration._
 import scala.sys.process.ProcessLogger
@@ -184,7 +184,7 @@ object ParadoxPlugin extends AutoPlugin {
       .deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
     target in paradoxTheme := target.value / "paradox" / "theme" / configTarget(configuration.value),
     paradoxThemeDirectory := SbtWeb.syncMappings(
-      WCompat.cacheStore(streams.value, "paradox-theme"),
+      streams.value.cacheStoreFactory.make("paradox-theme"),
       (mappings in paradoxTheme).value,
       (target in paradoxTheme).value
     ),
@@ -410,7 +410,7 @@ object ParadoxPlugin extends AutoPlugin {
     },
     target in scopeTask := target.value / "paradox" / siteDir / configTarget(configuration.value),
     siteTask := SbtWeb.syncMappings(
-      WCompat.cacheStore(streams.value, "paradox-" + siteDir),
+      streams.value.cacheStoreFactory.make("paradox-" + siteDir),
       (mappings in scopeTask).value,
       (target in scopeTask).value
     )
