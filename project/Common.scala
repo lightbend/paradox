@@ -36,7 +36,6 @@ object Common extends AutoPlugin {
   override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8"),
-    resolvers += Resolver.typesafeIvyRepo("releases"),
     sonatypeProfileName := "com.lightbend",
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
