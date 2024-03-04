@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import com.lightbend.paradox.tree.Tree.{Forest, Location}
+import com.lightbend.paradox.tree.Tree.Location
 import java.io.{File, FileNotFoundException}
 import java.util.Optional
 

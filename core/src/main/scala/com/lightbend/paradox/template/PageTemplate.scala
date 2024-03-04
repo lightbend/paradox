@@ -23,8 +23,6 @@ import java.util.{Map => JMap}
 import org.stringtemplate.v4.misc.STMessage
 import org.stringtemplate.v4.{NoIndentWriter, ST, STErrorListener, STRawGroupDir}
 
-import collection.concurrent.TrieMap
-
 /**
  * Page template writer.
  */
