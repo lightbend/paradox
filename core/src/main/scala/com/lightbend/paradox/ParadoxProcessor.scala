@@ -243,7 +243,7 @@ class ParadoxProcessor(
             .statusMessage()} on external link, location redirected to is [${response.header("Location")}]")
       } else if (response.statusCode() != 200) {
         close()
-        reportError(s"Error validating external link, status was ${response.statusCode()} ${response.statusMessage()}")
+        reportError(s"Error validating external link ${capturedLink.link}, status was ${response.statusCode()} ${response.statusMessage()}")
       } else {
         if (capturedLink.hasFragments) {
           validateFragments(url, response.parse(), capturedLink.fragments, errorContext)
