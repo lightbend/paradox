@@ -18,7 +18,7 @@ addSbtPlugin("org.scalameta"         % "sbt-scalafmt"                       % "2
 addSbtPlugin("de.heikoseeberger"     % "sbt-header"                         % "5.10.0")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.10.7")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "3.0.1")
-addSbtPlugin("com.github.sbt"        % "sbt-github-actions"                 % "0.23.0")
+addSbtPlugin("com.github.sbt"        % "sbt-github-actions"                 % "0.24.0")
 addSbtPlugin("com.github.sbt"        % "sbt-ci-release"                     % "1.5.12")
 
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
@@ -29,7 +29,7 @@ lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
     sbtPlugin    := true,
     scalaVersion := "2.12.19",
-    addSbtPlugin("com.github.sbt" % "sbt-web" % "1.5.5"),
+    addSbtPlugin("com.github.sbt" % "sbt-web" % "1.5.8"),
     Compile / unmanagedSourceDirectories :=
       mirrorScalaSource((ThisBuild / baseDirectory).value.getParentFile / "theme-plugin")
   )
