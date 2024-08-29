@@ -19,7 +19,7 @@ addSbtPlugin("de.heikoseeberger"     % "sbt-header"                         % "5
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox"                        % "0.10.7")
 addSbtPlugin("com.lightbend.paradox" % "sbt-paradox-lightbend-project-info" % "3.0.1")
 addSbtPlugin("com.github.sbt"        % "sbt-github-actions"                 % "0.24.0")
-addSbtPlugin("com.github.sbt"        % "sbt-ci-release"                     % "1.5.12")
+addSbtPlugin("com.github.sbt"        % "sbt-ci-release"                     % "1.6.1")
 
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 
