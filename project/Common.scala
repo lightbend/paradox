@@ -29,7 +29,7 @@ object Common extends AutoPlugin {
   override def requires = plugins.JvmPlugin && HeaderPlugin
 
   override def buildSettings = Seq(
-    scalaVersion := "2.12.19"
+    scalaVersion := "2.12.20"
   )
 
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
