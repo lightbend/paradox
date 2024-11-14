@@ -1,4 +1,4 @@
-Paradox [![scaladex-badge][]][scaladex] [![travis-badge][]][travis]
+Paradox [![scaladex-badge][]][scaladex] [![travis-badge][]][travis] 
 =======
 
 [scaladex]:       https://index.scala-lang.org/lightbend/paradox
