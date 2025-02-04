@@ -203,9 +203,9 @@ object ParadoxPlugin extends AutoPlugin {
       sourceDirectories in paradoxTemplate,
       includeFilter in paradoxTemplate,
       excludeFilter in paradoxTemplate
-    ) dependsOn {
+    ) dependsOn
       paradoxThemeDirectory // trigger theme extraction first
-    }).value,
+    ).value,
     mappings in paradoxTemplate := Defaults
       .relativeMappings(sources in paradoxTemplate, sourceDirectories in paradoxTemplate)
       .value,
@@ -289,10 +289,9 @@ object ParadoxPlugin extends AutoPlugin {
       }
     }.value,
     includeFilter in paradox := AllPassFilter,
-    excludeFilter in paradox := {
+    excludeFilter in paradox :=
       // exclude markdown sources and the _template directory sources
-      (includeFilter in paradoxMarkdownToHtml).value || InDirectoryFilter((sourceDirectory in paradoxTheme).value)
-    },
+      (includeFilter in paradoxMarkdownToHtml).value || InDirectoryFilter((sourceDirectory in paradoxTheme).value),
     sources in paradox := Defaults
       .collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox)
       .value,
