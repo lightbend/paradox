@@ -21,6 +21,5 @@ jobs:
           fetch-depth: 0
 
       - name: Check project is formatted
-        uses: jrouly/scalafmt-native-action@v1
-        with:
-          version: '3.8.3'
+        # https://github.com/jrouly/scalafmt-native-action/releases
+        uses: jrouly/scalafmt-native-action@14620cde093e5ff6bfbbecd4f638370024287b9d # v4
