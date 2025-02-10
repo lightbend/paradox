@@ -148,21 +148,19 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "throw exceptions for non-existing GitHub tree path with label" in {
-    val ex = the[ParadoxException] thrownBy {
+    val ex = the[ParadoxException] thrownBy
       markdown("""
         |@github[oops](does/not/exist.scala) { #broken }
         |""")
-    }
 
     ex.getMessage.startsWith("Failed to resolve [does/not/exist.scala] to a file") shouldBe true
   }
 
   it should "throw exceptions for non-existing GitHub tree path with invalid label" in {
-    val ex = the[ParadoxException] thrownBy {
+    val ex = the[ParadoxException] thrownBy
       markdown("""
         |@github[neither](tests/src/test/scala/com/lightbend/paradox/markdown/example.scala) { #does-not-exist }
         |""")
-    }
 
     ex.getMessage.replace('\\', '/') shouldBe
       "Failed to resolve [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]: Label [does-not-exist] not found in [tests/src/test/scala/com/lightbend/paradox/markdown/example.scala]"

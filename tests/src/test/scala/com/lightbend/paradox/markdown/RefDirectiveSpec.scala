@@ -101,12 +101,11 @@ class RefDirectiveSpec extends MarkdownBaseSpec {
       """.stripMargin) shouldEqual testHtml("""<p>This <a href="pagewithanchors.html#header">Page</a> is linked.</p>""")
   }
 
-  it should "support referenced links with empty key" in {
+  it should "support referenced links with empty key" in
     testMarkdown("""This @ref:[Page][] { .ref a=1 } is linked.
                    |
                    |  [Page]: pagewithanchors.md#header
       """.stripMargin) // shouldEqual testHtml("""<p>This <a href="page.html#header">Page</a> is linked.</p>""")
-  }
 
   it should "support referenced links with defined key" in {
     testMarkdown("""This @ref:[Page][123] { .ref a=1 } is linked.
