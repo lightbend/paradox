@@ -1,12 +1,10 @@
-Paradox [![scaladex-badge][]][scaladex] [![travis-badge][]][travis]
+Paradox [![scaladex-badge][]][scaladex]
 =======
 
 [scaladex]:       https://index.scala-lang.org/lightbend/paradox
 [scaladex-badge]: https://index.scala-lang.org/lightbend/paradox/paradox/latest.svg
-[travis]:                https://travis-ci.com/lightbend/paradox
-[travis-badge]:          https://travis-ci.com/lightbend/paradox.svg?branch=master
 
-Paradox is a markdown documentation tool for software projects. See [Paradox docs](http://developer.lightbend.com/docs/paradox/latest/) for details.
+Paradox is a markdown documentation tool for software projects. See [Paradox docs](https://lightbend.github.io/paradox/) for details.
 
 ## License
 

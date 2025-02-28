@@ -64,7 +64,7 @@ To use this functionality, make `project.url` point to a URL where the **current
 To set a URL different from `homepage`, add `project.url` to Paradox properties
 
 ```scala
-paradoxProperties += ("project.url" -> "https://developer.lightbend.com/docs/paradox/current/")
+paradoxProperties += ("project.url" -> "https://lightbend.github.io/paradox/")
 ```
 
 ## Canonical URL
@@ -74,7 +74,7 @@ The built-in theme (`generic`) will add a `<link rel="canonical" href=...` page 
 To set a URL different from `homepage`, add `canonical.base_url` to Paradox properties
 
 ```scala
-paradoxProperties += ("canonical.base_url" -> "https://developer.lightbend.com/docs/paradox/current/")
+paradoxProperties += ("canonical.base_url" -> "https://lightbend.github.io/paradox/")
 ```
 
 ## HTML description tag
