@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Validation · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/validation.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="js/page.js"></script>
+<script type="text/javascript" src="js/warnOldVersion.js"></script>
+<script type="text/javascript" src="js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="overview.html" class="page">Overview</a></li>
+  <li><a href="getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="configuration.html" class="page">Configuration</a></li>
+  <li><a href="markdown.html" class="page">Markdown</a></li>
+  <li><a href="directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="directives/linking.html" class="page">Linking</a></li>
+    <li><a href="directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="groups.html" class="page">Groups</a></li>
+  <li><a href="customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="customization/templating.html" class="page">Templating</a></li>
+    <li><a href="customization/theming.html" class="page">Theming</a></li>
+    <li><a href="customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="validation.html" class="active page">Validation</a></li>
+  <li><a href="single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="overview.html" class="page">Overview</a></li>
+  <li><a href="getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="configuration.html" class="page">Configuration</a></li>
+  <li><a href="markdown.html" class="page">Markdown</a></li>
+  <li><a href="directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="directives/linking.html" class="page">Linking</a></li>
+    <li><a href="directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="groups.html" class="page">Groups</a></li>
+  <li><a href="customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="customization/templating.html" class="page">Templating</a></li>
+    <li><a href="customization/theming.html" class="page">Theming</a></li>
+    <li><a href="customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="validation.html" class="active page">Validation</a></li>
+  <li><a href="single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="index.html">Paradox</a></li>
+  <li>Validation</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#validation" name="validation" class="anchor"><span class="anchor-link"></span></a>Validation</h1>
+<p>Paradox will validate many directives at compile time, such as ref links and their fragments, and snippets. However, some validation can&rsquo;t be done (or is best not done) at compile time, such as validating external links, or non ref links to other paths in the documentation. Paradox provides two tasks to do this validation.</p><div class="callout note "><div class="callout-title">Note</div>
+<p>Paradox fails for regular markdown links which seem to link to a local markdown file (<code>.md</code>), as the <code>@ref</code> directive is often left out. This check is controlled by the regex in <code>paradoxIllegalLinkPath</code>.</p></div>
+<h2><a href="#validating-internal-links" name="validating-internal-links" class="anchor"><span class="anchor-link"></span></a>Validating internal links</h2>
+<p>The <code>paradoxValidateInternalLinks</code> task can validate internal links that are not validated at compile time. An internal link is any non <code>@ref</code> link that does not specify an authority part of its URI (ie, relative links).</p>
+<p>Paradox uses <code>mappings in paradoxValidateInternalLinks</code> to validate these links, links to any paths that are not in the mappings are flagged as errors. <code>mappings in paradoxValidateInternalLinks</code> defaults to <code>mappings in paradox</code>, this means that any non markdown assets in the Paradox source root (such as images) will be included, along with the output of Paradox compilation itself (that is, all the HTML files). Additional files for validation can be added to either setting, the primary difference is that <code>mappings in paradox</code> is synced by Paradox to the Paradox <code>site</code> target directory when <code>paradox</code> is run, whereas <code>mappings in paradoxValidateInternalLinks</code> is not. Hence, if you are deploying those assets through a different means than taking the output of the Paradox site directory, then they should be added to the latter mappings.</p>
+<h3><a href="#links-outside-of-the-paradox-directory-tree" name="links-outside-of-the-paradox-directory-tree" class="anchor"><span class="anchor-link"></span></a>Links outside of the Paradox directory tree</h3>
+<p>If you wish to validate internal links that are outside of the Paradox directory tree, for example, if your paradox root gets deployed to a directory called <code>/docs</code>, but you want to include links to <code>/apidocs</code> in the validation, this can be done by specifying <code>paradoxValidationSiteBasePath</code>, like so:</p>
+<pre class="prettyprint"><code class="language-scala">paradoxValidationSiteBasePath := Some(&quot;/docs&quot;)
+</code></pre>
+<p>By default, internal links that are outside of the Paradox site directory tree are ignored, setting this setting will cause them to be validated. This will also cause all <code>mappings in paradoxValidateInternalLinks</code> that come from <code>mappings in paradox</code> to have their paths rebased to the site base path. The additional assets can then be added to <code>mappings in paradoxValidateInternalLinks</code>, for example, to add all api docs to it:</p>
+<pre class="prettyprint"><code class="language-scala">mappings in (Compile, paradoxValidateInternalLinks) ++= {
+  val apiDocs = (doc in Compile).value
+  ((apiDocs ** &quot;*&quot;) pair Path.relativeTo(apiDocs)).map {
+    case (file, path) =&gt; file -&gt; s&quot;/apidocs/$path&quot;
+  }
+}
+</code></pre>
+<h2><a href="#validating-external-links" name="validating-external-links" class="anchor"><span class="anchor-link"></span></a>Validating external links</h2>
+<p>External links can be validated by running <code>paradoxValidateLinks</code>. This will validate both internal links and external links, and will check to ensure that all external links return a 200 status code. It is strongly recommended that you do not run <code>paradoxValidateLinks</code> as part of CI, since it will make your CI build dependent on the availability of every site that your documentation links to, and will likely cause PR validation failures completely unrelated to the code being validated. Rather, it can be run manually, periodically, as a convenience to check that there are no dead links.</p>
+<h2><a href="#validating-fragments" name="validating-fragments" class="anchor"><span class="anchor-link"></span></a>Validating fragments</h2>
+<p>If a link contains a fragment, Paradox will validate the fragment by searching for a string that looks like an id tag in the target. For example, the link <code>validation.html#validating-fragments</code> will be considered valid if <code>validation.html</code> contains the string <code>id=&quot;validating-fragments&quot;</code>. This applies to both external and internal links.</p>
+<h2><a href="#ignoring-links" name="ignoring-links" class="anchor"><span class="anchor-link"></span></a>Ignoring links</h2>
+<p>Links can be ignored by validation by specifying regular expressions to match on paths to ignore in <code>paradoxValidationIgnorePaths</code>. This list defaults to <code>http://localhost.*</code>. For example:</p>
+<pre class="prettyprint"><code class="language-scala">paradoxValidationIgnorePaths ++= Seq(
+  // Don&#39;t validate any links to example.com
+  &quot;https://example\\.com.*&quot;.r,
+  // Ignore all links to versions of the docs other than the latest
+  &quot;/docs/version/(?!latest).*&quot;
+)
+</code></pre>
+<h2><a href="#retrying-links-check" name="retrying-links-check" class="anchor"><span class="anchor-link"></span></a>Retrying links check</h2>
+<p><code>paradoxValidateLinksRetryCount</code> setting allows retrying link check for the provided number of times in case linked server does not reply, or returns a possibly temporary failure response code (500, 502, 503 or 504).</p>
+<pre class="prettyprint"><code class="language-scala">paradoxValidateLinksRetryCount := 3 // retries link check 3 times in case of non 200 response code
+</code></pre>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/validation.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="single.html">Single page HTML/PDF output</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="validation.html#validation" class="header">Validation</a>
+  <ul>
+    <li><a href="validation.html#validating-internal-links" class="header">Validating internal links</a></li>
+    <li><a href="validation.html#validating-external-links" class="header">Validating external links</a></li>
+    <li><a href="validation.html#validating-fragments" class="header">Validating fragments</a></li>
+    <li><a href="validation.html#ignoring-links" class="header">Ignoring links</a></li>
+    <li><a href="validation.html#retrying-links-check" class="header">Retrying links check</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="js/magellan.js"></script>
+
+<style type="text/css">@import "lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>

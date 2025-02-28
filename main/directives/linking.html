@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Linking · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/directives/linking.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../js/page.js"></script>
+<script type="text/javascript" src="../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="active page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="active page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../index.html">Paradox</a></li>
+  <li><a href="../directives/index.html">Directives</a></li>
+  <li>Linking</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h2><a href="#linking" name="linking" class="anchor"><span class="anchor-link"></span></a>Linking</h2>
+<h4><a href="#external-links" name="external-links" class="anchor"><span class="anchor-link"></span></a>External links</h4>
+<p>External links can be created with the default markdown syntax <code>[text](url)</code>. Additionally Paradox introduces <code>@link:</code> which accepts the <code>open=new</code> attribute to make the link open in a new browser tab (it adds <code>target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;</code> to the anchor tag), and the <code>title</code> attribute to be used on the <code>a</code> tag.</p>
+<pre><code>See the @link:[Paradox GitHub repo](https://github.com/lightbend/paradox) { open=new } for more information.
+</code></pre>
+<h4><a href="#ref-link" name="ref-link" class="anchor"><span class="anchor-link"></span></a>@ref link</h4>
+<p>Paradox extensions are designed so the resulting Markdown is Github friendly. For example, you might want to link from one document to the other, let&rsquo;s say from <code>index.md</code> to <code>setup/index.md</code>.</p>
+<pre><code>See @ref:[Setup](setup/index.md) for more information.
+</code></pre>
+<p>This will render to be <code>setup/index.html</code> in the HTML, but the source on Github will link correct as well!</p>
+<h3><a href="#parameterized-links" name="parameterized-links" class="anchor"><span class="anchor-link"></span></a>Parameterized links</h3>
+<p>Parameterized link directives help to manage links that references external documentation, such as API documentation or source code. The directives are configured via base URLs defined in <code>paradoxProperties</code>:</p>
+<pre class="prettyprint"><code class="language-sbt">paradoxProperties in Compile ++= Map(
+  &quot;github.base_url&quot; -&gt; s&quot;https://github.com/lightbend/paradox/tree/${version.value}&quot;,
+  &quot;scaladoc.akka.base_url&quot; -&gt; s&quot;http://doc.akka.io/api/${Dependencies.akkaVersion}&quot;,
+  &quot;extref.rfc.base_url&quot; -&gt; &quot;http://tools.ietf.org/html/rfc%s&quot;
+)
+</code></pre>
+<p>After which the directives can be used as follows:</p>
+<pre><code>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL
+NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,  &quot;MAY&quot;, and
+&quot;OPTIONAL&quot; in this document are to be interpreted as
+described in @extref[RFC 2119](rfc:2119).
+
+...
+
+Use a @scaladoc[Future](scala.concurrent.Future) to avoid that long
+running operations block the @scaladoc[Actor](akka.actor.Actor).
+
+...
+
+Issue @github[#1](#1) was fixed in commit @github[83986f9](83986f9).
+See @github[example](/src/test/scala/ServerSetup.scala) { #ssl-setup } for more info.
+</code></pre>
+<p><em>NOTE</em>: Only use these directives if standard Markdown and <code>@ref</code> does not work, since GitHub won&rsquo;t preview them correctly.</p>
+<h4><a href="#scaladoc-directive" name="scaladoc-directive" class="anchor"><span class="anchor-link"></span></a>@scaladoc directive</h4>
+<p>Use the <code>@scaladoc</code> directives to link to Scaladoc sites based on the package prefix. Scaladoc URL mappings can be configured via the properties <code>scaladoc.&lt;package-prefix&gt;.base_url</code> and the default <code>scaladoc.base_url</code>. The directive will match the link text with the longest common package prefix and use the default base URL as a fall-back if nothing else matches.</p>
+<p>For example, given:</p>
+<ul>
+  <li><code>scaladoc.akka.base_url=http://doc.akka.io/api/akka/2.4.10</code></li>
+  <li><code>scaladoc.akka.http.base_url=http://doc.akka.io/api/akka-http/10.0.0</code></li>
+</ul>
+<p>Then <code>@scaladoc[Http](akka.http.scaladsl.Http$)</code> will resolve to <a href="http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html">http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/Http$.html</a>. To link to a package page append <code>.index</code> for Scala 2.12 and <code>.package</code> for Scaladoc generated with versions earlier than 2.12, for example <code>@scaladoc[scaladsl
+package](akka.http.scaladsl.index)</code> will resolve to <a href="http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/index.html">http://doc.akka.io/api/akka-http/10.0.0/akka/http/scaladsl/index.html</a>.</p>
+<p>By default, <code>scaladoc.scala.base_url</code> is configured to the Scaladoc associated with the configured <code>scalaVersion</code>. If the sbt project&rsquo;s <code>apiURL</code> setting is configured, it is used as the default Scaladoc base URL.</p>
+<p>The <code>@scaladoc</code> directive also supports site root relative base URLs using the <code>.../</code> syntax.</p>
+<p>The directive will identify inner classes and resolve a reference like <code>@scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)</code> to <a href="https://doc.akka.io/api/alpakka-kafka/current/akka/kafka/scaladsl/Consumer$$Control.html">https://doc.akka.io/api/alpakka-kafka/current/akka/kafka/scaladsl/Consumer$$Control.html</a>. This is working fine as long as all (sub)package names are starting with a lowercase character while class names start with an uppercase character &ndash; which is most often the case.</p>
+<p>In a situation where a (sub)package name starts with an uppercase character the reference is resolved incorrectly. This can be fixed by configuring the properties <code>scaladoc.&lt;package-prefix&gt;.package_name_style</code> or the default <code>scaladoc.package_name_style</code> and set it to <code>startWithAnycase</code>. The directive will match the link text with the longest common package prefix and use the default style as a fall-back if nothing else matches. Keep in mind that the <code>OuterClass.InnerClass</code> notation is no longer working then and has to be replaced by <code>OuterClass$$InnerClass</code>.</p>
+<p>For example, given:</p>
+<pre class="prettyprint"><code class="language-sbt">paradoxProperties in Compile ++= Map(
+  //...
+  &quot;scaladoc.com.example.package_name_style&quot; -&gt; s&quot;startWithAnycase&quot;
+)
+</code></pre>
+<pre class="prettyprint"><code class="language-markdown"> @scaladoc[SomeClass](com.example.Some.Library.SomeClass)
+ @scaladoc[Outer.Inner](com.example.Some.Library.Outer$$Inner)
+ @scaladoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)
+</code></pre>
+<p>Then all are being resolved to the correct URL.</p>
+<h4><a href="#javadoc-directive" name="javadoc-directive" class="anchor"><span class="anchor-link"></span></a>@javadoc directive</h4>
+<p>Use the <code>@javadoc</code> directives to link to Javadoc sites based on the package prefix. Javadoc URL mappings can be configured via the properties <code>javadoc.&lt;package-prefix&gt;.base_url</code> and the default <code>javadoc.base_url</code>. The directive will match the link text with the longest common package prefix and use the default base URL as a fall-back if nothing else matches.</p>
+<p>For example, given:</p>
+<pre><code>javadoc.akka.base_url=http://doc.akka.io/japi/akka/2.4.10
+javadoc.akka.link_style=frames
+javadoc.akka.http.base_url=http://doc.akka.io/japi/akka-http/10.0.0
+javadoc.akka.http.link_style=frames
+</code></pre>
+<p>Then <code>@javadoc[Http](akka.http.javadsl.Http#shutdownAllConnectionPools--)</code> will resolve to <a href="http://doc.akka.io/japi/akka-http/10.0.0/?akka/http/javadsl/Http.html#shutdownAllConnectionPools--">http://doc.akka.io/japi/akka-http/10.0.0/?akka/http/javadsl/Http.html#shutdownAllConnectionPools--</a>.</p>
+<p>Since Java 9 the API documentation from Javadoc doesn&rsquo;t use frames anymore. Links to classes need to include the class as part of the URI. To choose the link style for the Javadoc-generated API to link to, set the <code>javadoc.&lt;package&gt;.link_style</code> to <code>direct</code>.</p>
+<p>The root default, <code>javadoc.base_url</code> is configured to be <code>frames</code> (Javadoc &lt; 9 style).</p>
+<p>By default, <code>javadoc.java.base_url</code> is configured to the Javadoc associated with the <code>java.specification.version</code> system property.</p>
+<p>The <code>@javadoc</code> directive also supports site root relative base URLs using the <code>.../</code> syntax.</p>
+<p>The directive will identify inner classes and resolve a reference like <code>@javadoc[Flow.Subscriber](java.util.concurrent.Flow.Subscriber)</code> to <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html">https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html</a>. This is working fine as long as all (sub)package names are starting with a lowercase character while class names start with an uppercase character &ndash; which is most often the case.</p>
+<p>In a situation where a (sub)package name starts with an uppercase character the reference is resolved incorrectly. This can be fixed by configuring the properties <code>javadoc.&lt;package-prefix&gt;.package_name_style</code> or the default <code>javadoc.package_name_style</code> and set it to <code>startWithAnycase</code>. The directive will match the link text with the longest common package prefix and use the default style as a fall-back if nothing else matches. Keep in mind that the <code>OuterClass.InnerClass</code> notation is no longer working then. In this case the class has to be referenced as <code>OuterClass$$InnerClass</code> which is being resolved back to the <code>.</code>-notation.</p>
+<p>For example, given:</p>
+<pre class="prettyprint"><code class="language-sbt">paradoxProperties in Compile ++= Map(
+  //...
+  &quot;javadoc.com.example.package_name_style&quot; -&gt; s&quot;startWithAnycase&quot;
+)
+</code></pre>
+<pre class="prettyprint"><code class="language-markdown"> @javadoc[SomeClass](com.example.Some.Library.SomeClass)
+ @javadoc[Outer.Inner](com.example.Some.Library.Outer$$Inner)
+ @javadoc[outer.Inner](com.example.Some.Library.outer$$Inner)
+ @javadoc[Outer.inner](com.example.Some.Library.Outer$$inner)
+ @javadoc[Consumer.Control](akka.kafka.scaladsl.Consumer.Control)
+</code></pre>
+<p>Then all are being resolved to the correct URL.</p>
+<h4><a href="#github-directive" name="github-directive" class="anchor"><span class="anchor-link"></span></a>@github directive</h4>
+<p>Use the <code>@github</code> directive to link to GitHub issues, commits and files. It supports most of <a href="https://help.github.com/articles/autolinked-references-and-urls/">GitHub&rsquo;s autolinking syntax</a>.</p>
+<p>The <code>github.base_url</code> property must be configured to use shorthands such as <code>#1</code>. To link to a directory or file in a specific version, set the base URL to a tree revision, for example: <a href="https://github.com/lightbend/paradox/tree/v0.2.1">https://github.com/lightbend/paradox/tree/v0.2.1</a>.</p>
+<p>If the sbt project&rsquo;s <code>scmInfo</code> setting is configured and the <code>browseUrl</code> points to a GitHub project, it is used as the GitHub base URL. Note that this behaviour only occurs if <code>github.base_url</code> is not set so you still have the option to define <code>github.base_url</code> if this is not desirable.</p>
+<p>Relative as well as absolute file and directory paths use the value of the <code>github.root.base_dir</code> property to resolve the absolute project path. The sbt plugin automatically sets this property to the absolute path of the root project.</p>
+<p>Links to a specific line or line range in a file can use snippet labels to ensure that line numbers are up-to-date. Example:</p>
+<pre class="prettyprint"><code class="language-markdown">@github[../../resources/build.sbt] { #setup_example }
+</code></pre>
+<h4><a href="#extref-directive" name="extref-directive" class="anchor"><span class="anchor-link"></span></a>@extref directive</h4>
+<p>Use the <code>@extref</code> directive to link to pages using custom URL templates. URL templates can be configured via <code>extref.&lt;scheme&gt;.base_url</code> and the template may contain one <code>%s</code> which is replaced with the scheme specific part of the link URL. For example, given the property:</p>
+<pre class="prettyprint"><code class="nocode">extref.rfc.base_url=http://tools.ietf.org/html/rfc%s
+</code></pre>
+<p>then <code>@extref[RFC 2119](rfc:2119)</code> will resolve to the URL <a href="http://tools.ietf.org/html/rfc2119">http://tools.ietf.org/html/rfc2119</a>.</p>
+<p>The <code>@extref</code> directive also supports site root relative base URLs using the <code>.../</code> syntax.</p>
+<h4><a href="#image-base-url" name="image-base-url" class="anchor"><span class="anchor-link"></span></a>image.base_url</h4>
+<p>When placing images via the standard markdown image syntax you can refer to a configured base URL by starting the image href with <code>.../</code>, e.g. like this:</p>
+<pre><code>![logo](.../logo.png)
+</code></pre>
+<p>The <code>...</code> prefix refers to a defined a <code>image.base_url</code> property that is specified either in the page&rsquo;s front matter or globally like this (for example):</p>
+<pre class="prettyprint"><code class="language-sbt">paradoxProperties in Compile ++= Map(&quot;image.base_url&quot; -&gt; &quot;.../assets/images&quot;)
+</code></pre>
+<p>If the image base URL itself starts with three dots (<code>...</code>) then these in turn refer to the root URL of the site.</p>
+<p><strong>Note</strong>: Using this feature will not allow GitHub to preview the images correctly on the web.</p>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/directives/linking.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../directives/dependencies.html">Library dependencies</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../directives/linking.html#linking" class="header">Linking</a>
+  <ul>
+    <li><a href="../directives/linking.html#external-links" class="header">External links</a></li>
+    <li><a href="../directives/linking.html#ref-link" class="header">@ref link</a></li>
+    <li><a href="../directives/linking.html#parameterized-links" class="header">Parameterized links</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../js/magellan.js"></script>
+
+<style type="text/css">@import "../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>

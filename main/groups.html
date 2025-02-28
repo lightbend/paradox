@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Groups · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/groups.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="js/page.js"></script>
+<script type="text/javascript" src="js/warnOldVersion.js"></script>
+<script type="text/javascript" src="js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="overview.html" class="page">Overview</a></li>
+  <li><a href="getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="configuration.html" class="page">Configuration</a></li>
+  <li><a href="markdown.html" class="page">Markdown</a></li>
+  <li><a href="directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="directives/linking.html" class="page">Linking</a></li>
+    <li><a href="directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="groups.html" class="active page">Groups</a></li>
+  <li><a href="customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="customization/templating.html" class="page">Templating</a></li>
+    <li><a href="customization/theming.html" class="page">Theming</a></li>
+    <li><a href="customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="validation.html" class="page">Validation</a></li>
+  <li><a href="single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="overview.html" class="page">Overview</a></li>
+  <li><a href="getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="configuration.html" class="page">Configuration</a></li>
+  <li><a href="markdown.html" class="page">Markdown</a></li>
+  <li><a href="directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="directives/linking.html" class="page">Linking</a></li>
+    <li><a href="directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="groups.html" class="active page">Groups</a></li>
+  <li><a href="customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="customization/templating.html" class="page">Templating</a></li>
+    <li><a href="customization/theming.html" class="page">Theming</a></li>
+    <li><a href="customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="validation.html" class="page">Validation</a></li>
+  <li><a href="single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="index.html">Paradox</a></li>
+  <li>Groups</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#groups" name="groups" class="anchor"><span class="anchor-link"></span></a>Groups</h1>
+<p>Paradox supports &lsquo;groups&rsquo; which allow users to easily switch between different variants of the documentation.</p>
+<h2><a href="#configuration" name="configuration" class="anchor"><span class="anchor-link"></span></a>Configuration</h2>
+<p>Groups must be configured through sbt:</p>
+<pre><code>.enablePlugins(NoPublish, ParadoxPlugin)
+  .settings(
+    name := &quot;paradox docs&quot;,
+    paradoxTheme := Some(builtinParadoxTheme(&quot;generic&quot;)),
+    paradoxGroups := Map(&quot;Language&quot; -&gt; Seq(&quot;Scala&quot;, &quot;Java&quot;))
+  )
+</code></pre>
+<h2><a href="#syntax" name="syntax" class="anchor"><span class="anchor-link"></span></a>Syntax</h2>
+<h3><a href="#tabs" name="tabs" class="anchor"><span class="anchor-link"></span></a>Tabs</h3>
+<p>Groups are used for tabs, where the group is determined by the tab name:</p>
+<pre class="prettyprint"><code class="language-markdown">Java
+:   @@snip [example-first.java](/docs/src/main/resources/tab-switching/examples.java) { #java_first }
+
+Scala
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first }
+</code></pre>
+<dl>
+  <dt>Java</dt>
+  <dd>
+  <pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/tab-switching/examples.java#L18-L22" target="_blank" title="Go to snippet source">source</a><code class="language-java">class JavaFirst {
+  public static void main(String[] args) {
+    System.out.println(&quot;Hello java!&quot;);
+  }
+}</code></pre></dd>
+  <dt>Scala</dt>
+  <dd>
+  <pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/tab-switching/examples.scala#L18-L20" target="_blank" title="Go to snippet source">source</a><code class="language-scala">object ScalaFirst extends App {
+  println(&quot;Hello scala!&quot;)
+}</code></pre></dd>
+</dl>
+<p>or by the group parameter on the snippet:</p>
+<pre class="prettyprint"><code class="language-markdown">example-first.java
+:   @@snip [example-first.java](../../resources/tab-switching/examples.java) { #java_first group=java }
+
+example-first.scala
+:   @@snip [example-first.scala](/docs/src/main/resources/tab-switching/examples.scala) { #scala_first group=scala }
+</code></pre>
+<dl>
+  <dt>example-first.java
+  </dt>
+  <dd>
+  <pre class="prettyprint group-java"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/tab-switching/examples.java#L18-L22" target="_blank" title="Go to snippet source">source</a><code class="language-java">class JavaFirst {
+  public static void main(String[] args) {
+    System.out.println(&quot;Hello java!&quot;);
+  }
+}</code></pre></dd>
+  <dt>example-first.scala
+  </dt>
+  <dd>
+  <pre class="prettyprint group-scala"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/tab-switching/examples.scala#L18-L20" target="_blank" title="Go to snippet source">source</a><code class="language-scala">object ScalaFirst extends App {
+  println(&quot;Hello scala!&quot;)
+}</code></pre></dd>
+</dl>
+<p>But tabs not associated with groups are left alone:</p>
+<dl>
+  <dt>sbt</dt>
+  <dd>
+  <pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/build.sbt#L4" target="_blank" title="Go to snippet source">source</a><code class="language-sbt">libraryDependencies += &quot;com.lightbend.akka&quot; %% &quot;akka-stream-alpakka-cassandra&quot; % &quot;0.3&quot;</code></pre></dd>
+  <dt>Maven</dt>
+  <dd>
+  <pre class="prettyprint"><button class="snippet-button copy-snippet" title="Copy snippet to clipboard">copy</button><a class="snippet-button go-to-source" href="https://github.com/lightbend/paradox/tree/master/docs/src/main/resources/pom.xml#L10-L14" target="_blank" title="Go to snippet source">source</a><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;com.lightbend.akka&lt;/groupId&gt;
+  &lt;artifactId&gt;akka-stream-alpakka-cassandra_2.11&lt;/artifactId&gt;
+  &lt;version&gt;0.3&lt;/version&gt;
+&lt;/dependency&gt;</code></pre></dd>
+  <dt>Gradle</dt>
+  <dd>Non-snippet tab body</dd>
+</dl>
+<h3><a href="#inline" name="inline" class="anchor"><span class="anchor-link"></span></a>Inline</h3>
+<p>For each group a directive is automatically created. This can be used for switching inline text:</p>
+<pre><code>Text describing the @java[Java variant]@scala[Scala variant containing ***markdown*** and @ref:[Linking](linking.md)].
+</code></pre>
+<p>Text describing the <span class="group-java">Java variant</span><span class="group-scala">Scala variant containing <strong><em>markdown</em></strong> and <a href="directives/linking.html">Linking</a></span>.</p>
+<h3><a href="#directives" name="directives" class="anchor"><span class="anchor-link"></span></a>Directives</h3>
+<p>You can also use groups with directives such as <a href="directives/css-friendliness.html#div"><code>@@@div</code></a> and <a href="directives/callouts.html#note-callout"><code>@@@note</code></a> as follows:</p>
+<pre><code>@@@ div { .group-scala }
+
+This only shows up when the `group` is &quot;scala&quot;
+
+@@@
+
+@@@ note { .group-java }
+
+This only shows up when the `group` is &quot;java&quot;
+
+@@@
+</code></pre><div class="group-scala">
+<p>This only shows up when the <code>group</code> is &ldquo;scala&rdquo;</p></div><div class="callout note group-java"><div class="callout-title">Note</div>
+<p>This only shows up when the <code>group</code> is &ldquo;java&rdquo;</p></div>
+<h2><a href="#behavior" name="behavior" class="anchor"><span class="anchor-link"></span></a>Behavior</h2>
+<p>Switching is currently done in javascript. When the page loads, a script in <code>page.js</code> looks for entities with class <code>supergroup</code> and derives the groups catalog from that. If you use a custom theme, use <code>$page.groups$</code> to generate the catalog in javascript.</p>
+<p>The currently selected group for each category is stored in a cookie.</p>
+<h2><a href="#extending" name="extending" class="anchor"><span class="anchor-link"></span></a>Extending</h2>
+<p>You can register an event listener that will be called whenever a group is switched:</p>
+<pre><code>window.groupChanged(function(group, supergroup, catalog) {
+  // your code here
+});
+</code></pre>
+<h2><a href="#linking" name="linking" class="anchor"><span class="anchor-link"></span></a>Linking</h2>
+<p>The current group is typically determined by the order in which is was defined, or the previously-selected group as stored in a cookie. It is also possible to specify the desired group as a query parameter, so you can link to <a href="?language=java">this page with Java selected</a> or <a href="?language=scala">this page with Scala selected</a>.</p>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/groups.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="customization/index.html">Customization</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="groups.html#groups" class="header">Groups</a>
+  <ul>
+    <li><a href="groups.html#configuration" class="header">Configuration</a></li>
+    <li><a href="groups.html#syntax" class="header">Syntax</a></li>
+    <li><a href="groups.html#behavior" class="header">Behavior</a></li>
+    <li><a href="groups.html#extending" class="header">Extending</a></li>
+    <li><a href="groups.html#linking" class="header">Linking</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="js/magellan.js"></script>
+
+<style type="text/css">@import "lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>

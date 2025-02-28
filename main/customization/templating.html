@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Templating · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/customization/templating.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../js/page.js"></script>
+<script type="text/javascript" src="../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="active page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="active page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../index.html">Paradox</a></li>
+  <li><a href="../customization/index.html">Customization</a></li>
+  <li>Templating</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#templating" name="templating" class="anchor"><span class="anchor-link"></span></a>Templating</h1>
+<p>Paradox uses <a href="http://www.stringtemplate.org/">StringTemplate</a> for the basic templating, i.e. for creating full HTML documents from documentation content generated from markdown. A set of templates of assets that comprises all that is needed for a full documentation page, is called a <a href="theming.html">theme</a>. There&rsquo;s a default theme that is used if nothing else was specified.</p>
+<p>String Templates are text files that include placeholders where property values are to be inserted during generation</p>
+<h2><a href="#properties" name="properties" class="anchor"><span class="anchor-link"></span></a>Properties</h2>
+<p>Here is a list of supported properties that can be used in the string template files:</p>
+<ul>
+  <li><code>$page.title$</code> : display the title of the page which corresponds to the first header on a page.</li>
+  <li><code>$page.content$</code> : display the processed content of your entire markdown source file.</li>
+  <li><code>$page.base$</code> : display the relative path to the root folder of the project.</li>
+  <li><code>$page.home$</code>, <code>$page.prev$</code>, <code>$page.next$</code> : gives references to specified &ldquo;links&rdquo;. <code>home</code> corresponds to the root page of the project, <code>next</code> is the next page, and <code>prev</code> the previous one in the paradox navigation.  Each &ldquo;link&rdquo; can provide four fields:</li>
+  <li><code>href</code> : displays the relative path.</li>
+  <li><code>html</code> : gives directly the url leading to this link.</li>
+  <li><code>title</code> : displays the title of the link (same process than <code>$page.title$</code>)  - <code>active</code> : determines if the link is currently active or not. Particularly useful if we want to check whether we are on the main page or not: <code>$if(page.home.active)$</code></li>
+  <li><code>$page.breadcrumbs$</code> : gives the list of the parent folder of the current page and each parent is displayed as a link.</li>
+  <li><code>$page.navigation$</code> : gives the links of all pages in the project (except the main page).</li>
+  <li><code>$page.subheaders$</code> : determines if the current page contains subheaders or not, which concretely means that it contains multiple sections depending on the `toc-.</li>
+  <li><code>$page.toc$</code> : in relation with <code>$page.subheaders$</code>, displays the list of all sections on the page as anchor links.</li>
+  <li><code>$page.source_url$</code> : contains the plain text of the github source url of the current page. Works only if the associated <code>github.base_url</code> is defined (see <a href="../directives/linking.html#github-directive">github directive</a> for additional information). If this property is not defined, this field returns a null value; then a condition testing like <code>$if(page.source_url)$</code> would be necessary in this case.</li>
+  <li><code>$page.properties$</code>: displays purely the list of the properties for the current page, which contains the actual properties of the page and the global ones shared to all pages. See next sections to figure out how to deal with properties.</li>
+</ul>
+<h3><a href="#custom-properties" name="custom-properties" class="anchor"><span class="anchor-link"></span></a>Custom properties</h3>
+<p>Properties are key-value pairs available in your pages. For a property named <code>foo</code>:</p>
+<ul>
+  <li>Inside template files use <code>$page.properties.(&quot;foo&quot;)</code> or <code>$foo$</code> if the template&rsquo;s name does not contain dots.</li>
+  <li>Inside markdown files use either <code>$foo$</code> inline.</li>
+  <li>Inside markdown file container blocks delimited by ``` use <code>@@@vars</code> around the block and <code>$foo$</code> to call the property.</li>
+</ul>
+<p>The special <code>$</code> character can always be escaped with a back slash, i.e. <code>\$</code>.</p>
+<p>To add properties to your pages, there exists two ways for doing this:</p>
+<ul>
+  <li>To add properties to the entire document, common to all pages, you can add them in your build: <code>paradoxProperties += (&quot;foo&quot; -&gt; &quot;bar&quot;)</code></li>
+  <li>To add properties at page level, use Properties front matter (next section)</li>
+</ul>
+<h3><a href="#conditionals" name="conditionals" class="anchor"><span class="anchor-link"></span></a>Conditionals</h3>
+<p>It is possible to conditionally include a section based on a boolean expression:</p>
+<pre><code>$if(page.next.html)$
+&lt;div class=&quot;nav-next&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Next:&lt;/strong&gt; $page.next.html$&lt;/p&gt;
+&lt;/div&gt;
+$endif$
+</code></pre>
+<p>The <code>property_is</code> page property can be used to check whether a property has a certain value:</p>
+<pre><code>$if(page.property_is.(&quot;project.license&quot;).(&quot;Apache-2.0&quot;))$
+&lt;section class=&quot;copyright&quot;&gt;
+&lt;div&gt;$page.properties.(&quot;project.name&quot;)$ is Open Source and available under the Apache 2 License.&lt;/div&gt;
+$endif$
+</code></pre>
+<h3><a href="#properties-front-matter" name="properties-front-matter" class="anchor"><span class="anchor-link"></span></a>Properties front matter</h3>
+<p>Paradox allows to specify some properties at page level using <code>---</code> delimiters at the top of the page.</p>
+<h4><a href="#out" name="out" class="anchor"><span class="anchor-link"></span></a>out</h4>
+<p>The <code>out</code> property allows to rename the target name of the current file.</p>
+<pre class="prettyprint"><code class="language-markdown">---
+out: newIndex.html
+---
+/*
+ * Content of the page
+ */
+</code></pre>
+<p>where <code>newIndex.html</code> will be the new name of the generated file. Links leading to this page are automatically updated.</p>
+<h4><a href="#layout" name="layout" class="anchor"><span class="anchor-link"></span></a>layout</h4>
+<p>The layout of the page is determined by default by a template called <code>page.st</code>. Using layout property, we can change the layout template to something else for this particular page. The layouts are generated by default in paradox in the <code>target/paradox/theme</code> folder, but you can create one in <code>src/main/paradox/_template</code> folder as a string template file (.st).</p>
+<pre class="prettyprint"><code class="language-markdown">---
+layout: templateName
+---
+/*
+ * Content of the page
+ */
+</code></pre>
+<p>where <code>templateName</code> is the name of a template, more precisely the <code>templateName.st</code> file, which could either be a predefined template, or a created one in the <code>src/main/paradox/_template</code> folder. The default templates generated by paradox depends on the theme used, see <a href="theming.html">this</a> for more info about themes.</p>
+<p>If you want to set a new default template page, let&rsquo;s say <code>myDefault.st</code> for all your pages, you can set it by specifying the layout in <code>build.sbt</code>:</p>
+<pre class="prettyprint"><code class="language-scala">  paradoxProperties += (&quot;layout&quot; -&gt; &quot;myDefault.st&quot;)
+</code></pre>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/customization/templating.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../customization/theming.html">Theming</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../customization/templating.html#templating" class="header">Templating</a>
+  <ul>
+    <li><a href="../customization/templating.html#properties" class="header">Properties</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../js/magellan.js"></script>
+
+<style type="text/css">@import "../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>

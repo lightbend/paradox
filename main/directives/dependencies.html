@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Library dependencies · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/directives/dependencies.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../js/page.js"></script>
+<script type="text/javascript" src="../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="active page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="active page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../index.html">Paradox</a></li>
+  <li><a href="../directives/index.html">Directives</a></li>
+  <li>Library dependencies</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h2><a href="#library-dependencies" name="library-dependencies" class="anchor"><span class="anchor-link"></span></a>Library dependencies</h2>
+<p>The <code>@@dependency</code> block is used to show example code for how to configure a dependency on a library in a build tool, such as sbt.</p>
+<pre class="prettyprint"><code class="language-markdown">@@dependency[sbt,Maven,Gradle] {
+  group=&quot;com.typesafe.akka&quot;
+  artifact=&quot;akka-http_2.12&quot;
+  version=&quot;10.0.10&quot;
+}
+</code></pre>
+<p>Which will render as:</p><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies += "com.typesafe.akka" %% "akka-http" % "10.0.10"</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependencies&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-http_2.12&lt;/artifactId&gt;
+    &lt;version&gt;10.0.10&lt;/version&gt;
+  &lt;/dependency&gt
+&lt;/dependencies&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  implementation "com.typesafe.akka:akka-http_2.12:10.0.10"
+}</code></pre></dd></dl>
+<p>The build tools for which to show a configuration snippet can be configured in the directive content. Recognized build tools are: sbt, Maven and Gradle. Each build tool snippet will be shown in a separate tab.</p>
+<p>The library coordinates are defined via the <code>group</code>, <code>artifact</code> and <code>version</code> attributes. Optionally, <code>scope</code> and <code>classifier</code> attributes can also be defined if needed. Variables may be used inside attributes, for example <code>$project.version$</code>.</p>
+<pre class="prettyprint"><code class="language-scala">@@dependency[sbt,Maven,Gradle] {
+  group=&quot;com.example&quot;
+  artifact=&quot;domain&quot;
+  version=&quot;0.1.0&quot;
+  scope=&quot;runtime&quot;
+  classifier=&quot;assets&quot;
+}
+</code></pre>
+<p>Which will render as:</p><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies += "com.example" % "domain" % "0.1.0" % Runtime classifier "assets"</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependencies&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;domain&lt;/artifactId&gt;
+    &lt;version&gt;0.1.0&lt;/version&gt;
+    &lt;classifier&gt;assets&lt;/classifier&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+  &lt;/dependency&gt
+&lt;/dependencies&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  runtime "com.example:domain:0.1.0:assets"
+}</code></pre></dd></dl>
+<h2><a href="#multiple-dependencies" name="multiple-dependencies" class="anchor"><span class="anchor-link"></span></a>Multiple dependencies</h2>
+<p>It is also possible to render more than one dependency in a list. In that case library coordinates need to be appended with the same suffix. For example</p>
+<pre class="prettyprint"><code class="language-scala">@@dependency[sbt,Maven,Gradle] {
+  group=&quot;com.example&quot; artifact=&quot;domain&quot; version=&quot;0.1.0&quot;
+  group2=&quot;com.example&quot; artifact2=&quot;another-domain&quot; version2=&quot;0.2.1&quot;
+}
+</code></pre>
+<p>will be rendered as:</p><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">libraryDependencies ++= Seq(
+  "com.example" % "domain" % "0.1.0",
+  "com.example" % "another-domain" % "0.2.1"
+)</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;dependencies&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;domain&lt;/artifactId&gt;
+    &lt;version&gt;0.1.0&lt;/version&gt;
+  &lt;/dependency&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;another-domain&lt;/artifactId&gt;
+    &lt;version&gt;0.2.1&lt;/version&gt;
+  &lt;/dependency&gt
+&lt;/dependencies&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">dependencies {
+  implementation "com.example:domain:0.1.0"
+  implementation "com.example:another-domain:0.2.1"
+}</code></pre></dd></dl>
+<h2><a href="#symbolic-version-numbers" name="symbolic-version-numbers" class="anchor"><span class="anchor-link"></span></a>Symbolic version numbers</h2>
+<p>When multiple dependencies always use the same version, symbolic version names can be shown. For example</p>
+<pre class="prettyprint"><code class="language-scala">@@dependency[sbt,Maven,gradle] {
+  symbol=&quot;AkkaVersion&quot;
+  value=&quot;2.5.29&quot;
+  symbol2=&quot;AkkaHttpVersion&quot;
+  value2=&quot;10.1.0&quot;
+  group=&quot;com.typesafe.akka&quot;
+  artifact=&quot;akka-stream_$scala.binary.version$&quot;
+  version=&quot;AkkaVersion&quot;
+  group2=&quot;com.typesafe.akka&quot;
+  artifact2=&quot;akka-actor-typed_$scala.binary.version$&quot;
+  version2=&quot;AkkaVersion&quot;
+  group3=&quot;com.typesafe.akka&quot;
+  artifact3=&quot;akka-http_$scala.binary.version$&quot;
+  version3=&quot;AkkaHttpVersion&quot;
+}
+</code></pre>
+<p>will be rendered as:</p><dl class="dependency"><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">val AkkaVersion = "2.5.29"
+val AkkaHttpVersion = "10.1.0"
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+  "com.typesafe.akka" %% "akka-actor-typed" % AkkaVersion,
+  "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
+)</code></pre></dd><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;properties&gt;
+  &lt;akka.version&gt;2.5.29&lt;/akka.version&gt;
+  &lt;akka.http.version&gt;10.1.0&lt;/akka.http.version&gt;
+  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
+&lt;/properties&gt;
+&lt;dependencies&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-stream_${scala.binary.version}&lt;/artifactId&gt;
+    &lt;version&gt;${akka.version}&lt;/version&gt;
+  &lt;/dependency&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-actor-typed_${scala.binary.version}&lt;/artifactId&gt;
+    &lt;version&gt;${akka.version}&lt;/version&gt;
+  &lt;/dependency&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-http_${scala.binary.version}&lt;/artifactId&gt;
+    &lt;version&gt;${akka.http.version}&lt;/version&gt;
+  &lt;/dependency&gt
+&lt;/dependencies&gt;</code></pre></dd><dt>gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">def versions = [
+  AkkaVersion: "2.5.29",
+  AkkaHttpVersion: "10.1.0",
+  ScalaBinary: "2.12"
+]
+dependencies {
+  implementation "com.typesafe.akka:akka-stream_${versions.ScalaBinary}:${versions.AkkaVersion}"
+  implementation "com.typesafe.akka:akka-actor-typed_${versions.ScalaBinary}:${versions.AkkaVersion}"
+  implementation "com.typesafe.akka:akka-http_${versions.ScalaBinary}:${versions.AkkaHttpVersion}"
+}</code></pre></dd></dl>
+<h2><a href="#bill-of-materials-bom-for-maven-and-gradle" name="bill-of-materials-bom-for-maven-and-gradle" class="anchor"><span class="anchor-link"></span></a>Bill of Materials (BOM) for Maven and Gradle</h2>
+<p>Similar to the symbolic version names above, <a href="http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms">Maven BOMs</a> can point to a BOM which specifies versions for dependencies and frees the local build from setting library versions for those dependencies.</p>
+<p>By specifying a <code>bomGroup</code>, <code>bomArtifact</code> and <code>bomVersionSymbols</code> the Maven and Gradle notations will show the notation to import the BOM and leave out the versions for the libraries using the listed symbols. If the BOM covers multiple different versions, list all symbols separated by commas.</p>
+<p>Note that the notation works just fine for sbt.</p>
+<p>This example (with empty lines for readability)</p>
+<pre><code>@@dependency[Maven,Gradle,sbt] {
+  bomGroup=com.typesafe.akka
+  bomArtifact=akka-with-http-bom_$scala.binary.version$
+  bomVersionSymbols=AkkaVersion,AkkaHttpVersion
+
+  symbol1=AkkaVersion
+  value1=&quot;2.6.13&quot;
+
+  symbol2=&quot;AkkaHttpVersion&quot;
+  value2=&quot;10.2.2&quot;
+
+  group1=&quot;com.typesafe.akka&quot;
+  artifact1=&quot;akka-stream_$scala.binary.version$&quot;
+  version1=&quot;AkkaVersion&quot;
+
+  group2=&quot;com.typesafe.akka&quot;
+  artifact2=&quot;akka-http_$scala.binary.version$&quot;
+  version2=&quot;AkkaHttpVersion&quot;
+}
+</code></pre>
+<p>will be rendered as:</p><dl class="dependency"><dt>Maven</dt><dd><pre class="prettyprint"><code class="language-xml">&lt;properties&gt;
+  &lt;scala.binary.version&gt;2.12&lt;/scala.binary.version&gt;
+&lt;/properties&gt;
+&lt;dependencyManagement&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+      &lt;artifactId&gt;akka-with-http-bom_${scala.binary.version}&lt;/artifactId&gt;
+      &lt;version&gt;2.6.13&lt;/version&gt;
+      &lt;type&gt;pom&lt;/type&gt;
+      &lt;scope&gt;import&lt;/scope&gt;
+    &lt;/dependency&gt
+  &lt;/dependencies&gt;
+&lt;/dependencyManagement&gt;
+&lt;dependencies&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-stream_${scala.binary.version}&lt;/artifactId&gt;
+  &lt;/dependency&gt
+  &lt;dependency&gt;
+    &lt;groupId&gt;com.typesafe.akka&lt;/groupId&gt;
+    &lt;artifactId&gt;akka-http_${scala.binary.version}&lt;/artifactId&gt;
+  &lt;/dependency&gt
+&lt;/dependencies&gt;</code></pre></dd><dt>Gradle</dt><dd><pre class="prettyprint"><code class="language-gradle">def versions = [
+  ScalaBinary: "2.12"
+]
+dependencies {
+  implementation platform("com.typesafe.akka:akka-with-http-bom_${versions.ScalaBinary}:2.6.13")
+
+  implementation "com.typesafe.akka:akka-stream_${versions.ScalaBinary}"
+  implementation "com.typesafe.akka:akka-http_${versions.ScalaBinary}"
+}</code></pre></dd><dt>sbt</dt><dd><pre class="prettyprint"><code class="language-scala">val AkkaVersion = "2.6.13"
+val AkkaHttpVersion = "10.2.2"
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
+  "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion
+)</code></pre></dd></dl>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/directives/dependencies.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../directives/repositories.html">Library repositories</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../directives/dependencies.html#library-dependencies" class="header">Library dependencies</a>
+  <ul>
+    <li><a href="../directives/dependencies.html#multiple-dependencies" class="header">Multiple dependencies</a></li>
+    <li><a href="../directives/dependencies.html#symbolic-version-numbers" class="header">Symbolic version numbers</a></li>
+    <li><a href="../directives/dependencies.html#bill-of-materials-bom-for-maven-and-gradle" class="header">Bill of Materials (BOM) for Maven and Gradle</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../js/magellan.js"></script>
+
+<style type="text/css">@import "../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>

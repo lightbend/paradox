@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+<title>Theming · Paradox</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content='Paradox is a markdown documentation tool for software projects.'/>
+<link rel="canonical" href="https://developer.lightbend.com/docs/paradox/current/customization/theming.html"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100normal,100italic,300normal,300italic,400normal,400italic,500normal,500italic,700normal,700italic,900normal,900italicc" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../js/page.js"></script>
+<script type="text/javascript" src="../js/warnOldVersion.js"></script>
+<script type="text/javascript" src="../js/groups.js"></script>
+<link rel="stylesheet" type="text/css" href="../lib/foundation/dist/foundation.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/page.css"/>
+
+<!--
+<link rel="shortcut icon" href="../images/favicon.ico" />
+-->
+</head>
+
+<body>
+<div class="off-canvas-wrapper">
+<div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+
+<div class="off-canvas position-left" id="off-canvas-menu" data-off-canvas>
+<nav class="off-canvas-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="active page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="off-canvas-content" data-off-canvas-content>
+
+<header class="site-header expanded row">
+<div class="small-12 column">
+<a href="#" class="off-canvas-toggle hide-for-medium" data-toggle="off-canvas-menu"><svg class="svg-icon svg-icon-menu" version="1.1" id="Menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve"> <path class="svg-icon-menu-path" fill="#53CDEC" d="M16.4,9H3.6C3.048,9,3,9.447,3,10c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,9.447,16.952,9,16.4,9z M16.4,13
+H3.6C3.048,13,3,13.447,3,14c0,0.553,0.048,1,0.6,1H16.4c0.552,0,0.6-0.447,0.6-1C17,13.447,16.952,13,16.4,13z M3.6,7H16.4
+C16.952,7,17,6.553,17,6c0-0.553-0.048-1-0.6-1H3.6C3.048,5,3,5.447,3,6C3,6.553,3.048,7,3.6,7z"/></svg>
+</a>
+<div class="title"><a href="../index.html">Paradox</a></div>
+
+<!--
+<a href="https://www.example.com" class="logo show-for-medium">logo</a>
+-->
+</div>
+</header>
+
+<div class="expanded row">
+
+<div class="medium-3 large-2 show-for-medium column">
+<nav class="site-nav">
+<div class="nav-home">
+<a href="../index.html" >
+<span class="home-icon">⌂</span>Paradox
+</a>
+<div class="version-number">
+0.10.7+23-064e6f3f*
+</div>
+</div>
+<select class="supergroup" name="Language"><option class="group" value="group-scala">Scala</option><option class="group" value="group-java">Java</option></select>
+<div class="nav-toc">
+<ul>
+  <li><a href="../overview.html" class="page">Overview</a></li>
+  <li><a href="../getting-started.html" class="page">Getting Started</a></li>
+  <li><a href="../configuration.html" class="page">Configuration</a></li>
+  <li><a href="../markdown.html" class="page">Markdown</a></li>
+  <li><a href="../directives/index.html" class="page">Directives</a>
+  <ul>
+    <li><a href="../directives/organizing-pages.html" class="page">Organizing pages</a></li>
+    <li><a href="../directives/linking.html" class="page">Linking</a></li>
+    <li><a href="../directives/dependencies.html" class="page">Library dependencies</a></li>
+    <li><a href="../directives/repositories.html" class="page">Library repositories</a></li>
+    <li><a href="../directives/snippets.html" class="page">Snippet inclusion</a></li>
+    <li><a href="../directives/includes.html" class="page">Markdown file inclusion</a></li>
+    <li><a href="../directives/fiddles.html" class="page">Fiddle inclusion</a></li>
+    <li><a href="../directives/callouts.html" class="page">Callouts</a></li>
+    <li><a href="../directives/vars.html" class="page">Variable Substitution Directives</a></li>
+    <li><a href="../directives/css-friendliness.html" class="page">CSS Friendliness</a></li>
+    <li><a href="../directives/directives-alphabetically.html" class="page">Alphabetical List of Directives</a></li>
+  </ul></li>
+  <li><a href="../variable-substitution.html" class="page">Variable Substitution</a></li>
+  <li><a href="../groups.html" class="page">Groups</a></li>
+  <li><a href="../customization/index.html" class="page">Customization</a>
+  <ul>
+    <li><a href="../customization/templating.html" class="page">Templating</a></li>
+    <li><a href="../customization/theming.html" class="active page">Theming</a></li>
+    <li><a href="../customization/extensions.html" class="page">Pre-packaged Extensions</a></li>
+    <li><a href="../customization/generators.html" class="page">Generating pages with code</a></li>
+  </ul></li>
+  <li><a href="../validation.html" class="page">Validation</a></li>
+  <li><a href="../single.html" class="page">Single page HTML/PDF output</a></li>
+</ul>
+</div>
+
+</nav>
+</div>
+
+<div class="small-12 medium-9 large-10 column">
+<section class="site-content">
+
+<span id="version-warning"></span>
+
+<div class="page-header row">
+<div class="medium-12 show-for-medium column">
+<div class="nav-breadcrumbs">
+<ul>
+  <li><a href="../index.html">Paradox</a></li>
+  <li><a href="../customization/index.html">Customization</a></li>
+  <li>Theming</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="page-content row">
+<div class="small-12 large-9 column" id="docs">
+<h1><a href="#theming" name="theming" class="anchor"><span class="anchor-link"></span></a>Theming</h1>
+<p>A theme is a collection of templates and other resources like css and image files that can be distributed as a web jar. Using this mechanism, multiple Paradox sites can have consistent look and feel. By default, a simple predefined theme in paradox is used and looks like <a href="https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets">this</a>.</p>
+<p>If you want to use a template <code>otherTemplate.st</code> inside an other template <code>myTemplate.st</code>, you need to specify it inside the <code>myTemplate.st</code>&rsquo;s code:</p>
+<pre><code>/*
+  some template code
+ */
+
+$otherTemplate()$
+
+/*
+  some other template code
+ */
+</code></pre>
+<h3><a href="#how-to-use-themes" name="how-to-use-themes" class="anchor"><span class="anchor-link"></span></a>How to use themes</h3>
+<p>To use a theme you need to set <code>paradoxTheme</code> in your build.</p>
+<ul>
+  <li>If you want to use the default theme of paradox, you can use it by setting <code>paradoxTheme := Some(builtinParadoxTheme(&quot;generic&quot;))</code>. Take a look at this <a href="https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets">default theme</a> to get an idea of how it looks like.</li>
+  <li>If you want to use an external theme, you can use it by setting <code>paradoxTheme := Some(&quot;organization&quot; % &quot;name&quot; % &quot;X.Y.Z&quot;)</code>. A good example of an external theme is the <a href="https://github.com/jonas/paradox-material-theme">Material theme</a>.</li>
+</ul>
+<h3><a href="#how-to-create-themes" name="how-to-create-themes" class="anchor"><span class="anchor-link"></span></a>How to create themes</h3>
+<p>If you don&rsquo;t want to use a predefined theme, or at least the entire theme, you can create one. You have three options:</p>
+<ul>
+  <li>Create an external theme</li>
+  <li>Create a local template system</li>
+  <li>Modify a theme</li>
+</ul>
+<h4><a href="#external-theme" name="external-theme" class="anchor"><span class="anchor-link"></span></a>External theme</h4>
+<p>External themes use the paradox theme plugin to package files into a JAR which can be published to Maven Central or some other repository. The <a href="https://github.com/akka/akka-paradox">Akka theme</a> and <a href="https://github.com/jonas/paradox-material-theme">Material Design theme</a> are good examples of what a paradox theme repository should look like.</p>
+<p>Add to the <code>project/plugins.sbt</code> file of your theme repository:</p>
+<pre class="prettyprint"><code class="language-scala">addSbtPlugin(&quot;com.lightbend.paradox&quot; % &quot;sbt-paradox-theme&quot; % &quot;0.10.7+23-064e6f3f-SNAPSHOT&quot;)
+</code></pre>
+<p>and in your <code>build.sbt</code> file the information that will be used to generate your theme.</p>
+<pre class="prettyprint"><code class="language-scala">lazy val myTheme = (project in file(&quot;.&quot;))
+  .enablePlugins(ParadoxThemePlugin)
+  .settings(
+    inThisBuild(List(
+      organization := &quot;com.organization.paradox&quot;
+    )),
+    name := &quot;paradox-theme-organization&quot;
+  )
+</code></pre>
+<p>Finally, the theme created will be available inside your paradox project by setting the <code>paradoxTheme</code> like this:</p>
+<pre class="prettyprint"><code class="language-scala">  paradoxTheme := Some(&quot;com.organization.paradox&quot; % &quot;paradox-theme-organization&quot; % &quot;X.Y.Z&quot;)
+</code></pre>
+<p>Concerning the template/css/js files, they need to be placed inside the <code>src/main/assets</code> folder. Remember that the default template used by paradox at generation will be the template named <code>page.st</code>, unless you specify an other one with the <code>layout</code> property; see the <a href="templating.html#layout">Templating</a> section.</p>
+<p>In order to use your template in your paradox projects, you need to publish it.</p>
+<h4><a href="#create-local-templates" name="create-local-templates" class="anchor"><span class="anchor-link"></span></a>Create local templates</h4>
+<p>If you do not want to use any external theme, you can create your own theme directly inside the paradox project. To do this, you have to build your entire new system of templates from scratch.</p>
+<p>The procedure is to indicate to paradox that you don&rsquo;t need to use any theme in your build.sbt file:</p>
+<pre class="prettyprint"><code class="language-scala">  paradoxTheme := None
+</code></pre>
+<p>All template files need to be created inside the <code>src/main/paradox/_template</code> folder of your project. You can specify an other one by setting its new location in the build:</p>
+<pre class="prettyprint"><code class="language-scala">sourceDirectory in Compile in paradoxTheme := sourceDirectory.value / &quot;main&quot; / &quot;paradox&quot; / &quot;templatesConfig&quot;
+</code></pre>
+<p>Remember that your theme need to contain a page template with the name <code>page.st</code> that will be used by default for all your pages. You can specify an other default template for your pages, by specifying a new <code>layout</code>; see <a href="templating.html#layout">layout templating</a>:</p>
+<h4><a href="#modify-a-theme" name="modify-a-theme" class="anchor"><span class="anchor-link"></span></a>Modify a theme</h4>
+<p>An other way of dealing with themes is modifying or overwriting an existing one. In your project <code>build.sbt</code> file, when you set <code>paradoxTheme := Some(...)</code>, you can easily change the theme by modifying the templates or by creating new ones (in the same way than the above section). All those modifications and/or creations must be done inside the <code>src/main/paradox/_template</code> folder, which will overwrite the files with the same name in the original template. If you want to modify/create new css or js files for your templates, you can do it inside <code>src/main/paradox/_template/css</code> and <code>src/main/paradox/_template/js</code> folders respectively.</p>
+<p>As in the previous section, you can also change your template folder in the build:</p>
+<pre class="prettyprint"><code class="language-scala">sourceDirectory in Compile in paradoxTheme := sourceDirectory.value / &quot;main&quot; / &quot;paradox&quot; / &quot;templatesConfig&quot;
+</code></pre>
+<p>If you use the default paradox theme for example, take a look at the <a href="https://github.com/lightbend/paradox/tree/master/themes/generic/src/main/assets">generic theme</a> to see the templates you could use or modify for your personal templates.</p>
+<p>An example of modification of this template would be to use some of its templates and modify for example the default <code>page.st</code> file to manipulate the other template files differently. Once again, if you don&rsquo;t want to modify the <code>page.st</code> file but use an other default page built by yourself, you can add the <code>layout</code> property as explained in the <a href="templating.html#layout">layout section</a></p>
+<div class="source-github">
+The source code for this page can be found <a href="https://github.com/lightbend/paradox/tree/master/docs/src/main/paradox/customization/theming.md">here</a>.
+</div>
+
+<div class="nav-next">
+<p><strong>Next:</strong> <a href="../customization/extensions.html">Pre-packaged Extensions</a></p>
+</div>
+</div>
+<div class="large-3 show-for-large column" data-sticky-container>
+<nav class="sidebar sticky" data-sticky data-anchor="docs" data-sticky-on="large">
+<div class="page-nav">
+<div class="nav-title">On this page:</div>
+<div class="nav-toc">
+<ul>
+  <li><a href="../customization/theming.html#theming" class="header">Theming</a>
+  <ul>
+    <li><a href="../customization/theming.html#how-to-use-themes" class="header">How to use themes</a></li>
+    <li><a href="../customization/theming.html#how-to-create-themes" class="header">How to create themes</a></li>
+  </ul></li>
+</ul>
+</div>
+</div>
+</nav>
+</div>
+</div>
+
+</section>
+</div>
+
+</div>
+
+<footer class="site-footer">
+
+<section class="site-footer-nav">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 medium-4 large-3 text-center column">
+<div class="nav-links">
+<ul>
+<!-- <li><a href="https://www.example.com/products/">Products</a> -->
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<section class="site-footer-base">
+<div class="expanded row">
+<div class="small-12 large-offset-2 large-10 column">
+<div class="row site-footer-content">
+
+<div class="small-12 text-center large-9 column">
+
+<!--
+<div class="copyright">
+<span class="text">&copy; 2025</span>
+<a href="https://www.example.com" class="logo">logo</a>
+</div>
+-->
+</div>
+
+</div>
+</div>
+</div>
+</section>
+</footer>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript" src="../lib/foundation/dist/foundation.min.js"></script>
+<script type="text/javascript">jQuery(document).foundation();</script>
+<script type="text/javascript" src="../js/magellan.js"></script>
+
+<style type="text/css">@import "../lib/prettify/prettify.css";</style>
+<script type="text/javascript" src="../lib/prettify/prettify.js"></script>
+<script type="text/javascript" src="../lib/prettify/lang-scala.js"></script>
+<script type="text/javascript">jQuery(function(){window.prettyPrint && prettyPrint()});</script>
+<script type="text/javascript">jQuery(function(jq){initOldVersionWarnings(jq, '0.10.7+23-064e6f3f-SNAPSHOT', 'https://developer.lightbend.com/docs/paradox/current/')});</script>
+
+
+</html>
