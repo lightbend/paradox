@@ -23,7 +23,7 @@ inThisBuild(
     licenses += "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"),
     organizationName     := "lightbend",
     organizationHomepage := Some(url("https://lightbend.com/")),
-    homepage             := Some(url("https://developer.lightbend.com/docs/paradox/current/")),
+    homepage             := Some(url("https://lightbend.github.io/paradox/")),
     scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
     developers := List(
       Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
