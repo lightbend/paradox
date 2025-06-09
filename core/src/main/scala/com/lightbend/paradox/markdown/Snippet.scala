@@ -120,7 +120,7 @@ object Snippet {
         case NoBlock if blockStart(l) => es.withBlock(InBlock)
         case NoBlock                  => es
         case InBlock if blockEnd(l)   => es.withBlock(NoBlock)
-        case InBlock =>
+        case InBlock                  =>
           es.copy(lines = addLine(l, es.lines, lineIndex + 1))
       }
     }

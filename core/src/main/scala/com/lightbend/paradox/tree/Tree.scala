@@ -292,10 +292,10 @@ object Tree {
      */
     def delete: Option[Location[A]] = rights match {
       case r :: rs => Some(Location(r, lefts, rs, parents))
-      case _ =>
+      case _       =>
         lefts match {
           case l :: ls => Some(Location(l, ls, rights, parents))
-          case _ =>
+          case _       =>
             parents match {
               case p :: ps => Some(Location(Tree(p.label, Nil), p.lefts, p.rights, ps))
               case Nil     => None
@@ -319,9 +319,9 @@ object Tree {
    */
   def link[A](nodes: List[A], links: A => List[A]): Forest[A] = {
     import scala.collection.mutable
-    val seen      = mutable.HashSet.empty[A]
-    val completed = mutable.HashSet.empty[A]
-    val roots     = mutable.Map.empty[A, Tree[A]]
+    val seen                 = mutable.HashSet.empty[A]
+    val completed            = mutable.HashSet.empty[A]
+    val roots                = mutable.Map.empty[A, Tree[A]]
     def visit(node: A): Unit =
       if (!seen(node)) {
         seen(node) = true;

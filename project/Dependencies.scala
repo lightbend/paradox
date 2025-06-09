@@ -31,7 +31,7 @@ object Version {
 object Library {
   val foundation = "org.webjars"  % "foundation" % Version.foundation
   val jtidy      = "net.sf.jtidy" % "jtidy"      % Version.jtidy
-  val pegdown = Seq(
+  val pegdown    = Seq(
     "org.pegdown"   % "pegdown"        % Version.pegdown,
     "org.parboiled" % "parboiled-java" % Version.parboiled // overwrite for JDK10 support
   )

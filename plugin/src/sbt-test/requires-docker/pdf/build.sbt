@@ -2,10 +2,10 @@ lazy val docs = project
   .in(file("."))
   .enablePlugins(ParadoxPlugin)
   .settings(
-    version      := "0.1-SNAPSHOT",
-    name         := "Paradox Test",
-    paradoxTheme := None,
-    paradoxRoots := List("index.html"),
+    version        := "0.1-SNAPSHOT",
+    name           := "Paradox Test",
+    paradoxTheme   := None,
+    paradoxRoots   := List("index.html"),
     paradoxPdfArgs := List(
       "--footer-right",
       "[page]",

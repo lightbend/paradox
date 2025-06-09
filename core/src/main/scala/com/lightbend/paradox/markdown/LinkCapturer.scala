@@ -141,7 +141,7 @@ class LinkCapturer {
   private var links: List[Link] = Nil
 
   def capture(page: Page, node: Node, rendering: LinkRenderer.Rendering): LinkRenderer.Rendering = {
-    val fullUri = URI.create(rendering.href)
+    val fullUri         = URI.create(rendering.href)
     val (uri, fragment) =
       if (fullUri.getFragment == null) (fullUri, None)
       else
