@@ -37,7 +37,7 @@ class IncludeNodeSerializer(context: Context) extends ToHtmlSerializerPlugin {
     case include @ IncludeNode(included, includedFrom, includedFromPath) =>
       // This location has no forest around it... which probably means that things like toc and navigation can't
       // be rendered inside snippets, which I'm ok with.
-      val page = Page.included(includedFrom, includedFromPath, context.location.tree.label, included)
+      val page        = Page.included(includedFrom, includedFromPath, context.location.tree.label, included)
       val newLocation =
         Location(Tree.leaf(page), context.location.lefts, context.location.rights, context.location.parents)
       printer.print(

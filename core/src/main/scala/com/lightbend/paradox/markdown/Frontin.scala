@@ -30,7 +30,7 @@ object Frontin {
 
   def apply(file: File): Frontin = {
     var source: BufferedSource = null
-    val lines =
+    val lines                  =
       try {
         source = scala.io.Source.fromFile(file)("UTF-8")
         source.getLines.mkString("\n")
@@ -41,7 +41,7 @@ object Frontin {
 
   def apply(str: String): Frontin =
     str.linesWithSeparators.toList match {
-      case Nil => Frontin(Map.empty[String, String], "")
+      case Nil                     => Frontin(Map.empty[String, String], "")
       case x :: xs if separates(x) =>
         xs span (!separates(_)) match {
           case (h, b) => Frontin(loadProperties(Some(h.mkString(""))), if (b.isEmpty) "" else b.tail.mkString(""))
@@ -50,7 +50,7 @@ object Frontin {
     }
 
   def loadProperties(str: Option[String]): Map[String, String] = str match {
-    case None => Map.empty[String, String]
+    case None    => Map.empty[String, String]
     case Some(s) =>
       val p = new java.util.Properties
       p.load(new StringReader(s))

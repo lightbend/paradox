@@ -82,7 +82,7 @@ object ParadoxPlugin extends AutoPlugin {
 
   def baseParadoxSettings: Seq[Setting[_]] = Seq(
     WebKeys.webJarsClassLoader in Assets := classLoader((dependencyClasspath in ParadoxTheme).value),
-    paradoxProcessor := new ParadoxProcessor(
+    paradoxProcessor                     := new ParadoxProcessor(
       reader = new Reader(maxParsingTime = paradoxParsingTimeout.value),
       writer = new Writer(serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value))
     ),
@@ -134,11 +134,11 @@ object ParadoxPlugin extends AutoPlugin {
     unmanagedSourceDirectories in paradox := Seq((sourceDirectory in paradox).value) ++ paradoxOverlayDirectories.value,
     sourceManaged in paradox              := target.value / "paradox_managed",
     managedSourceDirectories in paradox   := Seq((sourceManaged in paradox).value),
-    sourceDirectories in paradox := Classpaths
+    sourceDirectories in paradox          := Classpaths
       .concatSettings(unmanagedSourceDirectories in paradox, managedSourceDirectories in paradox)
       .value,
-    includeFilter in paradoxMarkdownToHtml := "*.md",
-    excludeFilter in paradoxMarkdownToHtml := HiddenFileFilter,
+    includeFilter in paradoxMarkdownToHtml    := "*.md",
+    excludeFilter in paradoxMarkdownToHtml    := HiddenFileFilter,
     unmanagedSources in paradoxMarkdownToHtml := Defaults
       .collectFiles(
         unmanagedSourceDirectories in paradox,
@@ -148,7 +148,7 @@ object ParadoxPlugin extends AutoPlugin {
       .value,
     sourceGenerators in paradoxMarkdownToHtml := Nil,
     managedSources in paradoxMarkdownToHtml   := generate(sourceGenerators in paradoxMarkdownToHtml).value,
-    sources in paradoxMarkdownToHtml := Classpaths
+    sources in paradoxMarkdownToHtml          := Classpaths
       .concatDistinct(unmanagedSources in paradoxMarkdownToHtml, managedSources in paradoxMarkdownToHtml)
       .value,
     mappings in paradoxMarkdownToHtml := Defaults
@@ -157,7 +157,7 @@ object ParadoxPlugin extends AutoPlugin {
     mappings in paradoxSingleMarkdownToHtml := (mappings in paradoxMarkdownToHtml).value,
     mappings in paradoxPdfMarkdownToHtml    := (mappings in paradoxMarkdownToHtml).value,
     target in paradoxMarkdownToHtml         := target.value / "paradox" / "html" / configTarget(configuration.value),
-    target in paradoxSingleMarkdownToHtml := target.value / "paradox" / "single-html" / configTarget(
+    target in paradoxSingleMarkdownToHtml   := target.value / "paradox" / "single-html" / configTarget(
       configuration.value
     ),
     target in paradoxPdfMarkdownToHtml := target.value / "paradox" / "pdf-html" / configTarget(configuration.value),
@@ -168,7 +168,7 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectories in paradoxTheme := (managedSourceDirectories in paradoxTheme).value :+ (sourceDirectory in paradoxTheme).value,
     includeFilter in paradoxTheme := AllPassFilter,
     excludeFilter in paradoxTheme := HiddenFileFilter,
-    sources in paradoxTheme := (Defaults.collectFiles(
+    sources in paradoxTheme       := (Defaults.collectFiles(
       sourceDirectories in paradoxTheme,
       includeFilter in paradoxTheme,
       excludeFilter in paradoxTheme
@@ -183,7 +183,7 @@ object ParadoxPlugin extends AutoPlugin {
     mappings in paradoxTheme := SbtWeb
       .deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
     target in paradoxTheme := target.value / "paradox" / "theme" / configTarget(configuration.value),
-    paradoxThemeDirectory := SbtWeb.syncMappings(
+    paradoxThemeDirectory  := SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-theme"),
       (mappings in paradoxTheme).value,
       (target in paradoxTheme).value
@@ -199,7 +199,7 @@ object ParadoxPlugin extends AutoPlugin {
     sourceDirectories in paradoxTemplate := Seq((sourceDirectory in paradoxTemplate).value),
     includeFilter in paradoxTemplate     := AllPassFilter,
     excludeFilter in paradoxTemplate     := "*.st" || "*.stg",
-    sources in paradoxTemplate := (Defaults.collectFiles(
+    sources in paradoxTemplate           := (Defaults.collectFiles(
       sourceDirectories in paradoxTemplate,
       includeFilter in paradoxTemplate,
       excludeFilter in paradoxTemplate
@@ -296,11 +296,11 @@ object ParadoxPlugin extends AutoPlugin {
       .collectFiles(sourceDirectories in paradox, includeFilter in paradox, excludeFilter in paradox)
       .value,
     watchSources in Defaults.ConfigGlobal ++= Compat.sourcesFor((sourceDirectories in paradox).value),
-    paradoxBrowse := openInBrowser(paradox.value / "index.html", streams.value.log),
+    paradoxBrowse                            := openInBrowser(paradox.value / "index.html", streams.value.log),
     mappings in paradoxValidateInternalLinks := {
       val paradoxMappings = (mappings in paradox).value
       paradoxValidationSiteBasePath.value match {
-        case None => paradoxMappings
+        case None           => paradoxMappings
         case Some(basePath) =>
           val basePathPrefix = if (basePath.endsWith("/")) basePath else basePath + "/"
           paradoxMappings.map { case (file, path) =>
@@ -316,7 +316,7 @@ object ParadoxPlugin extends AutoPlugin {
     // 0.12.6 still hasn't been released, so we're forced to rely on this dev build published here:
     // https://builds.wkhtmltopdf.org/0.12.6-dev/
     paradoxPdfDockerImage := "jamesroper/wkhtmltopdf:0.12.6-0.20180618.3.dev.e6d6f54",
-    paradoxPdfArgs := Seq(
+    paradoxPdfArgs        := Seq(
       "--dump-outline",
       "/opt/paradox/pdf/" + configTarget(configuration.value) + "/toc.xml",
       "--footer-right",
@@ -408,7 +408,7 @@ object ParadoxPlugin extends AutoPlugin {
       (mappings in Assets).value filterNot { case (file, path) => themeFilter.accept(file) }
     },
     target in scopeTask := target.value / "paradox" / siteDir / configTarget(configuration.value),
-    siteTask := SbtWeb.syncMappings(
+    siteTask            := SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-" + siteDir),
       (mappings in scopeTask).value,
       (target in scopeTask).value
@@ -416,7 +416,7 @@ object ParadoxPlugin extends AutoPlugin {
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
-    val strms = streams.value
+    val strms          = streams.value
     val basePathPrefix = paradoxValidationSiteBasePath.value.fold("") {
       case withSlash if withSlash.endsWith("/") => withSlash
       case withoutSlash                         => withoutSlash + "/"

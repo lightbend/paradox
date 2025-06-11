@@ -353,7 +353,7 @@ class ParadoxProcessor(
       outputFile.getParentFile.mkdirs
       val pagesToRender = pages.tail
       val pageName      = if (print) pageTemplate.defaultPrintName else pageTemplate.defaultSingleName
-      val cover = if (print) {
+      val cover         = if (print) {
         val printCover = new File(outputDirectory, "print-cover.html")
         Some(pageTemplate.writePrintCover("print-cover", pages.head, printCover) -> "print-cover.html")
       } else None
@@ -416,7 +416,7 @@ class ParadoxProcessor(
 
     private val page = loc.tree.label
 
-    val getTitle: String = page.title
+    val getTitle: String   = page.title
     val getContent: String =
       try writer.writeContent(page.markdown, context)
       catch {
@@ -431,7 +431,7 @@ class ParadoxProcessor(
     lazy val getPrev: PageTemplate.Link = link(loc.prev)
     lazy val getSelf: PageTemplate.Link = link(Some(loc))
     lazy val getNext: PageTemplate.Link = link(loc.next)
-    lazy val getBreadcrumbs: String =
+    lazy val getBreadcrumbs: String     =
       writer.writeBreadcrumbs(Breadcrumbs.markdown(leadingBreadcrumbs, loc.path), context)
     lazy val getNavigation: String  = writer.writeNavigation(navToc.root(loc), context)
     lazy val getGroups: String      = Groups.html(groups)
@@ -457,12 +457,12 @@ class ParadoxProcessor(
    */
   case class PageLink(location: Option[Location[Page]], current: Page, writer: Writer, context: Writer.Context)
       extends PageTemplate.Link {
-    lazy val getHref: String  = location.map(href).orNull
-    lazy val getHtml: String  = location.map(link).orNull
-    lazy val getTitle: String = location.map(title).orNull
+    lazy val getHref: String       = location.map(href).orNull
+    lazy val getHtml: String       = location.map(link).orNull
+    lazy val getTitle: String      = location.map(title).orNull
     lazy val getAbsolute: PageLink =
       PageLink(location, location.map(_.root.tree.label).getOrElse(current), writer, context)
-    lazy val isActive: Boolean = location.exists(active)
+    lazy val isActive: Boolean   = location.exists(active)
     lazy val getRelative: String = location.map { l =>
       val root = new File(".").getCanonicalFile.toString
       Path.relativeLocalPath(root, l.tree.label.file.getPath)
@@ -560,7 +560,7 @@ class ParadoxProcessor(
         val labels = include.attributes.values("identifier").asScala
         val source = include.source match {
           case direct: DirectiveNode.Source.Direct => direct.value
-          case _ =>
+          case _                                   =>
             error(s"Only explicit links are supported by the include directive, reference links are not", file, include)
             ""
         }

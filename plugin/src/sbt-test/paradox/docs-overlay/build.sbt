@@ -8,7 +8,7 @@ lazy val docs = (project in file("."))
     ParadoxPlugin.paradoxSettings(DocsFirst),
     ParadoxPlugin.paradoxSettings(DocsSecond),
     // paradoxOverlayDirectories := Seq(baseDirectory.value / "src" / "commonFirst"),
-    paradoxOverlayDirectories in DocsFirst := Seq(baseDirectory.value / "src" / "commonFirst"),
+    paradoxOverlayDirectories in DocsFirst  := Seq(baseDirectory.value / "src" / "commonFirst"),
     paradoxOverlayDirectories in DocsSecond := Seq(
       baseDirectory.value / "src" / "commonFirst",
       baseDirectory.value / "src" / "commonSecond"

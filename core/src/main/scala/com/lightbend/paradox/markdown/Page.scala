@@ -103,9 +103,9 @@ object Page {
    */
   def convertPage(convertPath: String => String)(page: Index.Page): Page = {
     // TODO: get default label node from page index link?
-    val properties  = Page.Properties(page.properties)
-    val targetPath  = properties.convertToTarget(convertPath)(page.path)
-    val rootSrcPage = Path.relativeRootPath(page.file, page.path)
+    val properties       = Page.Properties(page.properties)
+    val targetPath       = properties.convertToTarget(convertPath)(page.path)
+    val rootSrcPage      = Path.relativeRootPath(page.file, page.path)
     val (h1, subheaders) = page.headers match {
       case h :: hs => (Header(h.label.path, h.label.markdown, h.label.group, h.label.includeIndexes), h.children ++ hs)
       case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None, Nil), Nil)

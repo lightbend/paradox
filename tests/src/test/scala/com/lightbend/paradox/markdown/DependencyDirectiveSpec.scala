@@ -208,7 +208,7 @@ class DependencyDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "use CrossVersion.full when scalaVersion and scalaBinaryVersion matches" in {
-    val scalaVersion = "2.13.0-M1"
+    val scalaVersion   = "2.13.0-M1"
     val testProperties = Map(
       "scala.version" -> scalaVersion,
       "scala.binary.version" -> scalaVersion

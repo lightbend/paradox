@@ -24,7 +24,7 @@ inThisBuild(
     organizationName     := "lightbend",
     organizationHomepage := Some(url("https://lightbend.com/")),
     homepage             := Some(url("https://lightbend.github.io/paradox/")),
-    scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
+    scmInfo    := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git")),
     developers := List(
       Developer("pvlugter", "Peter Vlugter", "@pvlugter", url("https://github.com/pvlugter")),
       Developer("eed3si9n", "Eugene Yokota", "@eed3si9n", url("https://github.com/eed3si9n"))
@@ -41,7 +41,7 @@ ThisBuild / githubWorkflowJavaVersions := List(
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
-ThisBuild / githubWorkflowPublish := Seq(
+ThisBuild / githubWorkflowPublish               := Seq(
   WorkflowStep.Sbt(
     List("ci-release"),
     env = Map(

@@ -25,9 +25,9 @@ import scala.concurrent.duration.Duration
 import scala.util.matching.Regex
 
 trait ParadoxKeys {
-  val paradox                = taskKey[File]("Build the paradox site.")
-  val paradoxMarkdownToHtml  = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
-  val paradoxNavigationDepth = settingKey[Int]("Determines depth of TOC for page navigation.")
+  val paradox                      = taskKey[File]("Build the paradox site.")
+  val paradoxMarkdownToHtml        = taskKey[Seq[(File, String)]]("Convert markdown files to HTML.")
+  val paradoxNavigationDepth       = settingKey[Int]("Determines depth of TOC for page navigation.")
   val paradoxNavigationExpandDepth =
     settingKey[Option[Int]]("Depth of auto-expanding navigation below the active page.")
   val paradoxNavigationIncludeHeaders = settingKey[Boolean]("Whether to include headers in the navigation.")
@@ -35,11 +35,11 @@ trait ParadoxKeys {
   val paradoxExpectedNumberOfRoots = settingKey[Int]("How many ToC roots to expect.")
   val paradoxRoots                 = settingKey[List[String]]("Which ToC roots (pages without parent) to expect.")
   val paradoxLeadingBreadcrumbs    = settingKey[List[(String, String)]]("Any leading breadcrumbs (label -> url)")
-  val paradoxIllegalLinkPath =
+  val paradoxIllegalLinkPath       =
     settingKey[Regex]("Path pattern to fail site creation (eg. to protect against missing `@ref` for links).")
-  val paradoxOrganization = settingKey[String]("Paradox dependency organization (for theme dependencies).")
-  val paradoxDirectives   = taskKey[Seq[Writer.Context => Directive]]("Enabled paradox directives.")
-  val paradoxProcessor    = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
+  val paradoxOrganization   = settingKey[String]("Paradox dependency organization (for theme dependencies).")
+  val paradoxDirectives     = taskKey[Seq[Writer.Context => Directive]]("Enabled paradox directives.")
+  val paradoxProcessor      = taskKey[ParadoxProcessor]("ParadoxProcessor to use when generating the site.")
   val paradoxParsingTimeout = settingKey[Duration](
     "Per-page pegdown parsing timeout. Parsing will fail if it takes longer than this (safe-guard for parser non-termination)."
   )
@@ -57,7 +57,7 @@ trait ParadoxKeys {
   val paradoxValidateInternalLinks   = taskKey[Unit]("Validate internal, non ref paradox links.")
   val paradoxValidateLinks           = taskKey[Unit]("Validate all non ref paradox links.")
   val paradoxValidateLinksRetryCount = taskKey[Int]("Number of retries for validate links task.")
-  val paradoxValidationIgnorePaths =
+  val paradoxValidationIgnorePaths   =
     settingKey[List[Regex]]("List of regular expressions to apply to paths to determine if they should be ignored.")
   val paradoxValidationSiteBasePath = settingKey[Option[String]](
     "The base path that the documentation is deployed to, allows validating links on the docs site that are outside of the documentation root tree"
@@ -68,7 +68,7 @@ trait ParadoxKeys {
   val paradoxPdfSite              = taskKey[File]("Build the single page HTML Paradox site")
   val paradoxPdfDockerImage       = settingKey[String]("The wkhtmltopdf docker image to us")
   val paradoxPdfArgs              = settingKey[Seq[String]]("Arguments for wkhtmltopdf generation")
-  val paradoxPdfTocTemplate = settingKey[Option[String]](
+  val paradoxPdfTocTemplate       = settingKey[Option[String]](
     "XSL template to use for generating the table of contents, relative to the theme directory."
   )
   val paradoxPdfMarkdownToHtml = taskKey[Seq[(File, String)]]("Convert markdown files to single page HTML")

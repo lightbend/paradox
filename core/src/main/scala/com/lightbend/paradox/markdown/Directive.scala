@@ -275,8 +275,8 @@ abstract class ApiDocDirective(name: String) extends ExternalLinkDirective(name,
 
   protected def resolveApiLink(link: String): Url
 
-  val defaultBaseUrl: PropertyUrl = PropertyUrl(name + ".base_url", variables.get)
-  val ApiDocProperty: Regex       = raw"""$name\.(.*)\.base_url""".r
+  val defaultBaseUrl: PropertyUrl        = PropertyUrl(name + ".base_url", variables.get)
+  val ApiDocProperty: Regex              = raw"""$name\.(.*)\.base_url""".r
   val baseUrls: Map[String, PropertyUrl] = variables.collect { case (property @ ApiDocProperty(pkg), _) =>
     (pkg, PropertyUrl(property, variables.get))
   }
@@ -440,7 +440,7 @@ trait GitHubResolver {
   protected def resolvePath(page: Page, source: String, labelOpt: Option[String]): Url = {
     val pathUrl = Url.parse(source, "path is invalid")
     val path    = pathUrl.base.getPath
-    val root = variables.get("github.root.base_dir") match {
+    val root    = variables.get("github.root.base_dir") match {
       case None      => throw Url.Error("[github.root.base_dir] is not defined")
       case Some(dir) => new File(dir)
     }
@@ -519,7 +519,7 @@ case class SnipDirective(ctx: Writer.Context)
       val (text, snippetLang) = Snippet(file, labels, filterLabels)
       val lang                = Option(node.attributes.value("type")).getOrElse(snippetLang)
       val group               = Option(node.attributes.value("group")).getOrElse("")
-      val sourceUrl =
+      val sourceUrl           =
         if (
           variables
             .contains(GitHubResolver.baseUrl) && variables.getOrElse(SnipDirective.showGithubLinks, "false") == "true"
@@ -655,7 +655,7 @@ case class VarsDirective(variables: Map[String, String]) extends ContainerBlockD
       case Some(verbatim: VerbatimNode) =>
         val startDelimiter = node.attributes.value("start-delimiter", "$")
         val stopDelimiter  = node.attributes.value("stop-delimiter", "$")
-        val text = variables.foldLeft(verbatim.getText) { case (str, (key, value)) =>
+        val text           = variables.foldLeft(verbatim.getText) { case (str, (key, value)) =>
           str.replace(startDelimiter + key + stopDelimiter, value)
         }
         new VerbatimNode(text, verbatim.getType).accept(visitor)
@@ -861,7 +861,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
         classifier: Option[String]
     ): String = {
       val artifactName = artifactNameWithScalaBin(artifact, rawArtifact, "${versions.ScalaBinary}")
-      val conf = scope match {
+      val conf         = scope match {
         case None         => "implementation"
         case Some("test") => "testImplementation"
         case Some(other)  => other
@@ -935,7 +935,7 @@ case class DependencyDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
           val libraryDependencies = artifacts match {
             case Seq(artifact) => s"libraryDependencies += $artifact"
-            case artifacts =>
+            case artifacts     =>
               Seq("libraryDependencies ++= Seq(", artifacts.map(a => s"  $a").mkString(",\n"), ")").mkString("\n")
           }
 
@@ -1107,7 +1107,7 @@ case class RepositoryDirective(ctx: Writer.Context) extends LeafBlockDirective("
 
           val repoStrings = repos match {
             case Seq(r) => s"resolvers += $r\n"
-            case rs =>
+            case rs     =>
               Seq("resolvers ++= Seq(\n", rs.map(a => s"  $a").mkString(",\n"), "\n)\n").mkString
           }
 

@@ -79,7 +79,7 @@ class ErrorCollector extends ErrorContext {
       .foreach { case (page, errors) =>
         // Load contents of the page
         var source: BufferedSource = null
-        val lines =
+        val lines                  =
           try {
             source = scala.io.Source.fromFile(page)("UTF-8")
             source.getLines().toList
@@ -89,7 +89,7 @@ class ErrorCollector extends ErrorContext {
           case ParadoxError(error, _, Some(idx)) =>
             val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>
               state match {
-                case (_, _, _, Some(_)) => state
+                case (_, _, _, Some(_))  => state
                 case (total, l, c, None) =>
                   if (total + line.length < idx) {
                     (total + line.length + 1, l + 1, c, None)

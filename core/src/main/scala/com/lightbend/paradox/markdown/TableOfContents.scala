@@ -110,7 +110,7 @@ class TableOfContents(
     // Otherwise, we compare the current level of include indexes if they exist, or the current indexes themselves.
     (tocIncludeIndexes, headerIncludeIndexes) match {
       case (i :: itail, h :: htail) if i == h => isBelow(tocIndex, itail, headerIndex, htail)
-      case _ =>
+      case _                                  =>
         headerIncludeIndexes.headOption.getOrElse(headerIndex) > tocIncludeIndexes.headOption.getOrElse(tocIndex)
     }
 

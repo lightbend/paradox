@@ -49,7 +49,7 @@ object ParadoxThemePlugin extends AutoPlugin {
    */
   def minimalWebjarSettings = inConfig(Assets)(
     Seq(
-      includeMinimalWebjars := true,
+      includeMinimalWebjars  := true,
       referencedWebjarAssets := {
         // extract all webjar asset references in string template files
         val libReference = """\$page\.base\$(lib/.*)\"""".r

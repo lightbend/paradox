@@ -190,7 +190,7 @@ object Writer {
       node match {
         case n: ExpLinkNodeExtended =>
           val rendering: LinkRenderer.Rendering = new LinkRenderer.Rendering(url, text)
-          val r2 =
+          val r2                                =
             if (n.attributes.value("title") != null)
               rendering.withAttribute("title", encode(n.attributes.value("title")))
             else if (StringUtils.isEmpty(title)) rendering

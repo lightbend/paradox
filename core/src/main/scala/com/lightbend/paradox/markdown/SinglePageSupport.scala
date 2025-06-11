@@ -72,7 +72,7 @@ object SinglePageSupport {
       ctx.pageMappings(source).flatMap(path => check(node, path)) match {
         case Some(path) =>
           val resolved = URI.create(ctx.page.path).resolve(path).getPath
-          val link = if (path.contains("#")) {
+          val link     = if (path.contains("#")) {
             val anchor = path.substring(path.lastIndexOf('#') + 1)
             s"#$resolved~$anchor"
           } else {
@@ -112,7 +112,7 @@ object SinglePageSupport {
     override def render(node: AutoLinkNode): LinkRenderer.Rendering = delegate.render(node)
 
     override def render(node: ExpImageNode, text: String): LinkRenderer.Rendering = {
-      val uri = URI.create(node.url)
+      val uri            = URI.create(node.url)
       val relativeToBase = if (uri.getAuthority == null) {
         val path = URI.create(ctx.page.path).resolve(uri).getPath
         new ExpImageNode(node.title, path, node.getChildren.get(0))
