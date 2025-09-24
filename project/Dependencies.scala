@@ -17,7 +17,7 @@
 import sbt._
 
 object Version {
-  val foundation = "6.2.4"
+  val foundation = "6.4.3-1"
   val jtidy      = "r938"
   val pegdown    = "1.6.0"
   val parboiled  = "1.4.1"
