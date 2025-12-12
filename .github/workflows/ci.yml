@@ -28,7 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -61,7 +61,7 @@ jobs:
         run: tar cf targets.tar plugin/target themes/generic/target target docs/target tests/target theme-plugin/target core/target themes/target testkit/target project/target
 
       - name: Upload target directories
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: target-${{ matrix.os }}-${{ matrix.scala }}-${{ matrix.java }}
           path: targets.tar
@@ -78,7 +78,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -102,7 +102,7 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Download target directories (2.12.20)
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: target-${{ matrix.os }}-2.12.20-${{ matrix.java }}
 
