@@ -95,8 +95,8 @@ class Writer(serializer: Writer.Context => ToHtmlSerializer) {
 
 object Writer {
 
-  val DefaultSourceSuffix: String = ".md"
-  val DefaultTargetSuffix: String = ".html"
+  val DefaultSourceSuffix: String   = ".md"
+  val DefaultTargetSuffix: String   = ".html"
   val DefaultIllegalLinkPath: Regex =
     // #DefaultIllegalLinkPath
     raw"""^(?!https?:).*\.md(#.*)?""".r
