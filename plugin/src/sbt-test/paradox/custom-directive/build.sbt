@@ -1,4 +1,5 @@
 import com.lightbend.paradox.markdown.Writer
+import sbtcompat.PluginCompat._
 
 lazy val docs = project
   .in(file("."))
