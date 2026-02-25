@@ -98,7 +98,8 @@ lazy val tests = project
     libraryDependencies ++= Seq(
       Library.scalatest % "test"
     ),
-    publish / skip := true
+    publish / skip := true,
+    Test / parallelExecution := false
   )
 
 lazy val plugin = project
