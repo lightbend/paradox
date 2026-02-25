@@ -22,6 +22,8 @@ import java.io.{File, PrintWriter}
 import com.lightbend.paradox.template.PageTemplate
 import java.nio.file._
 
+import com.lightbend.paradox.markdown.{Path => ParadoxPath}
+
 import com.lightbend.paradox.{NullLogger, ParadoxProcessor, ThrowingErrorContext}
 
 abstract class MarkdownTestkit {
@@ -78,7 +80,7 @@ abstract class MarkdownTestkit {
     Source.fromFile(file).getLines.mkString("\n")
   }
 
-  def createFileTemplates(dir: Path, templates: Seq[(String, String)]) = {
+  def createFileTemplates(dir: java.nio.file.Path, templates: Seq[(String, String)]) = {
     val suffix = ".st"
     templates map {
       case (path, content) if path.endsWith(suffix) =>
@@ -122,7 +124,7 @@ abstract class MarkdownTestkit {
         frontin.header
       )
     }
-    Page.forest(parsed, Path.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
+    Page.forest(parsed, ParadoxPath.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
   }
 
   def html(text: String): String =

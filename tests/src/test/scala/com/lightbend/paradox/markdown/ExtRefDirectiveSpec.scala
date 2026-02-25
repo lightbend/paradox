@@ -17,10 +17,11 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class ExtRefDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit val context = writerContextWithProperties(
+  implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
     "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s",
     "extref.issue.base_url" -> "https://github.com/lightbend/paradox/issues/%s",
     "extref.docs.base_url" -> "https://docs.example.org/%s",

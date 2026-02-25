@@ -83,6 +83,7 @@ lazy val testkit = project
   .dependsOn(core)
   .settings(
     name := "testkit",
+    crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.jtidy
     )
@@ -93,6 +94,7 @@ lazy val tests = project
   .dependsOn(core, testkit)
   .settings(
     name := "tests",
+    crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.scalatest % "test"
     ),

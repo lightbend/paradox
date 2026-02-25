@@ -17,10 +17,11 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class GitHubDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit val context = writerContextWithProperties(
+  implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
     "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
     "github.root.base_dir" -> "."
   )
@@ -36,7 +37,7 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support github enterprise deployments" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "github.base_url" -> "https://git.enterprise.net/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> ".",
       "github.domain" -> "git.enterprise.net"

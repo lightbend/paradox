@@ -16,6 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.tree.Tree.Location
 import org.scalatest.flatspec.AnyFlatSpecLike
 import org.scalatest.matchers.should.Matchers
 

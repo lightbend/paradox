@@ -17,10 +17,11 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class RefDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit private val context = writerContextWithProperties("page.variable" -> "page")
+  implicit private val context: Location[Page] => Writer.Context = writerContextWithProperties("page.variable" -> "page")
 
   def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] =
     markdownPages(
