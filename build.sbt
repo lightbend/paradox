@@ -107,6 +107,7 @@ lazy val plugin = project
   .enablePlugins(SbtPlugin)
   .settings(
     name      := "sbt-paradox",
+    crossScalaVersions := Seq("2.12.21", scala3), // sbt 1 uses 2.12, sbt 2 uses 3 — no 2.13
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
@@ -116,7 +117,7 @@ lazy val plugin = project
         case _      => "2.0.0-RC9"
       }
     },
-    scriptedSbt                   := sbtVersion.value, // run scripted tests against build sbt by default
+    scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= ManagementFactory.getRuntimeMXBean.getInputArguments.asScala
       .filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)),
