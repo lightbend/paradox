@@ -10,7 +10,7 @@ lazy val docs = project
       "--footer-right",
       "[page]",
       "--footer-left",
-      (name in paradoxPdf).value
+      (paradoxPdf / name).value
     )
   )
 

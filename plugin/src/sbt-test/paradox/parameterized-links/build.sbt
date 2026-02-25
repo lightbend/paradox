@@ -6,7 +6,7 @@ scalaVersion := "2.11.12"
 
 enablePlugins(ParadoxPlugin)
 paradoxTheme := None
-paradoxProperties in Compile ++= Map(
+Compile / paradoxProperties ++= Map(
   "extref.rfc.base_url" -> "http://tools.ietf.org/html/rfc%s",
   "extref.akka-docs.base_url" -> s"http://doc.akka.io/docs/akka/$akkaVersion/%s.html",
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/$akkaVersion",
@@ -29,7 +29,7 @@ apiURL  := Some(url(s"https://example.org/api/${version.value}"))
 scmInfo := Some(ScmInfo(url("https://github.com/lightbend/paradox"), "git@github.com:lightbend/paradox.git"))
 
 TaskKey[Unit]("checkJavadocJavalibContent") := {
-  val file = (target in (Compile, paradox)).value / "javadoc-javalib.html"
+  val file = (Compile / paradox / target).value / "javadoc-javalib.html"
 
   assert(file.exists, s"${file.getAbsolutePath} did not exist")
   val content = IO.readLines(file).mkString

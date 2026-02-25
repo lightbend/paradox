@@ -413,13 +413,13 @@ object ParadoxPlugin extends AutoPlugin {
         (paradoxTheme / managedSourceDirectories).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
       (Assets / mappings).value filterNot { case (file, path) => themeFilter.accept(Compat.refToFile(file, fileConverter.value)) }
     },
-    scopeTask / target := target.value / "paradox" / siteDir / configTarget(configuration.value),
-    siteTask            := SbtWeb.syncMappings(
+    scopeTask / target := baseDirectory.value / "target" / "paradox" / siteDir / configTarget(configuration.value),
+    siteTask            := Def.uncached(SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-" + siteDir),
       (scopeTask / mappings).value,
       (scopeTask / target).value,
       fileConverter.value
-    )
+    ))
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {

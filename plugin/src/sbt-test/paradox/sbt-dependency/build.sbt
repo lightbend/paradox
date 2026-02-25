@@ -9,6 +9,6 @@ def docs(scalaV: String)(project: Project) =
       version                                    := "0.1.0",
       scalaVersion                               := scalaV,
       paradoxTheme                               := None,
-      sourceDirectory in (Compile, paradoxTheme) := (baseDirectory in ThisBuild).value / "theme",
-      sourceDirectory in (Compile, paradox)      := (baseDirectory in ThisBuild).value / "doc"
+      Compile / paradoxTheme / sourceDirectory := (ThisBuild / baseDirectory).value / "theme",
+      Compile / paradox / sourceDirectory      := (ThisBuild / baseDirectory).value / "doc"
     )
