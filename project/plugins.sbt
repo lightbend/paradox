@@ -38,6 +38,8 @@ lazy val metaThemePlugin = (project in file("theme-plugin"))
 // http://stackoverflow.com/a/37513852/3827
 def mirrorScalaSource(baseDirectory: File): Seq[File] = {
   val scalaSourceDir = baseDirectory / "src" / "main" / "scala"
-  if (scalaSourceDir.exists) scalaSourceDir :: Nil
+  val sbt1Dir       = baseDirectory / "src" / "main" / "scala-sbt-1.0"
+  val dirs          = scalaSourceDir :: (if (sbt1Dir.exists) sbt1Dir :: Nil else Nil)
+  if (scalaSourceDir.exists) dirs
   else sys.error(s"Missing source directory: $scalaSourceDir")
 }

@@ -19,7 +19,28 @@ package com.lightbend.paradox.sbt
 import sbt._
 import sbt.internal.io.Source
 import java.io.File
+import java.net.URI
 
 object Compat {
   def sourcesFor(dirs: Seq[File]): Seq[Source] = dirs.map(d => new Source(d, AllPassFilter, NothingFilter))
+
+  def classpathToURLs(classpath: Seq[Attributed[_]], conv: xsbti.FileConverter): Array[java.net.URL] =
+    Path.toURLs(classpath.asInstanceOf[Seq[Attributed[File]]].map(_.data)).toArray
+
+  def apiUrlForLinkProperties(opt: Option[_]): Option[URI] =
+    opt.asInstanceOf[Option[java.net.URL]].map(_.toURI)
+
+  def browseUrlString(scmInfo: Option[ScmInfo]): Option[String] =
+    scmInfo.flatMap(info => { val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toExternalForm) else None })
+
+  def licenseNamesToCommaSeparated(licenses: Seq[_]): String =
+    licenses.map(_.asInstanceOf[(String, _)]._1).mkString(",")
+
+  def mappingsToFiles(mappings: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
+    mappings
+
+  def filesToMappings(files: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
+    files
+
+  def refToFile(ref: Any, conv: xsbti.FileConverter): File = ref.asInstanceOf[File]
 }

@@ -141,8 +141,9 @@ lazy val plugin = project
 lazy val themePlugin = project
   .in(file("theme-plugin"))
   .settings(
-    name      := "sbt-paradox-theme",
-    sbtPlugin := true,
+    name               := "sbt-paradox-theme",
+    crossScalaVersions  := Seq("2.12.21", scala3),
+    sbtPlugin          := true,
     addSbtPlugin(Library.sbtWeb),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     (pluginCrossBuild / sbtVersion) := {
