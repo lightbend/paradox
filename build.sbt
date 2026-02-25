@@ -35,10 +35,13 @@ inThisBuild(
 
 // https://github.com/djspiewak/sbt-github-actions
 ThisBuild / githubWorkflowJavaVersions := List(
-  JavaSpec.temurin("11"),
-  JavaSpec.temurin("17")
+  JavaSpec.temurin("17"),
+  JavaSpec.temurin("11")
 )
 ThisBuild / githubWorkflowScalaVersions := List("2.12.21", "3.8.1")
+ThisBuild / githubWorkflowBuildMatrixExclusions := Seq(
+  MatrixExclude(Map("scala" -> "3.8.1", "java" -> "temurin@11"))
+)
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
