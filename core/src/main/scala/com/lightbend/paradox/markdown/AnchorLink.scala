@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 import org.pegdown.ast._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.Printer
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 
 /**
  * Serialize an AnchorLinkSuperNode, which can contain multiple children. Render as a separate anchor link for section

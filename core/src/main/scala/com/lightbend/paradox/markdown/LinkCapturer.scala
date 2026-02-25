@@ -22,7 +22,7 @@ import java.net.URI
 import org.pegdown.ast._
 import org.pegdown.{LinkRenderer, Printer, ToHtmlSerializer}
 
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 
 /**
  * This captures links for validation.

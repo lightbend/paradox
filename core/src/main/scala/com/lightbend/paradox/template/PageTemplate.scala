@@ -40,7 +40,7 @@ class PageTemplate(
    * Write a templated page to the target file.
    */
   def write(name: String, contents: PageTemplate.Contents, target: File): File = {
-    import scala.collection.JavaConverters._
+    import com.lightbend.paradox.compat.Implicits._
     write(name, target) { t =>
       // TODO, only load page properties, not global ones
       for (content <- contents.getProperties.asScala.filterNot(_._1.contains("."))) t.add(content._1, content._2)
@@ -57,7 +57,7 @@ class PageTemplate(
       contents: Seq[PageTemplate.Contents],
       target: File
   ): File = {
-    import scala.collection.JavaConverters._
+    import com.lightbend.paradox.compat.Implicits._
     write(name, target) { t =>
       t.add("page", firstPage)
       t.add("pages", contents.asJava)

@@ -24,12 +24,12 @@ import java.net.{URI, URISyntaxException}
 case class Url(base: URI) {
   def withEndingSlash: Url = base.getPath match {
     case path if path.endsWith("/index.html") => this
-    case path                                 => copy(path = path + "/")
+    case path                                 => withComponents(path = path + "/")
   }
-  def /(path: String): Url                = copy(path = base.getPath + "/" + path)
-  def withQuery(query: String): Url       = copy(query = query)
-  def withFragment(fragment: String): Url = copy(fragment = fragment)
-  def copy(path: String = base.getPath, query: String = base.getQuery, fragment: String = base.getFragment): Url = {
+  def /(path: String): Url                = withComponents(path = base.getPath + "/" + path)
+  def withQuery(query: String): Url       = withComponents(query = query)
+  def withFragment(fragment: String): Url = withComponents(fragment = fragment)
+  def withComponents(path: String = base.getPath, query: String = base.getQuery, fragment: String = base.getFragment): Url = {
     val uri = new URI(base.getScheme, base.getUserInfo, base.getHost, base.getPort, path, query, fragment)
     Url(uri.normalize)
   }

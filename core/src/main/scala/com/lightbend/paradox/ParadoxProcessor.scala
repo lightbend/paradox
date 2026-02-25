@@ -29,7 +29,7 @@ import org.pegdown.ast._
 import java.net.SocketTimeoutException
 import java.util
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 import scala.util.control.NonFatal
 import scala.util.matching.Regex
 
@@ -412,7 +412,7 @@ class ParadoxProcessor(
       navToc: TableOfContents,
       pageToc: TableOfContents
   ) extends PageTemplate.Contents {
-    import scala.collection.JavaConverters._
+    import com.lightbend.paradox.compat.Implicits._
 
     private val page = loc.tree.label
 
@@ -557,7 +557,7 @@ class ParadoxProcessor(
 
     root.getChildren.asScala.foreach {
       case include: DirectiveNode if include.name == "include" =>
-        val labels = include.attributes.values("identifier").asScala
+        val labels = include.attributes.values("identifier").asScala.toSeq
         val source = include.source match {
           case direct: DirectiveNode.Source.Direct => direct.value
           case _                                   =>

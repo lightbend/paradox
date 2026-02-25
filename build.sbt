@@ -62,11 +62,13 @@ lazy val paradox = project
     publish / skip := true
   )
 
+lazy val scala3 = "3.8.1"
+
 lazy val core = project
   .in(file("core"))
   .settings(
     name               := "paradox",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.18"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.18", scala3),
     libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
       Library.st4,
@@ -104,7 +106,13 @@ lazy val plugin = project
     name      := "sbt-paradox",
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
-    pluginCrossBuild / sbtVersion := "1.0.0", // support all sbt 1.x
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.4"
+        case _      => "2.0.0-RC9"
+      }
+    },
     scriptedSbt                   := sbtVersion.value, // run scripted tests against build sbt by default
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= ManagementFactory.getRuntimeMXBean.getInputArguments.asScala
@@ -131,7 +139,15 @@ lazy val themePlugin = project
   .settings(
     name      := "sbt-paradox-theme",
     sbtPlugin := true,
-    addSbtPlugin(Library.sbtWeb)
+    addSbtPlugin(Library.sbtWeb),
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    libraryDependencies += "com.github.sbt" %% "sbt2-compat" % "0.1.0",
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.4"
+        case _      => "2.0.0-RC9"
+      }
+    }
   )
 
 lazy val themes = project

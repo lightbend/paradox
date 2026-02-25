@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package com.lightbend.paradox.markdown
+package com.lightbend.paradox
 
-import org.pegdown.ast._
-import org.pegdown.plugins.ToHtmlSerializerPlugin
-import org.pegdown.Printer
-import com.lightbend.paradox.compat.Implicits._
-
-/**
- * Serialize a ClassyLink, adding the class attribute.
- */
-class ClassyLinkSerializer extends ToHtmlSerializerPlugin {
-  def visit(node: Node, visitor: Visitor, printer: Printer): Boolean = node match {
-    case link: ClassyLinkNode =>
-      printer.print(s"""<a href="${link.href}" class="${link.classAttribute}">""")
-      link.getChildren.asScala.foreach(_.accept(visitor))
-      printer.print("</a>")
-      true
-    case _ => false
-  }
+package object compat {
+  val Implicits = scala.collection.JavaConverters
 }

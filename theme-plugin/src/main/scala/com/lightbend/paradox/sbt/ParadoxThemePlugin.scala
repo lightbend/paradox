@@ -18,6 +18,7 @@ package com.lightbend.paradox.sbt
 
 import sbt._
 import sbt.Keys._
+import sbtcompat.PluginCompat
 import com.typesafe.sbt.web.Import.{Assets, WebKeys}
 import com.typesafe.sbt.web.SbtWeb
 import org.webjars.WebJarAssetLocator.WEBJARS_PATH_PREFIX
@@ -63,12 +64,14 @@ object ParadoxThemePlugin extends AutoPlugin {
           val prefix  = SbtWeb.path(s"${WEBJARS_PATH_PREFIX}/${moduleName.value}/${version.value}/")
           val include = referencedWebjarAssets.value
           Def.task {
-            (WebKeys.webModules / mappings).value flatMap {
+            implicit val conv: xsbti.FileConverter = fileConverter.value
+            val fileMappings = (WebKeys.webModules / mappings).value.flatMap {
               case (file, path) if include(path) => Some(file -> (prefix + path))
               case _                             => None
             }
+            PluginCompat.toFileRefsMapping(fileMappings)
           }
-        } else Def.task(Seq.empty[(java.io.File, String)])
+        } else Def.task(Seq.empty[(PluginCompat.FileRef, String)])
       }.value
     )
   )

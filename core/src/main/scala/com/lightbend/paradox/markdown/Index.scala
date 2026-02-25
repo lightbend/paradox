@@ -24,7 +24,7 @@ import org.pegdown.ast.DirectiveNode.Source
 import org.pegdown.ast._
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 
 /**
  * Create index of pages from parsed markdown.
