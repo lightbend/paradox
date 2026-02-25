@@ -38,6 +38,7 @@ ThisBuild / githubWorkflowJavaVersions := List(
   JavaSpec.temurin("11"),
   JavaSpec.temurin("17")
 )
+ThisBuild / githubWorkflowScalaVersions := List("2.12.21", "3.8.1")
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
@@ -141,7 +142,6 @@ lazy val themePlugin = project
     sbtPlugin := true,
     addSbtPlugin(Library.sbtWeb),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
-    libraryDependencies += "com.github.sbt" %% "sbt2-compat" % "0.1.0",
     (pluginCrossBuild / sbtVersion) := {
       scalaBinaryVersion.value match {
         case "2.12" => "1.12.4"

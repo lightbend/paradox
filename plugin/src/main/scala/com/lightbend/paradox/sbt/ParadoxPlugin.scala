@@ -181,12 +181,13 @@ object ParadoxPlugin extends AutoPlugin {
     // if there are duplicates, select the file from the local template to allow overrides/extensions in themes
     WebKeys.deduplicators in paradoxTheme += SbtWeb.selectFileFrom((sourceDirectory in paradoxTheme).value),
     mappings in paradoxTheme := SbtWeb
-      .deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value),
+      .deduplicateMappings((mappings in paradoxTheme).value, (WebKeys.deduplicators in paradoxTheme).value, fileConverter.value),
     target in paradoxTheme := target.value / "paradox" / "theme" / configTarget(configuration.value),
     paradoxThemeDirectory  := SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-theme"),
       (mappings in paradoxTheme).value,
-      (target in paradoxTheme).value
+      (target in paradoxTheme).value,
+      fileConverter.value
     ),
     paradoxTemplate := {
       val dir = paradoxThemeDirectory.value
@@ -411,7 +412,8 @@ object ParadoxPlugin extends AutoPlugin {
     siteTask            := SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-" + siteDir),
       (mappings in scopeTask).value,
-      (target in scopeTask).value
+      (target in scopeTask).value,
+      fileConverter.value
     )
   )
 
