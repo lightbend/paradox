@@ -1,4 +1,5 @@
-> docs/docsOverlayParadox
+> DocsFirst/paradox
+> DocsSecond/paradox
 
 $ must-mirror target/paradox/site/docsFirst/docsFirstFile.html expected/docsFirst/docsFirstFile.html
 $ must-mirror target/paradox/site/docsFirst/docsFirstDir/docsFirstSubfile.html expected/docsFirst/docsFirstDir/docsFirstSubfile.html

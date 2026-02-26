@@ -1,15 +1,9 @@
 val DocsFirst  = config("docsFirst")
 val DocsSecond = config("docsSecond")
 
-lazy val docsOverlayParadox = taskKey[Unit]("Run paradox for both docsFirst and docsSecond configs")
-
 lazy val docs = (project in file("."))
   .enablePlugins(ParadoxPlugin)
   .settings(
-    docsOverlayParadox := {
-      (DocsFirst / paradox).value
-      (DocsSecond / paradox).value
-    },
     paradoxTheme := None,
     ParadoxPlugin.paradoxSettings(DocsFirst),
     ParadoxPlugin.paradoxSettings(DocsSecond),
