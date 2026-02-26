@@ -482,7 +482,7 @@ object ParadoxPlugin extends AutoPlugin {
 
   def linkProperties(
       scalaVersion: String,
-      apiURL: Option[java.net.URI],
+      apiURI: Option[java.net.URI],
       scmInfo: Option[ScmInfo],
       isSnapshot: Boolean,
       version: String,
@@ -502,14 +502,14 @@ object ParadoxPlugin extends AutoPlugin {
         },
       "scaladoc.version" -> Some(scalaVersion),
       "scaladoc.scala.base_url" -> Some(url(s"http://www.scala-lang.org/api/$scalaVersion")),
-      "scaladoc.base_url" -> apiURL.map(_.toString),
+      "scaladoc.base_url" -> apiURI,
       GitHubResolver.baseUrl -> {
         if (!gitHubResolverBaseUrlDefined) {
           Compat.browseUrlString(scmInfo).collect {
-            case urlStr if !urlStr.contains("/tree/") =>
+            case url if !url.contains("/tree/") =>
               val branch = if (isSnapshot) "master" else s"v$version"
-              s"$urlStr/tree/$branch"
-            case urlStr => urlStr
+              s"$url/tree/$branch"
+            case url => url
           }
         } else None
       }
