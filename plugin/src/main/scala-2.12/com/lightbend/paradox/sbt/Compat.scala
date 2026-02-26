@@ -21,14 +21,14 @@ import java.io.File
 import java.net.URI
 
 object Compat {
-  def apiUrlForLinkProperties(opt: Option[_]): Option[URI] =
-    opt.asInstanceOf[Option[java.net.URL]].map(_.toURI)
+  def apiUrlForLinkProperties(opt: Option[java.net.URL]): Option[URI] =
+    opt.map(_.toURI)
 
   def browseUrlString(scmInfo: Option[ScmInfo]): Option[String] =
     scmInfo.flatMap(info => { val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toExternalForm) else None })
 
-  def licenseNamesToCommaSeparated(licenses: Seq[_]): String =
-    licenses.map(_.asInstanceOf[(String, _)]._1).mkString(",")
+  def licenseNamesToCommaSeparated(licenses: Seq[(String, java.net.URL)]): String =
+    licenses.map(_._1).mkString(",")
 
   def mappingsToFiles(mappings: Seq[(File, String)])(implicit conv: xsbti.FileConverter): Seq[(File, String)] =
     mappings

@@ -21,15 +21,15 @@ import java.io.File
 import java.net.URI
 
 object Compat {
-  def apiUrlForLinkProperties(opt: Option[?]): Option[URI] =
-    opt.asInstanceOf[Option[URI]]
+  def apiUrlForLinkProperties(opt: Option[URI]): Option[URI] =
+    opt
 
   def browseUrlString(scmInfo: Option[ScmInfo]): Option[String] =
     scmInfo.flatMap(info => { val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toString) else None })
 
-  def licenseNamesToCommaSeparated(licenses: Seq[?]): String = {
+  def licenseNamesToCommaSeparated(licenses: Seq[sbt.librarymanagement.License]): String = {
     licenses.map { l =>
-      val s = l.asInstanceOf[sbt.librarymanagement.License].toString
+      val s = l.toString
       val start = s.indexOf('(') + 1
       if (start > 0) s.drop(start).takeWhile(_ != ',')
       else s
