@@ -239,8 +239,8 @@ object ParadoxPlugin extends AutoPlugin {
           paradoxTemplate.value,
           new SbtParadoxLogger(strms.log)
         ) match {
-          case Left(err) =>
-            strms.log.error(err)
+          case Left(error) =>
+            strms.log.error(error)
             throw new ParadoxException
           case Right(files) => files
         }
@@ -265,8 +265,8 @@ object ParadoxPlugin extends AutoPlugin {
           false,
           new SbtParadoxLogger(strms.log)
         ) match {
-          case Left(err) =>
-            strms.log.error(err)
+          case Left(error) =>
+            strms.log.error(error)
             throw new ParadoxException
           case Right(files) => files
         }
@@ -291,8 +291,8 @@ object ParadoxPlugin extends AutoPlugin {
           true,
           new SbtParadoxLogger(strms.log)
         ) match {
-          case Left(err) =>
-            strms.log.error(err)
+          case Left(error) =>
+            strms.log.error(error)
             throw new ParadoxException
           case Right(files) => files
         }
