@@ -406,12 +406,12 @@ object ParadoxPlugin extends AutoPlugin {
   ) = Seq(
     scopeTask / mappings := Defaults.relativeMappings(paradox / sources, paradox / sourceDirectories).value,
     scopeTask / mappings ++= (paradoxTemplate / mappings).value,
-    scopeTask / mappings ++= Compat.filesToMappings(markdownToHtmlTask.value, fileConverter.value),
+    scopeTask / mappings ++= toFileRefsMapping(markdownToHtmlTask.value)(using fileConverter.value),
     scopeTask / mappings ++= {
       // include webjar assets, but not the assets from the theme
       val themeFilter =
         (paradoxTheme / managedSourceDirectories).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
-      (Assets / mappings).value filterNot { case (file, path) => themeFilter.accept(Compat.refToFile(file, fileConverter.value)) }
+      (Assets / mappings).value filterNot { case (file, path) => themeFilter.accept(toFile(file)(using fileConverter.value)) }
     },
     scopeTask / target := baseDirectory.value / "target" / "paradox" / siteDir / configTarget(configuration.value),
     siteTask            := Def.uncached(SbtWeb.syncMappings(

@@ -38,9 +38,4 @@ object Compat {
 
   def mappingsToFiles(mappings: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
     mappings
-
-  def filesToMappings(files: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
-    files
-
-  def refToFile(ref: Any, conv: xsbti.FileConverter): File = ref.asInstanceOf[File]
 }

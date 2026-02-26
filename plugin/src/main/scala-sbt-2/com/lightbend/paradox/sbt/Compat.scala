@@ -46,10 +46,4 @@ object Compat {
 
   def mappingsToFiles(mappings: Seq[(xsbti.HashedVirtualFileRef, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
     mappings.map { case (ref, path) => (sbtcompat.PluginCompat.toFile(ref)(using conv), path) }
-
-  def filesToMappings(files: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(xsbti.HashedVirtualFileRef, String)] =
-    sbtcompat.PluginCompat.toFileRefsMapping(files)(using conv)
-
-  def refToFile(ref: Any, conv: xsbti.FileConverter): File =
-    sbtcompat.PluginCompat.toFile(ref.asInstanceOf[xsbti.HashedVirtualFileRef])(using conv)
 }
