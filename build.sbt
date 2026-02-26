@@ -44,6 +44,10 @@ ThisBuild / githubWorkflowScalaVersions := List("2.12.21", "3.8.1")
 ThisBuild / githubWorkflowBuildMatrixExclusions := Seq(
   MatrixExclude(Map("scala" -> "3.8.1", "java" -> "temurin@11"))
 )
+ThisBuild / githubWorkflowSbtCommand := "sbt -batch"
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(List("verify"), name = Some("Verify project"))
+)
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))

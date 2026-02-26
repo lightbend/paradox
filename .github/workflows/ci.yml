@@ -55,10 +55,10 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Check that workflows are up to date
-        run: sbt '++ ${{ matrix.scala }}' githubWorkflowCheck
+        run: sbt -batch '++ ${{ matrix.scala }}' githubWorkflowCheck
 
-      - name: Build project
-        run: sbt '++ ${{ matrix.scala }}' test
+      - name: Verify project
+        run: sbt -batch '++ ${{ matrix.scala }}' verify
 
       - name: Compress target directories
         run: tar cf targets.tar plugin/target themes/generic/target target docs/target tests/target theme-plugin/target core/target themes/target testkit/target project/target
@@ -131,4 +131,4 @@ jobs:
           CI_CLEAN: clean
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
-        run: sbt ci-release
+        run: sbt -batch ci-release
