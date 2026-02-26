@@ -223,8 +223,9 @@ object ParadoxPlugin extends AutoPlugin {
       val strms = streams.value
       IO.delete((paradoxMarkdownToHtml / target).value)
       Def.task {
+        implicit val conv: xsbti.FileConverter = fileConverter.value
         paradoxProcessor.value.process(
-          Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value, fileConverter.value),
+          Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value),
           paradoxLeadingBreadcrumbs.value,
           (paradoxMarkdownToHtml / target).value,
           paradoxSourceSuffix.value,
@@ -250,8 +251,9 @@ object ParadoxPlugin extends AutoPlugin {
       val strms = streams.value
       IO.delete((paradoxSingleMarkdownToHtml / target).value)
       Def.task {
+        implicit val conv: xsbti.FileConverter = fileConverter.value
         paradoxProcessor.value.processSinglePage(
-          Compat.mappingsToFiles((paradoxSingleMarkdownToHtml / mappings).value, fileConverter.value),
+          Compat.mappingsToFiles((paradoxSingleMarkdownToHtml / mappings).value),
           (paradoxSingleMarkdownToHtml / target).value,
           (paradoxSingle / paradoxSourceSuffix).value,
           (paradoxSingle / paradoxTargetSuffix).value,
@@ -276,8 +278,9 @@ object ParadoxPlugin extends AutoPlugin {
       val strms = streams.value
       IO.delete((paradoxPdfMarkdownToHtml / target).value)
       Def.task {
+        implicit val conv: xsbti.FileConverter = fileConverter.value
         paradoxProcessor.value.processSinglePage(
-          Compat.mappingsToFiles((paradoxPdfMarkdownToHtml / mappings).value, fileConverter.value),
+          Compat.mappingsToFiles((paradoxPdfMarkdownToHtml / mappings).value),
           (paradoxPdfMarkdownToHtml / target).value,
           (paradoxPdf / paradoxSourceSuffix).value,
           (paradoxPdf / paradoxTargetSuffix).value,
@@ -430,16 +433,17 @@ object ParadoxPlugin extends AutoPlugin {
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
+    implicit val conv: xsbti.FileConverter = fileConverter.value
     val strms          = streams.value
     val basePathPrefix = paradoxValidationSiteBasePath.value.fold("") {
       case withSlash if withSlash.endsWith("/") => withSlash
       case withoutSlash                         => withoutSlash + "/"
     }
     val errors = paradoxProcessor.value.validate(
-      Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value, fileConverter.value).map { case (file, path) =>
+      Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value).map { case (file, path) =>
         file -> (basePathPrefix + path)
       },
-      Compat.mappingsToFiles((paradoxValidateInternalLinks / mappings).value, fileConverter.value),
+      Compat.mappingsToFiles((paradoxValidateInternalLinks / mappings).value),
       paradoxGroups.value,
       paradoxProperties.value,
       paradoxValidationIgnorePaths.value,

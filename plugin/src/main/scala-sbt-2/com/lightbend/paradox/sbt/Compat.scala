@@ -36,6 +36,6 @@ object Compat {
     }.mkString(",")
   }
 
-  def mappingsToFiles(mappings: Seq[(xsbti.HashedVirtualFileRef, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
-    mappings.map { case (ref, path) => (sbtcompat.PluginCompat.toFile(ref)(using conv), path) }
+  def mappingsToFiles(mappings: Seq[(xsbti.HashedVirtualFileRef, String)])(using conv: xsbti.FileConverter): Seq[(File, String)] =
+    mappings.map { case (ref, path) => (sbtcompat.PluginCompat.toFile(ref), path) }
 }

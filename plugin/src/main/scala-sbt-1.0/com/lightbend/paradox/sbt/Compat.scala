@@ -30,6 +30,6 @@ object Compat {
   def licenseNamesToCommaSeparated(licenses: Seq[_]): String =
     licenses.map(_.asInstanceOf[(String, _)]._1).mkString(",")
 
-  def mappingsToFiles(mappings: Seq[(File, String)], conv: xsbti.FileConverter): Seq[(File, String)] =
+  def mappingsToFiles(mappings: Seq[(File, String)])(implicit conv: xsbti.FileConverter): Seq[(File, String)] =
     mappings
 }
