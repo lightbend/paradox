@@ -7,10 +7,10 @@ lazy val additionalMappings         = settingKey[List[(File, String)]]("Addition
 additionalInternalMappings := Nil
 additionalMappings         := Nil
 (Compile / paradox / mappings) ++= Def.task {
-  val conv = fileConverter.value
-  sbtcompat.PluginCompat.toFileRefsMapping(additionalInternalMappings.value)(using conv)
+  implicit val conv: xsbti.FileConverter = fileConverter.value
+  sbtcompat.PluginCompat.toFileRefsMapping(additionalInternalMappings.value)
 }.value
 (Compile / paradoxValidateInternalLinks / mappings) ++= Def.task {
-  val conv = fileConverter.value
-  sbtcompat.PluginCompat.toFileRefsMapping(additionalMappings.value)(using conv)
+  implicit val conv: xsbti.FileConverter = fileConverter.value
+  sbtcompat.PluginCompat.toFileRefsMapping(additionalMappings.value)
 }.value
