@@ -51,6 +51,12 @@ ThisBuild / githubWorkflowBuild := Seq(
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+ThisBuild / githubWorkflowGeneratedCI ~= { jobs =>
+  jobs.map { job =>
+    if (job.id == "publish") job.copy(scalas = List("2.12.21", "3.8.1"))
+    else job
+  }
+}
 ThisBuild / githubWorkflowPublish               := Seq(
   WorkflowStep.Sbt(
     List("ci-release"),
