@@ -17,6 +17,8 @@
 import scala.collection.JavaConverters._
 import java.lang.management.ManagementFactory
 
+import sbt.ScriptedPlugin.autoImport.sbtTestDirectory
+
 inThisBuild(
   List(
     organization := "com.lightbend.paradox",
@@ -191,4 +193,21 @@ lazy val docs = project
   )
 
 addCommandAlias("verify", ";Test/compile ;Compile/doc ;test ;scripted ;docs/paradox")
-addCommandAlias("verify-no-docker", ";Test/compile ;Compile/doc ;test ;scripted paradox/* ;docs/paradox")
+
+commands += Command.command("verify-no-docker") { state =>
+  val extracted = Project.extract(state)
+  val pluginRef = LocalProject("plugin")
+  val base      = extracted.get(pluginRef / sbtTestDirectory) / "paradox"
+  val sv        = extracted.get(pluginRef / scalaBinaryVersion)
+  val exclude   = if (sv == "3") Set("libraryDependencies") else Set.empty[String]
+  val tests = Option(base.listFiles).toSeq.flatten
+    .filter(_.isDirectory)
+    .map(_.getName)
+    .filterNot(exclude)
+    .sorted
+    .map(n => s"paradox/$n")
+    .mkString(" ")
+  val cmds = "Test/compile" :: "Compile/doc" :: "test" ::
+    s"plugin/scripted $tests" :: "docs/paradox" :: Nil
+  cmds ::: state
+}
