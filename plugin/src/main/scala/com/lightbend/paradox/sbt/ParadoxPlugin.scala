@@ -106,7 +106,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradox / version     := version.value,
     paradox / description := description.value,
     paradox / licenses    := licenses.value,
-    paradoxProperties ++= Def.task(Def.uncached(Map(
+    paradoxProperties ++= Def.uncached(Map(
       "project.name" -> (paradox / name).value,
       "project.version" -> (paradox / version).value,
       "project.version.short" -> shortVersion((paradox / version).value),
@@ -118,8 +118,8 @@ object ParadoxPlugin extends AutoPlugin {
       "github.root.base_dir" -> (ThisBuild / baseDirectory).value.toString,
       "scala.version" -> scalaVersion.value,
       "scala.binary.version" -> scalaBinaryVersion.value
-    ))).value,
-    paradoxProperties ++= Def.task(Def.uncached({
+    )),
+    paradoxProperties ++= Def.uncached({
       homepage.value match {
         case Some(url) =>
           Map(
@@ -128,16 +128,16 @@ object ParadoxPlugin extends AutoPlugin {
           )
         case None => Map.empty
       }
-    })).value,
-    paradoxProperties ++= Def.task(Def.uncached(dateProperties)).value,
-    paradoxProperties ++= Def.task(Def.uncached(linkProperties(
+    }),
+    paradoxProperties ++= Def.uncached(dateProperties),
+    paradoxProperties ++= Def.uncached(linkProperties(
       scalaVersion.value,
       Compat.apiUrlForLinkProperties(apiURL.value),
       scmInfo.value,
       isSnapshot.value,
       version.value,
       paradoxProperties.value.isDefinedAt(GitHubResolver.baseUrl)
-    ))).value,
+    )),
     paradoxOverlayDirectories             := Nil,
     paradox / sourceDirectory            := sourceDirectory.value / "paradox",
     paradox / unmanagedSourceDirectories := Seq((paradox / sourceDirectory).value) ++ paradoxOverlayDirectories.value,
