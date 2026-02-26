@@ -17,13 +17,10 @@
 package com.lightbend.paradox.sbt
 
 import sbt._
-import sbt.internal.io.Source
 import java.io.File
 import java.net.URI
 
 object Compat {
-  def sourcesFor(dirs: Seq[File]): Seq[Source] = dirs.map(d => new Source(d, AllPassFilter, NothingFilter))
-
   def classpathToURLs(classpath: Seq[sbt.Attributed[?]], conv: xsbti.FileConverter): Array[java.net.URL] = {
     val files = sbtcompat.PluginCompat.toFiles(classpath.asInstanceOf[Seq[sbt.Attributed[xsbti.HashedVirtualFileRef]]])(using conv)
     Path.toURLs(files.toSeq).toArray

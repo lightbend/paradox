@@ -19,6 +19,7 @@ package com.lightbend.paradox.sbt
 import com.lightbend.paradox.markdown.Reader
 import sbt._
 import sbt.Keys._
+import sbt.internal.io.Source
 import sbt.Defaults.generate
 import com.lightbend.paradox.{ParadoxLogger, ParadoxProcessor}
 import com.lightbend.paradox.markdown.{GitHubResolver, SnipDirective, Writer}
@@ -301,7 +302,9 @@ object ParadoxPlugin extends AutoPlugin {
     paradox / sources := Defaults
       .collectFiles(paradox / sourceDirectories, paradox / includeFilter, paradox / excludeFilter)
       .value,
-    Global / watchSources ++= Def.uncached(Compat.sourcesFor((paradox / sourceDirectories).value)),
+    Global / watchSources ++= Def.uncached(
+      (paradox / sourceDirectories).value.map(d => new Source(d, AllPassFilter, NothingFilter))
+    ),
     paradoxBrowse                            := openInBrowser(paradox.value / "index.html", streams.value.log),
     paradoxValidateInternalLinks / mappings := {
       val paradoxMappings = (paradox / mappings).value
