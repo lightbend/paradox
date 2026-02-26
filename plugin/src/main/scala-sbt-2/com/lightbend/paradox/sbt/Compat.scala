@@ -21,11 +21,6 @@ import java.io.File
 import java.net.URI
 
 object Compat {
-  def classpathToURLs(classpath: Seq[sbt.Attributed[?]], conv: xsbti.FileConverter): Array[java.net.URL] = {
-    val files = sbtcompat.PluginCompat.toFiles(classpath.asInstanceOf[Seq[sbt.Attributed[xsbti.HashedVirtualFileRef]]])(using conv)
-    Path.toURLs(files.toSeq).toArray
-  }
-
   def apiUrlForLinkProperties(opt: Option[?]): Option[URI] =
     opt.asInstanceOf[Option[URI]]
 

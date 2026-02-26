@@ -21,9 +21,6 @@ import java.io.File
 import java.net.URI
 
 object Compat {
-  def classpathToURLs(classpath: Seq[Attributed[_]], conv: xsbti.FileConverter): Array[java.net.URL] =
-    Path.toURLs(classpath.asInstanceOf[Seq[Attributed[File]]].map(_.data)).toArray
-
   def apiUrlForLinkProperties(opt: Option[_]): Option[URI] =
     opt.asInstanceOf[Option[java.net.URL]].map(_.toURI)
 

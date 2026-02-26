@@ -79,11 +79,14 @@ object ParadoxPlugin extends AutoPlugin {
     inConfig(ParadoxTheme)(Defaults.configSettings) ++
     inConfig(config)(baseParadoxSettings)
 
-  private def classLoader(classpath: Seq[Attributed[_]], conv: xsbti.FileConverter): ClassLoader =
-    new java.net.URLClassLoader(Compat.classpathToURLs(classpath, conv), null)
+  private def classLoader(classpath: Classpath)(implicit conv: xsbti.FileConverter): ClassLoader =
+    new java.net.URLClassLoader(Path.toURLs(sbtcompat.PluginCompat.toFiles(classpath).toSeq).toArray, null)
 
   def baseParadoxSettings: Seq[Setting[_]] = Seq(
-    Assets / WebKeys.webJarsClassLoader := Def.uncached(classLoader((ParadoxTheme / dependencyClasspath).value, fileConverter.value)),
+    Assets / WebKeys.webJarsClassLoader := Def.uncached {
+      implicit val conv: xsbti.FileConverter = fileConverter.value
+      classLoader((ParadoxTheme / dependencyClasspath).value)
+    },
     paradoxProcessor                     := Def.uncached(new ParadoxProcessor(
       reader = new Reader(maxParsingTime = paradoxParsingTimeout.value),
       writer = new Writer(
