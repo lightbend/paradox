@@ -80,7 +80,7 @@ abstract class MarkdownTestkit {
     Source.fromFile(file).getLines.mkString("\n")
   }
 
-  def createFileTemplates(dir: java.nio.file.Path, templates: Seq[(String, String)]) = {
+  def createFileTemplates(dir: Path, templates: Seq[(String, String)]) = {
     val suffix = ".st"
     templates map {
       case (path, content) if path.endsWith(suffix) =>
