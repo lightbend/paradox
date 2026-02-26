@@ -35,7 +35,7 @@ comparePdfs := {
   val creationDate = "/CreationDate".getBytes
 
   def readLines(name: String) =
-    splitBytesByLines(IO.readBytes(file(name)).view, Vector())
+    splitBytesByLines(IO.readBytes(file(name)).toSeq, Vector())
 
   val f1Lines              = readLines(f1)
   val f2Lines              = readLines(f2)

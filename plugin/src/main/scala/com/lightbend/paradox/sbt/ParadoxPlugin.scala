@@ -191,7 +191,7 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxTheme / WebKeys.deduplicators += Def.uncached(SbtWeb.selectFileFrom((paradoxTheme / sourceDirectory).value)),
     paradoxTheme / mappings := SbtWeb
       .deduplicateMappings((paradoxTheme / mappings).value, (paradoxTheme / WebKeys.deduplicators).value, fileConverter.value),
-    paradoxTheme / target := target.value / "paradox" / "theme" / configTarget(configuration.value),
+    paradoxTheme / target := baseDirectory.value / "target" / "paradox" / "theme" / configTarget(configuration.value),
     paradoxThemeDirectory  := Def.uncached(SbtWeb.syncMappings(
       streams.value.cacheStoreFactory.make("paradox-theme"),
       (paradoxTheme / mappings).value,
@@ -344,7 +344,8 @@ object ParadoxPlugin extends AutoPlugin {
       val _              = paradoxPdfSite.value
       val outputFileName = (paradoxPdf / moduleName).value + ".pdf"
       val ct             = configTarget(configuration.value)
-      val outputDir      = target.value / "paradox" / "pdf" / ct
+      val paradoxRoot    = baseDirectory.value / "target" / "paradox"
+      val outputDir      = paradoxRoot / "pdf" / ct
       val root           = (paradoxPdf / paradoxRoots).value.head
       outputDir.mkdirs()
 
@@ -353,13 +354,13 @@ object ParadoxPlugin extends AutoPlugin {
         "run",
         "--rm",
         "-v",
-        (target.value / "paradox").getAbsolutePath + ":/opt/paradox",
+        paradoxRoot.getAbsolutePath + ":/opt/paradox",
         // This can be accessed by the above mount, but needs to include the configuration name in it. The print-toc.xml
         // can only use absolute file:/// links to resources, so to ensure it doesn't have to include main/test in its
         // references to css files, we put this here so that it can reference any resources in the site using
         // file:///opt/paradoxsite
         "-v",
-        (target.value / "paradox" / "site-pdf" / ct).getAbsolutePath + ":/opt/paradoxsite",
+        (paradoxRoot / "site-pdf" / ct).getAbsolutePath + ":/opt/paradoxsite",
         paradoxPdfDockerImage.value
       ) ++
         paradoxPdfArgs.value ++
