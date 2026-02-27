@@ -124,7 +124,11 @@ abstract class MarkdownTestkit {
         frontin.header
       )
     }
-    Page.forest(parsed, ParadoxPath.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix), globalProperties)
+    Page.forest(
+      parsed,
+      ParadoxPath.replaceSuffix(Writer.DefaultSourceSuffix, Writer.DefaultTargetSuffix),
+      globalProperties
+    )
   }
 
   def html(text: String): String =

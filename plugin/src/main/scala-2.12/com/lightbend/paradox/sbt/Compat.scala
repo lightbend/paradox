@@ -25,7 +25,9 @@ object Compat {
     opt.map(_.toURI)
 
   def browseUrlString(scmInfo: Option[ScmInfo]): Option[String] =
-    scmInfo.flatMap(info => { val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toExternalForm) else None })
+    scmInfo.flatMap { info =>
+      val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toExternalForm) else None
+    }
 
   def licenseNamesToCommaSeparated(licenses: Seq[(String, java.net.URL)]): String =
     licenses.map(_._1).mkString(",")

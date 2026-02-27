@@ -87,14 +87,16 @@ object ParadoxPlugin extends AutoPlugin {
       implicit val conv: xsbti.FileConverter = fileConverter.value
       classLoader((ParadoxTheme / dependencyClasspath).value)
     },
-    paradoxProcessor                     := Def.uncached(new ParadoxProcessor(
-      reader = new Reader(maxParsingTime = paradoxParsingTimeout.value),
-      writer = new Writer(
-        linkRenderer = Writer.defaultLinks,
-        verbatimSerializers = Writer.defaultVerbatims,
-        serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value)
+    paradoxProcessor := Def.uncached(
+      new ParadoxProcessor(
+        reader = new Reader(maxParsingTime = paradoxParsingTimeout.value),
+        writer = new Writer(
+          linkRenderer = Writer.defaultLinks,
+          verbatimSerializers = Writer.defaultVerbatims,
+          serializerPlugins = Writer.defaultPlugins(paradoxDirectives.value)
+        )
       )
-    )),
+    ),
     sourceDirectory := {
       val config = configuration.value
       if (config.name != Compile.name)
@@ -106,20 +108,22 @@ object ParadoxPlugin extends AutoPlugin {
     paradox / version     := version.value,
     paradox / description := description.value,
     paradox / licenses    := licenses.value,
-    paradoxProperties ++= Def.uncached(Map(
-      "project.name" -> (paradox / name).value,
-      "project.version" -> (paradox / version).value,
-      "project.version.short" -> shortVersion((paradox / version).value),
-      "project.description" -> (paradox / description).value,
-      "project.license" -> Compat.licenseNamesToCommaSeparated((paradox / licenses).value),
-      "snip.root.base_dir" -> baseDirectory.value.toString,
-      SnipDirective.buildBaseDir -> (ThisBuild / baseDirectory).value.toString,
-      SnipDirective.showGithubLinks -> "true",
-      "github.root.base_dir" -> (ThisBuild / baseDirectory).value.toString,
-      "scala.version" -> scalaVersion.value,
-      "scala.binary.version" -> scalaBinaryVersion.value
-    )),
-    paradoxProperties ++= Def.uncached({
+    paradoxProperties ++= Def.uncached(
+      Map(
+        "project.name" -> (paradox / name).value,
+        "project.version" -> (paradox / version).value,
+        "project.version.short" -> shortVersion((paradox / version).value),
+        "project.description" -> (paradox / description).value,
+        "project.license" -> Compat.licenseNamesToCommaSeparated((paradox / licenses).value),
+        "snip.root.base_dir" -> baseDirectory.value.toString,
+        SnipDirective.buildBaseDir -> (ThisBuild / baseDirectory).value.toString,
+        SnipDirective.showGithubLinks -> "true",
+        "github.root.base_dir" -> (ThisBuild / baseDirectory).value.toString,
+        "scala.version" -> scalaVersion.value,
+        "scala.binary.version" -> scalaBinaryVersion.value
+      )
+    ),
+    paradoxProperties ++= Def.uncached(
       homepage.value match {
         case Some(url) =>
           Map(
@@ -128,17 +132,19 @@ object ParadoxPlugin extends AutoPlugin {
           )
         case None => Map.empty
       }
-    }),
+    ),
     paradoxProperties ++= Def.uncached(dateProperties),
-    paradoxProperties ++= Def.uncached(linkProperties(
-      scalaVersion.value,
-      Compat.apiUrlForLinkProperties(apiURL.value),
-      scmInfo.value,
-      isSnapshot.value,
-      version.value,
-      paradoxProperties.value.isDefinedAt(GitHubResolver.baseUrl)
-    )),
-    paradoxOverlayDirectories             := Nil,
+    paradoxProperties ++= Def.uncached(
+      linkProperties(
+        scalaVersion.value,
+        Compat.apiUrlForLinkProperties(apiURL.value),
+        scmInfo.value,
+        isSnapshot.value,
+        version.value,
+        paradoxProperties.value.isDefinedAt(GitHubResolver.baseUrl)
+      )
+    ),
+    paradoxOverlayDirectories            := Nil,
     paradox / sourceDirectory            := sourceDirectory.value / "paradox",
     paradox / unmanagedSourceDirectories := Seq((paradox / sourceDirectory).value) ++ paradoxOverlayDirectories.value,
     paradox / sourceManaged              := target.value / "paradox_managed",
@@ -181,23 +187,29 @@ object ParadoxPlugin extends AutoPlugin {
       paradoxTheme / sourceDirectories,
       paradoxTheme / includeFilter,
       paradoxTheme / excludeFilter
-    ) dependsOn {
+    ) dependsOn
       Assets / WebKeys.webJars // extract webjars first
-    }).value,
+    ).value,
     paradoxTheme / mappings := Defaults
       .relativeMappings(paradoxTheme / sources, paradoxTheme / sourceDirectories)
       .value,
     // if there are duplicates, select the file from the local template to allow overrides/extensions in themes
     paradoxTheme / WebKeys.deduplicators += Def.uncached(SbtWeb.selectFileFrom((paradoxTheme / sourceDirectory).value)),
     paradoxTheme / mappings := SbtWeb
-      .deduplicateMappings((paradoxTheme / mappings).value, (paradoxTheme / WebKeys.deduplicators).value, fileConverter.value),
+      .deduplicateMappings(
+        (paradoxTheme / mappings).value,
+        (paradoxTheme / WebKeys.deduplicators).value,
+        fileConverter.value
+      ),
     paradoxTheme / target := baseDirectory.value / "target" / "paradox" / "theme" / configTarget(configuration.value),
-    paradoxThemeDirectory  := Def.uncached(SbtWeb.syncMappings(
-      streams.value.cacheStoreFactory.make("paradox-theme"),
-      (paradoxTheme / mappings).value,
-      (paradoxTheme / target).value,
-      fileConverter.value
-    )),
+    paradoxThemeDirectory := Def.uncached(
+      SbtWeb.syncMappings(
+        streams.value.cacheStoreFactory.make("paradox-theme"),
+        (paradoxTheme / mappings).value,
+        (paradoxTheme / target).value,
+        fileConverter.value
+      )
+    ),
     paradoxTemplate := Def.uncached {
       val dir = paradoxThemeDirectory.value
       if (!dir.exists) {
@@ -311,7 +323,7 @@ object ParadoxPlugin extends AutoPlugin {
     Global / watchSources ++= Def.uncached(
       (paradox / sourceDirectories).value.map(d => new Source(d, AllPassFilter, NothingFilter))
     ),
-    paradoxBrowse                            := openInBrowser(paradox.value / "index.html", streams.value.log),
+    paradoxBrowse                           := openInBrowser(paradox.value / "index.html", streams.value.log),
     paradoxValidateInternalLinks / mappings := {
       val paradoxMappings = (paradox / mappings).value
       paradoxValidationSiteBasePath.value match {
@@ -421,21 +433,25 @@ object ParadoxPlugin extends AutoPlugin {
       // include webjar assets, but not the assets from the theme
       val themeFilter =
         (paradoxTheme / managedSourceDirectories).value.headOption.map(InDirectoryFilter).getOrElse(NothingFilter)
-      (Assets / mappings).value filterNot { case (file, path) => themeFilter.accept(toFile(file)(using fileConverter.value)) }
+      (Assets / mappings).value filterNot { case (file, path) =>
+        themeFilter.accept(toFile(file)(using fileConverter.value))
+      }
     },
     scopeTask / target := baseDirectory.value / "target" / "paradox" / siteDir / configTarget(configuration.value),
-    siteTask            := Def.uncached(SbtWeb.syncMappings(
-      streams.value.cacheStoreFactory.make("paradox-" + siteDir),
-      (scopeTask / mappings).value,
-      (scopeTask / target).value,
-      fileConverter.value
-    ))
+    siteTask           := Def.uncached(
+      SbtWeb.syncMappings(
+        streams.value.cacheStoreFactory.make("paradox-" + siteDir),
+        (scopeTask / mappings).value,
+        (scopeTask / target).value,
+        fileConverter.value
+      )
+    )
   )
 
   private def validateLinksTask(validateAbsolute: Boolean) = Def.task {
     implicit val conv: xsbti.FileConverter = fileConverter.value
-    val strms          = streams.value
-    val basePathPrefix = paradoxValidationSiteBasePath.value.fold("") {
+    val strms                              = streams.value
+    val basePathPrefix                     = paradoxValidationSiteBasePath.value.fold("") {
       case withSlash if withSlash.endsWith("/") => withSlash
       case withoutSlash                         => withoutSlash + "/"
     }

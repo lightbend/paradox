@@ -304,7 +304,8 @@ abstract class ApiDocDirective(name: String) extends ExternalLinkDirective(name,
   override protected def resolveLink(node: DirectiveNode, link: String): Url = {
     val resolvedLink = resolveApiLink(link)
     val resolvedPath = resolvedLink.base.getPath
-    if (resolvedPath startsWith ".../") resolvedLink.withComponents(path = page.base + resolvedPath.drop(4)) else resolvedLink
+    if (resolvedPath startsWith ".../") resolvedLink.withComponents(path = page.base + resolvedPath.drop(4))
+    else resolvedLink
   }
 
 }
