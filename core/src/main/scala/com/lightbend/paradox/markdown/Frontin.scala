@@ -34,8 +34,7 @@ object Frontin {
       try {
         source = scala.io.Source.fromFile(file)("UTF-8")
         source.getLines.mkString("\n")
-      } finally
-        source.close()
+      } finally source.close()
     apply(lines)
   }
 

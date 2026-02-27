@@ -6,9 +6,9 @@ def docs(scalaV: String)(project: Project) =
   project
     .enablePlugins(ParadoxPlugin)
     .settings(
-      version                                    := "0.1.0",
-      scalaVersion                               := scalaV,
-      paradoxTheme                               := None,
+      version                                  := "0.1.0",
+      scalaVersion                             := scalaV,
+      paradoxTheme                             := None,
       Compile / paradoxTheme / sourceDirectory := (ThisBuild / baseDirectory).value / "theme",
       Compile / paradox / sourceDirectory      := (ThisBuild / baseDirectory).value / "doc"
     )

@@ -30,8 +30,7 @@ object Snippet {
     try {
       val lines = source.getLines.toSeq
       (extract(file, lines, labels, filterLabelLines), language(file))
-    } finally
-      source.close()
+    } finally source.close()
   }
 
   def extract(file: File, lines: Seq[String], labels: Seq[String], filterLabelLines: Boolean): String =
@@ -77,8 +76,7 @@ object Snippet {
         None
       else
         Some((lineNumbers.min, lineNumbers.max))
-    } finally
-      source.close()
+    } finally source.close()
   }
 
   type Line = (Int, String)

@@ -83,8 +83,7 @@ class ErrorCollector extends ErrorContext {
           try {
             source = scala.io.Source.fromFile(page)("UTF-8")
             source.getLines().toList
-          } finally
-            source.close()
+          } finally source.close()
         errors.sortBy(_.index.getOrElse(0)).foreach {
           case ParadoxError(error, _, Some(idx)) =>
             val (_, lineNo, colNo, line) = lines.foldLeft((0, 0, 0, None: Option[String])) { (state, line) =>

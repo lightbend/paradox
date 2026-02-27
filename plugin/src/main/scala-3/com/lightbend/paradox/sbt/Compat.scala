@@ -25,17 +25,22 @@ object Compat {
     opt
 
   def browseUrlString(scmInfo: Option[ScmInfo]): Option[String] =
-    scmInfo.flatMap(info => { val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toString) else None })
+    scmInfo.flatMap { info =>
+      val u = info.browseUrl; if (u.getHost == "github.com") Some(u.toString) else None
+    }
 
-  def licenseNamesToCommaSeparated(licenses: Seq[sbt.librarymanagement.License]): String = {
-    licenses.map { l =>
-      val s = l.toString
-      val start = s.indexOf('(') + 1
-      if (start > 0) s.drop(start).takeWhile(_ != ',')
-      else s
-    }.mkString(",")
-  }
+  def licenseNamesToCommaSeparated(licenses: Seq[sbt.librarymanagement.License]): String =
+    licenses
+      .map { l =>
+        val s     = l.toString
+        val start = s.indexOf('(') + 1
+        if (start > 0) s.drop(start).takeWhile(_ != ',')
+        else s
+      }
+      .mkString(",")
 
-  def mappingsToFiles(mappings: Seq[(xsbti.HashedVirtualFileRef, String)])(using conv: xsbti.FileConverter): Seq[(File, String)] =
+  def mappingsToFiles(mappings: Seq[(xsbti.HashedVirtualFileRef, String)])(using
+      conv: xsbti.FileConverter
+  ): Seq[(File, String)] =
     mappings.map { case (ref, path) => (sbtcompat.PluginCompat.toFile(ref), path) }
 }

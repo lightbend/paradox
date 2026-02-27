@@ -395,8 +395,7 @@ class ParadoxProcessor(
                         |  "name" : "${properties("project.name")}",
                         |  "version" : "${properties("project.version")}"
                         |}""".stripMargin)
-    } finally
-      osWriter.close()
+    } finally osWriter.close()
     (target, metadataFilename)
   }
 

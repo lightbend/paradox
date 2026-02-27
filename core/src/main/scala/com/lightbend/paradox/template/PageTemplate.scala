@@ -83,8 +83,7 @@ class PageTemplate(
       osWriter = new OutputStreamWriter(new FileOutputStream(target), StandardCharsets.UTF_8)
       val noIndentWriter = new NoIndentWriter(osWriter)
       template.write(noIndentWriter)
-    } finally
-      osWriter.close()
+    } finally osWriter.close()
     target
   }
 }

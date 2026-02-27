@@ -29,7 +29,7 @@ lazy val metaThemePlugin = (project in file("theme-plugin"))
   .settings(
     sbtPlugin    := true,
     scalaVersion := "2.12.21",
-    addSbtPlugin("com.github.sbt" % "sbt-web" % "1.5.8"),
+    addSbtPlugin("com.github.sbt" % "sbt-web"     % "1.5.8"),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     Compile / unmanagedSourceDirectories :=
       mirrorScalaSource((ThisBuild / baseDirectory).value.getParentFile / "theme-plugin")
@@ -38,8 +38,8 @@ lazy val metaThemePlugin = (project in file("theme-plugin"))
 // http://stackoverflow.com/a/37513852/3827
 def mirrorScalaSource(baseDirectory: File): Seq[File] = {
   val scalaSourceDir = baseDirectory / "src" / "main" / "scala"
-  val scala212Dir   = baseDirectory / "src" / "main" / "scala-2.12"
-  val dirs          = scalaSourceDir :: (if (scala212Dir.exists) scala212Dir :: Nil else Nil)
+  val scala212Dir    = baseDirectory / "src" / "main" / "scala-2.12"
+  val dirs           = scalaSourceDir :: (if (scala212Dir.exists) scala212Dir :: Nil else Nil)
   if (scalaSourceDir.exists) dirs
   else sys.error(s"Missing source directory: $scalaSourceDir")
 }

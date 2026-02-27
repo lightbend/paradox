@@ -40,12 +40,12 @@ ThisBuild / githubWorkflowJavaVersions := List(
   JavaSpec.temurin("17"),
   JavaSpec.temurin("11")
 )
-ThisBuild / githubWorkflowScalaVersions := List("2.12.21", "3.8.1")
+ThisBuild / githubWorkflowScalaVersions         := List("2.12.21", "3.8.1")
 ThisBuild / githubWorkflowBuildMatrixExclusions := Seq(
   MatrixExclude(Map("scala" -> "3.8.1", "java" -> "temurin@11"))
 )
 ThisBuild / githubWorkflowSbtCommand := "sbt -batch"
-ThisBuild / githubWorkflowBuild := Seq(
+ThisBuild / githubWorkflowBuild      := Seq(
   WorkflowStep.Sbt(List("verify"), name = Some("Verify project"))
 )
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
@@ -91,7 +91,7 @@ lazy val testkit = project
   .in(file("testkit"))
   .dependsOn(core)
   .settings(
-    name := "testkit",
+    name               := "testkit",
     crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.jtidy
@@ -102,12 +102,12 @@ lazy val tests = project
   .in(file("tests"))
   .dependsOn(core, testkit)
   .settings(
-    name := "tests",
+    name               := "tests",
     crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.scalatest % "test"
     ),
-    publish / skip := true,
+    publish / skip           := true,
     Test / parallelExecution := false
   )
 
@@ -116,9 +116,9 @@ lazy val plugin = project
   .dependsOn(core)
   .enablePlugins(SbtPlugin)
   .settings(
-    name      := "sbt-paradox",
+    name               := "sbt-paradox",
     crossScalaVersions := Seq("2.12.21", scala3), // sbt 1 uses 2.12, sbt 2 uses 3 — no 2.13
-    sbtPlugin := true,
+    sbtPlugin          := true,
     addSbtPlugin(Library.sbtWeb),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     (pluginCrossBuild / sbtVersion) := {
@@ -152,7 +152,7 @@ lazy val themePlugin = project
   .in(file("theme-plugin"))
   .settings(
     name               := "sbt-paradox-theme",
-    crossScalaVersions  := Seq("2.12.21", scala3),
+    crossScalaVersions := Seq("2.12.21", scala3),
     sbtPlugin          := true,
     addSbtPlugin(Library.sbtWeb),
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
@@ -204,7 +204,7 @@ commands += Command.command("verify-no-docker") { state =>
   val base      = extracted.get(pluginRef / sbtTestDirectory) / "paradox"
   val sv        = extracted.get(pluginRef / scalaBinaryVersion)
   val exclude   = if (sv == "3") Set("libraryDependencies") else Set.empty[String]
-  val tests = Option(base.listFiles).toSeq.flatten
+  val tests     = Option(base.listFiles).toSeq.flatten
     .filter(_.isDirectory)
     .map(_.getName)
     .filterNot(exclude)
