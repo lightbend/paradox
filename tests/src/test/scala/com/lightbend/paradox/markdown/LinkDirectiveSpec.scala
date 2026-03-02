@@ -17,10 +17,13 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class LinkDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit private val context = writerContextWithProperties("page.variable" -> "https://page")
+  implicit private val context: Location[Page] => Writer.Context = writerContextWithProperties(
+    "page.variable" -> "https://page"
+  )
 
   def testMarkdown(text: String, pagePath: String = "page.md", testPath: String = "test.md"): Map[String, String] =
     markdownPages(

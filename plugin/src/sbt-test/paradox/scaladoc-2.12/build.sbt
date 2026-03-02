@@ -6,7 +6,7 @@ scalaVersion := "2.12.1"
 
 enablePlugins(ParadoxPlugin)
 paradoxTheme := None
-paradoxProperties in Compile ++= Map(
+Compile / paradoxProperties ++= Map(
   "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/akka/$akkaVersion",
   "scaladoc.akka.http.base_url" -> s"http://doc.akka.io/api/akka-http/$akkaHttpVersion"
 )

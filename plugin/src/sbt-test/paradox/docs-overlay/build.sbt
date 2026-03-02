@@ -1,5 +1,5 @@
-val DocsFirst  = config("docs-first")
-val DocsSecond = config("docs-second")
+val DocsFirst  = config("docsFirst")
+val DocsSecond = config("docsSecond")
 
 lazy val docs = (project in file("."))
   .enablePlugins(ParadoxPlugin)
@@ -8,18 +8,18 @@ lazy val docs = (project in file("."))
     ParadoxPlugin.paradoxSettings(DocsFirst),
     ParadoxPlugin.paradoxSettings(DocsSecond),
     // paradoxOverlayDirectories := Seq(baseDirectory.value / "src" / "commonFirst"),
-    paradoxOverlayDirectories in DocsFirst  := Seq(baseDirectory.value / "src" / "commonFirst"),
-    paradoxOverlayDirectories in DocsSecond := Seq(
+    DocsFirst / paradoxOverlayDirectories  := Seq(baseDirectory.value / "src" / "commonFirst"),
+    DocsSecond / paradoxOverlayDirectories := Seq(
       baseDirectory.value / "src" / "commonFirst",
       baseDirectory.value / "src" / "commonSecond"
     ),
-    paradoxRoots in DocsFirst := List(
+    DocsFirst / paradoxRoots := List(
       "commonFirst.html",
       "commonFirstDir/commonFirstFile.html",
       "docsFirstDir/docsFirstSubfile.html",
       "docsFirstFile.html"
     ),
-    paradoxRoots in DocsSecond := List(
+    DocsSecond / paradoxRoots := List(
       "commonFirst.html",
       "commonFirstDir/commonFirstFile.html",
       "commonSecond.html",

@@ -25,7 +25,7 @@ import org.pegdown.ast._
 import org.pegdown.{LinkRenderer, ToHtmlSerializer, VerbatimSerializer}
 
 import java.util.regex.Pattern
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 import scala.util.matching.Regex
 
 /**

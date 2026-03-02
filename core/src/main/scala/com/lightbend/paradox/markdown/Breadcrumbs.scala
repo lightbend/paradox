@@ -16,7 +16,7 @@
 
 package com.lightbend.paradox.markdown
 
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 
 import com.lightbend.paradox.tree.Tree.Location
 import org.pegdown.ast._

@@ -4,7 +4,7 @@ lazy val libraryDependencyTest = project
   .enablePlugins(ParadoxMaterialThemePlugin)
   .settings(
     TaskKey[Unit]("check") := {
-      val (_, file) = (packagedArtifact in makePom).value
+      val (_, file) = (Compile / makePom / packagedArtifact).value
       assert(file.exists, s"${file.getAbsolutePath} did not exist")
       val lines        = IO.readLines(file)
       val paradoxTheme = lines.find(_.matches(".*<artifactId>.*paradox.*theme.*</artifactId>.*"))

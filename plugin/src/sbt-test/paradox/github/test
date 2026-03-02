@@ -1,26 +1,26 @@
 # should work with tree url in scm info
 > docs/clean
-> set scmInfo in docs := (scmInfoTree in docs).value
+> set docs / scmInfo := (docs / scmInfoTree).value
 > docs/paradox
 $ must-mirror docs/target/paradox/site/main/github.html expected/github.html
 
 # should work with project url in scm info and not snapshot
 > docs/clean
-> set scmInfo in docs := (scmInfoProject in docs).value
-> set version in docs := (taggedVersion in docs).value
-> set isSnapshot in docs := false
+> set docs / scmInfo := (docs / scmInfoProject).value
+> set docs / version := (docs / taggedVersion).value
+> set docs / isSnapshot := false
 > docs/paradox
 $ must-mirror docs/target/paradox/site/main/github.html expected/github.html
 
 # should work with snapshot
 > docs/clean
-> set isSnapshot in docs := true
+> set docs / isSnapshot := true
 > docs/paradox
 $ must-mirror docs/target/paradox/site/main/github.html expected/github-master.html
 
 # should work with base_url set explicitly
 > docs/clean
-> set scmInfo in docs := None
-> set paradoxProperties in docs in Compile += (githubBaseUrlEntry in docs).value
+> set docs / scmInfo := None
+> set docs / Compile / paradoxProperties += (docs / githubBaseUrlEntry).value
 > docs/paradox
 $ must-mirror docs/target/paradox/site/main/github.html expected/github.html

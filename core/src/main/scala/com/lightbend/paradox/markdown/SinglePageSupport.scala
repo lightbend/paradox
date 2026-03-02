@@ -39,21 +39,21 @@ import org.pegdown.ast.{
 }
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 
 object SinglePageSupport {
 
   def writer: Writer = new Writer(new SinglePageToHtmlSerializer(_))
 
   def defaultPlugins(directives: Seq[Context => Directive]): Seq[Context => ToHtmlSerializerPlugin] =
-    Writer.defaultPlugins(directives).map { plugin => context: Context =>
+    Writer.defaultPlugins(directives).map { plugin => (context: Context) =>
       plugin(context) match {
         case _: AnchorLinkSerializer => new SinglePageAnchorLinkSerializer(context)
         case other                   => other
       }
     }
 
-  def defaultDirectives: Seq[Context => Directive] = Writer.defaultDirectives.map { directive => context: Context =>
+  def defaultDirectives: Seq[Context => Directive] = Writer.defaultDirectives.map { directive => (context: Context) =>
     directive(context) match {
       case ref: RefDirective => new SinglePageRefDirective(ref)
       case toc: TocDirective => new SinglePageTocDirective(toc)

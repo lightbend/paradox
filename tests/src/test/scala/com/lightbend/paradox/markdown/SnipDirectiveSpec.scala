@@ -112,7 +112,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "add link to source and copy button" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
       "snip.github_link" -> "true"
@@ -130,7 +130,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "add link to source with placeholders" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
       "snip.github_link" -> "true",
@@ -147,7 +147,7 @@ class SnipDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "not link to source if config says so" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "github.base_url" -> "https://github.com/lightbend/paradox/tree/v0.2.1",
       "github.root.base_dir" -> new File(".").getAbsoluteFile.getParent,
       "snip.github_link" -> "false"

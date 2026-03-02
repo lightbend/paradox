@@ -17,6 +17,8 @@
 import scala.collection.JavaConverters._
 import java.lang.management.ManagementFactory
 
+import sbt.ScriptedPlugin.autoImport.sbtTestDirectory
+
 inThisBuild(
   List(
     organization := "com.lightbend.paradox",
@@ -35,8 +37,16 @@ inThisBuild(
 
 // https://github.com/djspiewak/sbt-github-actions
 ThisBuild / githubWorkflowJavaVersions := List(
-  JavaSpec.temurin("11"),
-  JavaSpec.temurin("17")
+  JavaSpec.temurin("17"),
+  JavaSpec.temurin("11")
+)
+ThisBuild / githubWorkflowScalaVersions         := List("2.12.21", "3.8.1")
+ThisBuild / githubWorkflowBuildMatrixExclusions := Seq(
+  MatrixExclude(Map("scala" -> "3.8.1", "java" -> "temurin@11"))
+)
+ThisBuild / githubWorkflowSbtCommand := "sbt -batch"
+ThisBuild / githubWorkflowBuild      := Seq(
+  WorkflowStep.Sbt(List("verify"), name = Some("Verify project"))
 )
 ThisBuild / githubWorkflowTargetBranches := Seq("main")
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
@@ -62,11 +72,13 @@ lazy val paradox = project
     publish / skip := true
   )
 
+lazy val scala3 = "3.8.1"
+
 lazy val core = project
   .in(file("core"))
   .settings(
     name               := "paradox",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.18"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.18", scala3),
     libraryDependencies ++= Library.pegdown,
     libraryDependencies ++= Seq(
       Library.st4,
@@ -79,7 +91,8 @@ lazy val testkit = project
   .in(file("testkit"))
   .dependsOn(core)
   .settings(
-    name := "testkit",
+    name               := "testkit",
+    crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.jtidy
     )
@@ -89,11 +102,13 @@ lazy val tests = project
   .in(file("tests"))
   .dependsOn(core, testkit)
   .settings(
-    name := "tests",
+    name               := "tests",
+    crossScalaVersions := (core / crossScalaVersions).value,
     libraryDependencies ++= Seq(
       Library.scalatest % "test"
     ),
-    publish / skip := true
+    publish / skip           := true,
+    Test / parallelExecution := false
   )
 
 lazy val plugin = project
@@ -101,11 +116,18 @@ lazy val plugin = project
   .dependsOn(core)
   .enablePlugins(SbtPlugin)
   .settings(
-    name      := "sbt-paradox",
-    sbtPlugin := true,
+    name               := "sbt-paradox",
+    crossScalaVersions := Seq("2.12.21", scala3), // sbt 1 uses 2.12, sbt 2 uses 3 — no 2.13
+    sbtPlugin          := true,
     addSbtPlugin(Library.sbtWeb),
-    pluginCrossBuild / sbtVersion := "1.0.0", // support all sbt 1.x
-    scriptedSbt                   := sbtVersion.value, // run scripted tests against build sbt by default
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.4"
+        case _      => "2.0.0-RC9"
+      }
+    },
+    scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= ManagementFactory.getRuntimeMXBean.getInputArguments.asScala
       .filter(a => Seq("-Xmx", "-Xms", "-XX", "-Dfile").exists(a.startsWith)),
@@ -129,9 +151,17 @@ lazy val plugin = project
 lazy val themePlugin = project
   .in(file("theme-plugin"))
   .settings(
-    name      := "sbt-paradox-theme",
-    sbtPlugin := true,
-    addSbtPlugin(Library.sbtWeb)
+    name               := "sbt-paradox-theme",
+    crossScalaVersions := Seq("2.12.21", scala3),
+    sbtPlugin          := true,
+    addSbtPlugin(Library.sbtWeb),
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.4"
+        case _      => "2.0.0-RC9"
+      }
+    }
   )
 
 lazy val themes = project
@@ -167,4 +197,21 @@ lazy val docs = project
   )
 
 addCommandAlias("verify", ";Test/compile ;Compile/doc ;test ;scripted ;docs/paradox")
-addCommandAlias("verify-no-docker", ";Test/compile ;Compile/doc ;test ;scripted paradox/* ;docs/paradox")
+
+commands += Command.command("verify-no-docker") { state =>
+  val extracted = Project.extract(state)
+  val pluginRef = LocalProject("plugin")
+  val base      = extracted.get(pluginRef / sbtTestDirectory) / "paradox"
+  val sv        = extracted.get(pluginRef / scalaBinaryVersion)
+  val exclude   = if (sv == "3") Set("libraryDependencies") else Set.empty[String]
+  val tests     = Option(base.listFiles).toSeq.flatten
+    .filter(_.isDirectory)
+    .map(_.getName)
+    .filterNot(exclude)
+    .sorted
+    .map(n => s"paradox/$n")
+    .mkString(" ")
+  val cmds = "Test/compile" :: "Compile/doc" :: "test" ::
+    s"plugin/scripted $tests" :: "docs/paradox" :: Nil
+  cmds ::: state
+}

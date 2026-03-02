@@ -64,9 +64,9 @@ case class Page(
    * Extract a page title from text nodes in the label.
    */
   val title: String = {
-    import scala.collection.JavaConverters._
+    import com.lightbend.paradox.compat.Implicits._
     def textNodes(node: Node): Seq[String] =
-      node.getChildren.asScala.flatMap {
+      node.getChildren.asScala.toSeq.flatMap {
         case t: TextNode => Seq(t.getText)
         case other       => textNodes(other)
       }

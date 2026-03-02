@@ -19,7 +19,7 @@ package com.lightbend.paradox.markdown
 import java.util.function.Consumer
 
 import scala.collection.mutable
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 import org.parboiled.common.StringUtils
 import org.pegdown.ast.{VerbatimGroupNode, VerbatimNode}
 import org.pegdown.{Printer, VerbatimSerializer}

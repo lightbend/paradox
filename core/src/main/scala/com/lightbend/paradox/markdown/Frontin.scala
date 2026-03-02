@@ -17,7 +17,7 @@
 package com.lightbend.paradox.markdown
 
 import java.io.{File, StringReader}
-import collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 import scala.io.BufferedSource
 
 case class Frontin(header: Map[String, String], body: String)
@@ -34,8 +34,7 @@ object Frontin {
       try {
         source = scala.io.Source.fromFile(file)("UTF-8")
         source.getLines.mkString("\n")
-      } finally
-        source.close()
+      } finally source.close()
     apply(lines)
   }
 

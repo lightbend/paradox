@@ -17,10 +17,11 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit val context = writerContextWithProperties(
+  implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
     "scaladoc.base_url" -> "http://example.org/api/0.1.2/",
     "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.12/",
     "scaladoc.akka.base_url" -> "http://doc.akka.io/api/akka/2.4.10",
@@ -75,7 +76,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "create accept subpackages starting with uppercase" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "scaladoc.package_name_style" -> "startWithAnycase",
       "scaladoc.org.example.base_url" -> "http://example.org/api/0.1.2/"
     )
@@ -204,7 +205,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support Scala 2.12 links" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.12.0/",
       "scaladoc.version" -> "2.12.0"
     )
@@ -224,7 +225,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "support Scala 2.11 links" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "scaladoc.scala.base_url" -> "http://www.scala-lang.org/api/2.11.12/",
       "scaladoc.version" -> "2.11.12"
     )

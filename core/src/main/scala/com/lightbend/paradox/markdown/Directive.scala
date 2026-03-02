@@ -26,7 +26,7 @@ import org.pegdown.ast.DirectiveNode.Format._
 import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.{Printer, ToHtmlSerializer}
 
-import scala.collection.JavaConverters._
+import com.lightbend.paradox.compat.Implicits._
 import scala.util.matching.Regex
 
 /**
@@ -304,7 +304,8 @@ abstract class ApiDocDirective(name: String) extends ExternalLinkDirective(name,
   override protected def resolveLink(node: DirectiveNode, link: String): Url = {
     val resolvedLink = resolveApiLink(link)
     val resolvedPath = resolvedLink.base.getPath
-    if (resolvedPath startsWith ".../") resolvedLink.copy(path = page.base + resolvedPath.drop(4)) else resolvedLink
+    if (resolvedPath startsWith ".../") resolvedLink.withComponents(path = page.base + resolvedPath.drop(4))
+    else resolvedLink
   }
 
 }
@@ -512,7 +513,7 @@ case class SnipDirective(ctx: Writer.Context)
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     try {
-      val labels              = node.attributes.values("identifier").asScala
+      val labels              = node.attributes.values("identifier").asScala.toSeq
       val source              = resolvedSource(node, page)
       val filterLabels        = Directive.filterLabels("snip", node.attributes, labels, variables)
       val file                = resolveFile("snip", source, page, variables)
@@ -556,7 +557,7 @@ case class FiddleDirective(ctx: Writer.Context) extends LeafBlockDirective("fidd
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit =
     try {
-      val labels = node.attributes.values("identifier").asScala
+      val labels = node.attributes.values("identifier").asScala.toSeq
 
       val integrationScriptUrl =
         node.attributes.value("integrationScriptUrl", "https://embed.scalafiddle.io/integration.js")
@@ -650,7 +651,7 @@ case class VarDirective(variables: Map[String, String]) extends InlineDirective(
  */
 case class VarsDirective(variables: Map[String, String]) extends ContainerBlockDirective("vars") {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
-    import scala.collection.JavaConverters._
+    import com.lightbend.paradox.compat.Implicits._
     node.contentsNode.getChildren.asScala.headOption match {
       case Some(verbatim: VerbatimNode) =>
         val startDelimiter = node.attributes.value("start-delimiter", "$")

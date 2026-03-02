@@ -17,10 +17,11 @@
 package com.lightbend.paradox.markdown
 
 import com.lightbend.paradox.ParadoxException
+import com.lightbend.paradox.tree.Tree.Location
 
 class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
-  implicit val context = writerContextWithProperties(
+  implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
     "javadoc.base_url" -> "http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/",
     "javadoc.link_style" -> "frames",
     "javadoc.java.base_url" -> "https://docs.oracle.com/javase/8/docs/api/",
@@ -77,7 +78,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
   }
 
   it should "create accept subpackages starting with uppercase" in {
-    implicit val context = writerContextWithProperties(
+    implicit val context: Location[Page] => Writer.Context = writerContextWithProperties(
       "javadoc.package_name_style" -> "startWithAnycase",
       "javadoc.org.example.base_url" -> "http://example.org/api/0.1.2/"
     )

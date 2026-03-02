@@ -4,10 +4,10 @@ import sbt._
 
 object PageGenerator {
   def generatePages: Def.Initialize[Task[Seq[File]]] = Def.task {
-    val firstPage = (sourceManaged in (Compile, paradox)).value / "generated-page.md"
+    val firstPage = (Compile / paradox / sourceManaged).value / "generated-page.md"
     IO.write(firstPage, "Generated Page 1")
 
-    val secondPage = (sourceManaged in (Compile, paradox)).value / "generated" / "page.md"
+    val secondPage = (Compile / paradox / sourceManaged).value / "generated" / "page.md"
     IO.write(secondPage, "Generated Page 2")
 
     Seq(firstPage, secondPage)
