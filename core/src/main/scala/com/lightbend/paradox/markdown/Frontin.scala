@@ -26,14 +26,14 @@ object Frontin {
   val separator = "---"
 
   def separates(str: String): Boolean =
-    (str.trim == separator) && (str startsWith separator)
+    str.trim == separator && str.startsWith(separator)
 
   def apply(file: File): Frontin = {
     var source: BufferedSource = null
     val lines                  =
       try {
-        source = scala.io.Source.fromFile(file)("UTF-8")
-        source.getLines.mkString("\n")
+        source = scala.io.Source.fromFile(file)(using "UTF-8")
+        source.getLines().mkString("\n")
       } finally source.close()
     apply(lines)
   }

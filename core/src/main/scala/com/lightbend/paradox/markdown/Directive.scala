@@ -146,12 +146,12 @@ trait SourceDirective {
 object SourceDirective {
   def resolveFile(propPrefix: String, source: String, pageFile: File, variables: Map[String, String]): File =
     source match {
-      case s if s startsWith "$" =>
+      case s if s.startsWith("$") =>
         val baseKey       = s.drop(1).takeWhile(_ != '$')
         val base          = new File(PropertyUrl(s"$propPrefix.$baseKey.base_dir", variables.get).base.trim)
         val effectiveBase = if (base.isAbsolute) base else new File(pageFile.getParentFile, base.toString)
         new File(effectiveBase, s.drop(baseKey.length + 2))
-      case s if s startsWith "/" =>
+      case s if s.startsWith("/") =>
         val base = new File(PropertyUrl(SnipDirective.buildBaseDir, variables.get).base.trim)
         new File(base, s)
       case s =>
@@ -214,7 +214,7 @@ object LinkDirective {
 /**
  * Link to external sites using URI templates.
  */
-abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names: _*) with SourceDirective {
+abstract class ExternalLinkDirective(names: String*) extends InlineDirective(names*) with SourceDirective {
 
   protected def resolveLink(node: DirectiveNode, location: String): Url
 
@@ -227,7 +227,7 @@ abstract class ExternalLinkDirective(names: String*) extends InlineDirective(nam
     val link = super.resolvedSource(node, page)
     try {
       val resolvedLink = resolveLink(node: DirectiveNode, link).base.normalize.toString
-      if (resolvedLink startsWith ".../") page.base + resolvedLink.drop(4) else resolvedLink
+      if (resolvedLink.startsWith(".../")) page.base + resolvedLink.drop(4) else resolvedLink
     } catch {
       case e @ Url.Error(reason) =>
         ctx.logger.debug(e)
@@ -304,7 +304,7 @@ abstract class ApiDocDirective(name: String) extends ExternalLinkDirective(name,
   override protected def resolveLink(node: DirectiveNode, link: String): Url = {
     val resolvedLink = resolveApiLink(link)
     val resolvedPath = resolvedLink.base.getPath
-    if (resolvedPath startsWith ".../") resolvedLink.withComponents(path = page.base + resolvedPath.drop(4))
+    if (resolvedPath.startsWith(".../")) resolvedLink.withComponents(path = page.base + resolvedPath.drop(4))
     else resolvedLink
   }
 
@@ -462,7 +462,7 @@ trait GitHubResolver {
     val fragment = labelFragment.getOrElse(pathUrl.base.getFragment)
     val treePath = Path.relativeLocalPath(root.getAbsolutePath, file.getAbsolutePath)
 
-    (treeUrl / treePath) withFragment fragment
+    (treeUrl / treePath).withFragment(fragment)
   }
 
   protected def resolveProject(project: String): Url =
@@ -670,7 +670,7 @@ case class VarsDirective(variables: Map[String, String]) extends ContainerBlockD
  *
  * Renders call-out divs.
  */
-case class CalloutDirective(name: String, defaultTitle: String) extends ContainerBlockDirective(Array(name): _*) {
+case class CalloutDirective(name: String, defaultTitle: String) extends ContainerBlockDirective(Array(name)*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val classes = node.attributes.classesString
     val title   = node.attributes.value("title", defaultTitle)
@@ -687,7 +687,7 @@ case class CalloutDirective(name: String, defaultTitle: String) extends Containe
  *
  * Wraps inner content in a `div` or `p`, optionally with custom `id` and/or `class` attributes.
  */
-case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ, typ.toUpperCase): _*) {
+case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ, typ.toUpperCase)*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val id =
       node.attributes.identifier match {
@@ -710,7 +710,7 @@ case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ,
  *
  * Wraps inner contents in a `span`, optionally with custom `id` and/or `class` attributes.
  */
-case class InlineWrapDirective(typ: String) extends InlineDirective(Array(typ, typ.toUpperCase): _*) {
+case class InlineWrapDirective(typ: String) extends InlineDirective(Array(typ, typ.toUpperCase)*) {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val id =
@@ -729,7 +729,7 @@ case class InlineWrapDirective(typ: String) extends InlineDirective(Array(typ, t
   }
 }
 
-case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(groups: _*) {
+case class InlineGroupDirective(groups: Seq[String]) extends InlineDirective(groups*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     printer.print(s"""<span class="group-${node.name}">""")
     node.contentsNode.accept(visitor)

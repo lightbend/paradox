@@ -67,7 +67,7 @@ case class PropertyUrl(property: String, variables: String => Option[String]) {
   def resolve(): Url =
     Url.parse(base, s"property [$property] contains an invalid URL [$base]")
 
-  def format(args: String*): Url = Url(base.format(args: _*))
+  def format(args: String*): Url = Url(base.format(args*))
 
   def collect(f: PartialFunction[String, String]): Url =
     PropertyUrl(property, variables(_).collect(f)).resolve()

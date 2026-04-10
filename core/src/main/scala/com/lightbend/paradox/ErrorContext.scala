@@ -81,7 +81,7 @@ class ErrorCollector extends ErrorContext {
         var source: BufferedSource = null
         val lines                  =
           try {
-            source = scala.io.Source.fromFile(page)("UTF-8")
+            source = scala.io.Source.fromFile(page)(using "UTF-8")
             source.getLines().toList
           } finally source.close()
         errors.sortBy(_.index.getOrElse(0)).foreach {

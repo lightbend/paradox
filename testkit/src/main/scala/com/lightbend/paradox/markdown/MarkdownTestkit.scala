@@ -46,7 +46,7 @@ abstract class MarkdownTestkit {
           render(loc.next, rendered :+ (page.path, html))
         case None => rendered
       }
-    render(Location.forest(pages(mappings: _*))).toMap
+    render(Location.forest(pages(mappings*))).toMap
   }
 
   def layoutPages(mappings: (String, String)*)(
@@ -72,12 +72,12 @@ abstract class MarkdownTestkit {
           render(loc.next, rendered :+ (page.path, normalize(fileContent)))
         case None => rendered
       }
-    render(Location.forest(pages(mappings: _*))).toMap
+    render(Location.forest(pages(mappings*))).toMap
   }
 
   def fileToContent(file: File): String = {
     import scala.io.Source
-    Source.fromFile(file).getLines.mkString("\n")
+    Source.fromFile(file).getLines().mkString("\n")
   }
 
   def createFileTemplates(dir: Path, templates: Seq[(String, String)]) = {
@@ -109,7 +109,7 @@ abstract class MarkdownTestkit {
     )
 
   def pages(mappings: (String, String)*): Forest[Page] = {
-    val parsed = mappings map { case (path, text) =>
+    val parsed = mappings.map { case (path, text) =>
       val frontin = Frontin(prepare(text))
       val file    = new File(path)
       (
@@ -160,9 +160,9 @@ abstract class MarkdownTestkit {
     val getContent = content
 
     lazy val getBase         = ""
-    lazy val getHome         = new EmptyLink()
-    lazy val getPrev         = new EmptyLink()
-    lazy val getNext         = new EmptyLink()
+    lazy val getHome: PageTemplate.Link = new EmptyLink()
+    lazy val getPrev: PageTemplate.Link = new EmptyLink()
+    lazy val getNext: PageTemplate.Link = new EmptyLink()
     lazy val getBreadcrumbs  = ""
     lazy val getNavigation   = ""
     lazy val hasSubheaders   = false

@@ -26,9 +26,9 @@ object Snippet {
   class SnippetException(message: String) extends RuntimeException(message)
 
   def apply(file: File, labels: Seq[String], filterLabelLines: Boolean): (String, String) = {
-    val source = Source.fromFile(file)("UTF-8")
+    val source = Source.fromFile(file)(using "UTF-8")
     try {
-      val lines = source.getLines.toSeq
+      val lines = source.getLines().toSeq
       (extract(file, lines, labels, filterLabelLines), language(file))
     } finally source.close()
   }
@@ -68,9 +68,9 @@ object Snippet {
   }
 
   def extractLabelRange(file: File, label: String, filterLabelLines: Boolean = true): Option[(Int, Int)] = {
-    val source = Source.fromFile(file)("UTF-8")
+    val source = Source.fromFile(file)(using "UTF-8")
     try {
-      val lines       = source.getLines.toSeq
+      val lines       = source.getLines().toSeq
       val lineNumbers = extractState(file, lines, label, filterLabelLines).lines.map(_._1)
       if (lineNumbers.isEmpty)
         None

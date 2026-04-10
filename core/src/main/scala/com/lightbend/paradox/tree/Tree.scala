@@ -31,7 +31,7 @@ abstract class Tree[A] {
    * Map this tree into a new tree using f.
    */
   def map[B](f: A => B): Tree[B] =
-    Tree(f(label), children map (_ map f))
+    Tree(f(label), children.map(_.map(f)))
 
   /**
    * Create a new location focused on this tree.

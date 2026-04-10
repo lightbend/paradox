@@ -49,9 +49,9 @@ object ParadoxPlugin extends AutoPlugin {
 
   override def projectConfigurations: Seq[Configuration] = super.projectConfigurations :+ ParadoxTheme
 
-  override def projectSettings: Seq[Setting[_]] = paradoxSettings(Compile)
+  override def projectSettings: Seq[Setting[?]] = paradoxSettings(Compile)
 
-  def paradoxGlobalSettings: Seq[Setting[_]] = Seq(
+  def paradoxGlobalSettings: Seq[Setting[?]] = Seq(
     paradoxOrganization             := readProperty("paradox.properties", "paradox.organization"),
     paradoxVersion                  := readProperty("paradox.properties", "paradox.version"),
     paradoxSourceSuffix             := Writer.DefaultSourceSuffix,
@@ -69,20 +69,20 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxDefaultTemplateName      := "page",
     paradoxLeadingBreadcrumbs       := Nil,
     paradoxGroups                   := Map.empty,
-    libraryDependencies ++= paradoxTheme.value.toSeq map (_ % ParadoxTheme),
+    libraryDependencies ++= paradoxTheme.value.toSeq.map(_ % ParadoxTheme),
     paradoxValidateLinksRetryCount := 0,
     paradoxValidationIgnorePaths   := List("http://localhost.*".r),
     paradoxValidationSiteBasePath  := None
   )
 
-  def paradoxSettings(config: Configuration): Seq[Setting[_]] = paradoxGlobalSettings ++
+  def paradoxSettings(config: Configuration): Seq[Setting[?]] = paradoxGlobalSettings ++
     inConfig(ParadoxTheme)(Defaults.configSettings) ++
     inConfig(config)(baseParadoxSettings)
 
   private def classLoader(classpath: Classpath)(implicit conv: xsbti.FileConverter): ClassLoader =
     new java.net.URLClassLoader(Path.toURLs(sbtcompat.PluginCompat.toFiles(classpath).toSeq).toArray, null)
 
-  def baseParadoxSettings: Seq[Setting[_]] = Seq(
+  def baseParadoxSettings: Seq[Setting[?]] = Seq(
     Assets / WebKeys.webJarsClassLoader := Def.uncached {
       implicit val conv: xsbti.FileConverter = fileConverter.value
       classLoader((ParadoxTheme / dependencyClasspath).value)
@@ -187,9 +187,9 @@ object ParadoxPlugin extends AutoPlugin {
       paradoxTheme / sourceDirectories,
       paradoxTheme / includeFilter,
       paradoxTheme / excludeFilter
-    ) dependsOn
+    ).dependsOn(
       Assets / WebKeys.webJars // extract webjars first
-    ).value,
+    )).value,
     paradoxTheme / mappings := Defaults
       .relativeMappings(paradoxTheme / sources, paradoxTheme / sourceDirectories)
       .value,
@@ -225,9 +225,9 @@ object ParadoxPlugin extends AutoPlugin {
       paradoxTemplate / sourceDirectories,
       paradoxTemplate / includeFilter,
       paradoxTemplate / excludeFilter
-    ) dependsOn
+    ).dependsOn(
       paradoxThemeDirectory // trigger theme extraction first
-    ).value,
+    )).value,
     paradoxTemplate / mappings := Defaults
       .relativeMappings(paradoxTemplate / sources, paradoxTemplate / sourceDirectories)
       .value,
@@ -415,7 +415,7 @@ object ParadoxPlugin extends AutoPlugin {
   }
 
   private def defineSiteMappings(
-      scopeTask: TaskKey[_],
+      scopeTask: TaskKey[?],
       siteTask: TaskKey[File],
       markdownToHtmlTask: TaskKey[Seq[(File, String)]],
       siteDir: String
