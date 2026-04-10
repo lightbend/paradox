@@ -183,13 +183,16 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxTheme / sourceDirectories := (paradoxTheme / managedSourceDirectories).value :+ (paradoxTheme / sourceDirectory).value,
     paradoxTheme / includeFilter := AllPassFilter,
     paradoxTheme / excludeFilter := HiddenFileFilter,
-    paradoxTheme / sources       := (Defaults.collectFiles(
-      paradoxTheme / sourceDirectories,
-      paradoxTheme / includeFilter,
-      paradoxTheme / excludeFilter
-    ).dependsOn(
-      Assets / WebKeys.webJars // extract webjars first
-    )).value,
+    paradoxTheme / sources       := Defaults
+      .collectFiles(
+        paradoxTheme / sourceDirectories,
+        paradoxTheme / includeFilter,
+        paradoxTheme / excludeFilter
+      )
+      .dependsOn(
+        Assets / WebKeys.webJars // extract webjars first
+      )
+      .value,
     paradoxTheme / mappings := Defaults
       .relativeMappings(paradoxTheme / sources, paradoxTheme / sourceDirectories)
       .value,
@@ -221,13 +224,16 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxTemplate / sourceDirectories := Seq((paradoxTemplate / sourceDirectory).value),
     paradoxTemplate / includeFilter     := AllPassFilter,
     paradoxTemplate / excludeFilter     := "*.st" || "*.stg",
-    paradoxTemplate / sources           := (Defaults.collectFiles(
-      paradoxTemplate / sourceDirectories,
-      paradoxTemplate / includeFilter,
-      paradoxTemplate / excludeFilter
-    ).dependsOn(
-      paradoxThemeDirectory // trigger theme extraction first
-    )).value,
+    paradoxTemplate / sources           := Defaults
+      .collectFiles(
+        paradoxTemplate / sourceDirectories,
+        paradoxTemplate / includeFilter,
+        paradoxTemplate / excludeFilter
+      )
+      .dependsOn(
+        paradoxThemeDirectory // trigger theme extraction first
+      )
+      .value,
     paradoxTemplate / mappings := Defaults
       .relativeMappings(paradoxTemplate / sources, paradoxTemplate / sourceDirectories)
       .value,

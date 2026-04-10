@@ -53,7 +53,10 @@ object Index {
   )
 
   def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] =
-    link(parsed.map { case (file, path, markdown, pageProperties) => page(file, path, markdown, pageProperties) }.toList, properties)
+    link(
+      parsed.map { case (file, path, markdown, pageProperties) => page(file, path, markdown, pageProperties) }.toList,
+      properties
+    )
 
   /**
    * Create a new Index.Page with parsed indices and headers.

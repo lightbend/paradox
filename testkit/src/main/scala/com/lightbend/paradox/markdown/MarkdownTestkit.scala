@@ -159,17 +159,17 @@ abstract class MarkdownTestkit {
     val getTitle   = ""
     val getContent = content
 
-    lazy val getBase         = ""
+    lazy val getBase                    = ""
     lazy val getHome: PageTemplate.Link = new EmptyLink()
     lazy val getPrev: PageTemplate.Link = new EmptyLink()
     lazy val getNext: PageTemplate.Link = new EmptyLink()
-    lazy val getBreadcrumbs  = ""
-    lazy val getNavigation   = ""
-    lazy val hasSubheaders   = false
-    lazy val getToc          = ""
-    lazy val getSource_url   = ""
-    lazy val getProperties   = properties.asJava
-    lazy val getPath: String = ""
+    lazy val getBreadcrumbs             = ""
+    lazy val getNavigation              = ""
+    lazy val hasSubheaders              = false
+    lazy val getToc                     = ""
+    lazy val getSource_url              = ""
+    lazy val getProperties              = properties.asJava
+    lazy val getPath: String            = ""
   }
 
   case class EmptyLink() extends PageTemplate.Link {
