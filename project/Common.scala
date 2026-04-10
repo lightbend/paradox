@@ -34,6 +34,12 @@ object Common extends AutoPlugin {
   // AutomateHeaderPlugin is not an allRequirements-AutoPlugin, so explicitly add settings here:
   override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, _)) => Seq("-Xsource:3")
+        case _            => Seq.empty
+      }
+    },
     javacOptions ++= Seq("-encoding", "UTF-8"),
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
