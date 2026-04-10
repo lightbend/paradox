@@ -27,6 +27,7 @@ import org.pegdown.plugins.ToHtmlSerializerPlugin
 import org.pegdown.{Printer, ToHtmlSerializer}
 
 import com.lightbend.paradox.compat.Implicits._
+import com.lightbend.paradox.compat.unsafeWrapArray
 import scala.util.matching.Regex
 
 /**
@@ -670,7 +671,8 @@ case class VarsDirective(variables: Map[String, String]) extends ContainerBlockD
  *
  * Renders call-out divs.
  */
-case class CalloutDirective(name: String, defaultTitle: String) extends ContainerBlockDirective(Array(name)*) {
+case class CalloutDirective(name: String, defaultTitle: String)
+    extends ContainerBlockDirective(unsafeWrapArray(Array(name))*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val classes = node.attributes.classesString
     val title   = node.attributes.value("title", defaultTitle)
@@ -687,7 +689,7 @@ case class CalloutDirective(name: String, defaultTitle: String) extends Containe
  *
  * Wraps inner content in a `div` or `p`, optionally with custom `id` and/or `class` attributes.
  */
-case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ, typ.toUpperCase)*) {
+case class WrapDirective(typ: String) extends ContainerBlockDirective(unsafeWrapArray(Array(typ, typ.toUpperCase))*) {
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val id =
       node.attributes.identifier match {
@@ -710,7 +712,7 @@ case class WrapDirective(typ: String) extends ContainerBlockDirective(Array(typ,
  *
  * Wraps inner contents in a `span`, optionally with custom `id` and/or `class` attributes.
  */
-case class InlineWrapDirective(typ: String) extends InlineDirective(Array(typ, typ.toUpperCase)*) {
+case class InlineWrapDirective(typ: String) extends InlineDirective(unsafeWrapArray(Array(typ, typ.toUpperCase))*) {
 
   def render(node: DirectiveNode, visitor: Visitor, printer: Printer): Unit = {
     val id =
