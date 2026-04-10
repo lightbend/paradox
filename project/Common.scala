@@ -16,7 +16,6 @@
 
 import sbt._
 import sbt.Keys._
-import xerial.sbt.Sonatype.autoImport.sonatypeProfileName
 import de.heikoseeberger.sbtheader.{AutomateHeaderPlugin, CommentStyle, FileType, HeaderPlugin, License}
 
 /**
@@ -36,7 +35,6 @@ object Common extends AutoPlugin {
   override def projectSettings = AutomateHeaderPlugin.projectSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
     javacOptions ++= Seq("-encoding", "UTF-8"),
-    sonatypeProfileName := "com.lightbend",
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
       FileType.scala -> CommentStyle.cStyleBlockComment,
