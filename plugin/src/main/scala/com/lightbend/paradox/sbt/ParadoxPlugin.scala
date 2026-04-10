@@ -231,88 +231,82 @@ object ParadoxPlugin extends AutoPlugin {
     paradoxTemplate / mappings := Defaults
       .relativeMappings(paradoxTemplate / sources, paradoxTemplate / sourceDirectories)
       .value,
-    paradoxMarkdownToHtml := Def.taskDyn {
+    paradoxMarkdownToHtml := Def.uncached {
       val strms = streams.value
       IO.delete((paradoxMarkdownToHtml / target).value)
-      Def.task {
-        implicit val conv: xsbti.FileConverter = fileConverter.value
-        paradoxProcessor.value.process(
-          Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value),
-          paradoxLeadingBreadcrumbs.value,
-          (paradoxMarkdownToHtml / target).value,
-          paradoxSourceSuffix.value,
-          paradoxTargetSuffix.value,
-          paradoxIllegalLinkPath.value,
-          paradoxGroups.value,
-          paradoxProperties.value,
-          paradoxNavigationDepth.value,
-          paradoxNavigationExpandDepth.value,
-          paradoxNavigationIncludeHeaders.value,
-          paradoxRoots.value,
-          paradoxTemplate.value,
-          new SbtParadoxLogger(strms.log)
-        ) match {
-          case Left(error) =>
-            strms.log.error(error)
-            throw new ParadoxException
-          case Right(files) => files
-        }
+      implicit val conv: xsbti.FileConverter = fileConverter.value
+      paradoxProcessor.value.process(
+        Compat.mappingsToFiles((paradoxMarkdownToHtml / mappings).value),
+        paradoxLeadingBreadcrumbs.value,
+        (paradoxMarkdownToHtml / target).value,
+        paradoxSourceSuffix.value,
+        paradoxTargetSuffix.value,
+        paradoxIllegalLinkPath.value,
+        paradoxGroups.value,
+        paradoxProperties.value,
+        paradoxNavigationDepth.value,
+        paradoxNavigationExpandDepth.value,
+        paradoxNavigationIncludeHeaders.value,
+        paradoxRoots.value,
+        paradoxTemplate.value,
+        new SbtParadoxLogger(strms.log)
+      ) match {
+        case Left(error) =>
+          strms.log.error(error)
+          throw new ParadoxException
+        case Right(files) => files
       }
-    }.value,
-    paradoxSingleMarkdownToHtml := Def.taskDyn {
+    },
+    paradoxSingleMarkdownToHtml := Def.uncached {
       val strms = streams.value
       IO.delete((paradoxSingleMarkdownToHtml / target).value)
-      Def.task {
-        implicit val conv: xsbti.FileConverter = fileConverter.value
-        paradoxProcessor.value.processSinglePage(
-          Compat.mappingsToFiles((paradoxSingleMarkdownToHtml / mappings).value),
-          (paradoxSingleMarkdownToHtml / target).value,
-          (paradoxSingle / paradoxSourceSuffix).value,
-          (paradoxSingle / paradoxTargetSuffix).value,
-          (paradoxSingle / paradoxIllegalLinkPath).value,
-          (paradoxSingle / paradoxGroups).value,
-          (paradoxSingle / paradoxProperties).value,
-          (paradoxSingle / paradoxNavigationDepth).value,
-          (paradoxSingle / paradoxNavigationExpandDepth).value,
-          (paradoxSingle / paradoxRoots).value,
-          (paradoxSingle / paradoxTemplate).value,
-          false,
-          new SbtParadoxLogger(strms.log)
-        ) match {
-          case Left(error) =>
-            strms.log.error(error)
-            throw new ParadoxException
-          case Right(files) => files
-        }
+      implicit val conv: xsbti.FileConverter = fileConverter.value
+      paradoxProcessor.value.processSinglePage(
+        Compat.mappingsToFiles((paradoxSingleMarkdownToHtml / mappings).value),
+        (paradoxSingleMarkdownToHtml / target).value,
+        (paradoxSingle / paradoxSourceSuffix).value,
+        (paradoxSingle / paradoxTargetSuffix).value,
+        (paradoxSingle / paradoxIllegalLinkPath).value,
+        (paradoxSingle / paradoxGroups).value,
+        (paradoxSingle / paradoxProperties).value,
+        (paradoxSingle / paradoxNavigationDepth).value,
+        (paradoxSingle / paradoxNavigationExpandDepth).value,
+        (paradoxSingle / paradoxRoots).value,
+        (paradoxSingle / paradoxTemplate).value,
+        false,
+        new SbtParadoxLogger(strms.log)
+      ) match {
+        case Left(error) =>
+          strms.log.error(error)
+          throw new ParadoxException
+        case Right(files) => files
       }
-    }.value,
-    paradoxPdfMarkdownToHtml := Def.taskDyn {
+    },
+    paradoxPdfMarkdownToHtml := Def.uncached {
       val strms = streams.value
       IO.delete((paradoxPdfMarkdownToHtml / target).value)
-      Def.task {
-        implicit val conv: xsbti.FileConverter = fileConverter.value
-        paradoxProcessor.value.processSinglePage(
-          Compat.mappingsToFiles((paradoxPdfMarkdownToHtml / mappings).value),
-          (paradoxPdfMarkdownToHtml / target).value,
-          (paradoxPdf / paradoxSourceSuffix).value,
-          (paradoxPdf / paradoxTargetSuffix).value,
-          (paradoxPdf / paradoxIllegalLinkPath).value,
-          (paradoxPdf / paradoxGroups).value,
-          (paradoxPdf / paradoxProperties).value,
-          (paradoxPdf / paradoxNavigationDepth).value,
-          (paradoxPdf / paradoxNavigationExpandDepth).value,
-          (paradoxPdf / paradoxRoots).value,
-          (paradoxPdf / paradoxTemplate).value,
-          true,
-          new SbtParadoxLogger(strms.log)
-        ) match {
-          case Left(error) =>
-            strms.log.error(error)
-            throw new ParadoxException
-          case Right(files) => files
-        }
+      implicit val conv: xsbti.FileConverter = fileConverter.value
+      paradoxProcessor.value.processSinglePage(
+        Compat.mappingsToFiles((paradoxPdfMarkdownToHtml / mappings).value),
+        (paradoxPdfMarkdownToHtml / target).value,
+        (paradoxPdf / paradoxSourceSuffix).value,
+        (paradoxPdf / paradoxTargetSuffix).value,
+        (paradoxPdf / paradoxIllegalLinkPath).value,
+        (paradoxPdf / paradoxGroups).value,
+        (paradoxPdf / paradoxProperties).value,
+        (paradoxPdf / paradoxNavigationDepth).value,
+        (paradoxPdf / paradoxNavigationExpandDepth).value,
+        (paradoxPdf / paradoxRoots).value,
+        (paradoxPdf / paradoxTemplate).value,
+        true,
+        new SbtParadoxLogger(strms.log)
+      ) match {
+        case Left(error) =>
+          strms.log.error(error)
+          throw new ParadoxException
+        case Right(files) => files
       }
-    }.value,
+    },
     paradox / includeFilter := AllPassFilter,
     paradox / excludeFilter :=
       // exclude markdown sources and the _template directory sources
@@ -355,7 +349,7 @@ object ParadoxPlugin extends AutoPlugin {
       "--footer-spacing",
       "5"
     ),
-    paradoxPdf := {
+    paradoxPdf := Def.uncached {
       val _              = paradoxPdfSite.value
       val outputFileName = (paradoxPdf / moduleName).value + ".pdf"
       val ct             = configTarget(configuration.value)
