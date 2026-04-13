@@ -36,7 +36,7 @@ object Common extends AutoPlugin {
     scalacOptions ++= Seq("-encoding", "UTF-8", "-unchecked", "-deprecation", "-feature"),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, _)) => Seq("-Xsource:3")
+        case Some((2, _)) => Seq("-Xsource:3", "-release:11")
         case _            => Seq.empty
       }
     },
