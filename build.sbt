@@ -56,7 +56,6 @@ ThisBuild / githubWorkflowPublish               := Seq(
     List("ci-release"),
     env = Map(
       "CI_CLEAN" -> "clean",
-      "CI_RELEASE" -> ";^ core/publishSigned ;^ testkit/publishSigned ;^ plugin/publishSigned ;^ themePlugin/publishSigned ; genericTheme/publishSigned",
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
       "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
