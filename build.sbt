@@ -40,9 +40,9 @@ ThisBuild / githubWorkflowJavaVersions := List(
   JavaSpec.temurin("17"),
   JavaSpec.temurin("11")
 )
-ThisBuild / githubWorkflowScalaVersions         := List("2.12.21", "3.8.1")
+ThisBuild / githubWorkflowScalaVersions         := List("2.12.21", "3.8.3")
 ThisBuild / githubWorkflowBuildMatrixExclusions := Seq(
-  MatrixExclude(Map("scala" -> "3.8.1", "java" -> "temurin@11"))
+  MatrixExclude(Map("scala" -> "3.8.3", "java" -> "temurin@11"))
 )
 ThisBuild / githubWorkflowSbtCommand := "sbt -batch"
 ThisBuild / githubWorkflowBuild      := Seq(
@@ -72,7 +72,7 @@ lazy val paradox = project
     publish / skip := true
   )
 
-lazy val scala3 = "3.8.1"
+lazy val scala3 = "3.8.3"
 
 lazy val core = project
   .in(file("core"))
@@ -123,8 +123,8 @@ lazy val plugin = project
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     (pluginCrossBuild / sbtVersion) := {
       scalaBinaryVersion.value match {
-        case "2.12" => "1.12.4"
-        case _      => "2.0.0-RC9"
+        case "2.12" => "1.12.9"
+        case _      => "2.0.0-RC11"
       }
     },
     scriptedSbt := (pluginCrossBuild / sbtVersion).value,
@@ -158,8 +158,8 @@ lazy val themePlugin = project
     addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     (pluginCrossBuild / sbtVersion) := {
       scalaBinaryVersion.value match {
-        case "2.12" => "1.12.4"
-        case _      => "2.0.0-RC9"
+        case "2.12" => "1.12.9"
+        case _      => "2.0.0-RC11"
       }
     }
   )

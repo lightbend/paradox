@@ -96,7 +96,7 @@ object Page {
       convertPath: String => String,
       properties: Map[String, String]
   ): Forest[Page] =
-    Index.pages(parsed, properties) map (_ map convertPage(convertPath))
+    Index.pages(parsed, properties).map(_.map(convertPage(convertPath)))
 
   /**
    * Convert an Index.Page into the final Page and Headers. The first h1 header is used for the page header and title.
@@ -111,7 +111,7 @@ object Page {
       case Nil     => (Header(targetPath, new SpecialTextNode(targetPath), None, Nil), Nil)
     }
     val anchors = page.anchors.map(a => Anchor(a.path))
-    val headers = subheaders map (_ map (h => Header(h.path, h.markdown, h.group, h.includeIndexes)))
+    val headers = subheaders.map(_.map(h => Header(h.path, h.markdown, h.group, h.includeIndexes)))
     Page(page.file, targetPath, rootSrcPage, h1.label, h1, headers, anchors, page.markdown, h1.group, properties)
   }
 

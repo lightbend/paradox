@@ -166,8 +166,8 @@ object Writer {
     private lazy val imgBase = {
       val root = context.location.tree.label.base // ends with a slash
       val base = context.properties.getOrElse("image.base_url", sys.error("Property `image.base_url` is not defined"))
-      val baseUrl = if (base startsWith ".../") root + base.drop(4) else base
-      if (baseUrl endsWith "/") baseUrl dropRight 1 else baseUrl
+      val baseUrl = if (base.startsWith(".../")) root + base.drop(4) else base
+      if (baseUrl.endsWith("/")) baseUrl.dropRight(1) else baseUrl
     }
 
     override def render(node: ExpImageNode, text: String): LinkRenderer.Rendering =
@@ -210,7 +210,7 @@ object Writer {
       super.render(node, substituteVarsInString(url, context.properties), title, text)
 
     private def interpolatedUrl(url: String): Option[String] =
-      if (url startsWith ".../") Some(imgBase + url.drop(3)) else None
+      if (url.startsWith(".../")) Some(imgBase + url.drop(3)) else None
   }
 
   def substituteVarsInString(text: String, variables: Map[String, String]): String =

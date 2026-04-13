@@ -18,4 +18,7 @@ package com.lightbend.paradox
 
 package object compat {
   val Implicits = scala.collection.JavaConverters
+
+  def unsafeWrapArray[A](array: Array[A]): Seq[A] =
+    array.toIndexedSeq
 }

@@ -25,7 +25,7 @@ trait ParadoxLogger {
     // we provide our own implementation because sbt doesn't offer any exception logging at debug
     val writer = new StringWriter()
     t.printStackTrace(new PrintWriter(writer))
-    new StringOps(writer.toString).lines.foreach(debug(_))
+    new StringOps(writer.toString).linesIterator.foreach(debug(_))
   }
   def debug(msg: => String): Unit
   def info(msg: => String): Unit

@@ -18,4 +18,7 @@ package com.lightbend.paradox
 
 package object compat {
   val Implicits = scala.jdk.CollectionConverters
+
+  def unsafeWrapArray[A](array: Array[A]): scala.collection.immutable.ArraySeq[A] =
+    scala.collection.immutable.ArraySeq.unsafeWrapArray(array)
 }

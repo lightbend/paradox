@@ -53,7 +53,10 @@ object Index {
   )
 
   def pages(parsed: Seq[(File, String, RootNode, Map[String, String])], properties: Map[String, String]): Forest[Page] =
-    link(parsed.map((page _).tupled).toList, properties)
+    link(
+      parsed.map { case (file, path, markdown, pageProperties) => page(file, path, markdown, pageProperties) }.toList,
+      properties
+    )
 
   /**
    * Create a new Index.Page with parsed indices and headers.
@@ -65,7 +68,7 @@ object Index {
    * Create a tree of header refs from a parsed markdown page.
    */
   def headers(root: RootNode): Forest[Ref] =
-    Tree.hierarchy(headerRefs(root, group = None, includeIndexes = Nil))(Ordering[Int].on[Ref](_.level))
+    Tree.hierarchy(headerRefs(root, group = None, includeIndexes = Nil))(using Ordering[Int].on[Ref](_.level))
 
   /**
    * Extract refs from markdown headers.
@@ -109,7 +112,7 @@ object Index {
    * Create a tree of page refs from index directives in a parsed markdown page.
    */
   def indices(root: RootNode): Forest[Ref] =
-    Tree.hierarchy(indexRefs(root))(Ordering[Int].on[Ref](_.level))
+    Tree.hierarchy(indexRefs(root))(using Ordering[Int].on[Ref](_.level))
 
   /**
    * Extract refs from 'index' directives.
