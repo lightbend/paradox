@@ -77,13 +77,13 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       "github.root.base_dir" -> "."
     )
 
-    markdown("@github[See build.sbt](/build.sbt)")(context) shouldEqual
+    markdown("@github[See build.sbt](/build.sbt)")(using context) shouldEqual
       html("""<p><a href="https://github.com/lightbend/paradox/tree/master/build.sbt">See build.sbt</a></p>""")
   }
 
   it should "throw exceptions for unconfigured GitHub URL" in {
     the[ParadoxException] thrownBy {
-      markdown("@github[#1](#1)")(writerContext)
+      markdown("@github[#1](#1)")(using writerContext)
     } should have message "Failed to resolve [#1] because property [github.base_url] is not defined"
   }
 
@@ -92,11 +92,11 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
       writerContextWithProperties("github.base_url" -> "https://github.com/project", "github.root.base_dir" -> ".")
 
     the[ParadoxException] thrownBy {
-      markdown("@github[#1](#1)")(invalidContext)
+      markdown("@github[#1](#1)")(using invalidContext)
     } should have message "Failed to resolve [#1] because [github.base_url] is not a project URL"
 
     the[ParadoxException] thrownBy {
-      markdown("@github[README.md](/README.md)")(invalidContext)
+      markdown("@github[README.md](/README.md)")(using invalidContext)
     } should have message "Failed to resolve [/README.md] because [github.base_url] is not a project or versioned tree URL"
   }
 
@@ -104,7 +104,7 @@ class GitHubDirectiveSpec extends MarkdownBaseSpec {
     val brokenContext = writerContextWithProperties("github.base_url" -> "https://github.com/broken/project|")
 
     the[ParadoxException] thrownBy {
-      markdown("@github[#1](#1)")(brokenContext)
+      markdown("@github[#1](#1)")(using brokenContext)
     } should have message "Failed to resolve [#1] because property [github.base_url] contains an invalid URL [https://github.com/broken/project|]"
   }
 

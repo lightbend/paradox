@@ -210,7 +210,7 @@ class IndexSpec extends MarkdownBaseSpec {
   }
 
   def indexed(mappings: (String, String)*): String =
-    show(pages(mappings: _*))
+    show(pages(mappings*))
 
   def index(text: String): String = prepare(text)
 
