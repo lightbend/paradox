@@ -143,7 +143,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "throw exceptions for unconfigured default base URL" in {
     the[ParadoxException] thrownBy {
-      markdown("@javadoc[Model](org.example.Model)")(writerContext)
+      markdown("@javadoc[Model](org.example.Model)")(using writerContext)
     } should have message "Failed to resolve [org.example.Model] because property [javadoc.base_url] is not defined"
   }
 
@@ -171,7 +171,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "support creating non frame style links" in {
     val ctx = context.andThen(c => c.copy(properties = c.properties.updated("javadoc.link_style", "direct")))
-    markdown("@javadoc[Publisher](org.reactivestreams.Publisher)")(ctx) shouldEqual
+    markdown("@javadoc[Publisher](org.reactivestreams.Publisher)")(using ctx) shouldEqual
       html(
         """<p><a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>"""
       )
@@ -182,7 +182,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
       c.copy(properties = c.properties.updated("javadoc.org.reactivestreams.link_style", "direct"))
     )
     markdown("""Frames: @javadoc:[Actor](akka.actor.Actor)
-               |Direct: @javadoc[Publisher](org.reactivestreams.Publisher)""".stripMargin)(ctx) shouldEqual
+               |Direct: @javadoc[Publisher](org.reactivestreams.Publisher)""".stripMargin)(using ctx) shouldEqual
       html(
         """<p>Frames: <a href="http://doc.akka.io/japi/akka/2.4.10/?akka/actor/Actor.html" title="akka.actor.Actor"><code>Actor</code></a>
           |Direct: <a href="http://www.reactive-streams.org/reactive-streams-1.0.0-javadoc/org/reactivestreams/Publisher.html" title="org.reactivestreams.Publisher"><code>Publisher</code></a></p>""".stripMargin
@@ -197,7 +197,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
           .updated("javadoc.java.base_url", "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/")
       )
     )
-    markdown("@javadoc:[Flow.Subscriber](java.util.concurrent.Flow.Subscriber)")(ctx) shouldEqual
+    markdown("@javadoc:[Flow.Subscriber](java.util.concurrent.Flow.Subscriber)")(using ctx) shouldEqual
       html(
         """<p><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/Flow.Subscriber.html" title="java.util.concurrent.Flow.Subscriber"><code>Flow.Subscriber</code></a></p>"""
       )
@@ -211,7 +211,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
           .updated("javadoc.akka.base_url", "https://doc.akka.io/japi/akka/current/")
       )
     )
-    markdown("@javadoc:[Effect.MessageAdapter](akka.actor.testkit.typed.Effect.MessageAdapter)")(ctx) shouldEqual
+    markdown("@javadoc:[Effect.MessageAdapter](akka.actor.testkit.typed.Effect.MessageAdapter)")(using ctx) shouldEqual
       html(
         """<p><a href="https://doc.akka.io/japi/akka/current/akka/actor/testkit/typed/Effect.MessageAdapter.html" title="akka.actor.testkit.typed.Effect.MessageAdapter"><code>Effect.MessageAdapter</code></a></p>"""
       )
@@ -224,7 +224,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
           .updated("javadoc.org.example.package_name_style", "startWithAnycase")
       )
     )
-    markdown("@javadoc:[Outer.Inner](org.example.Lib.Outer$$Inner)")(ctx) shouldEqual
+    markdown("@javadoc:[Outer.Inner](org.example.Lib.Outer$$Inner)")(using ctx) shouldEqual
       renderedMd(
         "http://example.org/api/0.1.2/?org/example/Lib/Outer.Inner.html",
         "org.example.Lib.Outer.Inner",
@@ -248,7 +248,7 @@ class JavadocDirectiveSpec extends MarkdownBaseSpec {
           .updated("javadoc.org.example.package_name_style", "startWithAnycase")
       )
     )
-    markdown("@javadoc:[Outer.inner](org.example.lib.Outer$$inner)")(ctx) shouldEqual
+    markdown("@javadoc:[Outer.inner](org.example.lib.Outer$$inner)")(using ctx) shouldEqual
       renderedMd(
         "http://example.org/api/0.1.2/?org/example/lib/Outer.inner.html",
         "org.example.lib.Outer.inner",

@@ -20,7 +20,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class PagePropertiesSpec extends AnyFlatSpec with Matchers {
-  def convertPath = Path.replaceSuffix(".md", ".html") _
+  def convertPath: String => String = Path.replaceSuffix(".md", ".html")
 
   val propOut        = Map("out" -> "newIndex.html")
   val propNoOut      = Map.empty[String, String]

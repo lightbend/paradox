@@ -139,7 +139,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
           .updated("scaladoc.org.example.package_name_style", "startWithAnycase")
       )
     )
-    markdown("@scaladoc:[Outer.Inner](org.example.Lib.Outer$$Inner)")(ctx) shouldEqual
+    markdown("@scaladoc:[Outer.Inner](org.example.Lib.Outer$$Inner)")(using ctx) shouldEqual
       renderedMd(
         "http://example.org/api/0.1.2/org/example/Lib/Outer$$Inner.html",
         "org.example.Lib.Outer.Inner",
@@ -163,7 +163,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
           .updated("scaladoc.org.example.package_name_style", "startWithAnycase")
       )
     )
-    markdown("@scaladoc:[Outer.inner](org.example.lib.Outer$$inner)")(ctx) shouldEqual
+    markdown("@scaladoc:[Outer.inner](org.example.lib.Outer$$inner)")(using ctx) shouldEqual
       renderedMd(
         "http://example.org/api/0.1.2/org/example/lib/Outer$$inner.html",
         "org.example.lib.Outer.inner",
@@ -194,7 +194,7 @@ class ScaladocDirectiveSpec extends MarkdownBaseSpec {
 
   it should "throw exceptions for unconfigured default base URL" in {
     the[ParadoxException] thrownBy {
-      markdown("@scaladoc[Model](org.example.Model)")(writerContext)
+      markdown("@scaladoc[Model](org.example.Model)")(using writerContext)
     } should have message "Failed to resolve [org.example.Model] because property [scaladoc.base_url] is not defined"
   }
 
