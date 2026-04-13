@@ -22,4 +22,4 @@ jobs:
 
       - name: Check project is formatted
         # https://github.com/jrouly/scalafmt-native-action/releases
-        uses: jrouly/scalafmt-native-action@14620cde093e5ff6bfbbecd4f638370024287b9d # v4
+        uses: jrouly/scalafmt-native-action@a9c8e1032a02004c425d53ef8ce420fe2179eba7 # v5
