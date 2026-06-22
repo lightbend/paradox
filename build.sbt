@@ -71,7 +71,7 @@ lazy val paradox = project
     publish / skip := true
   )
 
-lazy val scala3 = "3.8.3"
+lazy val scala3 = "3.8.4"
 
 lazy val core = project
   .in(file("core"))
