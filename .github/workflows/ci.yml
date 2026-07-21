@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -55,10 +55,10 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Check that workflows are up to date
-        run: sbt -batch '++ ${{ matrix.scala }}' githubWorkflowCheck
+        run: sbt -batch '++ ${{ matrix.scala }}; githubWorkflowCheck'
 
       - name: Verify project
-        run: sbt -batch '++ ${{ matrix.scala }}' verify
+        run: sbt -batch '++ ${{ matrix.scala }}; verify'
 
       - name: Compress target directories
         run: tar cf targets.tar plugin/target themes/generic/target target docs/target tests/target theme-plugin/target core/target themes/target testkit/target project/target
@@ -81,7 +81,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
