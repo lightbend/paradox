@@ -52,7 +52,7 @@ jobs:
           cache: sbt
 
       - name: Setup sbt
-        uses: sbt/setup-sbt@v1
+        uses: sbt/setup-sbt@v1.5.5
 
       - name: Check that workflows are up to date
         run: sbt -batch '++ ${{ matrix.scala }}; githubWorkflowCheck'
@@ -102,7 +102,7 @@ jobs:
           cache: sbt
 
       - name: Setup sbt
-        uses: sbt/setup-sbt@v1
+        uses: sbt/setup-sbt@v1.5.5
 
       - name: Download target directories (2.12.21)
         uses: actions/download-artifact@v8
