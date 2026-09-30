@@ -41,6 +41,12 @@ object Common extends AutoPlugin {
       }
     },
     javacOptions ++= Seq("-encoding", "UTF-8"),
+    javacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, _)) => Seq("--release", "11")
+        case _            => Seq.empty
+      }
+    },
     // Header settings
     HeaderPlugin.autoImport.headerMappings := Map(
       FileType.scala -> CommentStyle.cStyleBlockComment,
