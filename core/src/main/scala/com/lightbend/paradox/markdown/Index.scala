@@ -24,6 +24,7 @@ import org.pegdown.ast.DirectiveNode.Source
 import org.pegdown.ast._
 
 import scala.annotation.tailrec
+import scala.collection.mutable
 import com.lightbend.paradox.compat.Implicits._
 
 /**
@@ -61,8 +62,59 @@ object Index {
   /**
    * Create a new Index.Page with parsed indices and headers.
    */
-  def page(file: File, path: String, markdown: RootNode, properties: Map[String, String]): Page =
+  def page(file: File, path: String, markdown: RootNode, properties: Map[String, String]): Page = {
+    uniqueHeaderAnchors(markdown)
     Page(file, path, markdown, properties, indices(markdown), headers(markdown), anchors(markdown))
+  }
+
+  /**
+   * Give repeated headers on a page unique anchor names, the way GitHub does.
+   *
+   * A header's anchor is derived from its text alone, so a page that repeats a header (for example `Bug Fixes` under
+   * each release in release notes) would otherwise get the same anchor several times. The first header keeps its
+   * anchor, so existing links still work, and later duplicates get `-1`, `-2`, ... appended, skipping any name already
+   * used by another header or explicit anchor on the page. Headers in included files and container directives count as
+   * part of the page.
+   *
+   * This updates the [[AnchorLinkSuperNode]]s in place and is idempotent.
+   */
+  def uniqueHeaderAnchors(root: RootNode): Unit = {
+    val headerAnchors = anchorLinkSuperNodes(root)
+    val used          = mutable.Set.empty[String]
+    headerAnchors.foreach(anchor => used += anchor.baseName)
+    anchors(root).foreach(ref => used += ref.path.stripPrefix("#"))
+    val seen = mutable.Set.empty[String]
+    // last suffix given per name, so the k-th duplicate doesn't re-check -1 .. -(k-1)
+    val lastSuffix = mutable.Map.empty[String, Int]
+    headerAnchors.foreach { anchor =>
+      val base = anchor.baseName
+      if (base.isEmpty || seen.add(base)) anchor.name = base
+      else {
+        var i = lastSuffix.getOrElse(base, 0) + 1
+        while (used(s"$base-$i")) i += 1
+        lastSuffix(base) = i
+        anchor.name = s"$base-$i"
+        used += anchor.name
+      }
+    }
+  }
+
+  /**
+   * All header anchors in a parsed markdown page, in document order, including those in included files.
+   */
+  private def anchorLinkSuperNodes(root: Node): List[AnchorLinkSuperNode] = {
+    val found                  = List.newBuilder[AnchorLinkSuperNode]
+    def walk(node: Node): Unit = {
+      node match {
+        case anchor: AnchorLinkSuperNode => found += anchor
+        case _                           =>
+      }
+      val children = node.getChildren
+      if (children ne null) children.asScala.foreach(walk)
+    }
+    walk(root)
+    found.result()
+  }
 
   /**
    * Create a tree of header refs from a parsed markdown page.

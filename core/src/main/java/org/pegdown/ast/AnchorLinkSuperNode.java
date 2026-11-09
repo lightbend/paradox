@@ -27,11 +27,23 @@ import java.util.List;
  */
 public class AnchorLinkSuperNode extends AbstractNode {
 
-    public final String name;
+    /**
+     * The anchor name derived from the header text alone.
+     */
+    public final String baseName;
+
+    /**
+     * The anchor name to render. Starts out as {@link #baseName}, and is given a
+     * numeric suffix when the same header text is repeated on a page
+     * (see {@code Index.uniqueHeaderAnchors}).
+     */
+    public String name;
+
     public final Node contents;
 
     public AnchorLinkSuperNode(Node contents) {
-        this.name = createAnchor(contents.getChildren());
+        this.baseName = createAnchor(contents.getChildren());
+        this.name = baseName;
         this.contents = contents;
     }
 
