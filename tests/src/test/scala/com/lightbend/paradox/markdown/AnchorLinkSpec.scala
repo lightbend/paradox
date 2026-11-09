@@ -16,6 +16,8 @@
 
 package com.lightbend.paradox.markdown
 
+import com.lightbend.paradox.ThrowingErrorContext
+
 class AnchorLinkSpec extends MarkdownBaseSpec {
 
   "Anchor links" should "create anchor for headers" in {
@@ -31,6 +33,102 @@ class AnchorLinkSpec extends MarkdownBaseSpec {
         |<h1><a href="#title-with-code" name="title-with-code" class="anchor">
         |<span class="anchor-link"></span></a>Title with <code>code</code>&hellip;</h1>
         """)
+  }
+
+  private def h(level: Int, name: String, title: String) =
+    s"""<h$level><a href="#$name" name="$name" class="anchor"><span class="anchor-link"></span></a>$title</h$level>"""
+
+  it should "give repeated headers unique anchors, keeping the first one" in {
+    markdown("""
+      |## 1.0.2
+      |### Bug Fixes
+      |### Changes
+      |## 1.0.1
+      |### Bug Fixes
+      |## 1.0.0
+      |### Bug Fixes
+      """) shouldEqual html(
+      Seq(
+        h(2, "1-0-2", "1.0.2"),
+        h(3, "bug-fixes", "Bug Fixes"),
+        h(3, "changes", "Changes"),
+        h(2, "1-0-1", "1.0.1"),
+        h(3, "bug-fixes-1", "Bug Fixes"),
+        h(2, "1-0-0", "1.0.0"),
+        h(3, "bug-fixes-2", "Bug Fixes")
+      ).mkString("\n")
+    )
+  }
+
+  it should "skip suffixes already used by another header" in {
+    markdown("""
+      |## Bug Fixes
+      |## Bug Fixes 1
+      |## Bug Fixes
+      """) shouldEqual html(
+      Seq(
+        h(2, "bug-fixes", "Bug Fixes"),
+        h(2, "bug-fixes-1", "Bug Fixes 1"),
+        h(2, "bug-fixes-2", "Bug Fixes")
+      ).mkString("\n")
+    )
+  }
+
+  it should "use the unique anchors in the page toc" in {
+    markdown("""
+      |# Releases
+      |@@ toc
+      |## 1.0.1
+      |### Bug Fixes
+      |## 1.0.0
+      |### Bug Fixes
+      """) shouldEqual html(
+      s"""
+      |${h(1, "releases", "Releases")}
+      |<div class="toc">
+      |  <ul>
+      |    <li><a href="test.html#1-0-1" class="header">1.0.1</a>
+      |      <ul>
+      |        <li><a href="test.html#bug-fixes" class="header">Bug Fixes</a></li>
+      |      </ul>
+      |    </li>
+      |    <li><a href="test.html#1-0-0" class="header">1.0.0</a>
+      |      <ul>
+      |        <li><a href="test.html#bug-fixes-1" class="header">Bug Fixes</a></li>
+      |      </ul>
+      |    </li>
+      |  </ul>
+      |</div>
+      |${h(2, "1-0-1", "1.0.1")}
+      |${h(3, "bug-fixes", "Bug Fixes")}
+      |${h(2, "1-0-0", "1.0.0")}
+      |${h(3, "bug-fixes-1", "Bug Fixes")}"""
+    )
+  }
+
+  it should "be idempotent when a page is indexed again" in {
+    val root = paradoxProcessor.parseAndProcessMarkdown(
+      new java.io.File("test.md"),
+      prepare("""
+        |## Bug Fixes
+        |## Bug Fixes
+        """),
+      Map.empty,
+      new ThrowingErrorContext
+    )
+    Index.uniqueHeaderAnchors(root)
+    Index.uniqueHeaderAnchors(root)
+    Index.headers(root).map(_.label.path) shouldEqual List("#bug-fixes", "#bug-fixes-1")
+  }
+
+  it should "not change anchors across pages" in {
+    markdownPages(
+      "a.md" -> "## Bug Fixes",
+      "b.md" -> "## Bug Fixes"
+    ) shouldEqual htmlPages(
+      "a.html" -> h(2, "bug-fixes", "Bug Fixes"),
+      "b.html" -> h(2, "bug-fixes", "Bug Fixes")
+    )
   }
 
 }
